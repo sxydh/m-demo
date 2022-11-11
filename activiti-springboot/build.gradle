@@ -1,0 +1,44 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.2'
+    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+    id 'java'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+group = 'cn.net.bhe'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    maven {
+        url 'https://maven.aliyun.com/repository/public'
+    }
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // https://mvnrepository.com/artifact/org.activiti/activiti-spring-boot-starter-basic
+    implementation 'org.activiti:activiti-spring-boot-starter-basic:6.0.0'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.7.2'
+    // https://mvnrepository.com/artifact/com.alibaba/druid-spring-boot-starter
+    implementation 'com.alibaba:druid-spring-boot-starter:1.2.11'
+    // https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc10
+    implementation 'com.oracle.database.jdbc:ojdbc10:19.15.0.0.1'
+    // https://mvnrepository.com/artifact/com.oracle.ojdbc/orai18n
+    implementation 'com.oracle.ojdbc:orai18n:19.3.0.0'
+    // https://mvnrepository.com/artifact/com.alibaba/fastjson
+    implementation 'com.alibaba:fastjson:2.0.11'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
