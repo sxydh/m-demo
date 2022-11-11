@@ -1,0 +1,11 @@
+server:
+  port: 10086
+frs:
+  baidu:
+    clientId: clientId
+    clientSecret: clientSecret
+    faceProbabilityMin: 0.95
+    spoofingMax: 0.00048
+    front: 10
+    side: 30
+    scoreMin: 95
