@@ -2,8 +2,8 @@ server:
   port: 10086
 frs:
   baidu:
-    clientId: clientId
-    clientSecret: clientSecret
+    clientId: API Key
+    clientSecret: Secret Key
     faceProbabilityMin: 0.95
     spoofingMax: 0.00048
     front: 10
