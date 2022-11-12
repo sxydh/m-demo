@@ -27,4 +27,11 @@
     <extensions defaultExtensionNs="com.intellij">
 
     </extensions>
+
+    <actions>
+        <action id="HelloWorld.ID" class="cn.net.bhe.ideaplugin.HelloWorld" text="Hello World">
+            <add-to-group group-id="FileMenu" anchor="first"/>
+        </action>
+    </actions>
+
 </idea-plugin>
