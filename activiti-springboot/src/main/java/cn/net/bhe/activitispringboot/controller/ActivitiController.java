@@ -20,8 +20,8 @@ import java.util.Map;
  * @author Administrator
  */
 @RestController
-@RequestMapping("/test")
-public class TestController {
+@RequestMapping("/activiti")
+public class ActivitiController {
 
     @Resource
     private RepositoryService repositoryService;
