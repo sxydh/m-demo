@@ -1,6 +1,6 @@
 # Profile
 
-字节码层面实现Java代理
+字节码方式实现Java代理
 
 ## Byte Buddy
 
