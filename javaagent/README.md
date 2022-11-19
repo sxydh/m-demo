@@ -6,6 +6,6 @@
 
 ### [类创建](src/main/java/cn/bet/bhe/javaagent/bytebuddy/CreatingAClass.java)
 
-### [代理创建](src/main/java/cn/bet/bhe/javaagent/bytebuddy/FieldsAndMethods.java)
+### [方法代理创建](src/main/java/cn/bet/bhe/javaagent/bytebuddy/FieldsAndMethods.java)
 
 ## Javassist
