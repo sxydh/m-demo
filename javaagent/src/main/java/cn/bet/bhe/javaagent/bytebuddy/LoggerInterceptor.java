@@ -1,12 +1,8 @@
 package cn.bet.bhe.javaagent.bytebuddy;
 
-import net.bytebuddy.implementation.bind.annotation.AllArguments;
-import net.bytebuddy.implementation.bind.annotation.Origin;
-import net.bytebuddy.implementation.bind.annotation.SuperCall;
-import net.bytebuddy.implementation.bind.annotation.This;
+import net.bytebuddy.implementation.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -14,17 +10,18 @@ import java.util.concurrent.Callable;
  */
 public class LoggerInterceptor {
 
-    public static List<String> log(@This Object zhis,
-                                   @SuperCall Callable<List<String>> zuper,
-                                   @Origin String origin,
-                                   @AllArguments String... args) throws Exception {
-        List<String> list = null;
+    @RuntimeType
+    public static Object log(@This Object zhis,
+                             @SuperCall Callable<?> zuper,
+                             @Origin String origin,
+                             @AllArguments Object... args) throws Exception {
+        Object obj = null;
         try {
-            list = zuper.call();
-            return list;
+            obj = zuper.call();
+            return obj;
         } finally {
             System.out.println(LoggerInterceptor.class + " => @This => " + zhis);
-            System.out.println(LoggerInterceptor.class + " => @SuperCall => " + list);
+            System.out.println(LoggerInterceptor.class + " => @SuperCall => " + obj);
             System.out.println(LoggerInterceptor.class + " => @Origin => " + origin);
             System.out.println(LoggerInterceptor.class + " => @AllArguments => " + Arrays.toString(args));
             System.out.println();
