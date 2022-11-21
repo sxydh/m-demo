@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.6.3'
+}
+
+group 'cn.net.bhe'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+jar.enabled = true
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation fileTree(dir: 'libs', includes: ['*jar'])
+
+    // https://mvnrepository.com/artifact/cn.hutool/hutool-all
+    implementation 'cn.hutool:hutool-all:5.8.10'
+}
+
+intellij {
+    version '2019.3.1'
+    plugins = ['java']
+    updateSinceUntilBuild = false
+}
+
+test {
+    useJUnitPlatform()
+}
