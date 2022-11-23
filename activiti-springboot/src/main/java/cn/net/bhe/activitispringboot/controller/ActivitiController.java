@@ -46,6 +46,16 @@ public class ActivitiController {
         return deployment.getId();
     }
 
+    @RequestMapping("/suspend")
+    public void suspend(@RequestParam("id") String id) {
+        repositoryService.suspendProcessDefinitionById(id);
+    }
+
+    @RequestMapping("/activate")
+    public void activate(@RequestParam("id") String id) {
+        repositoryService.activateProcessDefinitionById(id);
+    }
+
     @RequestMapping("/start")
     public String start(@RequestParam String processDefinitionKey) {
         // setAuthenticatedUserId设置流程实例的start_user_id_
