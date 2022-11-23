@@ -5,6 +5,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author Administrator
@@ -36,10 +40,9 @@ public class ActivitiController {
         Deployment deployment = repositoryService.createDeployment()
                 // 任意取
                 .name(bpmn.getOriginalFilename())
-                // resourceName后缀必须是bpmn
                 .addInputStream(
-                        Objects.requireNonNull(bpmn.getOriginalFilename())
-                                .substring(0, bpmn.getOriginalFilename().indexOf(".")) + ".bpmn",
+                        // resourceName后缀必须是bpmn
+                        bpmn.getOriginalFilename(),
                         bpmn.getInputStream())
                 .deploy();
         System.out.println(deployment);
@@ -54,6 +57,22 @@ public class ActivitiController {
     @RequestMapping("/activate")
     public void activate(@RequestParam("id") String id) {
         repositoryService.activateProcessDefinitionById(id);
+    }
+
+    @RequestMapping("/resource")
+    public void resource(@RequestParam("id") String id) throws Exception {
+        ProcessDefinition processDefinition = repositoryService.getProcessDefinition(id);
+        InputStream inputStream = repositoryService.getResourceAsStream(
+                processDefinition.getDeploymentId(),
+                processDefinition.getResourceName());
+        char[] buffer = new char[1024];
+        StringBuilder out = new StringBuilder();
+        Reader in = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+        for (int numRead; (numRead = in.read(buffer, 0, buffer.length)) > 0; ) {
+            out.append(buffer, 0, numRead);
+        }
+        System.out.println(out);
+        inputStream.close();
     }
 
     @RequestMapping("/start")
