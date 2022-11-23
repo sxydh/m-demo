@@ -138,17 +138,15 @@ public class ActivitiController {
         DefaultProcessDiagramGenerator diagramGenerator = new DefaultProcessDiagramGenerator();
         InputStream inputStream = diagramGenerator.generateDiagram(
                 bpmnModel,
-                "bmp",
                 highLightedActivities,
                 highLightedFlows,
                 "微软雅黑",
                 "微软雅黑",
-                "微软雅黑",
-                null,
-                2.0);
-        File imageFile = new File("C:\\Users\\Administrator\\Desktop\\" + processInstance.getProcessDefinitionName() + ".bmp");
+                "微软雅黑");
+        File imageFile = new File("C:\\Users\\Administrator\\Desktop\\" + processInstance.getProcessDefinitionName() + ".svg");
         OutputStream outputStream = new FileOutputStream(imageFile);
         IOUtils.copy(inputStream, outputStream);
+        inputStream.close();
     }
 
 }
