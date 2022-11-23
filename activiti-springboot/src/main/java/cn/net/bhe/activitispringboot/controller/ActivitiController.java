@@ -1,13 +1,22 @@
 package cn.net.bhe.activitispringboot.controller;
 
+import org.activiti.bpmn.model.BaseElement;
+import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.FlowElement;
+import org.activiti.bpmn.model.SequenceFlow;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.activiti.image.impl.DefaultProcessDiagramGenerator;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,11 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Administrator
@@ -32,6 +42,8 @@ public class ActivitiController {
     private RepositoryService repositoryService;
     @Resource
     private RuntimeService runtimeService;
+    @Resource
+    private HistoryService historyService;
     @Resource
     private TaskService taskService;
 
@@ -105,6 +117,38 @@ public class ActivitiController {
                         "key1", RandomStringUtils.randomAlphabetic(3),
                         "key2", RandomStringUtils.randomAlphabetic(3)));
         return task.getId();
+    }
+
+    @RequestMapping("/diagram")
+    public void generateDiagram(@RequestParam("id") String id) throws Exception {
+        HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(id).singleResult();
+        List<HistoricActivityInstance> activityInstances = historyService.createHistoricActivityInstanceQuery().processInstanceId(id).list();
+        List<String> highLightedActivities = activityInstances.stream()
+                .filter(ele -> ele.getEndTime() != null)
+                .map(HistoricActivityInstance::getActivityId)
+                .collect(Collectors.toList());
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processInstance.getProcessDefinitionId());
+        Collection<FlowElement> flowElements = bpmnModel.getProcesses().get(0).getFlowElements();
+        List<String> highLightedFlows = flowElements.stream()
+                .filter(ele -> ele instanceof SequenceFlow)
+                .map(ele -> (SequenceFlow) ele)
+                .filter(ele -> highLightedActivities.contains(ele.getSourceRef()) && highLightedActivities.contains(ele.getTargetRef()))
+                .map(BaseElement::getId)
+                .collect(Collectors.toList());
+        DefaultProcessDiagramGenerator diagramGenerator = new DefaultProcessDiagramGenerator();
+        InputStream inputStream = diagramGenerator.generateDiagram(
+                bpmnModel,
+                "bmp",
+                highLightedActivities,
+                highLightedFlows,
+                "微软雅黑",
+                "微软雅黑",
+                "微软雅黑",
+                null,
+                2.0);
+        File imageFile = new File("C:\\Users\\Administrator\\Desktop\\" + processInstance.getProcessDefinitionName() + ".bmp");
+        OutputStream outputStream = new FileOutputStream(imageFile);
+        IOUtils.copy(inputStream, outputStream);
     }
 
 }
