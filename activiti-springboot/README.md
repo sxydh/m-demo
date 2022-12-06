@@ -1,6 +1,6 @@
 # Profile
 
-SpringBoot2.7.2集成Activiti6.0.0
+SpringBoot2.7.2集成Activiti7.1.0.M6
 
 ## Quick Start
 
@@ -18,19 +18,20 @@ SpringBoot2.7.2集成Activiti6.0.0
   ActivitiSpringbootApplication.java
 
   ```java
-  @SpringBootApplication(exclude = {
-          SecurityAutoConfiguration.class,
-          org.activiti.spring.boot.SecurityAutoConfiguration.class})
+  @SpringBootApplication
   public class ActivitiSpringbootApplication {
-  
+
       public static void main(String[] args) {
           SpringApplication.run(ActivitiSpringbootApplication.class, args);
       }
-  
+
   }
   ```
 
   > **Note**  
   >
-  > 首次运行时Activiti表会自动初始化  
+  > `spring.activiti.database-schema-update`配置是否自动创建Activiti表  
+  > `spring.activiti.db-history-used`配置是否创建act_hi_*表  
+  > `spring.activiti.history-level`配置是否记录历史数据  
+  >
   > resources/processes下的流程文件默认自动部署
