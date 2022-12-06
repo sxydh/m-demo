@@ -23,8 +23,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    // https://mvnrepository.com/artifact/org.activiti/activiti-spring-boot-starter-basic
-    implementation 'org.activiti:activiti-spring-boot-starter-basic:6.0.0'
+    // https://mvnrepository.com/artifact/org.activiti/activiti-spring-boot-starter
+    implementation 'org.activiti:activiti-spring-boot-starter:7.1.0.M6'
     // https://mvnrepository.com/artifact/org.activiti/activiti-image-generator
     implementation 'org.activiti:activiti-image-generator:7.1.0.M6'
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
