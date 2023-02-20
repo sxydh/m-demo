@@ -1,0 +1,21 @@
+<html>
+
+<body>
+    <script type="text/javascript">
+        if (window.WebSocket) {
+            const ws = new WebSocket("ws://localhost:3010/ws");
+            ws.onopen = e => {
+                console.log(e);
+            };
+            ws.onmessage = e => {
+                console.log(e);
+            };
+            ws.onclose = e => {
+                console.log(e);
+            };
+
+        }
+    </script>
+</body>
+
+</html>
