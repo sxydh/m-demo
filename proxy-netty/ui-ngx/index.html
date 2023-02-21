@@ -8,7 +8,11 @@
                 console.log(e);
             };
             ws.onmessage = e => {
-                console.log(e);
+                let reader = new FileReader();
+                reader.onload = () => {
+                    console.log(reader.result);
+                };
+                reader.readAsText(event.data);
             };
             ws.onclose = e => {
                 console.log(e);

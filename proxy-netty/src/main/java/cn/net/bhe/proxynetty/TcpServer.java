@@ -29,7 +29,6 @@ public class TcpServer {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) {
                         socketChannel.pipeline()
-                                .addLast(new LoggingHandler(LogLevel.DEBUG))
                                 .addLast(new TcpHandler());
                     }
                 });
