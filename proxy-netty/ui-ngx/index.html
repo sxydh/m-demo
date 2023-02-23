@@ -1,25 +1,16 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Vuetify 3</title>
+</head>
 
 <body>
-    <script type="text/javascript">
-        if (window.WebSocket) {
-            const ws = new WebSocket("ws://localhost:3010/ws");
-            ws.onopen = e => {
-                console.log(e);
-            };
-            ws.onmessage = e => {
-                let reader = new FileReader();
-                reader.onload = () => {
-                    console.log(reader.result);
-                };
-                reader.readAsText(event.data);
-            };
-            ws.onclose = e => {
-                console.log(e);
-            };
-
-        }
-    </script>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"></script>
 </body>
 
 </html>
