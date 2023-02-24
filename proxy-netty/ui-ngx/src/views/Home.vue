@@ -1,7 +1,6 @@
 <template>
-  <HelloWorld />
+  <WsEcho/>
 </template>
 
 <script setup>
-  import HelloWorld from '@/components/HelloWorld.vue'
-</script>
+import WsEcho from '@/components/WsEcho'</script>
