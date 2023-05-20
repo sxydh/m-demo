@@ -5,10 +5,10 @@ Seata官方也有类似的[*samples*](https://github.com/seata/seata-samples/tre
 
 按以下步骤启动：  
 
-* [*数据库*](sts.sql)初始化
+* [*数据库*](doc/sts.sql)初始化
 * 启动[*SeaTa*](https://github.com/seata/seata/releases)
-* 启动[*订单*](../sts-order/src/main/java/cn/net/bhe/stsorder/StsOrderApplication.java)服务
-* 启动[*库存*](../sts-invt/src/main/java/cn/net/bhe/stsinvt/StsInvtApplication.java)服务
+* 启动[*订单*](sts-order/src/main/java/cn/net/bhe/stsorder/StsOrderApplication.java)服务
+* 启动[*库存*](sts-invt/src/main/java/cn/net/bhe/stsinvt/StsInvtApplication.java)服务
 * 调用下单接口  
 
   ```bash
