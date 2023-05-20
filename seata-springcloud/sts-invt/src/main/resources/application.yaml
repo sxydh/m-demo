@@ -1,0 +1,17 @@
+server:
+  port: 50020
+spring:
+  application:
+    name: sts-invt
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sts?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: 123456
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
