@@ -6,7 +6,3 @@ spring:
   redis:
     redisson:
       file: classpath:redisson.yaml
-
-logging:
-  level:
-    root: debug

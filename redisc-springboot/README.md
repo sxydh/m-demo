@@ -59,9 +59,9 @@ SpringBoot使用Redis集群简单示例
   /root/app/redis/redis-6.2.4/src/redis-cli -c -p 6381
   ```
 
-## Lettuce客户端使用
+## Lettuce客户端
 
-* 修改配置文件application.yaml  
+* 配置文件application.yaml  
   
   ```yaml
   spring:
@@ -81,4 +81,57 @@ SpringBoot使用Redis集群简单示例
 * 启动项目
 * 使用`RedisTemplate`操作Redis
 
-## TODO
+## Redisson客户端
+
+* 配置文件application.yaml  
+
+  ```yaml
+  spring:
+    redis:
+      redisson:
+        file: classpath:redisson.yaml
+  ```
+
+  配置文件redisson.yaml  
+
+  ```yaml
+  # https://github.com/redisson/redisson/wiki/2.-Configuration#242-cluster-yaml-config-format
+  clusterServersConfig:
+    idleConnectionTimeout: 10000
+    connectTimeout: 10000
+    timeout: 3000
+    retryAttempts: 3
+    retryInterval: 1500
+    failedSlaveReconnectionInterval: 3000
+    failedSlaveCheckInterval: 60000
+    password: null
+    subscriptionsPerConnection: 5
+    clientName: null
+    loadBalancer: !<org.redisson.connection.balancer.RoundRobinLoadBalancer> {}
+    subscriptionConnectionMinimumIdleSize: 1
+    subscriptionConnectionPoolSize: 50
+    slaveConnectionMinimumIdleSize: 24
+    slaveConnectionPoolSize: 64
+    masterConnectionMinimumIdleSize: 24
+    masterConnectionPoolSize: 64
+    readMode: "SLAVE"
+    subscriptionMode: "SLAVE"
+    nodeAddresses:
+      - "redis://192.168.30.130:6381"
+      - "redis://192.168.30.130:6382"
+      - "redis://192.168.30.130:6383"
+      - "redis://192.168.30.130:6384"
+      - "redis://192.168.30.130:6385"
+      - "redis://192.168.30.130:6386"
+    scanInterval: 1000
+    pingConnectionInterval: 30000
+    keepAlive: false
+    tcpNoDelay: true
+  threads: 16
+  nettyThreads: 32
+  codec: !<org.redisson.codec.Kryo5Codec> {}
+  transportMode: "NIO"
+  ```
+
+* 启动项目
+* 使用`RedissonClient`操作Redis
