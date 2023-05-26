@@ -1,0 +1,12 @@
+server:
+  port: 50010
+
+# https://github.com/redisson/redisson/tree/master/redisson-spring-boot-starter
+spring:
+  redis:
+    redisson:
+      file: classpath:redisson.yaml
+
+logging:
+  level:
+    root: debug

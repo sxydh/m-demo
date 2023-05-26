@@ -1,0 +1,14 @@
+server:
+  port: 50010
+spring:
+  redis:
+    client-type: lettuce
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1ms
+    cluster:
+      max-redirects: 3
+      nodes: 192.168.30.130:6381,192.168.30.130:6382,192.168.30.130:6383,192.168.30.130:6384,192.168.30.130:6385,192.168.30.130:6386
