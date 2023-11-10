@@ -1,0 +1,27 @@
+环境（3.4.10）
+    集群部署 
+        文件准备    
+            sudo mkdir /opt/module/zookeeper
+            sudo wget -P /opt/module/zookeeper https://archive.apache.org/dist/zookeeper/zookeeper-3.4.10/zookeeper-3.4.10.tar.gz
+            sudo tar -zxvf /opt/module/zookeeper/zookeeper-3.4.10.tar.gz -C /opt/module/zookeeper
+            sudo chown -R sxydh:sxydh /opt/module/zookeeper
+        配置服务器编号
+            mkdir /opt/module/zookeeper/zookeeper-3.4.10/zk_data
+            vim /opt/module/zookeeper/zookeeper-3.4.10/zk_data/myid
+                追加
+                    2
+        修改配置文件 
+            mv /opt/module/zookeeper/zookeeper-3.4.10/conf/zoo_sample.cfg /opt/module/zookeeper/zookeeper-3.4.10/conf/zoo.cfg
+            vim /opt/module/zookeeper/zookeeper-3.4.10/conf/zoo.cfg
+                # 数据存储路径 
+                dataDir=/opt/module/zookeeper/zookeeper-3.4.10/zk_data
+                
+                # 集群信息
+                # 3888表示选举通信端口
+                server.2=192.168.233.129:2888:3888
+                server.3=192.168.233.130:2888:3888
+                server.4=192.168.233.131:2888:3888
+        启动 
+            cd /opt/module/zookeeper/zookeeper-3.4.10 && bin/zkServer.sh start
+            cd /opt/module/zookeeper/zookeeper-3.4.10 && bin/zkServer.sh status
+        文件同步到其它服务器，修改配置文件相应信息，并启动。
