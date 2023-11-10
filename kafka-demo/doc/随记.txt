@@ -1,0 +1,515 @@
+概述
+    Kafka是一个分布式的基于发布/订阅模式的消息队列（Message Queue），主要应用于大数据实时处理领域。
+    Kafka是一个开源的分布式事件流平台（Event Stream Platform）
+    传统的消息队列的主要应用场景：缓存/消峰、解耦和异步通信。
+消息队列的两种模式
+    点对点模式
+        消费者主动拉取数据，消息收到后清除消息。
+    发布/订阅模式 
+        可以有多个topic主题
+        消费者消费数据后，不删除数据。
+        每个消费者相互独立，都可以消费到数据。
+基础架构
+    Producer
+    Kafka Cluster 
+        Broker0
+            TopicA
+                Partition0
+                Partition1
+                ...
+            TopicB
+            ...
+        Broker1
+        ... 
+    Consumer Group 
+        ConsumerA
+        ConsumerB
+        ...
+
+    为方便扩展，并提高吞吐量，一个topic分为多个分区（partition）。
+    配合分区的设计，提出消费者组的概念，组内每个消费者并行消费。一个分区只能由组内一个消费者消费。
+    为提高可用性，为每个partition增加若干副本。ZooKeeper中记录谁是Leader，Kafka2.8.0以后也可以配置不采用ZooKeeper。
+Kafka生产者
+    发送流程
+        Kafka Producer
+            main线程 
+                Producer 
+                    send(ProducerRecord)
+                Interceptors（拦截器）
+                Serializer（序列化器）
+                Partitioner（分区器）
+                    RecordAccumulator（buffer.memory，RecordAccumulator缓冲区总大小，默认32m）
+                        DQueue0（一个分区一个队列）
+                            ProducerBatch
+                                batch.size：只有数据积累到batch.size之后，sender才会发送数据。默认16k。
+                                linger.ms：如果数据迟迟未达到batch.size，sender等待linger.ms设置的时间到了之后就会发送数据。单位ms，默认值是0ms，表示没有延迟。
+                        DQueue1
+                        ...
+            sender线程
+                Sender（读取DQueue数据）
+                NetworkClient（发送请求到broker）
+                    InFlightRequests（默认给每个broker节点最多缓存5个请求）
+                        Request1
+                        Request2
+                        ...
+        Kafka集群
+            应答acks
+                0：生产者发送过来的数据，不需要等数据落盘应答。
+                1：生产者发送过来的数据，Leader收到数据后应答。
+                -1/all：生产者发送过来的数据，Leader和ISR队列里的所有节点收齐数据后应答。-1和all等价。
+    生产者分区
+        概述
+            便于合理使用存储资源，每个Partition在一个Broker上存储，可以把海量的数据按照分区切割成一块一块数据存储在多台Broker上。
+            合理控制分区的任务，可以实现负载均衡的效果。
+        分区策略
+            指明partition的情况下，直接将指明的值作为partition值。
+                例如：指明partition=0，所有数据写入分区0.
+            没有指明partition值但有key的情况下，将key的hash值与topic的partition数进行取余得到partition值。
+            既没有partition值有没有key值的情况下，Kafka采用Sticky Partition（黏性分区器），会随机选择一个分区，并尽可能一直使用该分区，待该分区的batch已满或者已完成，Kafka再随机一个分区进行使用（和上一次分区不同）。
+                例如：第一次随机选择0号分区，等0号分区当前批次满了（默认16k）或者linger.ms设置的时间到，Kafka再随机一个分区进行使用（如果还是0会继续随机）。
+        自定义分区
+            实现org.apache.kafka.clients.producer.Partitioner
+    吞吐量优化
+        batch.size：批次大小，默认16k。
+        linger.ms：等待时间，修改为5-100ms。
+        compression.type：压缩snappy。
+        RecordAccumulator：缓冲区大小，修改为64m。
+    数据可靠
+        应答acks 
+            0：生产者发送过来的数据，不需要等数据落盘应答。
+                数据有可能丢失
+            1：生产者发送过来的数据，Leader收到数据后应答。
+                Leader宕机，副本未同步，可能导致数据丢失。
+            -1/all：生产者发送过来的数据，Leader和ISR队列里的所有节点收齐数据后应答。-1和all等价。
+                Leader维护了一个动态in-sync replica set（ISR），意为和Leader保持同步的Follower+Leader集合（leader:0，isr:0,1,2）。
+                如果Follower长时间未向Leader发送通信请求或同步数据，则该Follower将被踢出ISR。该时间阈值由replica.lag.time.max.ms参数设定，默认30s。
+                这样就不用等长期联系不上或者已经故障的节点。
+                如果分区副本设置为1个，或者ISR里应答的最小副本数量（min.insync.replicas默认为1）设置为1，和acks=1的效果是一样的，仍然有丢数的风险（leader:0，isr:0）。
+        数据完全可靠条件
+            acks级别设置为-1，且分区副本大于等于2，且ISR里应答的最小副本数量大于等于2。
+    数据重复
+        至少一次（At Least Once） 
+            acks级别设置为-1，且分区副本大于等于2，且ISR里应答的最小副本数量大于等于2。
+            可能出现重复
+        最多一次（At Most Once） 
+            acks级别设置为0
+            不会出现重复
+        精确一次（Exactly Once） 
+            至少一次（At Least Once），且幂等性。
+            幂等性就是指Producer不论向Broker发送多少次重复数据，Broker端都只会持久化一条，保证了不重复。
+            重复数据的判断标准：具有相同主键<PID，Partition，SeqNumber>的消息提交时，Broker指挥持久化一条。
+                其中PID是Kafka每次重启都会分配一个新的
+                Partition表示分区号
+                Sequence Number是单调自增的
+            所以幂等性只能保证的是在单分区单会话内不重复。
+            幂等性配置：enable.idempotencce，默认为true，false关闭。
+    Kafka事务管理 
+        开启事务，必须开启幂等性（事务是基于幂等性实现的）。
+        每个Broker都有一个事务协调器（Transaction Coordinator）
+        事务协调器上的数据存储在主题__transaction_sate上，该主题默认有50个分区，每个分区负责一部分事务。
+        Producer在使用事务功能前，必须先自定义一个唯一的事务ID transactionl.id。有了transactional.id，即使客户端挂掉了，它在重启后也能继续处理未完成的事务。
+        Kafka Producer事务流程：
+            根据transactionl.id的hashcode值%50，计算出本次事务属于主题__transaction_sate上的哪个分区，该分区Leader所在的Broker节点即为这个transactionl.id对应的事务协调器（Transaction Coordinator）节点。
+            Producer向事务协调器请求producer id（幂等性需要）
+            Producer发送业务消息到BrokerX（业务消息的目标分区所在的Broker）
+            Producer向事务协调器发送commit请求
+            事务协调器持久化commit请求
+            事务协调器发送commit请求到BrokerX
+    数据有序
+        概述
+            InFlightRequests默认给每个broker节点最多缓存5个请求，这有可能导致消息乱序。例如请求3可能因为网络等原因导致失败并重试，重试期间请求4和5成功到达Broker端并落盘，3重试成功后消息顺序就变成了（3，5，4），而不是（5，4，3）。
+        Kafka在1.x版本之前保证数据单分区有序，条件如下：
+            max.in.flight.requests.per.connection=1（不需要考虑是否开启幂等性）
+        Kafka在1.x及以后版本保证数据单分区有序，条件如下：
+            未开启幂等性
+                max.in.flight.requests.per.connection=1
+            开启幂等性 
+                max.in.flight.requests.per.connection<=5
+                在Kafka1.x及以后，启用幂等后，Kafka服务端会缓存Producer发来的最近5个request的元数据，故无论如何，都可以保证最近5个request的数据都是有序的（利用SeqNumber进行重排序）。
+Kafka Broker 
+    Zookeeper中存储的Kafka信息
+        /kafka/brokers/ids：记录有哪些服务器。
+        /kafka/brokers/topics/first/partitions/0/state
+            {"leader":1,"isr":[1,0,2]}：记录谁是Leader，有哪些服务器可用。
+        /kafka/controller
+            {"brokerid":0}：辅助选举Leader。
+    Kafka Broker总体工作流程
+        Broker启动后在Zookeeper中注册
+            /brokers/ids/
+        Broker在Zookeeper中注册自己的Controller，第一个注册的Controller称为Controller Leader，负责监听所有Broker节点的变化，和后续的Broker Leader选举。
+            /controller
+        Broker Leader选举规则：
+            在ISR中存活为前提，按照AR（Kafka分区中的所有副本统称）中排在前面的优先。
+            例如ar[1,0,2]，isr[0,1,2]，那么Leader就会按照[1,0,2]的顺序轮询。
+        Controller Leader将分区节点信息上传到Zookeeper
+            /brokers/topics/first/partitions/0/state
+        其它Controller从Zookeeper同步相关信息
+        Broker Leader接收消息并同步数据到Broker Follower
+        假设Broker1（Leader）宕机，Controller监听到节点变化后，获取ISR并开始新的Leader选举，选举完成后更新Leader及ISR。
+    服役新节点
+        主题负载均衡（假设现有Broker节点[0,1,2]，新加入节点[3]，对主题word进行重分区）
+            创建均衡主题
+                vim topics-to-move.json
+                    {"topics":[{"topic":"word"}],"version":1}
+            生成均衡计划
+                bin/kafka-reassign-partitions.sh --bootstrap-server 192.168.233.129:9092 --topics-to-move-json-file topics-to-move.json --broker-list "0,1,2,3" --generate
+            创建均衡计划
+                vim increase-replication-factor.json
+                    复制生成负载均衡计划内容到此文件内
+            执行均衡计划
+                bin/kafka-reassign-partitions.sh --bootstrap-server 192.168.233.129:9092 --reassignment-json-file increase-replication-factor.json --execute
+            验证均衡计划
+                bin/kafka-reassign-partitions.sh --bootstrap-server 192.168.233.129:9092 --reassignment-json-file increase-replication-factor.json --verify
+    退役旧节点
+        主题负载均衡（假设现有Broker节点[0,1,2,3]，退役旧节点[3]，对主题word进行重分区）
+            与服役新节点步骤一致，生成均衡计划参数稍作修改：
+                --broker-list "0,1,2,3" --generate
+                改为
+                --broker-list "0,1,2" --generate
+    副本基本信息 
+        Kafka默认副本1个，生产环境一般配置为2个，保证数据可靠性。太多副本会增加磁盘存储空间，增加网络数据传输，降低效率。
+        Kafka中副本分为：Leader和Follower。Kafka生产者只会把数据发往Leader，然后Follower找Leader进行同步数据。
+        Kafka分区中所有副本统称为AR（Assigned Reppllicas）。
+            AR=ISR+OSR
+            ISR：表示和Leader保持同步的Follower集合。如果Follwer长时间未向Leader发送通信请求或同步数据，则该Follower将被踢出ISR。该时间阈值由replica.lag.time.max.ms参数设定，默认30s。Leader发生故障后，就会从ISR中选举新的Leader。
+            OSR：表示Follower与Leader副本同步时，延迟过多的副本。
+    Follower故障
+        LEO（Log End Offset）：每个副本的最后一个offset，LEO其实就是最新的offset + 1。
+        HW（High Watermark）：所有副本中最小的LEO。
+        Follower发生故障后会被临时踢出ISR
+        这个期间Leader和Follower继续接收数据
+        待该Follower恢复后，Follower会读取本地磁盘记录的上次HW，并将log文件高于HW的部分截取掉，从HW开始从Leader进行同步。
+        等该Follower的LEO大于等于该Partition的HW，即Follower追上Leader之后，就可以重新加入ISR了。
+    Leader故障 
+        Leader发生故障后，会从ISR中选出一个新的Leader。
+        为保证多个副本之间的数据一致性，其余的Follower会先将各自的log文件高于HW的部分截掉，然后从新的Leader同步数据。
+        这只能保证副本之间的数据一致性，并不能保证数据不丢失或者不重复。
+    手动调整分区副本分配
+        创建均衡计划
+            略 
+        执行均衡计划
+            略
+        验证均衡计划
+            略
+    Leader Partition负载均衡
+        正常情况下，Kafka本身会自动把Leader Partition均匀分散在各个机器上，来保证每台机器的读写吞吐量都是均匀的。但是如果某些Broker宕机，会导致Leader Partition过于集中在其它少部分几台Broker上，这会导致少数几台Broker的读写请求压力过高，其它宕机的Broker重启之后都是Follower Partition，读写请求很低，造成集群负载不均衡。
+        auto.leader.rebalance.enable，默认是true。自动Leader Partition平衡。
+        leader.imbalance.per.broker.percentage，默认是10%。每个Broker允许的不平衡的Leader的比率，如果每个Broker超过了这个值，控制器会触发Leader的平衡。
+        leader.imbalance.check.interval.seconds，默认值300s。检查Leader负载是否平衡的间隔时间。
+    增加副本因子
+        创建均衡计划
+            略 
+        执行均衡计划
+            略
+        验证均衡计划
+            略
+    文件存储机制
+        Topic是逻辑上的概念，而partition是物理上的概念，每个partition对应于一个log文件，该log文件中存储的就是Producer生产的数据。
+        Producer生产的数据会被不断追加到该log文件末端，为防止log文件过大导致数据定位效率低下，Kafka采取了分片和索引机制，将每个partition分为多个segment。
+            log.segment.bytes，segment大小，默认1G。
+        每个segment包括：.index文件，.log文件，.timeindex等文件。这些文件位于一个文件夹下，该文件夹的命名规则为：topic名称 + 分区序号，例如：word-0。
+            .log：日志文件，以当前segment的第一条消息的offset命名。
+            .index：偏移量索引文件。
+                以当前segment的第一条消息的offset命名
+                index为稀疏索引，大约每往log文件写入4kb数据，会往index文件写入一条索引。参数log.index.interval.bytes默认4kb。
+                index文件中保存的offset为相对offset，这样能确保offset的值所占空间不会过大，因此能将offset的值控制在固定大小。
+
+                例子：在log文件中定位到offset=600的Record。
+                    定位index文件。设目标index文件名中的offset为index_offset，下一个index文件名中的offset为index_offset_next，此时应当满足（index_offset <= 600 < index_offset_next）。
+                    定位index项。index文件index项中记录有消息的相对offset和position，设目标index项中的相对offset为rel_offset，下一个相对offset为rel_offset_next，此时应当满足（(index_offset + rel_offset) <= 600 < (index_offset + rel_offset_next)）。 
+                    定位record。根据index项的position在log文件中遍历log项，找到目标record。
+            .timeindex：时间戳索引文件。
+    文件清理策略
+        Kafka中默认的日志保存时间为7天，可以通过调整如下参数修改保存时间。
+            log.retention.hours，最低优先级小时，默认7天。
+            log.retention.minutes，分钟。
+            log.retention.ms，最高优先级毫秒。
+            log.retention.check.interval.ms，负责设置检查周期，默认5分钟。
+        Kafka中提供的日志清理策略有delete和compact两种。
+            delete：将过期数据删除。
+                log.cleanup.policy=delete，所有数据启用删除策略。
+                    基于时间：默认打开。以segment中所有记录中的最大时间戳作为该文件时间戳。
+                    基于大小：默认关闭。超过设置的所有日志总大小，删除最早的segment。
+                        log.retention.bytes，默认-1，表示无穷大。
+            compact：对于相同key的不同value值，只保留最后一个版本。
+                log.cleanup.policy=compact，所有数据启用压缩策略。
+                压缩后的offset可能部分offset会丢失。
+                这种策略只适合特殊场景，比如消息的key是用户ID，value是用户资料，通过这种压缩策略，整个消息集里就保存了所有用户最新的资料。
+    高效读写数据
+        Kafka本身是分布式集群，可以采用分区技术，并行度高。
+        读取数据采用稀疏索引，可以快速定位要消费的数据。
+        顺序写磁盘，Kafka的Producer生产数据，要写入到log文件中，写的过程是一直追加到文件末端，为顺序写。
+        页缓存和零拷贝计数
+            零拷贝：Kafka的数据加工处理操作交由Kafka生产者和Kafka消费者处理。Kafka Broker应用层不关心存储的数据，所以就不用走应用层，传输效率高。
+            PageCache页缓存：Kafka重度依赖底层操作系统提供的PageCache功能。当上层有写操作时，操作系统只是将数据写入PageCache。当读操作发生时，先从PageCache中查找，如果找不到，再去磁盘中读取。实际上PageCache是把尽可能多的空闲内存都当作了磁盘缓存来使用。
+Kafka消费者
+    概述
+        每个分区的数据只能由消费者组中的一个消费者消费，一个消费者可以消费多个分区数据。
+        每个消费者的offset由消费者提交到系统主题（__consumer_offsets）保存。
+    消费者组
+        消费者组（Consumer Group，CG）由多个consumer组成，形成一个消费者组的条件，是所有消费者的groupId相同。
+        消费者组内每个消费者负责消费不同分区的数据，一个分区只能由一个组内消费者消费。
+        消费者组互不影响，所有的消费者都属于某个消费者组，即消费者组是逻辑上的一个订阅者。
+        如果向消费者组中添加更多的消费者，超过主题分区数量，则有一部分消费者就会闲置，不会接收任何消息。
+    消费者组初始化流程：
+        Coordinator：辅助实现消费者组的初始化和分区的分配，每个Broker都有一个Coordinator。
+            Coordinator节点选择 = groupId的hashcode值 % 50（__consumer_offsets的分区数量）。
+            例如：groupId的hashcode值 = 1，1 % 50 = 1，那么__consumer_offsets主题的1号分区在哪个Broker上，就选择这个节点的Coordinator作为这个消费者组的老大。消费者组下的所有消费者提交offset的时候就往这个分区去提交offset。
+        每个Consumer都向Coordinator发送JoinGroup请求，Coordinator选出一个Consumer作为消费者Leader。
+        Coordinator把要消费的Topic情况发送给消费者Leader
+        消费者Leader制定消费方案，发送给Coordinator。
+        Coordinator把消费方案下发给各个Consumer
+        每个消费者都会和Coordinator保持心跳（heartbeat.interval.ms，默认3s。该条目的值必须小于session.timeout.ms，也不应该高于session.timeout.ms的1/3），一旦超时（session.timeout.ms=45s），该消费者会被移除，并触发再平衡；或者消费者处理消息的时间过长（max.poll.interval.ms=5分钟），也会触发再平衡。
+    消费者组消费流程
+        Consumer向ConsumerNetworkClient（负责与Broker通信）发送消费请求sendFetches
+        ConsumerNetworkClient向Broker发送请求
+            fetch.min.bytes：每批次最小抓取大小，默认1字节。
+            fetch.max.wait.ms，一批数据最小值未达到的超时时间，默认500ms。
+            fetch.max.bytes，每批次最大抓取大小，默认50m。
+        Broker数据到达completedFetches（队列）
+        Consumer从completedFetches中抓取数据fetchedRecords
+            max.poll.records，一次拉取数据返回消息的最大条数，默认500条。
+        消息反序列化parseRecord
+        消息拦截器Interceptors
+        Consumer处理数据
+    分区的分配以及再平衡
+        一个Consumer Group中由多个Consumer组成，一个Topic由多个Partition组成，现在的问题是，到底由哪个Consumer来消费哪个Partition的数据。
+        Kafka有四种主流的分区分配策略：
+            Range
+                将Topic的分区依次分配给Consumer（分区按序号排序，Consumer按字母排序），多出来的分区分配给排在前面的消费者。
+                Range是对每个Topic而言的，如果每个Topic都有分配不均匀的情况，容易产生消费者数据倾斜。
+            RoundRobin
+                与Range类似，分区和Consumer按hashcode排序。
+            Sticky
+                黏性分区是Kafka从0.11.x版本开始引入这种分配策略，首先会尽量均衡的放置分区到消费者上面，在出现同一消费者组内消费者出现问题的时候，会尽量保持原有分配的分区不变化。
+            CooperativeSticky
+        可以通过配置参数partition.assignment.strategy，修改分区的分配策略。
+        默认策略是Range + CooperativeSticky。 
+        Kafka可以同时使用多个分区分配策略。
+    消费者offset保存位置
+        Kafka0.9版本之前，Consumer默认将offset保存在Zookeeper中。
+        从0.9版本开始，Consumer默认将offset保存在Kafka一个内置的Topic中，该Topic为__consumer_offsets。
+        __consumer_offsets主题里面采用key和value的方式存储数据。key是groupId + topic + 分区号，value就是offset值。每个一段时间，Kafka内部会对这个Topic进行compact，也就是每个groupId + topic + 分区号就保留最新数据。
+    消费者提交offset
+        自动提交offset
+            为了使我们能够专注于自己的业务逻辑，Kafka提供了自动提交offset的功能。
+            自动提交offset的相关参数：
+                enable.auto.commit：是否开启自动提交offset功能，默认是true。
+                auto.commit.interval.ms：自动提交offset的时间间隔，默认是5s。
+        手动提交offset
+            同步提交commitSync：提交时阻塞当前线程，一直到提交成功，并且会自动失败重试。
+            异步提交commitAsync：提交后没有失败重试机制。
+    消费者指定offset
+        auto.offset.reset = earliest | latest | none。
+        当Kafka中没有初始偏移量（消费者组第一次消费）或服务器上不存在当前偏移量时（例如该数据已被删除），该怎么办？
+            earliest：自动将偏移量重置为最早的偏移量，--from-beginning。
+            latest（默认值）：自动将偏移量重置为最新偏移量。
+            none：如果未找到消费者组的先前偏移量，则向消费者抛出异常。
+    消费者事务
+        重复消费
+            offset设置为自动提交
+            如果消费者宕机，但是offset还没来得及提交，消费者重启后，则从上一次提交的offset处继续消费，导致重复消费。 
+        漏消费
+            offset设置为手动提交
+            如果offset提交成功，但是消费者宕机，此时数据未处理，导致这部分数据漏消费。
+        如果想完成Consumer端的精确一次性消费，那么需要Kafka消费端将消费过程和提交offset过程做原子绑定。此时我们需要将Kafka的offset保存到支持事务的自定义介质（比如MySQL）。
+    消费者数据积压
+        如果是Kafka消费能力不足，则可以考虑增加Topic的分区数，并同时提升消费者组的消费者数量，消费者 = 分区数（两者缺一不可）。
+        如果是下游的数据处理不及时，可以提高每批次拉取的数量。批次拉取数据过少（拉取数据 / 处理时间 < 生产速度），使处理的数据小于生产的数据，也会造成数据积压。
+Kafka生产调优
+    场景说明
+        100万日活，没人每天100条日志，每天总共的日志条数是100万 * 100条 = 1亿条。
+        1亿 / 24小时 / 3600秒 = 1150条/秒
+        每条日志大小：0.5k~2k（取1k）。
+        高峰期每秒钟：1150条 * 20倍 = 23000条，约等于20~40MB/s。
+    硬件选择
+        服务器台数 = 2 * (生产者峰值生产速率 * 副本数 / 100) + 1
+                  = 2 * (20MB/s * 2 / 100) + 1
+                  = 3台
+        磁盘选择
+            Kafka按照顺序读写，机械硬盘和固态硬盘顺序读写速度差不多。
+            1亿条 * 1k = 100G
+            100G * 2个副本 * 3天 / 0.7 = 1T 
+            建议三台服务器总的磁盘大小 > 1T 
+        内存选择 
+            Kafka内存 = 堆内存(Kafka内部配置) + 页缓存(服务器内存)
+            堆内存：一般10~15G。
+            页缓存：10(Leader分区数) * 1G(Segment一般1G) * 25%(假设加载Segment的1/4到页缓存) / 3(服务器数) = 1G。
+            Kafka内存 = 10G + 1G = 11G
+        CPU选择
+            num.io.threads=8，负责写磁盘的线程数，整个参数值要占总核数的50%。
+            num.replica.fetchers=1，副本拉取线程数，这个参数占总核数的50%的1/3。
+            num.network.threads=3，数据传输线程数，这个参数占总核数的50%的2/3。
+            建议32个CPU CORE。
+        网络选择 
+            网络带宽 = 20MB(峰值)，选择千兆网卡即可。
+    生产者调优
+        batch.size，缓冲区一批数据最大值，默认16k。适当增加该值，可以提高吞吐量，但是如果设置太大，会导致数据延迟增加。 
+        linger.ms，如果数据迟迟未达到batch.size，Sender等待linger.ms之后就会发送数据。单位ms，默认0ms，表示没有延迟。生产环境建议该值大小为5~100ms。
+        buffer.memory，RecordAccumulator缓存区总大小，默认32m，可以增加到64m。 
+        compression.type，生产者发送的所有数据的压缩方式，默认是none，也就是不压缩。支持压缩类型：none，gzip，snappy，lz4和zstd。压缩之后可以减小数据量，提升吞吐量，但是会加大Producer端CPU开销。
+    Broker调优
+        auto.leader.rebalance.enable，自动Leader Partition再平衡，默认是true。建议关闭。
+        auto.create.topics.enable，自动创建主题，默认是true。建议关闭。
+    消费者调优
+        增加分区数
+            创建一个只有1个分区的Topic
+            测试这个Topic的Producer吞吐量和Consuer吞吐量，假设分别是Tp和Tc，单位是MB/s。
+            建设总的目标吞吐量是Tt，那么分区数 = Tt / min(Tp, Tc)。
+            分区数不是越多越好，也不是越少越好，需要搭建完集群，进行压测，再灵活调整分区数。一般设置为3~10个。
+        fetch.max.bytes，默认52428800（50m）。消费者获取服务端一批消息的最大字节数，如果服务端一批次的数据大于该值，仍然可以拉取回来这批数据，因此，这不是一个绝对最大值。一批次的大小受message.max.bytes（服务端配置）或max.message.bytes（主题配置）影响。
+        max.poll.records，一次poll拉取数据返回消息的最大条数，默认是500条。
+    单条日志大于1m
+        max.request.size，默认1m，生产者发往Broker每个消息最大值，针对Topic级别设置消息体的大小。
+        message.max.bytes，默认1m，Broker端接收每个批次消息最大值。 
+        replica.fetch.max.bytes，默认1m，副本同步数据，每个批次消息最大值。
+        fetch.max.bytes，默认52428800（50m），略。
+    生产者压力测试
+        cd /opt/module/kafka/kafka_2.13-3.0.0
+        bin/kafka-producer-perf-test.sh --topic word --record-size 1024 --num-records 1000000 --throughput 10000 --producer-props bootstrap.servers=192.168.233.129:9092,192.168.233.130:9092,192.168.233.131:9092 batch.size=16384 linger.ms=0
+            record-size：一条信息有多大，单位是字节。
+            num-reocrds：总共发送多少条消息。
+            throughput：每秒多少条消息，-1表示不限制。
+            producer-props：配置生产者相关参数。
+    消费者压力测试
+        cd /opt/module/kafka/kafka_2.13-3.0.0
+        bin/kafka-consumer-perf-test.sh --bootstrap-server 192.168.233.129:9092,192.168.233.130:9092,192.168.233.131:9092 --topic word --messages 1000000 --consumer.config config/consumer.properties 
+            --bootstrap-server：指定Kafka集群地址。
+            --topic：指定Topic名称。
+环境（3.0.0）
+    安装JDK11 
+        略
+    集群部署
+        文件准备
+            sudo mkdir /opt/module/kafka
+            sudo wget -P /opt/module/kafka https://archive.apache.org/dist/kafka/3.0.0/kafka_2.13-3.0.0.tgz
+            sudo tar -zxvf /opt/module/kafka/kafka_2.13-3.0.0.tgz -C /opt/module/kafka
+            sudo chown -R sxydh:sxydh /opt/module/kafka
+        修改配置文件
+            vim /opt/module/kafka/kafka_2.13-3.0.0/config/server.properties
+                # Server Basics
+                # 节点唯一标识 
+                broker.id=0
+                
+                # Socket Server Settings
+                # 监听地址
+                listeners=PLAINTEXT://192.168.233.129:9092
+                
+                # Log Basics
+                # 数据存储路径 
+                log.dirs=/opt/module/kafka/kafka_2.13-3.0.0/log_data
+                
+                # Zookeeper 
+                # 集群信息
+                zookeeper.connect=192.168.233.129:2181,192.168.233.130:2181,192.168.233.131:2181/kafka
+        环境变量
+            sudo vim /etc/profile.d/my_env.sh
+                追加
+                    export KAFKA_HOME=/opt/module/kafka/kafka_2.13-3.0.0
+                    export PATH=$PATH:$KAFKA_HOME/bin
+            source /etc/profile
+            echo $KAFKA_HOME
+        启动 
+            启动zookeeper
+                略
+            启动kafka
+                cd /opt/module/kafka/kafka_2.13-3.0.0 && bin/kafka-server-start.sh -daemon config/server.properties
+                jps
+            停止kafka
+                cd /opt/module/kafka/kafka_2.13-3.0.0 && bin/kafka-server-stop.sh
+        命令行操作
+            主题命令（kafka-topics.sh）
+                --bootstrap-server <String:server to connect to>
+                    连接的Kafka Broker主机和端口
+                    bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --list
+                --topic <String:topic>
+                    操作的topic名称
+                    bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --describe
+                --create 
+                    创建主题
+                    bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --create --partitions 1 --replication-factor 3
+                --delete
+                    删除主题
+                    bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --delete
+                --alter 
+                    修改主题
+                    bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --alter --partitions 6
+                --list 
+                    查看主题列表
+                    bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --list
+                --describe
+                    查看主题详情
+                    bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --describe
+                --partitions <Integer:# of partitions>
+                    设置分区数
+                    bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --create --partitions 1 --replication-factor 3
+                --replication-factor <Integer:replication factor>
+                    设置分区副本数
+                    bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --create --partitions 1 --replication-factor 3
+                --config <String:name=value> 
+                    更新配置
+            生产者命令
+                bin/kafka-console-producer.sh --bootstrap-server 192.168.233.129:9092 --topic word
+            消费者命令
+                bin/kafka-console-consumer.sh --bootstrap-server 192.168.233.129:9092 --topic word
+    Kafka Eagle
+        准备Kafka
+            停止Kafka集群
+            vim /opt/module/kafka/kafka_2.13-3.0.0/bin/kafka-server-start.sh
+                修改为 
+                    if [ "x$KAFKA_HEAP_OPTS" = "x" ]; then
+                        export KAFKA_HEAP_OPTS="-Xms2G -Xmx2G -Djava.rmi.server.hostname=192.168.233.129"
+                        export JMX_PORT="9999"
+                        # export KAFKA_HEAP_OPTS="-Xmx1G -Xms1G"
+                    fi
+            启动Kafka集群
+        安装MySQL8.0.35
+            sudo apt update
+            sudo apt install mysql-server
+            systemctl status mysql 
+
+            sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
+                注释掉
+                    bind-address          = 127.0.0.1
+            sudo systemctl restart mysql 
+            systemctl status mysql 
+
+            sudo mysql -u root -p 
+                alter user 'root'@'localhost' identified with mysql_native_password by '123';
+            mysql -u root -p 
+                use mysql 
+                select user, host from user;
+                update user set host = '%' where user = 'root';
+        安装Kafka Eagle（2.0.8）
+            文件准备
+                sudo mkdir /opt/module/kafka_eagle
+                chown -R sxydh:sxydh /opt/module/kafka_eagle
+                sudo wget -P /opt/module/kafka_eagle https://github.com/smartloli/kafka-eagle-bin/archive/refs/tags/v2.0.8.tar.gz
+                tar -zxvf /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8.tar.gz -C /opt/module/kafka_eagle/
+                tar -zxvf /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8-bin.tar.gz -C /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/
+            修改配置文件 
+                vim /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8/conf/system-config.properties
+                    修改为
+                        efak.zk.cluster.alias=cluster1
+                        cluster1.zk.list=192.168.233.129:2181,192.168.233.130:2181,192.168.233.131:2181/kafka
+                        # cluster2.zk.list=xdn10:2181,xdn11:2181,xdn12:2181
+
+                        cluster1.efak.offset.storage=kafka
+                        # cluster2.efak.offset.storage=zk
+
+                        efak.driver=com.mysql.jdbc.Driver
+                        efak.url=jdbc:mysql://192.168.233.129:3306/ke?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+                        efak.username=root
+                        efak.password=123
+            环境变量
+                sudo vim /etc/profile.d/my_env.sh
+                    追加
+                        export KE_HOME=/opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8
+                        export PATH=$PATH:$KE_HOME/bin
+                source /etc/profile
+                echo $KE_HOME
+            启动 
+                cd /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8 && bin/ke.sh start 
+            停止
+                cd /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8 && bin/ke.sh stop 
+            
