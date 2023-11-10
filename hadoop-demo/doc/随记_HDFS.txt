@@ -1,0 +1,82 @@
+HDFS概述
+    HDFS（Hadoop Distributed File System），它是一个文件系统，用于存储文件，通过目录树来定位文件。其次，它是分布式的，由很多服务器联合起来实现其功能，集群中的服务器有各自的角色。
+    HDFS的使用场景：适合一次写入，多次读出的场景。一个文件经过创建、写入和关闭之后就不需要改变。
+    HDFS优点
+        高容错性
+            数据自动保存多个副本。它通过增加副本的形式，提供容错性。
+            某一个副本丢失以后，它可以自动恢复。
+        适合处理大数据
+            数据规模：能够处理数据规模达到GB、TB、甚至PB级别的数据。
+            文件规模：能够处理百万规模以上的文件数量。
+        可构建在廉价机器上，通过多副本机制，提高可靠性。
+    HDFS缺点
+        不适合低延时数据访问，比如毫秒级的存储数据，是做不到的。
+        无法高效的对大量小文件进行存储
+            存储大量小文件的话，它会占用NameNode大量的内存来存储文件目录和块信息。这样是不可取的，因为NameNode的内存总是有限的。
+            小文件存储的寻址时间会超过读取时间，它违反了HDFS的设计目标。
+        不支持并发写入、文件随机修改。
+            一个文件只能有一个写，不允许多个线程同时写。
+            仅支持数据追加（append），不支持文件随机修改。
+HDFS组成架构
+    NameNode（NN）：就是Master，它是一个管理者。
+        管理HDFS的名称空间
+        配置副本策略
+        管理数据块（Block）映射信息
+    DataNode：就是Salve。NameNode下达命令，DataNode执行实际的操作。
+        存储实际的数据块
+        执行数据块的读写操作
+    Client：就是客户端。
+        文件切分。文件上传HDFS的时候，Client将文件一个一个的Block，然后进行上传。
+        与NameNode交互，获取文件的位置信息。
+        与DataNode交互，读取或者写入数据。
+        Client提供一些命令来管理HDFS，比如NameNode格式化。
+        Client可以通过一些命令来访问HDFS，比如对HDFS增删查改操作。
+    Secondary NameNode：并非NameNode的热备。当NameNode挂掉的时候，它并不能马上替换NameNode并提供服务。
+        辅助NameNode，分担其工作量，比如定期合并FsImage和Edits，并推送给NameNode。
+        在紧急情况下，可辅助恢复NameNode。
+HDFS文件块大小
+    HDFS的文件在物理上是分块存储（Block），块的大小可以通过配置参数（dfs.blocksize）来规定，默认大小在Hadoop2.x/Hadoop3.x版本中是128M，1.x版本中是64M。
+    如果寻址时间约为10ms，即查找到目标Block的时间为10ms。
+    寻址时间为传输时间的1%时，则为最佳状态（专家）。因此，传输时间 = 10ms / 0.01 = 1000ms = 1s。
+    而目前磁盘的传输速率普遍为100MB/s，所以Block大小 = 1s * 100MB/s = 100MB，即应取128MB。
+    HDFS的块设置太小，会增加寻址时间，程序一直在找块的开始位置；如果块设置的太大，从磁盘传输数据的时间会明显大于定位这个块开始位置所需的时间。导致程序在处理这块数据时，会非常慢。HDFS块的大小设置主要取决于磁盘传输速率。
+HDFS的Shell操作
+    前置条件
+        hadoop fs -mkdir /sxydh
+    上传文件
+        moveFromLocal：从本地剪切粘贴到HDFS。
+            hadoop fs -moveFromLocal /opt/module/tmp/moveFromLocal.txt /sxydh
+        copyFromLocal：从本地拷贝文件到HDFS。
+            hadoop fs -copyFromLocal /opt/module/tmp/copyFromLocal.txt /sxydh
+        put：等同于copyFromLocal。
+            略
+        appendToFile：追加一个文件到已经存在的文件末尾。
+            hadoop fs -appendToFile /opt/module/tmp/appendToFile.txt /sxydh/copyFromLocal.txt
+    下载文件
+        copyToLocal：从HDFS拷贝到本地。
+            hadoop fs -copyToLocal /sxydh/copyFromLocal.txt /opt/module/tmp/copyToLocal.txt
+        get：等同于copyToLocal。
+            略
+    其它命令
+        ls：显示目录信息。
+        cat：显示文件内容
+        chgrp/chmod/chown：与Linux文件系统中的用法一样，修改文件所属权限。
+        mkdir：创建路径。
+        cp：从HDFS的一个路径拷贝到HDFS的另一个路径。
+        mv：在HDFS目录中移动文件。
+        tail：显示一个文件的末尾1kb的数据。
+        rm：删除文件或文件夹。
+        rm -r：递归删除目录及目录里面内容。
+        du：统计文件夹的大小信息。
+        setrep：设置HDFS中文件的副本数量。
+            hadoop fs -setrep 10 /sxydh/copyFromLocal.txt
+                这里设置的副本数只是记录在NameNode的元数据中，是否真的会有这么多副本，还得看DataNode的数量。如果当前集群只有3台设备，最多也就3个副本，只有节点数增加到10台时，副本数才能达到10。
+HDFS的API操作
+    前置条件 
+        JDK8
+        JDK环境变量
+        Windows依赖：https://github.com/s911415/apache-hadoop-3.1.0-winutils/archive/refs/heads/master.zip。
+        Windows程序包：https://download.visualstudio.microsoft.com/download/pr/10912041/cee5d6bca2ddbcd039da727bf4acb48a/vcredist_x64.exe。
+        HADOOP_HOME环境变量
+        PATH环境变量
+    
