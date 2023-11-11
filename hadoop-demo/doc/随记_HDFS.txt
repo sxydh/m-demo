@@ -79,4 +79,112 @@ HDFS的API操作
         Windows程序包：https://download.visualstudio.microsoft.com/download/pr/10912041/cee5d6bca2ddbcd039da727bf4acb48a/vcredist_x64.exe。
         HADOOP_HOME环境变量
         PATH环境变量
-    
+    操作API
+        详见hadoop-demo/hdfsclient-demo/src/main/java/cn/net/bhe/hdfsclientdemo
+HDFS写数据流程
+    创建HDFS的分布式文件系统客户端DistributedFileSystem，并向NameNode请求上传文件。
+    NameNode检查目录树是否可以创建文件，并响应客户端是否可以上传文件。
+        检查权限
+        检查目录结构（是否存在）
+    客户端向NameNode请求上传第一个Block（0~128M），NameNode返回可以存储数据的DataNode节点（存储节点选择：本地节点，其它机架节点）。
+    客户端创建数据流FSDataOutputStream，以串行方式请求建立Block传输通道DataNode1，DataNode2，...。
+    客户端传输数据包Packet，DataNode应答ACK。数据包以64k为一个单元，每个单元的数据队列由多个数据块组成（512字节的chunk + 4字节的chunksum）。
+HDFS节点距离计算
+    两节点之间的距离 = 两节点到达共同祖先的距离之和
+        同一节点上的进程：Distance(d1/r1/n0, d1/r1/n0) = 0。
+        同一机架上的不同节点：Distance(d1/r1/n0, d1/r1/n1) = 2。
+        同一数据中心不同机架上的节点：Distance(d1/r1/n0, d1/r2/n0) = 4。
+        不同数据中心的节点：Distance(d1/r1/n0, d2/r1/n0) = 6。
+HDFS存储节点选择
+    第一个副本在客户端所处的节点上。如果客户端在集群外，随机选一个。
+    第二个副本在另一个机架的随机一个节点
+    第三个副本在第二个副本所在机架的随机节点
+    源码参考
+        BlockPlacementPolicyDefault#chooseTargeInOrder
+HDFS读数据流程
+    创建HDFS的分布式文件系统客户端DistributedFileSystem，并向NameNode请求下载文件。
+    NameNode返回目标文件的元数据，包含数据块信息、数据节点信息等。
+    客户端创建数据流FSDatainputStream，从目标数据节点读取数据。
+HDFS NN和2NN工作机制
+    思考
+        NameNode中的元数据是存储在哪里的？
+    概述
+        首先，我们做个假设，如果存储在NameNode节点的磁盘红，因为经常需要进行随机访问，还有响应客户请求，必然是效率过低。因此，元数据需要存放在内存中。但如果只存在内存中，一旦断电，元数据丢失，整个集群就无法工作了。因此产生在磁盘中备份元数据的FsImage。
+        这样又会带来新的问题，当在内存中的元数据更新时，如果同时更新FsImage，就会导致效率低，但如果不更新，就会发生一致性问题，一旦NameNode节点断电，就会产生数据丢失。因此，引入Edits文件（只进行追加操作，效率很高）。每当元数据有更新或者添加元数据时，修改内存中的元数据并追加到Edits中。这样，一旦NameNode节点断电，可以通过FsImage和Edits的合并，合成元数据。
+        但是，如果长时间添加数据到Edits中，会导致该文件数据过大，效率降低，而且一旦断电，恢复元数据需要的时间过长。因此，需要定期进行FsImage和Edits的合并，如果这个操作由NameNode节点完成，又会效率过低。因此，引入一个新的节点SecondaryNameNode，专门用于FsImage和Edits的合并。
+    工作机制
+        假设NameNode节点内存128G（每个Block占元数据150byte）
+        NodeNode启动时会加载编辑日志edits_inprogress_001和镜像文件fsimage到内存
+        客户端增删改元数据时，NameNode记录操作日志到edits_inprogress_001（磁盘内）。
+        SecondaryNameNode请求NameNode是否可以执行CheckPoint，CheckPoint触发条件：
+            定时时间到
+            Edits中的数据满了
+        NameNode滚动正在写的Edits文件：将edits_inprogress_001复制一份为edits_inprogress_002，edits_inprogress_001重命名为edits_001，后续操作日志记录在edits_inprogress_002。
+        SecondaryNameNode节点将edits_001和fsimage拉取到本地，并加载到内存，然后将edits_001记录的操作日志合并到fsimage，生成新的fsimage.chkpoint，最后将fsimage.chkpoint拷贝到NameNode。
+        NameNode节点将fsimag.chkpoint重命名为fsimage，覆盖原来的fsimage，与edits_inprogress_002共同形成最新完整的元数据。
+    其它
+        Edits文件和FsImage文件存放在<HADOOP_HOME>/data/dfs/name/current。
+HDFS FsImage镜像文件
+    NameNode被格式化后，将在<HADOOP_HOME>/data/dfs/name/current目录中产生如下文件：
+        fsimage_0000000000000000000
+        fsimage_0000000000000000000.md5
+        seen_txid
+        VERSION
+    FsImage文件：HDFS文件系统元数据的一个永久性的检查点，其中包含HDFS文件系统的所有目录和文件inode的序列化信息。
+    Edits文件：存放HDFS文件系统的所有更新操作的路径，文件系统客户端执行的所有写操作首先会被记录到Edits文件中。
+    seen_txid文件：保存的是一个数字，就是最后一个edits_的数字。
+    每次NameNode启动的时候都会将FsImage文件读入内存，加载Edits里面的更新操作，保证内存中的元数据是最新的、同步的，可以看成NameNode启动的时候就将FsImage和Edits文件进行了合并。
+HDFS检查点时间设置
+    每隔一小时执行一次CheckPoint
+        hdfs-default.xml 
+            <property>
+                <name>dfs.namenode.checkpoint.period</name>
+                <value>3600s</value>
+            </property>
+    一分钟检查一次操作次数，当操作次数达到1百万时，SecondaryNameNode执行一次CheckPoint。
+        hdfs-default.xml 
+            <property>
+                <name>dfs.namenode.checkpoint.txns</name>
+                <value>1000000</value>
+                <description>操作动作次数</description>
+            </property>
+            <property>
+                <name>dfs.namenode.checkpoint.check.period</name>
+                <value>60s</value>
+                <description>1分钟检查一次操作次数</description>
+            </property>
+HDFS DN工作机制
+    DataNode主要存储数据块Block，Block中含有数据、数据长度、校验和、时间戳等信息。
+    DataNode启动后向NameNode注册
+    DataNode每6小时向NameNode上报所有块信息
+        hdfs-default.xml
+            <property>
+                <name>dfs.blockreport.intervalMsec</name>
+                <value>21600000</value>
+                <description>DN向NN汇报当前节点信息的时间间隔，默认6小时</description>
+            </property>
+            <property>
+                <name>dfs.datanode.directoryscan.interval</name>
+                <value>21600s</value>
+                <description>DN扫描自己节点块信息列表的时间间隔，默认6小时</description>
+            </property>
+    DataNode每3秒向NameNode发起一次心跳通信，心跳返回结果带有NameNode给该DataNode的命令，如复制块数据到另一台机器，或删除某个数据块。
+        超过10分钟 + 30秒没有收到DataNode的心跳，则认为该节点不可用。
+        Timeout = 2 * dfs.namenode.heartbeat.recheck-interval + 10 * dfs.heartbeat.interval 
+            dfs.namenode.heartbeat.recheck-interval：默认5分钟。
+                hdfs-site.xml
+                    <property>
+                        <name>dfs.namenode.heartbeat.recheck-interval</name>
+                        <value>300000</value>
+                    </property>
+            dfs.heartbeat.interval：默认3秒。
+                hdfs-site.xml
+                    <property>
+                        <name>dfs.heartbeat.interval</name>
+                        <value>3</value>
+                    </property>
+HDFS数据完整性
+    当DataNode读取Block的时候，它会计算CheckSum，如果计算后的CheckSum，与Block创建时值不一样，说明Block已经损坏。
+    Client读取其它DataNode上的Block
+    常见的校验算法CRC（32）、MD5（128）、SHA1（160）。
+    DataNode在其文件创建后周期验证CheckSum。
