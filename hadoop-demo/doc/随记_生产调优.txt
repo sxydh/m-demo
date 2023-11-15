@@ -1,0 +1,182 @@
+NameNode内存配置
+    每个文件块大概占用150byte，如果一台服务器内存128G，则能够存储的文件块个数=128*1024*1024*1024/150≈9.1亿。
+    NameNode最小值1G，每增加100万个文件块，增加1G内存。
+    DataNode最小值4G，文件块或者副本数升高，都应该调大内存值。一个DataNode上的副本总数低于400万时，设为4G，每超过100万增加1G。
+
+    Hadoop2.x NameNode内存配置
+        vim <path>/hadoop-env.sh
+            更新或追加
+                HADOOP_NAMENODE_OPTS=-Xmx3072m
+    Hadoop3.x NameNode内存配置
+        查看内存配置
+            sudo /opt/module/jdk/jdk1.8.0_202/bin/jmap -heap <jps_id>
+        修改内存配置（https://docs.cloudera.com/documentation/enterprise/6/release-notes/topics/rg_hardware_requirements.html#concept_fzz_dq4_gbb）
+            vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hadoop-env.sh
+                更新或追加
+                    export HDFS_NAMENODE_OPTS="-Dhadoop.security.logger=INFO,RFAS -Xmx1024m"
+                    export HDFS_DATANODE_OPTS="-Dhadoop.security.logger=ERROR,RFAS -Xmx1024m"
+            分发配置到各服务器
+                略
+            重启集群 
+                略
+NameNode心跳并发配置
+    NameNode有一个工作线程池，用来处理不同DataNode的并发心跳以及客户端并发的元数据操作。
+    对于大集群或者有大量客户端的集群来说，通常需要增大线程池参数（默认10）。
+    企业经验：dfs.namenode.handler.count=20*loge(DataNode台数)。
+
+    心跳并发配置
+        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml
+            更新或追加
+                <property>
+                    <name>dfs.namenode.handler.count</name>
+                    <value>21</value>
+                </property>
+        分发配置到各服务器
+            略
+        重启集群 
+            略
+HDFS回收站配置
+    开启回收站功能，可以将删除的文件在不超时的情况下，恢复原数据，起到防止误删除、备份等作用。
+    默认值fs.trash.interval=0，0表示禁用回收站，其它值表示设置文件的存活时间。
+    默认值fs.trash.checkpoint.interval=0，检查回收站的间隔时间，为0时需要同时禁止回收站功能。要求fs.trash.checkpoint.interval<=fs.trash.interval。
+    通过网页客户端直接删除的文件不会进入回收站。命令行hadoop fs -rm删除的文件会进入回收站。通过程序删除时需要显示调用moveToTrash()才会进入回收站。
+    回收站路径：/user/<user_name>/.Trash/...。
+
+    回收站配置
+        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/core-site.xml
+            更新或追加
+                <!-- 单位分钟 -->
+                <property>
+                    <name>fs.trash.interval</name>
+                    <value>1</value>
+                </property>
+        分发配置到各服务器
+            略
+        重启集群
+            略
+        测试删除文件
+            hadoop fs -rm -r <file_path>
+        恢复删除文件
+            hadoop fs -mv /user/<user_name>/.Trash/Current/<file_path> <target_path>
+HDFS压测性能
+    压测写性能
+        前置条件
+            hadoop01/hadoop02/hadoop03网络均限速为100Mbps
+            关闭虚拟内存检查
+                <property>
+                    <name>yarn.nodemanager.vmem-check-enabled</name>
+                    <value>false</value>
+                </property>
+        测试运行
+            hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.1.3-tests.jar TestDFSIO -write -nrFiles 10 -fileSize 128MB
+                实现原理
+                    测试文件个数=集群CPU总核数-1
+                    记录每个MapTask的写时间和平均速度
+                    汇总每个MapTask的写时间和平均速度
+                    吞吐量=总数据量/总时间
+                    平均速度=(MapTask1平均速度+...)/MapTask个数
+        测试分析
+            运行程序所在节点不参与测试（本地网络），一共参与测试的文件：10个文件*2个副本=20个。
+            压测后的速度：1.61M/s（单个MapTask）。
+            实测带宽：1.61M/s*20个文件≈32M/s。
+            三台服务器的带宽：12.5M/s*3≈37M/s。
+            如果实测速度远远小于网络，并且实测速度不能满足工作需求，可以考虑采用固态硬盘或者增加磁盘个数。
+    压测读性能
+        前置条件
+            略
+        测试运行
+            hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.1.3-tests.jar TestDFSIO -read -nrFiles 10 -fileSize 128MB
+        测试分析
+            如果读取文件速度大于网络带宽，是因为目前只有三台服务器，且有三个副本，数据读取采取就近原则，相当于都是读取本地磁盘数据，没有跨节点的网络开销。
+DataNode多目录配置
+    DataNode可以配置成多个目录，每个目录存储的数据不一样（不是副本）。
+    
+    多目录配置
+        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml
+            更新或追加
+                <property>
+                    <name>dfs.datanode.data.dir</name>
+                    <value>file://${hadoop.tmp.dir}/dfs/data1,file://${hadoop.tmp.dir}/dfs/data2</value>
+                </property>
+        分发配置到各服务器（如果各节点数据目录要求一样才分发）
+            略
+        重启集群
+            略
+DataNode数据均衡
+    生产环境，由于硬盘空间不足，往往需要增加一块硬盘。刚加载的硬盘没有数据时，可以执行磁盘数据均衡命令（Hadoop3.x新特性）。
+
+    数据均衡
+        生成均衡计划
+            hdfs diskbalancer -plan hadoop01 
+                如果报错：Name node is in safe mode。 
+                    hdfs dfsadmin -safemode leave
+        执行均衡计划
+            hdfs diskbalancer -execute hadoop01.plan.json
+        查看计划情况
+            hdfs diskbalancer -query hadoop01
+        取消均衡计划
+            hdfs diskbalancer -cancel hadoop01.plan.json
+HDFS扩容和缩容
+    白黑名单配置
+        白名单表示主机可以用来存储数据
+            vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/whitelist
+                新增
+                    hadoop01
+                    hadoop02
+                    hadoop03
+        黑名单可以避免黑客恶意访问攻击
+            touch vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/blacklist
+        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml
+            更新或追加
+                <!-- 白名单 -->
+                <property>
+                    <name>dfs.hosts</name>
+                    <value>/opt/module/hadoop/hadoop-3.1.3/etc/hadoop/whitelist</value>
+                </property>
+                <!-- 黑名单 -->
+                <property>
+                    <name>dfs.hosts.exclude</name>
+                    <value>/opt/module/hadoop/hadoop-3.1.3/etc/hadoop/blacklist</value>
+                </property>
+        分发配置到各服务器
+            略
+        重启集群（如果不是第一次配置黑白名单，只需要刷新节点即可：hdfs dfsadmin -refreshNodes）
+            略
+            http://hadoop01:9870/dfshealth.html#tab-datanode
+    新节点服役
+        前置条件
+            集群现有节点hadoop01，hadoop02，hadoop03。
+            克隆一台主机，hostname设置为hadoop11。
+            配置hadoop01和hadoop02的hosts
+                sudo vim /etc/hosts
+                    追加
+                        192.168.233.132 hadoop11
+            配置hadoop01和hadoop02到hadoop11免密SSH
+                略
+            hadoop11从hadoop01同步环境变量配置文件，并生效。
+                sudo scp -r /etc/profile.d/my_env.sh root@192.168.233.132:/etc/profile.d/my_env.sh
+            hadoop11从hadoop01同步JDK
+                scp -r /opt/module/jdk sxydh@192.168.233.132:/opt/module/
+            hadoop11从hadoop01同步hadoop-3.1.3
+                scp -r /opt/module/hadoop sxydh@192.168.233.132:/opt/module
+            hadoop11删除hadoop-3.1.3的data和logs文件夹
+                略
+        启动新节点（hadoop11）
+            HDFS组件
+                hdfs --daemon start datanode
+            YARN组件
+                yarn --daemon start nodemanager
+        更新白名单（hadoop01）
+            vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/whitelist
+                追加
+                    hadoop11
+            分发配置到各服务器（hadoop01，hadoop02，hadoop03，hadoop11）
+                略
+            更新节点信息
+                hdfs dfsadmin -refreshNodes
+        验证新节点
+            http://hadoop01:9870/dfshealth.html#tab-datanode
+            测试上传文件到集群（hadoop11）
+                hadoop fs -put /opt/module/jdk/jdk-8u202-linux-x64.tar.gz /sxydh
+                    可能需要先执行以下命令（hadoop01）
+                        hdfs dfsadmin -safemode leave
