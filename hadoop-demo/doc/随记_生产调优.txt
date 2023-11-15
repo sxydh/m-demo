@@ -117,6 +117,8 @@ DataNode数据均衡
         取消均衡计划
             hdfs diskbalancer -cancel hadoop01.plan.json
 HDFS扩容和缩容
+    前置条件 
+        集群现有节点hadoop01（NameNode），hadoop02（ResourceManager），hadoop03。
     白黑名单配置
         白名单表示主机可以用来存储数据
             vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/whitelist
@@ -125,7 +127,7 @@ HDFS扩容和缩容
                     hadoop02
                     hadoop03
         黑名单可以避免黑客恶意访问攻击
-            touch vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/blacklist
+            touch /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/blacklist
         vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml
             更新或追加
                 <!-- 白名单 -->
@@ -145,7 +147,6 @@ HDFS扩容和缩容
             http://hadoop01:9870/dfshealth.html#tab-datanode
     新节点服役
         前置条件
-            集群现有节点hadoop01，hadoop02，hadoop03。
             克隆一台主机，hostname设置为hadoop11。
             配置hadoop01和hadoop02的hosts
                 sudo vim /etc/hosts
@@ -180,3 +181,171 @@ HDFS扩容和缩容
                 hadoop fs -put /opt/module/jdk/jdk-8u202-linux-x64.tar.gz /sxydh
                     可能需要先执行以下命令（hadoop01）
                         hdfs dfsadmin -safemode leave
+        开启数据均衡
+            start-balancer.sh -threashold 10
+                10：集群中各个节点的磁盘空间利用率相差不超过10%，可根据实际情况调整。
+                HDFS需要启动单独的RebalanceServer来执行Rebalance操作，所以尽量不要在NameNode上执行，而是在比较空闲的主机上执行。
+                停止数据均衡
+                    stop-balancer.sh
+    旧节点退役
+        配置黑名单（hadoop01）
+            vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/blacklist
+                追加
+                    hadoop11
+            分发配置到各服务器（hadoop01，hadoop02）
+                略
+            更新节点信息
+                hdfs dfsadmin -refreshNodes
+                    http://hadoop01:9870/dfshealth.html#tab-datanode
+        停止旧节点组件（需要等hadoop11数据备份完之后）
+            yarn --daemon stop nodemanager
+            hdfs --daemon stop datanode
+        开启数据均衡（视实际情况定）
+            略
+HDFS存储优化 
+    纠删码
+        纠删码原理
+            HDFS默认情况下，一个文件有3各副本，这样提高了数据的可靠性，但也带来了2倍的冗余开销。Hadoop3.x引入了纠删码，采用计算的方式，可以节省约50%左右的存储空间。
+            假设现有一个文件300MB（3个副本），在纠删码算法下，可以将该文件拆分为3个数据单元+2个校验单元，每个单元100MB，存储上只比自己多了两个校验单元，相比不用纠删码算法的900MB节省了400MB空间。
+        纠删码策略
+            RS-3-2-1024k
+                使用RS编码，每3个数据单元，生成2个校验单元，共5个单元。也就是说，这5个单元中，只要任意的3个单元存在（不管是数据单元还是校验单元，只要总数为3），就可以得到原始数据。
+                每个单元的大小是1024k=1024*1024byte=1048576byte
+            RS-10-4-1024k
+            RS-6-3-1024k
+            RS-LEGACY-6-3-1024k
+                使用RS-LEGACY编码
+            XOR-2-1-1024k
+                使用XOR编码（比RS编码快）
+        查看纠删码策略
+            hdfs ec -listPolicies
+        纠删码案例
+            前置条件
+                集群现有5个节点hadoop01（NameNode），hadoop02（ResourceManager），hadoop03（SecondaryNameNode），hadoop11（DataNode），hadoop12（DataNode）。
+                hdfs dfsadmin -safemode leave
+            开启策略RS-3-2-1024k
+                hdfs ec -enablePolicy -policy RS-3-2-1024k
+            设置文件目录策略
+                hdfs dfs -mkdir /ecrs
+                hdfs ec -setPolicy -path /ecrs -policy RS-3-2-1024k
+            测试文件存储
+                hdfs dfs -put /opt/module/tmp/app_log.txt /ecrs 
+                hdfs fsck /ecrs/app_log.txt -files -blocks -locations
+    异构存储
+        概述
+            异构存储主要解决：不同的数据存储在不同类型的硬盘中，达到最佳性能的问题。
+        存储类型
+            内存文件系统（RAM_DISK），固态硬盘（SSD），普通磁盘（DISK），归档介质（ARCHIVE）。
+        存储策略
+            策略ID  策略名称        副本分布                说明
+            15      LAZY_PERSIST   RAM_DISK:1,DISK:n-1    一个副本保存在内存，其余在磁盘。
+            12      ALL_SSD        SSD:n                  所有副本在SSD
+            10      ONE_SSD        SSD:1,DISK:n-1         一个副本在SSD，其余在磁盘。
+            7       HOT            DISK:n                 所有副本在磁盘，默认。
+            5       WARM           DISK:1,ARCHIVE:n-1     一个副本在磁盘，其余在归档介质。
+            2       COLD           ARCHIVE:n              所有副本在归档介质
+        查看存储策略
+            hdfs storagepolicies -listPolicies 
+        异构存储案例
+            前置条件
+                集群现有5个节点hadoop01（NameNode），hadoop02（ResourceManager），hadoop03（SecondaryNameNode），hadoop11（DataNode），hadoop12（DataNode）。
+            修改配置文件（需要创建配置中相应的目录）
+                hadoop01
+                    vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml 
+                        更新或追加
+                            <property>
+                                <name>dfs.replication</name>
+                                <value>2</value>
+                            </property>
+                            <property>
+                                <name>dfs.storage.policy.enabled</name>
+                                <value>true</value>
+                            </property>
+                            <property>
+                                <name>dfs.datanode.data.dir</name>
+                                <value>[SSD]file:///opt/module/hadoop/hadoop-3.1.3/hdfsdata/ssd,[RAM_DISK]file:///opt/module/hadoop/hadoop-3.1.3/hdfsdata/ram_disk</value>
+                            </property>
+                hadoop02
+                    vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml 
+                        更新或追加
+                            <property>
+                                <name>dfs.replication</name>
+                                <value>2</value>
+                            </property>
+                            <property>
+                                <name>dfs.storage.policy.enabled</name>
+                                <value>true</value>
+                            </property>
+                            <property>
+                                <name>dfs.datanode.data.dir</name>
+                                <value>[SSD]file:///opt/module/hadoop/hadoop-3.1.3/hdfsdata/ssd,[DISK]file:///opt/module/hadoop/hadoop-3.1.3/hdfsdata/disk</value>
+                            </property>
+                hadoop03
+                    vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml 
+                        更新或追加
+                            <property>
+                                <name>dfs.replication</name>
+                                <value>2</value>
+                            </property>
+                            <property>
+                                <name>dfs.storage.policy.enabled</name>
+                                <value>true</value>
+                            </property>
+                            <property>
+                                <name>dfs.datanode.data.dir</name>
+                                <value>[DISK]file:///opt/module/hadoop/hadoop-3.1.3/hdfsdata/disk,[RAM_DISK]file:///opt/module/hadoop/hadoop-3.1.3/hdfsdata/ram_disk</value>
+                            </property>
+                hadoop11
+                    vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml 
+                        更新或追加
+                            <property>
+                                <name>dfs.replication</name>
+                                <value>2</value>
+                            </property>
+                            <property>
+                                <name>dfs.storage.policy.enabled</name>
+                                <value>true</value>
+                            </property>
+                            <property>
+                                <name>dfs.datanode.data.dir</name>
+                                <value>[ARCHIVE]file:///opt/module/hadoop/hadoop-3.1.3/hdfsdata/archive</value>
+                            </property>
+                hadoop12
+                    vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml 
+                        更新或追加
+                            <property>
+                                <name>dfs.replication</name>
+                                <value>2</value>
+                            </property>
+                            <property>
+                                <name>dfs.storage.policy.enabled</name>
+                                <value>true</value>
+                            </property>
+                            <property>
+                                <name>dfs.datanode.data.dir</name>
+                                <value>[ARCHIVE]file:///opt/module/hadoop/hadoop-3.1.3/hdfsdata/archive</value>
+                            </property>
+            停止集群
+                略
+            格式化集群
+                所有节点
+                    cd /opt/module/hadoop/hadoop-3.1.3 && rm -rf data/ logs/
+                hadoop01 
+                    hdfs namenode -format
+            重启集群 
+                略
+            设置文件目录存储策略
+                hadoop fs -mkdir /hdfsdata
+                hdfs storagepolicies -setStoragePolicy -path /hdfsdata -policy WARM
+                    验证
+                        hdfs storagepolicies -getStoragePolicy -path /hdfsdata 
+                    取消 
+                        hdfs storagepolicies -unsetStoragePolicy -path /hdfsdata 
+            上传文件
+                hadoop fs -put /opt/module/jdk/jdk-8u202-linux-x64.tar.gz /hdfsdata
+                    如果上传后再修改策略，需要执行以下命令：
+                        hdfs mover /hdfsdata
+            查看文件块分布
+                hdfs fsck /hdfsdata -files -blocks -locations
+            查看集群节点 
+                hadoop dfsadmin -report
