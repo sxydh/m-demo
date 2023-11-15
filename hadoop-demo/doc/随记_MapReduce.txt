@@ -1,0 +1,274 @@
+MapReduce概述
+    MapReduce是一个分布式运算程序的编程框架，是用户开发基于Hadoop的数据分析应用的核心框架。
+    MapReduce核心功能是将用户编写的业务逻辑代码和自带默认组件整合成一个完整的分布式运算程序，并发运行在一个Hadoop集群上。
+    MapReduce优点
+        易于编程：用户只关心业务逻辑和实现一些简单的框架接口。
+        良好的扩展性：可以动态增加服务器，解决计算资源不够的问题。
+        高容错性：任何一台机器挂掉，可以将任务转移到其它节点。
+        适合海量数据计算（TB/PB）：适合几千台服务器共同计算。
+    MapReduce缺点
+        不擅长实时计算：达不到毫秒级的查询。
+        不擅长流式计算
+        不擅长DAG有向无环图计算
+    MapReduce运算程序一般需要分成2个阶段：Map阶段和Reduce阶段。
+        Map阶段的并发MapTask，完全并行运行，互不相干。
+        Reduce阶段的并发ReduceTask，完全互不相干，但是它们的数据依赖于上一个阶段的所有MapTask并发实例的输出。
+        MapReduce编程模型只能包含一个Map阶段和一个Reduce阶段，如果用户的业务逻辑非常复杂，那就只能多个MapReduce程序，串行运行。
+    MapReduce程序在分布式运行时有三类实例进程：
+        MrAppMaster：负责整个程序的过程调度及状态协调。
+        MapTask：负责Map阶段的整个数据处理流程。
+        ReduceTask：负责Reduce阶段的整个数据处理流程。
+    MapReduce编程规范
+        Map阶段
+            用户自定义的Mapper要继承自己的父类
+            Mapper的输入数据是KV对的形式（KV的类型可自定义）
+            Mapper中的业务逻辑卸载map()方法中
+            Mapper的输出数据是KV对的形式（KV的类型可自定义）
+            MapTask进程对每一个<K, V>调用一次map()方法
+        Reduce阶段 
+            用户自定义的Reducer要继承自己的父类
+            Reducer的输入数据类型对应Mapper的输出数据类型，也是KV。
+            Reducer的业务逻辑写在reduce()方法中 
+            ReduceTask进程对每一组相同K的<K, V>组调用一次reduce()方法
+        Driver阶段
+            相当于YARN集群的客户端，用户提交我们整个程序到YARN集群，提交的是封装了MapReduce程序相关运行参数的Job对象。
+        本地调试
+            略
+        集群运行
+            打包程序并上传jar包到hadoop01
+            提交作业
+                hadoop jar /opt/module/tmp/hdfsmapred-demo-1.0-SNAPSHOT-jar-with-dependencies.jar cn.net.bhe.hdfsmapreddemo.WordCountDriver /wcinput /wcoutput
+MapReduce框架原理
+    MapReduce数据输入
+        MapReduce切片机制与MapTask并行度决定机制
+            数据块：Block是HDFS物理上把数据分成一块一块，数据块是HDFS存储数据单位。
+            数据切片：数据切片只是在逻辑上对输入进行分片，是MapReduce程序计算输入数据的单位，一个切片会对应启动一个MapTask。
+            一个Job的Map阶段并行度由客户端在提交Job时的切片数决定，每一个Split分片分配一个MapTask实例并行处理。
+            默认情况下，切片大小等于数据块大小，切片时不考虑数据集整体，而是逐个针对每一个文件（不是数据块）单独切片。
+                假设某个文件大小为300M，DataNode1数据块为0-128M，DataNode2数据块为128-256M，DataNode3数据块为256-300M。
+                若按100M大小进行切片，用3个MapTask并行处理，即：
+                    MapTask1负责DataNode1的0-100M
+                    MapTask2负责DataNode1的100-128M + DataNode2的128-200M。
+                    MapTask3负责DataNode2的128-256M + DataNode3的256-300M。
+                此时MapTask2和3在获取数据时会出现跨节点的情况，增加了时间开销。
+                所以切片大小应当设置为数据块大小
+        MapReduce Job提交流程
+            建立连接
+                connect();
+                创建提交Job的代理
+                    new Cluster(getConfiguration());
+                    判断执行环境（本地/YARN）
+                        initialize(jobTrackAddr, conf);
+                            从Java SPI获取ClientProtocolProvider列表
+                            遍历ClientProtocolProvider列表，返回第一个初始化成功的ClientProtocolProvider。
+                                配置项mapreduce.framework.name相关
+            提交Job
+                submitter.submitJobInternal(Job.this, cluster);
+                    创建给集群提交数据的Staging路径
+                        JobSubmissionFiles.getStagingDir(cluster, conf);
+                    获取JobId，并创建Job路径。
+                        submitClient.getNewJobID();
+                        new Path(jobStagingArea, jobId.toString());
+                    拷贝Jar包到集群
+                        copyAndConfigureFiles(job, submitJobDir);
+                            rUploader.uploadResources(job, jobSubmitDir);
+                    计算切片，生成切片规划文件。
+                        writeSplits(job, submitJobDir);
+                            writeNewSplits(job, jobSubmitDir); 
+                                input.getSplits(job);
+                    向Staging路径写XML配置文件
+                        writeConf(conf, submitJobFile);
+                            conf.writeXml(out);
+                    提交Job，返回提交状态。
+                        submitClient.submitJob(jobId, submitJobDir.toString(), job.getCredentials());
+        MapReduce切片源码
+            FileInputFormat#getSplits
+                程序先找到数据存储目录
+                遍历目录下的每一个文件
+                    获取文件大小
+                        FileStatus#getLen
+                    计算切片大小（默认情况下，切片大小等于Block大小）
+                        FileInputFormat#computeSplitSize
+                            Math.max(minSize, Math.min(maxSize, blockSize));
+                                maxSize：mapreduce.input.fileinputformat.split.maxsize=Long.MAX_VALUE，如果设置比BlockSize小，则会让切片变小。
+                                minSize：mapreduce.input.fileinputformat.split.minsize=1，默认值1。
+                    开始切片
+                        每次切片时，都要判断当前待切部分是否大于数据块的1.1倍，不大于1.1倍就划分为一块切片。
+                    将切片信息写到一个切片规划文件中，InputSplit记录了切片的元数据信息，比如起始位置、长度以及所在节点列表等。
+                        splits.add(makeSplit(path, length-bytesRemaining, splitSize, blkLocations[blkIndex].getHosts(), blkLocations[blkIndex].getCachedHosts()));
+                提交切片规划文件到YARN上，YARN上的MrAppMaster就可以根据切片规划文件计算开启MapTask个数。
+        MapReduce FileInputFormat
+            针对不同的数据类型，有不同的FileInputFormat实现类，常见的有：
+                TextInputFormat
+                    按行读取每条记录，键是每行在文件中的字节偏移量，值是该行的内容。
+                KeyValueTextInputFormat
+                NLineInputFormat
+                CombineTextInputFormat
+                    框架默认的TextInputFormat切片机制是不管文件多小，都会是一个单独的切片，交给一个单独的MapTask处理。这样如果有大量小文件，就会产生大量的MapTask，处理效率极其低下。
+                    CombineTextInputFormat用于小文件过多的场景，它可以将多个小文件从逻辑上规划到一个切片中，这样，多个小文件就可以交给一个MapTask处理。
+                    生成切片过程包括：虚拟存储过程和切片过程两部分。
+                    虚拟存储切片最大值设置：CombineTextInputFormat.setMaxInputSplitSize(job, 4194304)，4M。
+                    虚拟存储过程
+                        将输入目录下所有文件大小，依次和设置的setMaxInputSplitSize值比较。
+                        如果输入文件不大于设置的最大值，逻辑上划分为一个块。
+                        如果输入文件大于设置的最大值且大于两倍，那么以最大值切割一块，当剩余数据大小超过设置的最大值且不大于最大值两倍，此时将文件均分成2个虚拟存储块（防止出现太小切片）。
+                            例如setMaxInputSplitSize=4M，输入文件大小为8.02M，则先逻辑上分成一个4M。剩余的大小为4.02M，如果按照4M逻辑划分，就会出现0.02M的小虚拟存储文件，所以将剩余的4.02M文件切分成两个2.01M文件。
+                    切片过程
+                        判断虚拟存储的文件大小是否大于setMaxInputSplitSize值，大于等于则单独形成一个切片。
+                        如果不大于则跟下一个虚拟存储文件进行合并，共同形成一个切片。
+                    案例实操
+                        详见hadoop-demo/hdfsmapred-demo/src/main/java
+                自定义InputFormat
+    MapReduce工作流程
+        设有一批待处理数据文件
+        客户端submit()前，获取待处理数据的信息，然后根据参数配置，形成一个任务分配的规划。
+        客户端将切片信息Job.split、程序包Demo.jar、配置信息Job.xml提交到YARN RM。 
+        YARN开启MrAppMaster进程，根据切片信息计算出MapTask数量。
+        MapTask启动后，默认使用TextInputFormat以KV形式读取待处理数据，并返回给用户Mapper。
+        用户Mapper执行业务逻辑，完成后以KV形式输出数据到环形缓冲区。
+        环形缓冲区对数据进行分区、排序，并溢写到磁盘文件。不同的分区由不同的ReduceTask处理。
+            数据分区由Partitioner实现，默认实现是HashPartitioner。
+                分区号 = (key.hashCode() & Integer.MAX_VALUE) % numReduceTasks。
+                如果ReduceTask的数量 > getPartition的结果值，则会多产生几个空的输出文件part-r-000xx。
+                如果1 < ReduceTask数量 < getPartition的结果值，则有一部分分区数据无处安放，会Exception。
+                如果ReduceTask数量 = 1，则不管MapTask端输出多少个分区文件，最终结果都交给一个ReduceTask，最终也只会产生一个结果文件part-r-00000。
+                分区号必须从零开始，逐一累加。
+                自定义分区实现参考hadoop-demo/hdfsmapred-demo/src/main/java
+            缓冲区一半用来存储数据，另一半用来存储数据索引。
+            缓冲区包含了数据索引、数据分区等信息，数据格式为：index，partition，keystart，valstart，key，value，unused。
+            缓冲区默认大小100M，当占用超过80%时，开始在环内反向写，并将原来的数据持久化到磁盘（溢写）。
+                溢写需要一定时间，为了能够让后续数据继续写入缓冲区，需要给反向写的数据留有空间余量，即缓冲区占用80%时就开始溢写。
+                溢写前会对数据（仅索引）进行排序（对Key按字典进行快排）。
+                溢写时会进行Combiner
+                    Combiner是MrAppMaster程序中Mapper和Reducer之外的一种组件
+                    Combiner组件的父类就是Reducer
+                    Combiner和Reducer的区别在于运行位置
+                        Combiner是在每一个MapTask所在的节点运行
+                        Reducer是接收全局所有Mapper的输出结果
+                    Combiner的意义就是对每一个MapTask的输出进行局部汇总，以减小网络传输流量。
+                    Combiner能够应用的前提是不能影响最终的业务逻辑，而且Combiner的输出KV应该跟Reducer的输入KV类型对应起来。
+                    若setNumReduceTasks(0)，此时Shuffle阶段直接跳过，Combiner不起作用，输出文件个数和MapTask个数一致。
+                    自定义Combiner参考hadoop-demo/hdfsmapred-demo/src/main/java
+                溢写产生索引文件spill.index，和数据文件spill.out。
+        溢写文件合并。每个分区数据分散在多个溢写文件内，需要对这些文件进行归并排序、合并，形成每个分区一个有序文件。
+            归并时会进行Combiner
+            合并后对数据进行压缩，并写入磁盘，等待相应的ReduceTask来拉取。
+        所有MapTask任务完成后，启动相应数量的ReduceTask，并告知ReduceTask处理数据范围（数据分区）。
+        ReduceTask拉取自己分区的数据到本地内存缓冲，若内存缓冲不够，则溢写到磁盘文件。这些数据文件来自不同的MapTask，ReduceTask会对这些文件进行归并排序、合并。
+            归并时会进行Combiner
+        ReduceTask读取数据，一次读取一组并交给用户Reducer处理。
+        用户Reducer执行业务逻辑，完成后默认由TextOutputFormat将数据输出到磁盘文件。
+            OutputFormt是MapReduce输出的基类，所有实现MapReduce输出都实现了OutputFormat接口。
+            默认实现是TextOutputFormat
+            自定义OutputFormat参考hadoop-demo/hdfsmapred-demo/src/main/java
+    MapReduce框架总结
+        MapReduce Shuffle机制
+            Map方法之后，Reduce方法之前的数据处理过程称之为Shuffle，具体过程参考MapReduce工作流程。
+        MapReduce排序概述
+            排序环节主要涉及MapTask的输出和ReduceTask的输入，具体参考MapReduce工作流程。
+            自定义排序实现参考hadoop-demo/hdfsmapred-demo/src/main/java
+        MapReduce MapTask工作机制
+            主要阶段包含Read、Map、Collect、溢写、Merge，具体参考MapReduce工作流程。
+        MapReduce ReduceTask工作机制
+            主要阶段包含Copy、Sort、Reduce，具体参考MapReduce工作流程。
+    MapReduce框架源码
+        MapTask源码
+            MapTask#write 
+                collector.collect(key, value, partitioner.getPartition(key, value, partitions));
+                    // 数据分区 
+                    Partitioner#getPartition
+                    // 环形缓冲区
+                    MapTask#collect
+                        // 缓冲区信息
+                        int keystart = bufindex;
+                        final int valstart = bufindex;
+                        kvmeta.put(kvindex + PARTITION, partition);                
+                        kvmeta.put(kvindex + KEYSTART, keystart);                  
+                        kvmeta.put(kvindex + VALSTART, valstart);                  
+                        kvmeta.put(kvindex + VALLEN, distanceTo(valstart, valend));
+                        kvindex = (kvindex - NMETA + kvmeta.capacity()) % kvmeta.capacity();          
+            MapTask#close
+                // 缓冲区溢写
+                collector.flush();
+                    // 快排
+                    MapTask#sortAndSpill();
+                        // 写出到文件
+                        writer.append(key, value);
+                    // 合并溢写文件
+                    MapTask#mergeParts
+        ReduceTask源码
+            ReduceTask#run
+                // 阶段划分
+                copyPhase = getProgress().addPhase("copy");
+                sortPhase  = getProgress().addPhase("sort");
+                reducePhase = getProgress().addPhase("reduce");
+                // 初始化
+                Task#initialize
+                    // 获取OutputFormat
+                    outputFormat = ReflectionUtils.newInstance(taskContext.getOutputFormatClass(), job);
+                Shuffle#init 
+                    scheduler = new ShuffleSchedulerImpl<K, V>(...);
+                        // 获取MapTask个数
+                        totalMaps = job.getNumMapTasks();
+                    merger = createMergeManager(context);
+                        new MergeManagerImpl<K, V>(...);
+                            // 拉取数据前准备好存储介质
+                            this.inMemoryMerger = createInMemoryMerger();
+                            this.inMemoryMerger.start();
+                            
+                            this.onDiskMerger = new OnDiskMerger(this);
+                            this.onDiskMerger.start();
+                shuffleConsumerPlugin.run();
+                    // 拉取数据
+                    eventFetcher.start();
+                // 归并数据
+                sortPhase.complete();
+                ReduceTask#runNewReducer
+                    // 执行Reducer
+                    reducer.run(reducerContext);
+                        ...
+                            TextInputFormat#write 
+                                // 写出Key和Value
+                                writeObject(key);
+                                writeObject(value);
+MapReduce数据压缩
+    概述
+        压缩的优点：减少磁盘IO，减少占用磁盘空间。
+        压缩的缺点：增加CPU开销。
+        压缩原则
+            运算密集型的Job，少用压缩。
+            IO密集型的Job，多用压缩。
+    MR支持的压缩编码
+        压缩算法比较
+            压缩格式    Hadoop自带  算法       文件扩展名  是否可切片  换成压缩格式后，原来的程序是否需要修改。
+            Deflate    是          Deflate    .deflate   否         和文本处理一样，不需要修改。
+            Gzip       是          Deflate    .gz        否         和文本处理一样，不需要修改。
+            bzip2      是          bzip2      .bz2       是         和文本处理一样，不需要修改。
+            LZO        否          LZO        .lzo       是         需要建索引，还需要指定输入格式。
+            Snappy     是          Snappy     .snappy    否         和文本处理一样，不需要修改。
+        压缩性能比较
+            压缩格式    原始文件大小   压缩文件大小   压缩速度    解压速度
+            Gzip       8.3G          1.8G          17.5MB/s   58MB/s 
+            bzip2      8.3G          1.1G          2.4MB/s    9.5MB/s 
+            LZO        8.3G          2.9G          49.3MB/s   74.6MB/s 
+    压缩方式选择
+        重点考虑：压缩/解压缩速度、压缩率（压缩后存储大小）、压缩后是否可以支持切片。
+        压缩可以在MapReduce的任意阶段启用
+            Mapper输入端压缩：数据量小于块大小，重点考虑压缩和解压缩速度比较快的LZO/Snappy。
+            Mapper输出端压缩：为了减少MapTask和ReduceTask之间的网络IO，重点考虑压缩和解压缩快的LZO/Snappy。
+            Reducer输出端压缩：如果数据永久保存，考虑压缩率比较高的bzip2和Gzip；如果作为下一个MapReduce输入，需要考虑数据量和是否支持切片。
+    
+        压缩格式  优点                          缺点
+        Gzip     压缩率比较高                   不支持切片，压缩/解压缩速度一般。    
+        bzip2    压缩率高，支持切片。            压缩/解压缩速度慢
+        LZO      压缩解压缩速度比较快，支持切片。 压缩率一般，想支持切片需要额外创建索引。
+        Snappy   压缩和解压缩速度块              不支持切片，压缩率一般。
+    压缩参数配置
+        要在Hadoop中启用压缩，可以按如下配置
+            参数                                                文件位置            默认值                                        阶段                              建议
+            io.compression.codecs                               core-site.xml      无                                            输入压缩                          使用hadoop checknative查看默认值。Hadoop使用文件扩展名判断是否支持某种编码器。
+            mapreduce.map.output.compress                       mapred-site.xml    false                                         Mapper输出                        这个参数设为true启用压缩
+            mapreduce.map.output.compress.codec                 mapred-site.xml    org.apache.hadoop.io.compress.DefaultCodec    Mapper输出                        企业多使用LZO或Snappy编解码器在此阶段压缩数据
+            mapreduce.output.fileoutputformat.compress          mapred-site.xml    false                                         Reducer输出                       这个参数设为true启用压缩
+            mapreduce.output.fileoutputformat.compress.codec    mapred-site.xml    org.apache.hadoop.io.compress.DefaultCodec    Reducer输出                       使用标准工具或者编解码器，如Gzip和bzip2。
+        压缩实操参考hadoop-demo/hdfsmapred-demo/src/main/java
