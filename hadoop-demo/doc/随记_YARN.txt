@@ -31,11 +31,11 @@ YARN工作机制
     程序运行完毕后，NodeManager1的MrAppMaster向ResourceManager注销自己，释放相关资源。
 YARN调度器算法
     目前，Hadoop作业调度器主要有三种：FIFO、Capacity Scheduler（容量）和Fair Scheduler（公平）。
-    Hadoop3.1.3默认的资源调度器是Capacity Sheduler。 
+    Hadoop3.1.3默认的资源调度器是Capacity Scheduler。 
         yarn-default.xml 
             <property>
                 <name>yarn.resourcemanager.scheduler.class</property>
-                <value>org.apache.hadoop.yarn.server.resourcemanager.sheduler.capacity.CapacityScheduler</value>
+                <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
             </property>
     FIFO调度器
         单队列，根据提交作业的先后顺序，先来先服务。
@@ -161,7 +161,7 @@ YARN常用命令
 YARN生产环境核心参数配置
     ResourceManager相关
         yarn.resourcemanager.scheduler.class：配置调度器，默认容量调度器。
-        yarn.resourcemanager.sheduler.client.thread-count：ResourceManager处理调度器请求的线程数量，默认50。
+        yarn.resourcemanager.scheduler.client.thread-count：ResourceManager处理调度器请求的线程数量，默认50。
     NodeManager相关 
         yarn.nodemanager.resource.detect-hardware-capabilities：是否让YARN自己检测硬件进行配置，默认false。
         yarn.nodemanager.resource.count-logical-processors-as-cores：是否将虚拟核数当作CPU核数，默认false。
@@ -177,80 +177,258 @@ YARN生产环境核心参数配置
         yarn.scheduler.maximum-allocation-mb：容器最大内存，默认8G。
         yarn.scheduler.minimum-allocation-vcores：容器最小CPU核数，默认1个。
         yarn.scheduler.maximum-allocation-vcores：容器最大CPU核数，默认4个。
-    案例实操
+YARN案例实操    
+    核心参数配置
         假设从1G数据中，统计每个单词出现次数。
         服务器3台，每台配置4G内存，4核CPU，4线程。
         1G/128M=8个MapTask，1个ReduceTask，1个MrAppMaster。
         平均每个节点运行10个/3台≈3个任务
-        修改yarn-site.xml配置参数如下：
-            <!-- 选择调度器，默认容量。 -->
-            <property>
-                <name>yarn.resourcemanager.scheduler.class</name>
-                <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
-            </property>
-            <!-- ResourceManager处理调度器请求的线程数量，默认50。如果提交的任务数大于50，可以增加该值，但是不能超过3台*4线程=12线程（去除其它应用程序实际不能超过8）。 -->
-            <property>
-                <name>yarn.resourcemanager.sheduler.client.thread-count</name>
-                <value>8</value>
-            </property>
-            <!-- 是否让YARN自动检测硬件进行配置，默认是false。如果该节点有很多其它应用程序，建议手动配置，否则采用自动。 -->
-            <property>
-                <name>yarn.nodemanager.resource.detect-hardware-capabilities</name>
-                <value>false</value>
-            </property>
-            <!-- 是否将虚拟核数当作CPU核数，默认是false，采用物理CPU核数。 -->
-            <property>
-                <name>yarn.nodemanager.resource.count-logical-processors-as-cores</name>
-                <value>false</value>
-            </property>
-            <!-- 虚拟核数和物理核数乘数，默认是1.0。 -->
-            <property>
-                <name>yarn.nodemanager.resource.pcores-vcores-multiplier</name>
-                <value>1.0</value>
-            </property>
-            <!-- NodeManager使用内存数，默认8G，修改为4G。 -->
-            <property>
-                <name>yarn.nodemanager.resource.memory-mb</name>
-                <value>4096</value>
-            </property>
-            <!-- NodeManager的CPU核数，不按照硬件环境自动设定时默认是8个，修改为4个。 -->
-            <property>
-                <name>yarn.nodemanager.resource.cpu-vcores</name>
-                <value>4</value>
-            </property>
-            <!-- 容器最小内存，默认1G。 -->
-            <property>
-                <name>yarn.scheduler.minimum-allocation-mb</name>
-                <value>1024</value>
-            </property>
-            <!-- 容器最大内存，默认8G，修改为2G。 -->
-            <property>
-                <name>yarn.scheduler.maximum-allocation-mb</name>
-                <value>2048</value>
-            </property>
-            <!-- 容器小CPU核数，默认1个。 -->
-            <property>
-                <name>yarn.scheduler.minimum-allocation-vcores</name>
-                <value>1</value>
-            </property>
-            <!-- 容器大CPU核数，默认4个，修改为2个。 -->
-            <property>
-                <name>yarn.scheduler.maximum-allocation-vcores</name>
-                <value>2</value>
-            </property>
-            <!-- 虚拟内存检查，默认代开，修改为关闭。 -->
-            <property>
-                <name>yarn.nodemanager.vmem-check-enabled</name>
-                <value>false</value>
-            </property>
-            <!-- 虚拟内存和物理内存设置比例，默认2.1。 -->
-            <property>
-                <name>yarn.nodemanager.vmem-pmem-ratio</name>
-                <value>2.1</value>
-            </property>
+        修改配置文件
+            vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/yarn-site.xml 
+                追加
+                    <!-- 选择调度器，默认容量。 -->
+                    <property>
+                        <name>yarn.resourcemanager.scheduler.class</name>
+                        <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
+                    </property>
+                    <!-- ResourceManager处理调度器请求的线程数量，默认50。如果提交的任务数大于50，可以增加该值，但是不能超过3台*4线程=12线程（去除其它应用程序实际不能超过8）。 -->
+                    <property>
+                        <name>yarn.resourcemanager.scheduler.client.thread-count</name>
+                        <value>8</value>
+                    </property>
+                    <!-- 是否让YARN自动检测硬件进行配置，默认是false。如果该节点有很多其它应用程序，建议手动配置，否则采用自动。 -->
+                    <property>
+                        <name>yarn.nodemanager.resource.detect-hardware-capabilities</name>
+                        <value>false</value>
+                    </property>
+                    <!-- 是否将虚拟核数当作CPU核数，默认是false，采用物理CPU核数。 -->
+                    <property>
+                        <name>yarn.nodemanager.resource.count-logical-processors-as-cores</name>
+                        <value>false</value>
+                    </property>
+                    <!-- 虚拟核数和物理核数乘数，默认是1.0。 -->
+                    <property>
+                        <name>yarn.nodemanager.resource.pcores-vcores-multiplier</name>
+                        <value>1.0</value>
+                    </property>
+                    <!-- NodeManager使用内存数，默认8G，修改为4G。 -->
+                    <property>
+                        <name>yarn.nodemanager.resource.memory-mb</name>
+                        <value>4096</value>
+                    </property>
+                    <!-- NodeManager的CPU核数，不按照硬件环境自动设定时默认是8个，修改为4个。 -->
+                    <property>
+                        <name>yarn.nodemanager.resource.cpu-vcores</name>
+                        <value>4</value>
+                    </property>
+                    <!-- 容器最小内存，默认1G。 -->
+                    <property>
+                        <name>yarn.scheduler.minimum-allocation-mb</name>
+                        <value>1024</value>
+                    </property>
+                    <!-- 容器最大内存，默认8G，修改为2G。 -->
+                    <property>
+                        <name>yarn.scheduler.maximum-allocation-mb</name>
+                        <value>2048</value>
+                    </property>
+                    <!-- 容器小CPU核数，默认1个。 -->
+                    <property>
+                        <name>yarn.scheduler.minimum-allocation-vcores</name>
+                        <value>1</value>
+                    </property>
+                    <!-- 容器大CPU核数，默认4个，修改为2个。 -->
+                    <property>
+                        <name>yarn.scheduler.maximum-allocation-vcores</name>
+                        <value>2</value>
+                    </property>
+                    <!-- 虚拟内存检查，默认代开，修改为关闭。 -->
+                    <property>
+                        <name>yarn.nodemanager.vmem-check-enabled</name>
+                        <value>false</value>
+                    </property>
+                    <!-- 虚拟内存和物理内存设置比例，默认2.1。 -->
+                    <property>
+                        <name>yarn.nodemanager.vmem-pmem-ratio</name>
+                        <value>2.1</value>
+                    </property>
         分发配置到各服务器（若其它服务器硬件配置不一样，则需要单独配置）
             略
         重启集群 
             略
         运行程序并观察任务执行页面
             略
+    容量调度器
+        容量调度器多队列
+            概述
+                调度器默认就1个default队列，不能满足生产要求。
+                如何设计队列
+                    按照框架：hive/spark/flink，每个框架的任务放入指定队列。
+                    按照业务模块：模块1/模块2/...。
+                多队列好处
+                    避免坏任务耗尽全部资源
+                    实现任务降级，保证重要的任务队列资源充足。
+            配置 
+                假设default队列占总内存的40%，最大资源容量占总资源60%，hive队列占总内存的60%，最大资源容量占总资源80%。
+                修改配置文件
+                    vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/yarn-site.xml 
+                        更新或追加
+                            <!-- 选择调度器，默认容量。 -->
+                            <property>
+                                <name>yarn.resourcemanager.scheduler.class</name>
+                                <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
+                            </property>
+                    vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/capacity-scheduler.xml
+                        更新
+                            <!-- 指定多队列，增加hive队列。 -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.queues</name>
+                                <value>default,hive</value>
+                            </property>
+                            <!-- 降低default队列资源额定容量为40%，默认100%。 -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.default.capacity</name>
+                                <value>40</value>
+                            </property>
+                            <!-- 降低default队列资源最大容量为40%，默认100%。 -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.default.maximum-capacity</name>
+                                <value>60</value>
+                            </property>
+                        追加
+                            <!-- 指定hive队列额定容量 -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.hive.capacity</name>
+                                <value>60</value>
+                            </property>
+                            <!-- 指定hive队列最大容量 -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.hive.maximum-capacity</name>
+                                <value>80</value>
+                            </property>
+                            <!-- 指定hive队列用户最多可以使用队列多少资源。 -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.hive.user-limit-factor</name>
+                                <value>1</value>
+                            </property>
+                            <!-- 指定hive队列是否启用 -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.hive.state</name>
+                                <value>RUNNING</value>
+                            </property>
+                            <!-- 指定hive队列哪些用户可以提交任务 -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.hive.acl_submit_applications</name>
+                                <value>*</value>
+                            </property>
+                            <!-- 指定hive队列哪些用户可以作为管理员 -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.hive.acl_administer_queue</name>
+                                <value>*</value>
+                            </property>
+                            <!-- 指定hive队列哪些用户可以设置任务优先级 -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.hive.acl_application_max_priority</name>
+                                <value>*</value>
+                            </property>
+                            <!-- 指定hive队列最大生命周期 -->
+                            <!-- 提交到队列的application的超时时间不能超过application-lifetime，若maximum没有指定则取default。 -->
+                            <!-- 例：yarn application -appId <app_id> -updateLifetime <timeout> -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.hive.maximum-application-lifetime</name>
+                                <value>-1</value>
+                            </property>
+                            <!-- 指定hive队列默认生命周期 -->
+                            <property>
+                                <name>yarn.scheduler.capacity.root.hive.default-application-lifetime</name>
+                                <value>-1</value>
+                            </property>
+            分发配置到各服务器 
+                略
+            重启集群或者执行yarn rmadmin -refreshQueues
+                略
+            提交任务到指定队列
+                hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar wordcount -D mapreduce.job.queuename=hive /wcinput /wcoutput
+        容量调度器任务优先级
+            修改配置文件
+                vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/yarn-site.xml 
+                    追加 
+                        <!-- 指定优先级为5个等级 -->
+                        <property>
+                            <name>yarn.cluster.max-application-priority</name>
+                            <value>5</value>
+                        </property>
+            分发配置到各服务器
+                略
+            重启集群
+                略
+            提交任务 
+                hadoop01
+                    hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar pi 5 2000000
+                hadoop02
+                    hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar pi 5 2000000
+                hadoop03
+                    hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar pi -D mapreduce.job.priority=5 5 2000000
+    公平调度器
+        公平调度器多队列
+            假设有两个队列：queuea和queueb，期望实现以下效果：若用户提交任务时指定队列，则任务提交到指定队列；若未指定队列，usera用户提交的任务到queuea队列，userb提交的任务到queueb队列。
+            修改配置文件
+                vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/yarn-site.xml 
+                    追加
+                        <!-- 指定使用公平调度器 -->
+                        <property>
+                            <name>yarn.resourcemanager.scheduler.class</name>
+                            <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler</value>
+                        </property>
+                        <!-- 指定公平调度器队列分配文件 -->
+                        <property>
+                            <name>yarn.scheduler.fair.allocation.file</name>
+                            <value>/opt/module/hadoop/hadoop-3.1.3/etc/hadoop/fair-scheduler.xml</value>
+                        </property>
+                        <!-- 指定禁止队列间抢占资源 -->
+                        <property>
+                            <name>yarn.scheduler.fair.preemption</name>
+                            <value>false</value>
+                        </property>
+                vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/fair-scheduler.xml 
+                    新增
+                        <?xml version="1.0"?>
+                        <allocations>
+                            <!-- 单个队列中Application Master占用资源的最大比例，取值0~1，企业一般配置0.1。 -->
+                            <queueMaxAMShareDefault>0.5</queueMaxAMShareDefault>
+                            <!-- 单个队列最大资源的默认值 -->
+                            <queueMaxResourceDefault>4096mb,4vcores</queueMaxResourceDefault>
+                            <queue name="test">
+                                <minResources>2048mb,2vcores</minResources>
+                                <maxResources>4096mb,4vcores</maxResources>
+                                <maxRunningApps>4</maxRunningApps>
+                                <maxAMShare>0.5</maxAMShare>
+                                <weight>1.0</weight>
+                                <!-- 队列内资源分配策略 -->
+                                <schedulingPolicy>fair</schedulingPolicy>
+                            </queue>
+                            <queue name="sxydh" type="parent">
+                                <minResources>2048mb,2vcores</minResources>
+                                <maxResources>4096mb,4vcores</maxResources>
+                                <maxRunningApps>4</maxRunningApps>
+                                <maxAMShare>0.5</maxAMShare>
+                                <weight>1.0</weight>
+                                <!-- 队列内资源分配策略 -->
+                                <schedulingPolicy>fair</schedulingPolicy>
+                            </queue>
+                            <!-- 任务队列分配策略，可配置多层规则，从第一个规则开始匹配，直到匹配成功。 -->
+                            <queuePlacementPolicy>
+                                <!-- 提交任务时如果指定队列则分配到该队列，如果未指定，则继续匹配下一个规则。false：如果指定队列不存在，不允许自动创建。 -->
+                                <rule name="specified" create="false" />
+                                <!-- 提交任务到root.group.username队列，若root.group不存在，不允许自动创建，若root.group.use不存在，允许自动创建。 -->
+                                <rule name="nestedUserQueue" create="true">
+                                    <rule name="primaryGroup" create="false" />
+                                </rule>
+                                <!-- 最后一个规则必须为reject或者default。reject：规则匹配失败则拒绝任务提交。 -->
+                                <rule name="reject" />
+                            </queuePlacementPolicy>
+                        </allocations>
+            提交任务 
+                指定队列提交 
+                    hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar pi -D mapreduce.job.queuename=root.test 1 1
+                不指定队列提交
+                    hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar pi 1 1
