@@ -182,7 +182,7 @@ HDFS扩容和缩容
                     可能需要先执行以下命令（hadoop01）
                         hdfs dfsadmin -safemode leave
         开启数据均衡
-            start-balancer.sh -threashold 10
+            start-balancer.sh -threshold 10
                 10：集群中各个节点的磁盘空间利用率相差不超过10%，可根据实际情况调整。
                 HDFS需要启动单独的RebalanceServer来执行Rebalance操作，所以尽量不要在NameNode上执行，而是在比较空闲的主机上执行。
                 停止数据均衡
@@ -349,3 +349,341 @@ HDFS存储优化
                 hdfs fsck /hdfsdata -files -blocks -locations
             查看集群节点 
                 hadoop dfsadmin -report
+NameNode故障处理
+    概述
+        NameNode进程挂了并且存储的数据丢失的情况下，如何恢复NameNode。
+    故障模拟
+        停止NameNode进程
+            kill -9 <namenode_jps_id>
+        删除NameNode存储数据
+            rm -rf /opt/module/hadoop/hadoop-3.1.3/data/dfs/name/*
+        验证 
+            hdfs --daemon start namenode
+    故障处理
+        拷贝SecondaryNameNode的data数据到NameNode
+            scp -r sxydh@hadoop03:/opt/module/hadoop/hadoop-3.1.3/data/dfs/namesecondary/* /opt/module/hadoop/hadoop-3.1.3/data/dfs/name/
+        重启NameNode
+            hdfs --daemon start namenode
+HDFS安全模式
+    概述
+        安全模式：文件系统只接受读数据请求，而不接受删除、修改等变更请求。
+        进入安全模式场景
+            NameNode在加载镜像文件和编辑日志期间处于安全模式（集群刚启动完、部分文件块丢失后等）
+            NameNode在接收DataNode注册时，处于安全模式。
+        退出安全模式条件
+            dfs.namenode.safemode.min.datanodes：最小可用datanode数量，默认0。
+            dfs.namenode.safemode.threshold-pct：副本数达到最小要求的Block占系统总Block数的百分比，默认0.999f（只允许丢一个块）。
+            dfs.namenode.safemode.extension：稳定时间，默认值30000毫秒，即30秒。
+    基本语法
+        hdfs dfsadmin -safemode get
+        hdfs dfsadmin -safemode enter
+        hdfs dfsadmin -safemode leave
+        hdfs dfsadmin -safemode wait
+HDFS慢磁盘监控
+    概述
+        慢磁盘指的是写入数据非常慢的一类磁盘。
+        可以通过观察HDFS创建文件时的响应时间来判断是否存在慢磁盘。
+    找出慢磁盘
+        通过心跳时间
+            一般慢磁盘现象会影响该节点DataNode与NameNode之间的心跳。
+            正常心跳3s，超过3s说明有异常。
+        通过磁盘读写性能
+            前置条件
+                fio
+            测试顺序读
+                sudo fio -filename=/opt/module/tmp/app_log.txt -direct=1 -iodepth 1 -thread -rw=read -ioengine=psync -bs=16k -size=2G -numjobs=10 -runtime=60 -group_reporting -name=test_read
+            测试顺序写
+                sudo fio -filename=/opt/module/tmp/app_log.txt -direct=1 -iodepth 1 -thread -rw=write -ioengine=psync -bs=16k -size=2G -numjobs=10 -runtime=60 -group_reporting -name=test_write
+            测试随机写
+                sudo fio -filename=/opt/module/tmp/app_log.txt -direct=1 -iodepth 1 -thread -rw=randwrite -ioengine=psync -bs=16k -size=2G -numjobs=10 -runtime=60 -group_reporting -name=test_randwrite
+            测试随机读写
+                sudo fio -filename=/opt/module/tmp/app_log.txt -direct=1 -iodepth 1 -thread -rw=randrw -ioengine=psync -bs=16k -size=2G -numjobs=10 -runtime=60 -group_reporting -name=test_randrw
+HDFS小文件存档
+    概述
+        每个文件按块存储，每个块的元数据存储在NameNode的内存中，因此HDFS存储小文件会非常低效。
+        因为大量的小文件会耗尽NameNode中的大部分内存。但注意，存储小文件所需要的磁盘容量和数据块的大小无关。例如，一个1MB的文件设置为128MB的块存储，实际使用的是1MB的磁盘空间，而不是128MB。
+        HDFS存档文件或HAR文件，是一个更高效的文档存储工具。具体而言，HDFS存档文件对内还是一个一个独立文件，对NameNode而言却是一个整体，减少了NameNode的内存。
+    实操
+        归档文件
+            hadoop archive -archiveName app_log.har -p /har_test/in /har_test/out
+        查看归档文件
+            hadoop fs -ls /har_test/out/app_log.har
+            hadoop fs -ls har:///har_test/out/app_log.har
+        解归档文件
+            hadoop fs -cp har:///har_test/out/app_log.har/* /har_test/out
+MapReduce调优
+    概述
+        影响MapReduce的因素有计算机性能（CPU/内存/磁盘/网络）、IO（数据倾斜/MapTask慢/小文件多）等。
+    MapTask
+        自定义分区（减少数据倾斜）
+        减少溢写的次数
+            mapreduce.task.io.sort.mb：环形缓冲区大小，默认100m，可以提高到200m。
+            mapreduce.map.sort.spill.percent：环形缓冲区溢写的阈值，默认80%，可以提高到90%。
+        增加每次合并个数
+            mapreduce.task.io.sort.factor：默认10，可以提高到20。
+        提前Combiner（不影响业务额情况下）
+        采用压缩（Snappy、LZO等）
+        增加MapTask内存上限
+            mapreduce.map.memory.mb：默认1024MB，可以根据128MB数据对应1G内存原则提高该值。
+        增加MapTask堆内存
+            mapreduce.map.java.opts：如果存在OOM可以调大该值。
+        增加MapTask的CPU核数
+            mapreduce.map.cpu.vcores：默认1，计算密集型任务可以调大该值。 
+        调整MapTask最大重试次数
+            mapreduce.map.maxattempts：每个MapTask最大重试次数，默认4。
+    ReduceTask 
+        增加拉取数据并行数
+            mapreduce.reduce.shuffle.parallelcopies：默认5，可以10。
+        增加Buffer比例
+            mapreduce.reduce.shuffle.input.buffer.percent：Buffer占Reduce可用内存的比例，默认0.7，可以提高到0.8。
+        减少写盘的次数
+            mapreduce.reduce.shuffle.merge.percent：Buffer中的数据达到多少比例开始写入磁盘。默认0.66，可以提高到0.75。
+        增加ReduceTask内存上限
+            mapreduce.reduce.memory.mb：默认1024MB，可以根据128MB数据对应1G内存原则提高该值到4~6G。
+        增加ReduceTask堆内存
+            mapreduce.reduce.java.opts：如果存在OOM可以调大该值。
+        增加ReduceTask的CPU核数
+            mapreduce.reduce.cpu.vcores：默认1，可以提高到2~4。 
+        调整ReduceTask最大重试次数
+            mapreduce.reduce.maxattempts：默认4。
+        调整ReduceTask申请资源阈值
+            mapreduce.job.reduce.slowstart.completedmaps：当MapTask完成的比例达到该值后才会为ReduceTask申请资源，默认0.05。
+        调整Task超时时间
+            mapreduce.task.timeout：如果一个Task在一定时间内没有任何数据进入，也没有数据输出，则认为该Task处于Block状态。为了防止程序永远Block不退出，设置超时时间。默认600000毫秒（10分钟）。
+        减少ReduceTask
+            如果可以不用ReduceTask，尽可能不用。
+Hadoop小文件解决方案
+    小文件弊端
+        HDFS上每个文件都要在NameNode上创建对应的元数据，这个元数据的大小约为150byte。这样当小文件比较多的时候，就会产生很多的元数据文件，一方面会占用NameNode内存空间，另一方面使得寻址索引速度变慢。
+        小文件过多，在进行MR计算时，会产生过多切片，需要启动过多的MapTask。每个MapTask处理的数据量小，导致MapTask的处理时间比启动时间还小。
+    解决方案
+        数据源头
+            在数据采集的时候，就将小文件或小批数据合成大文件再上传HDFS。
+        存储方向（Hadoop Archive） 
+            利用HDFS存档文件或HAR文件，减少NameNode的内存使用。
+        计算方向
+            CombineTextInputFormat
+                减少多个小文件的切片数量
+            UBERTASK
+                概述
+                    默认情况下，每个Task任务都需要启动一个JVM来运行，如果Task任务计算的数据量很小，可以让同一个Job的多个Task运行在一个JVM中。
+                实现
+                    修改配置文件 
+                        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/mapred-site.xml
+                            更新或追加
+                                <property>
+                                    <name>mapreduce.job.ubertask.enable</name>
+                                    <value>true</value>
+                                </property>
+                                <property>
+                                    <name>mapreduce.job.ubertask.maxmaps</name>
+                                    <value>9</value>
+                                </property>
+                                <property>
+                                    <name>mapreduce.job.ubertask.maxreduces</name>
+                                    <value>1</value>
+                                </property>
+                                <property>
+                                    <name>mapreduce.job.ubertask.maxbytes</name>
+                                    <value></value>
+                                    <description>最大输入数据量，为空时取默认值dfs.blocksize。</description>
+                                </property>
+                    分发配置到各服务器
+                        略
+                    执行应用程序
+                        hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar wordcount /wcinput /wcoutput
+                            对比启用前后的Total Allocated Containers
+                                http://hadoop02:8088/cluster/apps
+                                    Applications 
+                                        application_1700096870272_0002
+                                            appattempt_1700096870272_0002_000001
+                                                Total Allocated Containers
+MapReduce集群压测
+    概述
+        使用程序Sort评测MapReduce
+    快速开始（单个虚拟机磁盘容量不超过150G不建议压测）
+        使用RandomWriter来产生随机数，每个节点运行10个Map任务，每个Map产生大约1G大小的二进制随机数。
+            hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar randomwriter random-data 
+        执行Sort程序
+            hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar sort random-data sorted-data
+        验证是否完成
+            hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.1.3-tests.jar testmapredsort -sortInput random-data -sortOutput sorted-data
+Hadoop综合调优
+    前置条件 
+        假设从1G数据中，统计每个单词出现次数。
+        服务器3台，每台配置4G内存，4核CPU，4线程。
+        1G/128M=8个MapTask，1个ReduceTask，1个MrAppMaster。
+        平均每个节点运行10个/3台≈3个任务
+    HDFS调优
+        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hadoop-env.sh
+            更新或追加
+                export HDFS_NAMENODE_OPTS="-Dhadoop.security.logger=INFO,RFAS -Xmx1024m"
+                export HDFS_DATANODE_OPTS="-Dhadoop.security.logger=ERROR,RFAS -Xmx1024m"
+        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml
+            更新或追加
+                <!-- NameNode心跳并发配置 -->
+                <property>
+                    <name>dfs.namenode.handler.count</name>
+                    <value>21</value>
+                </property>
+        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/core-site.xml
+            更新或追加
+                <!-- 回收站文件存活时间，单位分钟。 -->
+                <property>
+                    <name>fs.trash.interval</name>
+                    <value>60</value>
+                </property>
+    MapReduce调优 
+        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/mapred-site.xml
+            更新或追加
+                <!-- 环形缓冲区大小，默认100m。 -->
+                <property>
+                    <name>mapreduce.task.io.sort.mb</name>
+                    <value>100</value>
+                </property>
+                <!-- 环形缓冲区溢写阈值，默认0.8。 -->
+                <property>
+                    <name>mapreduce.map.sort.spill.percent</name>
+                    <value>0.8</value>
+                </property>
+                <!-- 合并个数，默认10个。 -->
+                <property>
+                    <name>mapreduce.task.io.sort.factor</name>
+                    <value>10</value>
+                </property>
+                <!-- MapTask内存，默认1G。MapTask堆内存默认和该值一致mapreduce.map.java.opts。 -->
+                <property>
+                    <name>mapreduce.map.memory.mb</name>
+                    <value>-1</value>
+                </property>
+                <!-- MapTask的CPU核数，默认1。 -->
+                <property>
+                    <name>mapreduce.map.cpu.vcores</name>
+                    <value>1</value>
+                </property>
+                <!-- MapTask最大重试次数，默认4次。 -->
+                <property>
+                    <name>mapreduce.map.maxattempts</name>
+                    <value>4</value>
+                </property>
+
+
+
+                <!-- ReduceTask拉取数据并行数，默认5。 -->
+                <property>
+                    <name>mapreduce.reduce.shuffle.parallelcopies</name>
+                    <value>5</value>
+                </property>
+                <!-- Buffer占用内存比例，默认0.7。 -->
+                <property>
+                    <name>mapreduce.reduce.shuffle.input.buffer.percent</name>
+                    <value>0.7</value>
+                </property>
+                <!-- Buffer写盘阈值，默认0.66。 -->
+                <property>
+                    <name>mapreduce.reduce.shuffle.merge.percent</name>
+                    <value>0.66</value>
+                </property>
+                <!-- ReduceTask内存，默认1G，ReduceTask堆内存默认与该值一致mapreduce.reduce.java.opts。 -->
+                <property>
+                    <name>mapreduce.reduce.memory.mb</name>
+                    <value>-1</value>
+                </property>
+                <!-- ReduceTask的CPU核数，默认1。 -->
+                <property>
+                    <name>mapreduce.reduce.cpu.vcores</name>
+                    <value>2</value>
+                </property>
+                <!-- ReduceTask最大重试次数，默认4。 -->
+                <property>
+                    <name>mapreduce.reduce.maxattempts</name>
+                    <value>4</value>
+                </property>
+                <!-- ReduceTask申请资源阈值，默认0.05（百分比）。 -->
+                <property>
+                    <name>mapreduce.job.reduce.slowstart.completedmaps</name>
+                    <value>0.05</value>
+                </property>
+                <!-- Task超时时间，单位毫秒。 -->
+                <property>
+                    <name>mapreduce.task.timeout</name>
+                    <value>600000</value>
+                </property>
+    YARN调优
+        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/yarn-site.xml 
+            更新或追加
+                <!-- 选择调度器，默认容量。 -->
+                <property>
+                    <name>yarn.resourcemanager.scheduler.class</name>
+                    <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
+                </property>
+                <!-- ResourceManager处理调度器请求的线程数量，默认50。如果提交的任务数大于50，可以增加该值，但是不能超过3台*4线程=12线程（去除其它应用程序实际不能超过8）。 -->
+                <property>
+                    <name>yarn.resourcemanager.scheduler.client.thread-count</name>
+                    <value>8</value>
+                </property>
+                <!-- 是否让YARN自动检测硬件进行配置，默认是false。如果该节点有很多其它应用程序，建议手动配置，否则采用自动。 -->
+                <property>
+                    <name>yarn.nodemanager.resource.detect-hardware-capabilities</name>
+                    <value>false</value>
+                </property>
+                <!-- 是否将虚拟核数当作CPU核数，默认是false，采用物理CPU核数。 -->
+                <property>
+                    <name>yarn.nodemanager.resource.count-logical-processors-as-cores</name>
+                    <value>false</value>
+                </property>
+                <!-- 虚拟核数和物理核数乘数，默认是1.0。 -->
+                <property>
+                    <name>yarn.nodemanager.resource.pcores-vcores-multiplier</name>
+                    <value>1.0</value>
+                </property>
+                <!-- NodeManager使用内存数，默认8G，修改为4G。 -->
+                <property>
+                    <name>yarn.nodemanager.resource.memory-mb</name>
+                    <value>4096</value>
+                </property>
+                <!-- NodeManager的CPU核数，不按照硬件环境自动设定时默认是8个，修改为4个。 -->
+                <property>
+                    <name>yarn.nodemanager.resource.cpu-vcores</name>
+                    <value>4</value>
+                </property>
+                <!-- 容器最小内存，默认1G。 -->
+                <property>
+                    <name>yarn.scheduler.minimum-allocation-mb</name>
+                    <value>1024</value>
+                </property>
+                <!-- 容器最大内存，默认8G，修改为2G。 -->
+                <property>
+                    <name>yarn.scheduler.maximum-allocation-mb</name>
+                    <value>2048</value>
+                </property>
+                <!-- 容器小CPU核数，默认1个。 -->
+                <property>
+                    <name>yarn.scheduler.minimum-allocation-vcores</name>
+                    <value>1</value>
+                </property>
+                <!-- 容器大CPU核数，默认4个，修改为2个。 -->
+                <property>
+                    <name>yarn.scheduler.maximum-allocation-vcores</name>
+                    <value>2</value>
+                </property>
+                <!-- 虚拟内存检查，默认代开，修改为关闭。 -->
+                <property>
+                    <name>yarn.nodemanager.vmem-check-enabled</name>
+                    <value>false</value>
+                </property>
+                <!-- 虚拟内存和物理内存设置比例，默认2.1。 -->
+                <property>
+                    <name>yarn.nodemanager.vmem-pmem-ratio</name>
+                    <value>2.1</value>
+                </property>
+    分发配置到各服务器
+        xsync.sh /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hadoop-env.sh
+        xsync.sh /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml
+        xsync.sh /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/core-site.xml
+        xsync.sh /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/mapred-site.xml
+        xsync.sh /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/yarn-site.xml
+    重启集群
+        略
+    执行程序 
+        略
