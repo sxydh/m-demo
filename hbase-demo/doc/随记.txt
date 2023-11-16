@@ -1,0 +1,98 @@
+HBase概述
+    Apache HBase是以HDFS为数据存储的、一种分布式的、可扩展的NoSQL数据库。
+    HBase数据模型的关键在于稀疏、分布式、多维、排序的映射。其中映射指代非关系型数据库的KV结构。
+HBase存储结构
+    逻辑结构
+        逻辑结构由行列组成，横向拆分为Region，纵向拆分为Store（以列族为单位，列族由多列组合而成）。Region和Store构成存储单元。
+        数据存储整体有序，按照RowKey的字典序排列，RowKey为Byte数组。
+    物理结构
+        物理结构为数据映射关系KV。K：Row Key + Column Family + Column Qualifier + Timestamp，V：数据值。
+        在逻辑结构上为空的数据，底层实际并不存储。
+        HBase把表格数据存储在HDFS上，按照Namespace -> Table -> Region -> Store的格式划分文件夹，在Store中存储HFile，HFile内部为数据Cell。
+HBase数据模型 
+    Namespace：命名空间，每个命名空间下有多个表。HBase有两个自带的命名空间hbase和default，hbase中存放的是HBase内置的表，default中存放的是用户自定义的表。
+    Table：数据表。表定义时只需要生命列族，而具体列可以动态变更。
+    Row：数据行。每行都有RowKey和Column，数据按照RowKey字典序存储，数据只能根据RowKey进行检索，所以RowKey的设计十分重要。
+    Column：数据列。每列都有Column Family（列族）和Column Qualifier（列限定符）。
+    Timestamp：数据时间戳。用于标识数据版本，每条数据写入时，系统会自动为加上该字段，值为写入时间。
+    Cell：数据单元。根据（Row Key，Column Family，Column Qualifier，Timestamp）可以限定唯一的数据单元，数据单元的值以字节码形式存储。
+HBase基础架构
+    ZooKeeper：HBase通过ZooKeeper实现高可用，主要节点有Master和RegionServer。
+    HDFS：HBase底层依赖HDFS存储服务。
+    Master：主要进程，具体实现类为HMaster，通常部署在NameNode节点上。Master启动多个后台进程实现以下功能：
+        通过ZK监控RegionServer实例，负责RegionServer的拆分和故障转移。
+        管理元数据表格hbase:meta
+        处理用户DDL命令
+    RegionServer：主要进程，具体实现类为HRegionServer，部署在DataNode上。RegionServer主要负责：
+        Cell处理，例如数据写入、数据查询等。
+        Region拆分和合并（Master监控，RegionServer执行）
+HBase环境
+    安装ZooKeeper
+        参考m-demo/zookeeper-demo
+    安装Hadoop
+        参考m-demo/hadoop-demo
+    安装HBase（2.4.11）
+        准备文件（hadoop01）
+            sudo mkdir /opt/module/hbase
+            sudo chown -R sxydh:sxydh /opt/module/hbase
+            wget -P /opt/module/hbase https://archive.apache.org/dist/hbase/2.4.11/hbase-2.4.11-bin.tar.gz
+            tar -zxvf /opt/module/hbase/hbase-2.4.11-bin.tar.gz -C /opt/module/hbase/
+            mv /opt/module/hbase/hbase-2.4.11/lib/client-facing-thirdparty/slf4j-reload4j-1.7.33.jar /opt/module/hbase/hbase-2.4.11/lib/client-facing-thirdparty/slf4j-reload4j-1.7.33.jar.bak
+                解决日志包版本冲突问题
+            sudo vim /etc/profile.d/my_env.sh
+                追加
+                    export HBASE_HOME=/opt/module/hbase/hbase-2.4.11
+                    export PATH=$PATH:$HBASE_HOME/bin
+            source /etc/profile
+        修改配置文件
+            vim /opt/module/hbase/hbase-2.4.11/conf/hbase-env.sh 
+                更新
+                    export HBASE_MANAGES_ZK=false
+                    export JAVA_HOME=/opt/module/jdk/jdk1.8.0_202/
+            vim /opt/module/hbase/hbase-2.4.11/conf/hbase-site.xml
+                更新或追加
+                    <!-- 启用集群 -->
+                    <property>
+                        <name>hbase.cluster.distributed</name>
+                        <value>true</value>
+                    </property>
+                    <!-- <property>
+                      <name>hbase.tmp.dir</name>
+                      <value>./tmp</value>
+                    </property>
+                    <property>
+                      <name>hbase.unsafe.stream.capability.enforce</name>
+                      <value>false</value>
+                    </property> -->
+
+
+
+                    <!-- ZooKeeper地址配置 -->
+                    <property>
+                        <name>hbase.zookeeper.quorum</name>
+                        <value>hadoop01,hadoop02,hadoop03</value>
+                    </property>
+                    <!-- 数据存储路径 -->
+                    <property>
+                        <name>hbase.rootdir</name>
+                        <value>hdfs://hadoop01:8020/hbase</value>
+                    </property>
+            vim /opt/module/hbase/hbase-2.4.11/conf/regionservers
+                追加
+                    hadoop01
+                    hadoop02
+                    hadoop03
+        分发文件到集群（hadoop02，hadoop03）
+            xsync.sh /opt/module/hbase
+            sudo /opt/module/mybin/xsync.sh /etc/profile.d/my_env.sh
+        启动节点
+            cd /opt/module/hbase/hbase-2.4.11
+                bin/hbase-daemon.sh start master 
+                bin/hbase-daemon.sh start regionserver
+        启动集群
+            cd /opt/module/hbase/hbase-2.4.11
+            bin/start-hbase.sh 
+                验证
+                    http://hadoop01:16010
+                停止
+                    bin/stop-hbase.sh
