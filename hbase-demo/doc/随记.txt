@@ -26,6 +26,24 @@ HBase基础架构
     RegionServer：主要进程，具体实现类为HRegionServer，部署在DataNode上。RegionServer主要负责：
         Cell处理，例如数据写入、数据查询等。
         Region拆分和合并（Master监控，RegionServer执行）
+HBase常用命令
+    前置条件
+        hbase shell
+    创建表格
+        list_namespace
+        create_namespace 'sxydh'
+        create 'sxydh:app_log','colg1','colg2'
+            创建在默认命名空间
+                create 'app_log','colg1','colg2'
+    删除表格
+        disable 'sxydh:app_log'
+        drop 'sxydh:app_log'
+    读写数据
+        put 'sxydh:app_log','row1','colg1:col1','value1'
+        get 'sxydh:app_log','row1'
+        scan 'sxydh:app_log'
+    删除数据
+        delete 'sxydh:app_log','row1','colg1:col1'
 HBase环境
     安装ZooKeeper
         参考m-demo/zookeeper-demo
@@ -37,8 +55,6 @@ HBase环境
             sudo chown -R sxydh:sxydh /opt/module/hbase
             wget -P /opt/module/hbase https://archive.apache.org/dist/hbase/2.4.11/hbase-2.4.11-bin.tar.gz
             tar -zxvf /opt/module/hbase/hbase-2.4.11-bin.tar.gz -C /opt/module/hbase/
-            mv /opt/module/hbase/hbase-2.4.11/lib/client-facing-thirdparty/slf4j-reload4j-1.7.33.jar /opt/module/hbase/hbase-2.4.11/lib/client-facing-thirdparty/slf4j-reload4j-1.7.33.jar.bak
-                解决日志包版本冲突问题
             sudo vim /etc/profile.d/my_env.sh
                 追加
                     export HBASE_HOME=/opt/module/hbase/hbase-2.4.11
@@ -91,8 +107,21 @@ HBase环境
                 bin/hbase-daemon.sh start regionserver
         启动集群
             cd /opt/module/hbase/hbase-2.4.11
-            bin/start-hbase.sh 
+            bin/start-hbase.sh
+                如果出现日志包冲突问题
+                    mv /opt/module/hbase/hbase-2.4.11/lib/client-facing-thirdparty/slf4j-reload4j-1.7.33.jar /opt/module/hbase/hbase-2.4.11/lib/client-facing-thirdparty/slf4j-reload4j-1.7.33.jar.bak
                 验证
                     http://hadoop01:16010
                 停止
                     bin/stop-hbase.sh
+        Master高可用（可选）
+            修改配置文件
+                vim /opt/module/hbase/hbase-2.4.11/conf/backup-masters 
+                    追加
+                        hadoop02 
+            分发文件到集群 
+                略
+            启动集群
+                略
+            验证
+                http://hadoop02:16010/
