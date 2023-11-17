@@ -173,6 +173,47 @@ HBase常用命令
         scan 'sxydh:app_log'
     删除数据
         delete 'sxydh:app_log','row1','colg1:col1'
+HBase二级索引
+    前置条件
+        vim /opt/module/hbase/hbase-2.4.11/conf/hbase-site.xml
+            追加
+                <!-- Phoenix RegionServer配置参数 -->
+                <property>
+                    <name>hbase.regionserver.wal.codec</name>
+                    <value>org.apache.hadoop.hbase.regionserver.wal.IndexedWALEditCodec</value>
+                </property>
+        分发文件到集群
+            略
+        重启集群（HBase）
+            略
+    全局索引
+        全局索引是默认的索引格式，创建全局索引时，会在HBase中建立一张新的索引表，也就是说索引和数据不是存放在同一张表中。因此全局索引适合读多写少的业务场景。
+        如果查询字段不是索引字段的话索引表不会被使用，也就是说不会带来查询速度的提升。
+        写数据时会产生比较大的开销，因为写数据时索引表也要更新，而索引表分布在不同的数据节点上，跨节点数据传输带来了比较大的网络开销。
+        读数据时Phoenix选择索引表来降低查询消耗时间
+
+        创建单个字段的全局索引
+            CREATE INDEX INDEX_APP_LOG_IP ON APP_LOG(IP);
+                验证
+                    EXPLAIN SELECT LOG_ID, IP FROM APP_LOG WHERE IP = '133.2.3.9';
+                删除索引
+                    DROP INDEX INDEX_APP_LOG_IP ON APP_LOG;
+    包含索引
+        本质还是全局索引，只是携带了其它字段。
+
+        创建包含索引
+            CREATE INDEX INDEX_APP_LOG_IPOP ON APP_LOG (IP) INCLUDE (OP);
+                验证
+                    EXPLAIN SELECT LOG_ID, IP, OP FROM APP_LOG WHERE LOG_ID = '1' AND OP = 'INSERT';
+    本地索引
+        本地索引适用于写操作频繁的场景
+        本地索引和数据放在同一张表中，而且是同一个Region，避免了写数据时更新不同节点索引的网络开销。
+        本地索引将所有的信息存在一个影子列族中，虽然读取也是范围扫描，但是没有全局索引块。 
+
+        创建本地索引
+            CREATE INDEX INDEX_APP_LOG_IPOPVAL ON APP_LOG(IP, OP, VAL);
+                验证
+                    EXPLAIN SELECT IP, OP, VAL FROM APP_LOG WHERE VAL = '1';
 HBase环境
     前置条件
         Ubuntu 20.04.6 LTS
@@ -289,11 +330,11 @@ HBase环境
             表列表
                 !tables
             创建表 
-                CREATE TABLE IF NOT EXISTS APP_LOG(LOG_ID VARCHAR PRIMARY KEY, IP VARCHAR, VAL VARCHAR);
+                CREATE TABLE IF NOT EXISTS APP_LOG(LOG_ID VARCHAR PRIMARY KEY, IP VARCHAR, OP VARCHAR, VAL VARCHAR);
             删除表 
                 DROP TABLE APP_LOG;
             插入数据
-                UPSERT INTO APP_LOG VALUES('1', '133.129.3.12', 'INSERT');
+                UPSERT INTO APP_LOG VALUES('1', '133.129.3.12', 'INSERT', '1');
             查询数据 
                 SELECT * FROM APP_LOG;
             删除数据
