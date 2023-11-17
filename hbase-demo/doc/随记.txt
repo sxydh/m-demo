@@ -3,12 +3,22 @@ HBase概述
     HBase数据模型的关键在于稀疏、分布式、多维、排序的映射。其中映射指代非关系型数据库的KV结构。
 HBase存储结构
     逻辑结构
-        逻辑结构由行列组成，横向拆分为Region，纵向拆分为Store（以列族为单位，列族由多列组合而成）。Region和Store构成存储单元。
+        逻辑结构由行列组成，即表结构。
+            表在行的方向上切分为多个Region，Region是HBase分布式存储的最小单元，不同的Region可以在不同的RegionServer上，但一个Region只会在一个RegionServer上。
+            Region包含多行，随着数据的不断插入，Region不断增大，当达到阈值后就会被切分。
+            Region由一个或多个Store组成，Store的划分以列族为单位。
         数据存储整体有序，按照RowKey的字典序排列，RowKey为Byte数组。
     物理结构
         物理结构为数据映射关系KV。K：Row Key + Column Family + Column Qualifier + Timestamp，V：数据值。
-        在逻辑结构上为空的数据，底层实际并不存储。
+        逻辑结构上为空的数据，物理上并不存储。
         HBase把表格数据存储在HDFS上，按照Namespace -> Table -> Region -> Store的格式划分文件夹，在Store中存储HFile，HFile内部为数据Cell。
+            HFile存储有多种数据信息，包括数据本身（KV键值对）、元数据记录、文件信息、元数据索引、数据索引和一个固定长度的尾部信息（记录文件的修改情况）。
+            键值对按照块大小（默认64k）保存在文件中
+            数据索引按照块创建，块越多，索引越大。
+            HFile还维护了一个布隆过滤器，读取时可以大致判断Key是否存在。
+            查看HFile数据内容命令：
+                hbase hfile -m -f /hbase/data/<namespace>/<table>/<regionid>/<columnfamily>/<filename>
+                    hbase hfile -m -f /hbase/data/sxydh/app_log/904b1a96ca1946638a804c819523cce2/colg1/a664aa77193c4786985da3193afd33c2
 HBase数据模型 
     Namespace：命名空间，每个命名空间下有多个表。HBase有两个自带的命名空间hbase和default，hbase中存放的是HBase内置的表，default中存放的是用户自定义的表。
     Table：数据表。表定义时只需要生命列族，而具体列可以动态变更。
@@ -17,15 +27,133 @@ HBase数据模型
     Timestamp：数据时间戳。用于标识数据版本，每条数据写入时，系统会自动为加上该字段，值为写入时间。
     Cell：数据单元。根据（Row Key，Column Family，Column Qualifier，Timestamp）可以限定唯一的数据单元，数据单元的值以字节码形式存储。
 HBase基础架构
-    ZooKeeper：HBase通过ZooKeeper实现高可用，主要节点有Master和RegionServer。
+    ZooKeeper：HBase通过ZooKeeper实现高可用，主要节点类型有Master和RegionServer。
     HDFS：HBase底层依赖HDFS存储服务。
-    Master：主要进程，具体实现类为HMaster，通常部署在NameNode节点上。Master启动多个后台进程实现以下功能：
-        通过ZK监控RegionServer实例，负责RegionServer的拆分和故障转移。
-        管理元数据表格hbase:meta
+    Master：主要进程，具体实现类为HMaster。Master通常部署在NameNode节点上，启动多个后台进程实现以下功能：
+        监控RegionServer实例。RegionServer启动后会向ZooKeeper注册自身信息，Master通过ZooKeeper获取RegionServer状态。
+        管理元数据表meta
+            meta表的命名空间为hbase
+            meta表在HDFS上的存储路径为/hbase/data/hbase/meta
+            meta表的RowKey：<table>,<region start key>,<region id>。
+                table：用户表表名。
+                region start key：用户表起始位置。
+                region id：用户表RegionId。
+            meta表的info列族
+                regioninfo列：Region信息，存储一个HRegionInfo对象。
+                server列：Region所处的RegionServer信息，包含端口号。
+                serverstartcode列：Region被分到RegionServer的起始时间。
+                如果某个表还处于切分的过程中，即Region切分，此时还会多出两列splitA和splitB，存储的值是HRegionInfo对象，切分结束后，这两列被删除。
+            客户端对元数据进行写入时才会连接Master，对用户表的读写操作会先连接ZooKeeper，然后从目录/hbase/meta-region-server上读取meta表所在的RegionServer，访问该RegionServer并读取meta表，以查找用户表的位置信息，减轻了Master的压力。HBase在2.3版本更新了一种新模式：Master Registry，客户端可以访问Master读取元数据信息，减轻了ZooKeeper的压力，但是会加大Master的压力。
+        切分数据表Region。Master对数据表进行横向切分，划分为多个Region，然后再将Region分配给具体的RegionServer。
+        预写日志。由Master的MasterProcWAL实现，将操作日志写入到Write Ahead Log中（存储在HDFS上），如果Master宕机后，Backup Master可以对日志进行操作回放，成为新的Master并恢复服务。
+        均衡RegionServer负载。由Master的负载均衡器实现，通过meta表了解Region在RegionServer的分配情况，如果出现不均衡则进行调控，5分钟调控一次。
+        转移RegionServer故障。如果某个RegionServer宕机后，Master将它管理的Region转移到其它RegionServer上。
         处理用户DDL命令
-    RegionServer：主要进程，具体实现类为HRegionServer，部署在DataNode上。RegionServer主要负责：
-        Cell处理，例如数据写入、数据查询等。
-        Region拆分和合并（Master监控，RegionServer执行）
+    RegionServer：主要进程，具体实现类为HRegionServer。RegionServer通常部署在DataNode上，主要负责：
+        管理数据表Region。Master对数据表进行切分后，形成多个Region并分配到RegionServer，由RegionServer对Region进行管理。
+        预写日志。客户端对数据表的操作会写入WAL并持久化到HDFS中，如果RegionServer宕机后，还未处理完的操作由其它RegionServer对WAL进行回放。
+        缓存写：客户端写入数据时先放在写缓存MemStore中，MemStore中的数据进行排序后，再刷写到HDFS。每个Store都有一个MemStore。
+        缓存读：客户端每次读取数据后会将数据放在缓存BlockCache中，以便于下次查找，提高查询效率。每个RegionServer只有一个BlockCache。
+        滚动WAL
+        刷写MemStore
+        切分Region
+            预分区
+                预分区在创建表格时指定，属于自定义分区。
+                每个Region都维护有startRowKey和endRowKey，如果要写入的数据符合某个Region的rowKey范围，则写入到该Region。
+                合理的预分区可以提高HBase性能
+            系统分区
+                系统分区由HRegionServer实现，不同版本有不同的触发策略。
+                分区前通过ZooKeeper让Master修改对应的表信息，即添加两列info:splitA和info:splitB，然后在HDFS上对文件进行切分。
+                分区后的两个Region先由原来的RegionServer管理，然后让Master更新meta表信息，等到负载均衡触发后，才会进行Region的重分配。
+                系统分区默认启用，即使已经指定了预分区。
+HBase写流程
+    客户端向ZooKeeper发送Put请求
+    客户端从ZooKeeper目录/hbase/meta-region-server上读取meta表所在的RegionServer，访问该RegionServer并读取meta表。客户端从ZooKeeper读取meta表会有一定的网络开销。
+    客户端根据Put请求中的RowKey在meta表中查找数据Region所在的RegionServer。
+        meta表信息会缓存在客户端的MetaCache中，便于下次访问。
+        如果下次访问时找不到数据Region的位置信息，则需要重新从ZooKeeper拉取meta表的最新信息。
+    客户端与目标RegionServer进行通讯，执行Put操作。
+        将操作日志追加到WAL并落盘HDFS
+        将数据放在写缓存MemStore中并排序
+        MemStore刷写到HDFS中的Store
+            MemStore刷写由多个线程控制，每个线程的刷写条件相互独立。
+            当某个MemStore的大小达到了hbase.hregion.memestore.flush.size（默认128MB）时，这个Store所在的Region都要刷写（Region由多个Store组成，每个Store都有对应的MemStore）。
+            当某个MemStore的大小达到了hbase.hregion.memestore.flush.size * hbase.hregion.memestore.block.multiplier（默认4）时，会触发刷写，并阻止继续往该MemStore写数据。
+                由于线程监控是周期性的，所以存在这种可能性：某次检查时未达到刷写条件，下次检查时却远远超过了刷写条件（数据洪峰时有这种情况）。
+                如果MemStore过大，刷写时RegionServer宕机，会导致数据丢失。
+            当RegionServer中所有的MemStore总大小达到低水位线时，Region将其所有的MemStore从大到小进行排序，并依次刷写，直到RegionServer中所有MemStore总大小处于低水位线以下。
+                低水位线 = java_heapsize * hbase.regionserver.global.memestore.size（默认0.4）* hbase.regionserver.global.memestore.size.lower.limit（默认0.95）
+                由MemStoreFlusher内部线程FlushHandler实现
+            当RegionServer中所有的MemStore总大小达到高水位线时，会触发刷写，并阻止继续往所有的MemStore写数据。
+                高水位线 = java_heapsize * hbase.regionserver.global.memestore.size（默认0.4）
+            当到达自动刷写的时间时，会触发刷写。
+                为了避免数据长时间处于内存中，需要定时刷写，由PeriodicMemStoreFlusher实现。
+                自动刷写间隔配置为hbase.regionserver.optionalcacheflushinterval，默认1小时。
+            MemStore每次刷写都会生成一个HFile（即StoreFile），HFile会被定期Compaction（合并）。Compaction分为两种，分别是MinorCompaction和MajorCompaction。
+                MinorCompaction将若干个HFile合并成一个HFile，并清理部分过期和删除的数据。
+                    hbase.hstore.compaction.ratio：文件大小比例，用来判断是否适合Minor合并，默认1.2（不建议修改该值）。
+                    habse.hstore.compaction.min：Minor合并的最小文件个数，默认3。
+                    habse.hstore.compaction.max：Minor合并的最大文件个数，默认10。
+                    habse.hstore.compaction.min.size：单个HFile最小值，小于这个值就会被合并，默认128MB。
+                    hbase.hstore.compaction.max.size：单个HFile最大值，高于这个值不会被合并，默认Long.MAX_VALUE。
+
+                    Minor合并会将整个Store中的所有HFile构成一个集合，然后从旧到新进行遍历，依据以下条件判断是否合并：
+                        文件过小则参与合并，过大则不参与合并。
+                        文件大小/hbase.hstore.compaction.ratio < 剩余文件大小和，则参与合并。
+                        参与合并的文件个数达不到个数要求（合并的最小文件个数 <= 参与合并的文件个数 <= 合并的最大文件个数），则不进行Minor合并。
+                MajorCompaction将所有HFile合并成一个HFile，并清理所有过期和删除的数据。
+                    hbase.hregion.majorcompaction：合并间隔时间，默认7天。
+    RegionServer向客户端返回ACK
+HBase读流程
+    获取目标RegionServer与写流程一致
+    客户端与目标RegionServer进行通讯，执行Get操作。
+        将操作日志追加到WAL并落盘HDFS
+        查询读缓存BlockCache
+            BlockCache优先存储索引文件、布隆过滤器和元数据，其余内存按照64k块存储数据。
+            BlockCache查询时如果命中，并不是立即给客户端返回数据，因为缓存中的数据可能不是最新的，需要将缓存中的元数据与HDFS中的元数据进行对照，如果一致则返回给客户端，否则需要从HDFS中获取，返回给客户端后并缓存到BlockCache中。
+            BlockCache清理数据时按照活跃度进行清理（仅清理64k块数据）
+            一个RegionServer只有一个BlockCache
+        查询写缓存MemStore。MemStore中的数据如果还没有落盘，查询MemStore可以提高查询效率。
+        查询HDFS的HFile文件
+        合并所有查询结果（版本）
+    RegionServer向客户端返回查询结果
+HBase调优
+    vim /opt/module/hbase/hbase-2.4.11/conf/hbase-site.xml 
+        zookeeper.session.timeout：节点会话超时时间，用来判断节点是否故障，默认90000毫秒。
+        hbase.regionserver.handler.count：RPC监听客户端请求数，默认30。可以适当增加该值。
+        hbase.hregion.majorcompaction：Major合并周期，默认604800000秒（7天）。0表示关闭，关闭后建议手动合并。
+        hbase.hregion.max.filesize：单个Region最大值，默认10737418240字节（10GB）。如果需要运行HBase的MR任务，可以减小该值，因为一个Region对应一个MapTask，如果单个Region过大，会导致MapTask执行时间过长。
+        hbase.client.write.buffer：与客户端通信的缓存，默认2097152字节（2MB）。增大该值可以减小RPC次数。
+        hbase.client.scanner.caching：每次扫描获取的行数，默认Integer.MAX_VALUE。值越大越消耗内存。
+        hbase.block.cache.size：读缓存BlockSize占用RegionServer堆内存的比例，默认0.4。读请求比较多的情况下，可以增大该值。
+        hbase.regionserver.global.memestore.size：写缓存MemStore占用RegionServer堆内存比例，默认0.4。写请求比较多的情况下，可以增大该值。
+
+        Lars Hofhansl推荐：Region最大值设置20GB，刷写设置128MB，其它默认。
+    JVM
+        JVM调优的思路有两种：内存设置，垃圾回收器设置。
+        垃圾回收改为并发垃圾回收，默认并行垃圾回收，会有大量暂停时间。HBase大量使用内存用于存储数据，容易遭遇数据洪峰造成OOM，同时写缓存的数据是不能垃圾回收的，主要回收的是读缓存，而读缓存垃圾回收不影响性能。
+        
+        设置使用CMS收集器
+            -XX:+UseConcMarkSweepGC
+        保持新生代尽量小，尽早开启GC。
+            // 内存占用超过70%时开启GC
+            -XX:CMSInitiatingOccupancyFraction=70
+            // 指定使用上述的70%，不让JVM动态调整。
+            -XX:+UseCMSInitiatingOccupancyOnly
+            // 新生代内存设置为512MB
+            -Xmn512m
+            // 并行执行新生代垃圾回收
+            -XX:UseParNewGC
+
+            // 设置扫描结果内存大小（hbase-site.xml，hbase.client.scanner.max.result.size）为Eden空间的1/8（大概为64MB）
+            // 设置max.result.size * handler.count小于SurvivorSpace（新生代经过垃圾回收后存活对象的空间）
+    HBase官方准则
+        Region大小控制在10~50GB
+        1张表1~3个列族，最好就1个。列族名称要尽量短，因为数据以KV形式存储，K中带有列族名，列族名过长会占用空间。
+        1~2个列族的表格，Region设计50~100个。
+        RowKey如果设计时间在最前面，会导致大量的旧数据存储在不活跃的Region中，使用的时候仅仅操作少数活跃的Region，并发数降低影响性能，此时建议增加更多的Region。
+        如果只有一个列族用于写数据，可以减小写缓存大小。
+        Cell大小不超过10MB
 HBase常用命令
     前置条件
         hbase shell
@@ -35,16 +163,19 @@ HBase常用命令
         create 'sxydh:app_log','colg1','colg2'
             创建在默认命名空间
                 create 'app_log','colg1','colg2'
+        describe 'sxydh:app_log'
     删除表格
         disable 'sxydh:app_log'
         drop 'sxydh:app_log'
-    读写数据
+    写读数据
         put 'sxydh:app_log','row1','colg1:col1','value1'
         get 'sxydh:app_log','row1'
         scan 'sxydh:app_log'
     删除数据
         delete 'sxydh:app_log','row1','colg1:col1'
 HBase环境
+    前置条件
+        Ubuntu 20.04.6 LTS
     安装ZooKeeper
         参考m-demo/zookeeper-demo
     安装Hadoop
@@ -125,3 +256,45 @@ HBase环境
                 略
             验证
                 http://hadoop02:16010/
+    安装Phoenix（5.1.2，可选）
+        前置条件
+            Python 3.6.15
+                sudo ln -s /usr/bin/python3 /usr/bin/python
+        准备文件（hadoop01）
+            sudo mkdir /opt/module/phoenix
+            sudo chown -R sxydh:sxydh /opt/module/phoenix
+            wget -P /opt/module/phoenix https://archive.apache.org/dist/phoenix/phoenix-5.1.2/phoenix-hbase-2.4-5.1.2-bin.tar.gz
+            tar -zxvf /opt/module/phoenix/phoenix-hbase-2.4-5.1.2-bin.tar.gz -C /opt/module/phoenix/
+            cp /opt/module/phoenix/phoenix-hbase-2.4-5.1.2-bin/phoenix-server-hbase-2.4-5.1.2.jar /opt/module/hbase/hbase-2.4.11/lib/
+            sudo vim /etc/profile.d/my_env.sh
+                追加
+                    export PHOENIX_HOME=/opt/module/phoenix/phoenix-hbase-2.4-5.1.2-bin
+                    export PHOENIX_CLASSPATH=$PHOENIX_HOME
+                    export PATH=$PATH:$PHOENIX_HOME/bin
+            source /etc/profile
+        分发文件到集群
+            sudo /opt/module/mybin/xsync.sh /etc/profile.d/my_env.sh
+            xsync.sh /opt/module/hbase/hbase-2.4.11/lib/phoenix-server-hbase-2.4-5.1.2.jar
+        重启集群（HBase）
+            cd /opt/module/hbase/hbase-2.4.11
+            bin/stop-hbase.sh
+            bin/start-hbase.sh
+        连接Phoenix
+            cd /opt/module/phoenix/phoenix-hbase-2.4-5.1.2-bin/
+            bin/sqlline.py hadoop01,hadoop02,hadoop03:2181
+                默认情况下，HBase中已存在的表，Phoenix是不可见的，需要进行表的映射。
+                退出
+                    !quit 
+        常用命令
+            表列表
+                !tables
+            创建表 
+                CREATE TABLE IF NOT EXISTS APP_LOG(LOG_ID VARCHAR PRIMARY KEY, IP VARCHAR, VAL VARCHAR);
+            删除表 
+                DROP TABLE APP_LOG;
+            插入数据
+                UPSERT INTO APP_LOG VALUES('1', '133.129.3.12', 'INSERT');
+            查询数据 
+                SELECT * FROM APP_LOG;
+            删除数据
+                DELETE FROM APP_LOG WHERE LOG_ID = '1';
