@@ -1,0 +1,114 @@
+Hive概述
+    Hive由Facebook开源用于解决海量结构化日志的数据统计工具
+    Hive是基于Hadoop的一个数据仓库工具，可以将结构化的数据映射为一张表，并提供类似SQL的查询功能。
+    Hive本质是将HQL转化成MapReduce程序
+        Hive处理的数据存储在HDFS
+        Hive分析数据底层的实现是MapReduce
+        Hive程序在YARN上运行
+
+    Hive优势在于处理大数据，常用于数据分析、读多写少的场景。
+    Hive小数据护理没有优势，因为执行延迟较高，不适用于实时性要求高的场景。
+    Hive的HQL表达能力有限，迭代式算法无法表达，不擅长数据挖掘。由于MapReduce数据处理流程的限制，效率更高的算法无法实现。
+    Hive自动生成的MapReduce作业，通常情况下不够智能化。
+    Hive调优比较困难，粒度较粗。
+Hive基础架构
+    客户端Client
+        CLI（Command Line Interface）
+        JDBC/ODBC
+        WebUI
+    元数据（Metastore）
+        元数据包括：表拥有者，表类型，表所属的数据库（默认是default），表名，列/分区字段，表数据所在目录等。
+        元数据默认存储在Hive自带的Derby数据库中，推荐使用MySQL存储元数据。
+    Hadoop 
+        Hive使用HDFS存储数据，使用MapReduce计算数据。
+    驱动器（Driver）
+        解析器（SQL Parser）：将SQL字符串转换成抽象语法树AST，一般用第三方工具库完成，比如ANTLR；对ANTLR进行语法分析，比如表是否存在，字段是否存在，SQL语义是否有误。
+        编译器（Physical Plan）：将AST编译生成逻辑执行计划。
+        优化器（Query Optimizer）：对逻辑执行计划进行优化。
+        执行器（Execution）：把逻辑执行计划转换成可以运行的物理计划，对于Hive来说就是MapReduce和Spark。
+    
+    Hive接收客户端SQL，使用自己的Driver，结合元数据，将这些SQL翻译成MapReduce，提交到Hadoop中执行，最后将执行结果返回给客户端。
+环境
+    前置条件
+        Ubuntu 20.04.6 LTS
+    安装Hive（3.1.2）
+        准备文件
+            sudo mkdir /opt/module/hive 
+            sudo chown -R sxydh:bhe /opt/module/hive
+            wget -P /opt/module/hive/ https://downloads.apache.org/hive/hive-3.1.2/apache-hive-3.1.2-bin.tar.gz
+            tar -zxvf /opt/module/hive/apache-hive-3.1.2-bin.tar.gz -C /opt/module/hive/
+                如果启动时出现找不到方法checkArgument的问题，执行以下命令：
+                    cp $HADOOP_HOME/share/hadoop/common/lib/guava-27.0-jre.jar $HIVE_HOME/lib/
+                    mv $HIVE_HOME/lib/guava-19.0.jar $HIVE_HOME/lib/guava-19.0.jar.bak
+                如果启动时出现日志包冲突问题，执行以下命令：
+                    mv $HIVE_HOME/lib/log4j-slf4j-impl-2.10.0.jar $HIVE_HOME/lib/log4j-slf4j-impl-2.10.0.jar.bak
+            sudo vim /etc/profile.d/my_env.sh
+                追加
+                    export HIVE_HOME=/opt/module/hive/apache-hive-3.1.2-bin
+                    export PATH=$PATH:$HIVE_HOME/bin
+            source /etc/profile 
+        分发文件到集群
+            略
+        启动
+            cd /opt/module/hive/apache-hive-3.1.2-bin
+            bin/hive
+                如果使用Derby存储元数据，需要先执行以下命令：
+                    bin/schematool -dbType derby -initSchema
+                        注意，Derby存储的元数据不会与集群中其它机器共享。
+                        建议将元数据存储在MySQL
+                            准备MySQL驱动
+                                cp /opt/module/tmp/mysql-connector-j-8.0.33.jar $HIVE_HOME/lib
+                            修改配置文件
+                                vim $HIVE_HOME/conf/hive-site.xml
+                                    追加
+                                        <?xml version="1.0"?>
+                                        <configuration>
+                                            <!-- JDBC URL -->
+                                            <property>
+                                                <name>javax.jdo.option.ConnectionURL</name>
+                                                <value>jdbc:mysql://hadoop01:3306/metastore?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull</value>
+                                            </property>
+                                            <!-- JDBC DriverName -->
+                                            <property>
+                                                <name>javax.jdo.option.ConnectionDriverName</name>
+                                                <value>com.mysql.jdbc.Driver</value>
+                                            </property>
+                                            <!-- JDBC UserName -->
+                                            <property>
+                                                <name>javax.jdo.option.ConnectionUserName</name>
+                                                <value>root</value>
+                                            </property>
+                                            <!-- JDBC Password -->
+                                            <property>
+                                                <name>javax.jdo.option.ConnectionPassword</name>
+                                                <value>123</value>
+                                            </property>
+                                            <!-- Hive元数据存储版本验证 -->
+                                            <property>
+                                                <name>hive.metastore.schema.verification</name>
+                                                <value>false</value>
+                                            </property>
+                                            <!-- Hive元数据存储授权 -->
+                                            <property>
+                                                <name>hive.metastore.event.db.notification.auth</name>
+                                                <value>false</value>
+                                            </property>
+                                            <!-- Hive默认在HDFS的工作目录 -->
+                                            <property>
+                                                <name>hive.metastore.warehouse.dir</name>
+                                                <value>/user/hive/warehouse</value>
+                                            </property>
+                                        </configuration>
+                            分发文件到集群
+                                xsync.sh $HIVE_HOME/lib/mysql-connector-j-8.0.33.jar
+                                xsync.sh $HIVE_HOME/conf/hive-site.xml
+                            新建MySQL数据库：metastore。
+                                略
+                            初始化Hive元数据库
+                                cd /opt/module/hive/apache-hive-3.1.2-bin
+                                bin/schematool -dbType mysql -initSchema -verbose
+                            启动Hive
+                                略
+                验证
+                    show databases;
+                    show tables;
