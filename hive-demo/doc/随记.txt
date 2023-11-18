@@ -112,3 +112,31 @@ Hive基础架构
                 验证
                     show databases;
                     show tables;
+        连接客户端（JDBC）
+            修改配置文件
+                vim $HIVE_HOME/conf/hive-site.xml
+                    追加
+                        <!-- 指定Host -->
+                        <property>
+                            <name>hive.server2.thrift.bind.host</name>
+                            <value>hadoop01</value>
+                        </property>
+                        <!-- 指定Port -->
+                        <property>
+                            <name>hive.server2.thrift.port</name>
+                            <value>10000</value>
+                        </property>
+                        <!-- 默认Hive用户 -->
+                        <property>
+                            <name>hive.server2.enable.doAs</name>
+                            <value>false</value> 
+                        </property>
+            分发文件到集群
+                略
+            启动HiveServer2
+                cd /opt/module/hive/apache-hive-3.1.2-bin
+                bin/hive --service hiveserver2
+                    如果报错可以忽略，等60秒后会正常启动。
+                        java.lang.NoClassDefFoundError: org/apache/tez/dag/api/TezConfiguration
+            连接客户端 
+                参考
