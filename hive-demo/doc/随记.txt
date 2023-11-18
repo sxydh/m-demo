@@ -138,5 +138,5 @@ Hive基础架构
                 bin/hive --service hiveserver2
                     如果报错可以忽略，等60秒后会正常启动。
                         java.lang.NoClassDefFoundError: org/apache/tez/dag/api/TezConfiguration
-            连接客户端 
-                参考
+            连接客户端
+                参考hive-demo/hivejdbc-demo/src/main/java
