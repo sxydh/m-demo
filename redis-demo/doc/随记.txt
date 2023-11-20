@@ -29,10 +29,46 @@
             sudo vim /etc/redis.conf
                 更新
                     daemonize yes
+                    bind 0.0.0.0
         启动
             cd /usr/local/bin/
             redis-server /etc/redis.conf
                 验证
                     ps aux | grep redis
+                    redis-cli
                 关闭
                     redis-cli shutdown
+    主从（一主两从）
+        前置条件
+            三台服务器均已安装好Redis
+                192.168.233.129（主）
+                192.168.233.130（从）
+                192.168.233.131（从）
+        修改配置文件
+            sudo vim /etc/redis_ms.conf（129）
+                追加
+                    bind 0.0.0.0
+                    port 6379
+                    daemonize yes
+                    
+                    logfile "/opt/module/redis/redis-6.2.1/logs/redis.log"
+                    dir "/opt/module/redis/redis-6.2.1/data/"
+                    dbfilename "redis.rdb"
+                    appendonly yes
+                    appendfilename "redis.aof"
+            sudo vim /etc/redis_ms.conf（130，131）
+                追加
+                    include /etc/redis.conf
+                    bind 0.0.0.0
+                    port 6379
+                    daemonize yes
+                    
+                    logfile "/opt/module/redis/redis-6.2.1/logs/redis.log"
+                    dir "/opt/module/redis/redis-6.2.1/data/"
+                    dbfilename "redis.rdb"
+                    appendonly yes
+                    appendfilename "redis.aof"
+                    replicaof 192.168.233.129 6379
+        启动主从服务（129，130，131）
+            redis-server /etc/redis_ms.conf
+    主从（一主两从，sentinel）
