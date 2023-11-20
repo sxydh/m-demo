@@ -1,0 +1,38 @@
+环境
+    单机（6.2.1）
+        前置条件
+            Ubuntu 20.04.6 LTS
+            sudo apt update
+            sudo apt install make
+            sudo apt install pkg-config
+            sudo apt install gcc
+        准备文件
+            sudo mkdir /opt/module/redis
+            sudo chown -R sxydh:bhe /opt/module/redis 
+            wget -P /opt/module/redis/ https://download.redis.io/releases/redis-6.2.1.tar.gz
+            tar -zxvf /opt/module/redis/redis-6.2.1.tar.gz -C /opt/module/redis/
+            cd /opt/module/redis/redis-6.2.1
+            make
+                如果报错：jemalloc/jemalloc.h: No such file or directory，可以先执行以下命令再make。
+                    make distclean
+            sudo make install
+                验证
+                    ll /usr/local/bin/
+                        redis-benchmark：性能测试工具。
+                        redis-check-aof：修复有问题的AOF文件。
+                        redis-check-rdb：修复有问题的RDB文件。
+                        redis-sentinel：集群使用。
+                        redis-server：服务端。
+                        redis-cli：客户端。
+        修改配置文件
+            sudo cp /opt/module/redis/redis-6.2.1/redis.conf /etc/redis.conf
+            sudo vim /etc/redis.conf
+                更新
+                    daemonize yes
+        启动
+            cd /usr/local/bin/
+            redis-server /etc/redis.conf
+                验证
+                    ps aux | grep redis
+                关闭
+                    redis-cli shutdown
