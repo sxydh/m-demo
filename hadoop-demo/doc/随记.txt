@@ -68,6 +68,10 @@ Hadoop概论
         Ubuntu 20.04.6
         sudo vim /etc/hostname
             修改为相应主机名，重启生效。
+                需要同时修改/etc/hosts，否则sudo命令有网络等待问题。
+                    sudo vim /etc/hosts
+                        更新
+                            127.0.0.1 <优先hostanme> <次优先hostname>
         sudo vim /etc/hosts
             追加
                 192.168.233.129 hadoop01
