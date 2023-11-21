@@ -25,14 +25,13 @@
                         redis-server：服务端。
                         redis-cli：客户端。
         修改配置文件
-            sudo cp /opt/module/redis/redis-6.2.1/redis.conf /etc/redis.conf
-            sudo vim /etc/redis.conf
+            cp /opt/module/redis/redis-6.2.1/redis.conf /opt/module/redis/redis-6.2.1/redis_single.conf
+            vim /opt/module/redis/redis-6.2.1/redis_single.conf
                 更新
                     daemonize yes
                     bind 0.0.0.0
-        启动
-            cd /usr/local/bin/
-            redis-server /etc/redis.conf
+        启动Redis服务
+            redis-server /opt/module/redis/redis-6.2.1/redis_single.conf
                 验证
                     ps aux | grep redis
                     redis-cli
@@ -45,30 +44,113 @@
                 192.168.233.130（从）
                 192.168.233.131（从）
         修改配置文件
-            sudo vim /etc/redis_ms.conf（129）
+            vim /opt/module/redis/redis-6.2.1/redis_ms.conf（129）
                 追加
+                    include /opt/module/redis/redis-6.2.1/redis.conf
                     bind 0.0.0.0
                     port 6379
                     daemonize yes
                     
-                    logfile "/opt/module/redis/redis-6.2.1/logs/redis.log"
+                    # logs文件夹提前创建好
+                    logfile "/opt/module/redis/redis-6.2.1/logs/redis_ms.log"
+                    # data文件夹提前创建好
                     dir "/opt/module/redis/redis-6.2.1/data/"
-                    dbfilename "redis.rdb"
+                    dbfilename "redis_ms.rdb"
                     appendonly yes
-                    appendfilename "redis.aof"
-            sudo vim /etc/redis_ms.conf（130，131）
+                    appendfilename "redis_ms.aof"
+                    # Redis进程ID会写入pidfile，该文件会加锁，以防止启动多个Redis进程。
+                    pidfile redis_ms.pid
+            vim /opt/module/redis/redis-6.2.1/redis_ms.conf（130，131）
                 追加
-                    include /etc/redis.conf
+                    include /opt/module/redis/redis-6.2.1/redis.conf
                     bind 0.0.0.0
                     port 6379
                     daemonize yes
                     
-                    logfile "/opt/module/redis/redis-6.2.1/logs/redis.log"
+                    # logs文件夹提前创建好
+                    logfile "/opt/module/redis/redis-6.2.1/logs/redis_ms.log"
+                    # data文件夹提前创建好
                     dir "/opt/module/redis/redis-6.2.1/data/"
-                    dbfilename "redis.rdb"
+                    dbfilename "redis_ms.rdb"
                     appendonly yes
-                    appendfilename "redis.aof"
+                    appendfilename "redis_ms.aof"
+                    # Redis进程ID会写入pidfile，该文件会加锁，以防止启动多个Redis进程。
+                    pidfile redis_ms.pid
                     replicaof 192.168.233.129 6379
-        启动主从服务（129，130，131）
-            redis-server /etc/redis_ms.conf
+        启动Redis服务（129，130，131）
+            redis-server /opt/module/redis/redis-6.2.1/redis_ms.conf
+                验证
+                    redis-cli 
+                停止
+                    redis-cli shutdown
     主从（一主两从，sentinel）
+        前置条件
+            三台服务器均已安装Redis，启动好Redis服务，并且构成主从架构。
+                192.168.233.129（主）
+                192.168.233.130（从）
+                192.168.233.131（从）
+        修改配置文件（129）
+            vim /opt/module/redis/redis-6.2.1/redis_sentinel.conf
+                追加
+                    include /opt/module/redis/redis-6.2.1/redis.conf
+                    bind 0.0.0.0
+                    port 26379
+                    daemonize yes
+                    
+                    logfile "/opt/module/redis/redis-6.2.1/logs/redis_sentinel.log"
+                    dir "/opt/module/redis/redis-6.2.1/data/"
+                    # Sentinel进程ID会写入pidfile，该文件会加锁，以防止启动多个Sentinel进程。
+                    pidfile redis_sentinel.pid
+                    # 要监控的Redis节点：mymaster 192.168.233.129 6379。
+                    # 末尾的2含义：在3个Sentinel构成的集群，如果2个以上Sentinel实例认为Redis节点宕机了，则客观认为该节点已经宕机，并将其下线。
+                    sentinel monitor mymaster 192.168.233.129 6379 2
+                    # 5000的含义：如果Sentinel在5000毫秒内检测不到Redisd节点的心跳，则主观认为该节点宕机。
+                    sentinel down-after-milliseconds mymaster 5000
+                    # 选主超时时间
+                    sentinel failover-timeout mymaster 30000
+        分发文件到集群（130，131）
+            略
+        启动Sentinel服务（129，130，131）
+            redis-sentinel /opt/module/redis/redis-6.2.1/redis_sentinel.conf
+                验证
+                    redis-cli -p 26379
+                关闭
+                    redis-cli -p 26379 shutdown
+    集群（3主3从）
+        前置条件
+            六台服务器均已安装Redis，而且不要启动Redis服务。
+                192.168.233.129，192.168.233.130。
+                192.168.233.131，192.168.233.132。
+                192.168.233.133，192.168.233.134。
+        修改配置文件（129）
+            vim /opt/module/redis/redis-6.2.1/redis_cluster.conf
+                追加
+                    include /opt/module/redis/redis-6.2.1/redis.conf
+                    bind 0.0.0.0
+                    port 6379
+                    daemonize yes
+                    
+                    logfile "/opt/module/redis/redis-6.2.1/logs/redis_cluster.log"
+                    dir "/opt/module/redis/redis-6.2.1/data/"
+                    pidfile redis_cluster.pid
+                    dbfilename "redis_cluster.rdb"
+                    appendonly yes
+                    appendfilename "redis_cluster.aof"
+                    
+                    cluster-enabled yes
+                    cluster-config-file redis_cluster_config.conf
+                    cluster-node-timeout 20000
+                    cluster-announce-ip <当前主机的IP>
+                    cluster-announce-port 6379
+                    cluster-announce-bus-port 16379
+        分发文件到集群（130，131，132，133，134）
+            略
+        启动Redis服务（129，130，131，132，133，134）
+            redis-server /opt/module/redis/redis-6.2.1/redis_cluster.conf
+                验证
+                    redis-cli
+        启动Redis集群（129）
+            redis-cli --cluster create --cluster-replicas 1 192.168.233.129:6379 192.168.233.130:6379 192.168.233.131:6379 192.168.233.132:6379 192.168.233.133:6379 192.168.233.134:6379
+                验证
+                    redis-cli --cluster check 192.168.233.129:6379
+                    redis-cli -c -p 6379
