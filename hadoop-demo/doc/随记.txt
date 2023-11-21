@@ -212,7 +212,8 @@ Hadoop概论
                 启动集群
                     如果集群是第一次启动，需要在hadoop01节点格式化NameNode。
                         hdfs namenode -format
-                        注意：格式化NameNode，会产生新的集群ID，导致NameNode和DataNode的集群ID不一致，集群找不到已往数据。如果集群在运行过程中报错，需要重新格式化NameNode的话，一定要先停止NameNode和DataNode进程，并且要删除所有机器的data和logs目录，然后再进行格式化。
+                            注意：格式化NameNode，会产生新的集群ID，可能导致NameNode和DataNode的集群ID不一致，集群找不到已往数据。
+                            如果集群在运行过程中报错，需要重新格式化NameNode的话，一定要先停止NameNode和DataNode进程，并且要删除所有机器的data和logs目录，然后再进行格式化。
                     在hadoop01启动HDFS
                         cd /opt/module/hadoop/hadoop-3.1.3 && sbin/start-dfs.sh
                             停止
