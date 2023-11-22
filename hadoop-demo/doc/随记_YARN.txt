@@ -16,7 +16,7 @@
         Container
             是YARN中的资源抽象，它封装了某个节点上的多维度资源，如内存、CPU、磁盘、网络等。
 YARN工作机制
-    Mr程序提交到客户端所在的节点
+    MapReduce程序提交到客户端所在的节点
         job.waitForCompletion(true);
             ...
                 YARNRunner#submitJob
@@ -253,8 +253,10 @@ YARN案例实操
                     </property>
         分发配置到各服务器（若其它服务器硬件配置不一样，则需要单独配置）
             略
-        重启集群 
-            略
+        重启YARN（ResourceManager节点）
+            cd /opt/module/hadoop/hadoop-3.1.3/
+            sbin/stop-yarn.sh 
+            sbin/start-yarn.sh
         运行程序并观察任务执行页面
             略
     容量调度器
@@ -342,12 +344,17 @@ YARN案例实操
                                 <name>yarn.scheduler.capacity.root.hive.default-application-lifetime</name>
                                 <value>-1</value>
                             </property>
-            分发配置到各服务器 
-                略
-            重启集群或者执行yarn rmadmin -refreshQueues
-                略
-            提交任务到指定队列
-                hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar wordcount -D mapreduce.job.queuename=hive /wcinput /wcoutput
+                分发配置到各服务器 
+                    略
+                重启YARN（ResourceManager节点）
+                    方式一
+                        cd /opt/module/hadoop/hadoop-3.1.3/
+                        sbin/stop-yarn.sh 
+                        sbin/start-yarn.sh
+                    方式二（刷新队列）
+                        yarn rmadmin -refreshQueues
+                提交任务到指定队列
+                    hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar wordcount -D mapreduce.job.queuename=hive /wcinput /wcoutput
         容量调度器任务优先级
             修改配置文件
                 vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/yarn-site.xml 
@@ -359,9 +366,11 @@ YARN案例实操
                         </property>
             分发配置到各服务器
                 略
-            重启集群
-                略
-            提交任务 
+            重启YARN（ResourceManager节点）
+                cd /opt/module/hadoop/hadoop-3.1.3/
+                sbin/stop-yarn.sh 
+                sbin/start-yarn.sh
+            提交任务（假设第一、二、三个任务依次提交，第三个任务设置了优先级，则执行顺序应该是：第一个任务执行，然后第三个任务执行，最后第二个任务执行） 
                 hadoop01
                     hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar pi 5 2000000
                 hadoop02
@@ -419,7 +428,7 @@ YARN案例实操
                             <queuePlacementPolicy>
                                 <!-- 提交任务时如果指定队列则分配到该队列，如果未指定，则继续匹配下一个规则。false：如果指定队列不存在，不允许自动创建。 -->
                                 <rule name="specified" create="false" />
-                                <!-- 提交任务到root.group.username队列，若root.group不存在，不允许自动创建，若root.group.use不存在，允许自动创建。 -->
+                                <!-- 提交任务到root.group.user队列，若root.group不存在，不允许自动创建，若root.group.user不存在，允许自动创建。 -->
                                 <rule name="nestedUserQueue" create="true">
                                     <rule name="primaryGroup" create="false" />
                                 </rule>
@@ -427,8 +436,16 @@ YARN案例实操
                                 <rule name="reject" />
                             </queuePlacementPolicy>
                         </allocations>
+            分发配置到各服务器
+                略
+            重启YARN（ResourceManager节点）
+                cd /opt/module/hadoop/hadoop-3.1.3/
+                sbin/stop-yarn.sh 
+                sbin/start-yarn.sh
             提交任务 
-                指定队列提交 
+                指定队列提交
                     hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar pi -D mapreduce.job.queuename=root.test 1 1
+                        提交到队列test
                 不指定队列提交
                     hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar pi 1 1
+                        假设当前user为sxydh，则提交到队列root.sxydh。

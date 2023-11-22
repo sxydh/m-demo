@@ -61,7 +61,7 @@ HDFS回收站配置
 HDFS压测性能
     压测写性能
         前置条件
-            hadoop01/hadoop02/hadoop03网络均限速为100Mbps
+            hadoop01，hadoop02，hadoop03网络均限速为100Mbps。
             关闭虚拟内存检查
                 <property>
                     <name>yarn.nodemanager.vmem-check-enabled</name>
@@ -118,7 +118,7 @@ DataNode数据均衡
             hdfs diskbalancer -cancel hadoop01.plan.json
 HDFS扩容和缩容
     前置条件 
-        集群现有节点hadoop01（NameNode），hadoop02（ResourceManager），hadoop03。
+        集群现有节点hadoop01（NameNode），hadoop02（ResourceManager），hadoop03（SecondaryNameNode）。
     白黑名单配置
         白名单表示主机可以用来存储数据
             vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/whitelist
@@ -147,7 +147,7 @@ HDFS扩容和缩容
             http://hadoop01:9870/dfshealth.html#tab-datanode
     新节点服役
         前置条件
-            克隆一台主机，hostname设置为hadoop11。
+            克隆一台主机（假设IP为192.168.233.132），hostname设置为hadoop11。
             配置hadoop01和hadoop02的hosts
                 sudo vim /etc/hosts
                     追加
@@ -205,7 +205,7 @@ HDFS扩容和缩容
 HDFS存储优化 
     纠删码
         纠删码原理
-            HDFS默认情况下，一个文件有3各副本，这样提高了数据的可靠性，但也带来了2倍的冗余开销。Hadoop3.x引入了纠删码，采用计算的方式，可以节省约50%左右的存储空间。
+            HDFS默认情况下，一个文件有3个副本，这样提高了数据的可靠性，但也带来了2倍的冗余开销。Hadoop3.x引入了纠删码，采用计算的方式，可以节省约50%左右的存储空间。
             假设现有一个文件300MB（3个副本），在纠删码算法下，可以将该文件拆分为3个数据单元+2个校验单元，每个单元100MB，存储上只比自己多了两个校验单元，相比不用纠删码算法的900MB节省了400MB空间。
         纠删码策略
             RS-3-2-1024k
@@ -332,7 +332,7 @@ HDFS存储优化
                     cd /opt/module/hadoop/hadoop-3.1.3 && rm -rf data/ logs/
                 hadoop01 
                     hdfs namenode -format
-            重启集群 
+            启动集群 
                 略
             设置文件目录存储策略
                 hadoop fs -mkdir /hdfsdata
@@ -381,11 +381,11 @@ HDFS安全模式
         hdfs dfsadmin -safemode wait
 HDFS慢磁盘监控
     概述
-        慢磁盘指的是写入数据非常慢的一类磁盘。
-        可以通过观察HDFS创建文件时的响应时间来判断是否存在慢磁盘。
+        慢磁盘指的是写入数据非常慢的一类磁盘
+        可以通过观察HDFS创建文件时的响应时间来判断是否存在慢磁盘
     找出慢磁盘
         通过心跳时间
-            一般慢磁盘现象会影响该节点DataNode与NameNode之间的心跳。
+            一般慢磁盘现象会影响该节点DataNode与NameNode之间的心跳
             正常心跳3s，超过3s说明有异常。
         通过磁盘读写性能
             前置条件
@@ -413,7 +413,7 @@ HDFS小文件存档
             hadoop fs -cp har:///har_test/out/app_log.har/* /har_test/out
 MapReduce调优
     概述
-        影响MapReduce的因素有计算机性能（CPU/内存/磁盘/网络）、IO（数据倾斜/MapTask慢/小文件多）等。
+        影响MapReduce的因素有计算机性能（CPU，内存，磁盘，网络）、IO（数据倾斜，MapTask慢，小文件多）等。
     MapTask
         自定义分区（减少数据倾斜）
         减少溢写的次数
