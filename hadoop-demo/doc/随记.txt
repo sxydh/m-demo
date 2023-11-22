@@ -81,7 +81,7 @@ Hadoop概论
         所有机器均已安装JDK8
         所有机器均已配置JAVA_HOME
     Hadoop（3.1.3）
-        Hadoop安装
+        Hadoop安装（hadoop01）
             sudo mkdir /opt/module/hadoop 
             sudo chown -R sxydh:sxydh /opt/module/hadoop
             wget -P /opt/module/hadoop https://archive.apache.org/dist/hadoop/common/hadoop-3.1.3/hadoop-3.1.3.tar.gz
@@ -93,7 +93,7 @@ Hadoop概论
                     export PATH=$PATH:$HADOOP_HOME/sbin
             source /etc/profile
             echo $HADOOP_HOME
-        Hadoop安装分发到集群
+        Hadoop安装分发到集群（hadoop02，hadoop03）
             scp（文件安全拷贝）
                 scp -r <source path> <user name>@<host>:<target path>
                     -r：递归。
