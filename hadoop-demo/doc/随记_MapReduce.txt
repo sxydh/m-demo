@@ -37,7 +37,7 @@ MapReduce概述
         集群运行
             打包程序并上传jar包到hadoop01
             提交作业
-                hadoop jar /opt/module/tmp/hdfsmapred-demo-1.0-SNAPSHOT-jar-with-dependencies.jar cn.net.bhe.hdfsmapreddemo.WordCountDriver /wcinput /wcoutput
+                hadoop jar /opt/module/tmp/hdfsmapred-demo-1.0-SNAPSHOT-jar-with-dependencies.jar cn.net.bhe.hdfsmapreddemo._WordCountDemo /wcinput /wcoutput
 MapReduce框架原理
     MapReduce数据输入
         MapReduce切片机制与MapTask并行度决定机制
