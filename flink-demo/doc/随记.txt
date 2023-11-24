@@ -18,56 +18,59 @@ Flink是什么
             控制应用程序执行的主进程，每个应用程序都会被一个不同的JobManager控制执行。
             JobManager接收要执行的应用程序，这个应用程序会包括：
                 作业图（JobGraph）
-                逻辑数据流图（logical dataflow graph）
-                打包了所有的类、库和其它资源的JAR包。
+                逻辑数据流图（Logical Dataflow Graph）
+                打包了所有的类、库和其它资源的Jar包。
             JobManager会把JobGraph转换成物理层面的数据流图（ExecutionGraph），包含了所有可以并发执行的任务。
-            JobManager会向资源管理器（ResourceManager）申请执行作业的资源，也就是任务管理器（TaskManager）上的插槽（slot）。一旦获申请到资源后，就将执行图分发到真正执行作业的TaskManager上。执行过程中JobManager会负责所有需要的中央协调工作，比如说检查点（checkpoint）的协调。
+            JobManager会向资源管理器（ResourceManager）申请执行作业的资源，也就是任务管理器（TaskManager）上的插槽（Slot）。一旦获申请到资源后，就将执行图分发到真正执行作业的TaskManager上。执行过程中JobManager会负责所有需要的中央协调工作，比如说检查点（Checkpoint）的协调。
         TaskManager（任务管理器）
-            Flink中的工作进程，通常在Flink中会有多个TaskManager运行。每个TaskManager都包含一定数量的插槽（slot），插槽的数量限制了TaskManager能够执行的任务数量。
+            Flink中的工作进程，通常在Flink中会有多个TaskManager运行。每个TaskManager都包含一定数量的插槽（Slot），插槽的数量限制了TaskManager能够执行的任务数量。
             Flink启动后，TaskManager向资源管理器（ResourceManager）注册自己的插槽。
             TaskManager收到资源管理器（ResourceManager）的指令后，将一个或多个插槽提供给JobManager调用，JobManager就可以向插槽分配任务来执行了。
             在执行过程中，TaskManager之间可以交换数据。
         ResourecManager（资源管理器）
-            ResourecManager主要负责管理TaskManager上的插槽（slot），插槽是Flink中定义的处理资源单元。
-            Flink为不同的环境和资源管理工具提供了不同资源管理器，比如YARN、Mesos、K8s，以及standalone等资源管理工具。
-            当JobManager申请slot时，ResourceManager将有空闲slot的TaskManager分配给JobManager。如果ResourceManager没有足够的slot满足JobManager的请求，它还可以向资源提供平台发起会话，以启动提供TaskManager进程的容器。
+            ResourecManager主要负责管理TaskManager上的插槽（Slot），插槽是Flink中定义的执行任务所需的资源单元。
+            Flink为不同的环境和资源管理工具提供了不同资源管理器，比如YARN、Mesos、K8s，以及Standalone等资源管理工具。
+            当JobManager申请Slot时，ResourceManager将有空闲Slot的TaskManager分配给JobManager。如果ResourceManager没有足够的Slot满足JobManager的请求，它还可以向资源提供平台发起会话，以启动提供TaskManager进程的容器。
         Dispatcher（分发器）
             为作业提交提供了REST接口
             Dispatcher在架构中并不是必需的，这取决于作业的提交方式。
     作业提交流程
         抽象架构
             作业提交到JobManager
-            JobManager向ResourceManager申请slot 
-            ResourceManager启动TaskManager，TaskManger向ResourceManager注册slot。
-            ResourceManager向TaskManager发出提供slot指令，TaskManager向JobManager提供slot。
-            JobManager提交作业到slot中执行
-        yarn模式（per-job-cluster，https://mdnice.com/writing/a31775688d1e400987493916376ca51f）
-            Flink Client上传JAR包和配置文件到HDFS
-            Flink Client提交任务信息到Yarn ResourceManager
-            Yarn ResourceManager启动ApplicationMaster（对Yarn来说是一个NodeManager，包含了Dispatcher、Flink ResourceManager、JobManager）
-            ApplicationMaster启动Flink ResourceManager
-            Dispatcher启动JobManager
-            JobManager向Flink ResourceManager申请slot 
-            Flink ResourceManager向Yarn ResourceManager申请资源 
-            Yarn ResourceManager启动TaskManager（对Yarn来说是一个NodeManager），TaskManager向Flink ResourceManager注册slot。
-            TaskManager向JobManager提供slot
-            JobManager提交作业到slot中执行
-    slot和任务调度
+            JobManager向ResourceManager申请Slot
+            ResourceManager启动TaskManager，TaskManger向ResourceManager注册自己的Slot。
+            ResourceManager向TaskManager发出提供Slot的指令，TaskManager向JobManager提供Slot。
+            JobManager提交作业到Slot中执行
+        YARN模式（Per-job Cluster，https://mdnice.com/writing/a31775688d1e400987493916376ca51f）
+            Flink Client上传Jar包和配置文件到HDFS
+            Flink Client提交任务信息到YARN ResourceManager
+            YARN ResourceManager启动YARN ApplicationMaster
+                YARN ApplicationMaster简称AM
+                一个用户程序对应一个AM
+                AM负责向YARN ResourceManager申请资源，得到的资源形成一个资源抽象Container。
+                YARN集群包含两种节点，ResourceManager节点和NodeManager节点，AM在NodeManager节点上。
+            AM启动Flink ResourceManager和Flink Dispatcher，Flink Dispatcher启动JobManager。
+            JobManager向Flink ResourceManager申请Slot
+            Flink ResourceManager向YARN ResourceManager申请新的Container，以启动TaskManager。
+            YARN ResourceManager启动TaskManager，TaskManager向Flink ResourceManager注册Slot。
+            TaskManager向JobManager提供Slot
+            JobManager提交作业到Slot中执行
+    Slot和任务调度
         并行度 
-            一个算子下子任务（subtask）数称之为该算子的并行度（parallelism）
-            一般情况下，一个stream的并行度等于所有算子中最大的并行度。
-        TaskManager和slot
+            一个算子的子任务（Subtask）个数称为该算子的并行度（Parallelism）
+            一般情况下，一个Stream的并行度等于所有算子中最大的并行度。
+        TaskManager和Slot
             Flink中每一个TaskManager都是一个JVM进程，它可能会在独立的线程上执行一个或多个子任务。
-            为了控制一个TaskManager能接收多少个task，TaskManager通过slot来进行控制。slot是作业处理的资源单元，包含CPU资源、内存、I/O等，slot之间数据隔离。
-        slot和并行度
-            算子子任务在slot中执行，并行度过大，slot不足会导致作业无法正常执行。
-            默认情况下，Flink允许子任务共享slot（即使它们是不同任务的子任务，可通过SingleOutputStreamOperator#slotSharingGroup改变此行为）。这样的好处是，一个slot可以保存作业的整个管道。
+            为了控制一个TaskManager能接收多少个Task，TaskManager通过Slot来进行控制。Slot是作业处理的资源单元，包含CPU资源、内存、I/O等，Slot之间数据隔离。
+        Slot和并行度
+            算子子任务在Slot中执行，并行度过大，Slot不足会导致作业无法正常执行。
+            默认情况下，Flink允许子任务共享Slot（即使它们是不同任务的子任务，SingleOutputStreamOperator#slotSharingGroup可以设置是否共享Slot，Group一样才能共享）。这样的好处是，一个Slot可以保存作业的整个管道。
     程序和数据流
         所有的Flink程序都由三部分组成：Source、Transformation、Sink。
             Source是数据入口
-            Transformation利用各种算子进行加工处理
+            Transformation利用各种算子对数据进行处理
             Sink是数据出口
-        在运行时，Flink程序被映射成逻辑数据流（dataflow）。一个dataflow以一个或多个Source开始，一个或多个Sink结束。dataflow构成一个有向无环图（DAG）。
+        在运行时，Flink程序被映射成逻辑数据流（Dataflow）。一个Dataflow以一个或多个Source开始，一个或多个Sink结束。Dataflow构成一个有向无环图（DAG）。
         Flink执行图可以分为四层：
             StreamGraph：根据用户的Stream API生成的图，表示程序的拓扑结构。
             JobGraph：StreamGraph经过优化后生成JobGraph（例如节点合并等），提交给JobManager。
@@ -75,14 +78,14 @@ Flink是什么
             物理执行图：JobManager根据ExecutionGraph对Job进行调度后，在各个TaskManager上部署Task后形成的图，并不是一个具体的数据结构。
     数据传输和任务链
         一个Flink程序，不同的算子可能具有不同的并行度。
-        算子之间的数据传输可以是one-to-one（forwarding），也可以是redistributing。
-            one-to-one 
-                stream维护分区和元素的顺序。
-                例如，source和map，这意味着map算子子任务看到的元素个数以及顺序，跟source相同。map、filter、flatMap都是one-to-one模式。
-                对于one-to-one、并行度相同、共享组相同的相邻算子，可以进行合并。
-            redistributing
-                stream分区发生改变。每个算子子任务根据所选择的transformation发送数据到不同的目标任务。
-                例如，keyBy基于hashCode重分区，而broadcast和rebalance会随机分区。
+        算子之间的数据传输可以是One-To-One（Forwarding），也可以是Redistributing。
+            One-To-One
+                Stream维护分区和元素的顺序
+                例如，source和map，这意味着map子任务看到的元素个数以及顺序，跟source相同。map、filter、flatMap都是One-To-One模式。
+                对于One-To-One、并行度相同、共享组相同的相邻算子，可以进行合并。
+            Redistributing
+                Stream分区发生改变，每个算子子任务根据所选择的transformation发送数据到不同的目标任务。
+                    例如，keyBy基于hashCode重分区，而broadcast和rebalance会随机分区。
 流处理API
     Transform算子 
         map 
@@ -101,9 +104,9 @@ Flink是什么
         其它（ArrayList、HashMapp、Enum等）
     数据重分区（https://blog.csdn.net/qq_37555071/article/details/122415430）
         概述
-            分布在不同slot上的算子子任务构成不同分区
+            某个算子的子任务分布在不同的Slot上，则它们相应地构成了不同的分区。
         分区方法
-            keyBy：数据流根据key的hashcode转到相应的下游算子子任务。
+            keyBy：数据流根据key的hashCode转到相应的下游算子子任务。
             broadcast：数据流被广播到下游算子的所有子任务。
             rebalance：数据流以随机轮询的方式转到下游算子子任务。
             rescale：略。
@@ -112,26 +115,30 @@ Flink是什么
             partitionCustom：略。
 窗口处理API
     窗口概述
-        一般真实的流是无界的，将无界数据流进行切分，得到有限数据集，即有界流。
-        窗口就是将无界流切分为有界流的一种形式，它会将流数据分发到有限大小的桶（bucket）中进行分析。
+        一般真实的流是无界的，对无界的数据流进行切分，得到有限数据集，即有界流。
+        窗口就是将无界流切分为有界流的一种形式，它会将流数据分发到有限大小的桶（Bucket）中进行分析。
     窗口类型
-        时间窗口
-            滚动时间窗口（tumbling window）
+        时间窗口（Time Window）
+            滚动时间窗口（Tumbling Window）
                 将数据按照固定窗口长度对数据进行切分
                 时间对齐，窗口长度固定，没有重叠。 
-            滑动时间窗口（sliding window）
+            滑动时间窗口（Sliding Window）
                 滑动窗口是固定窗口的广义形式，由固定窗口长度和滑动间隔组成。
                 窗口长度固定，可以有重叠。
-            会话窗口（session window）
-                由一系列事件组合一个指定时间长度的timeout间隙组成，也就是一段时间没有接收到新数据就会生成新的窗口。
+            会话窗口（Session Window）
+                由一系列事件组合一个指定时间长度的Timeout间隙组成，也就是一段时间没有接收到新数据就会生成新的窗口。
                 时间无对齐
-        计数窗口
+        计数窗口（Count Window）
             滚动计数窗口
-                ReduceFunction
-                AggregateFunction
             滑动计数窗口
-                ProcessWindowFunction
-                WindowFunction
+    窗口函数（Window Function）
+        Window Function定义了要对窗口内的数据进行的计算，可以分为两类：
+            增量聚合函数（Incremental Aggregation Function）
+                每条数据进入窗口内，都会进行一次计算。
+                例如：ReduceFunction，AggregateFunction。
+            全窗口函数（Full Window Function）
+                先把窗口的数据全部收集完，再进行遍历计算。
+                例如：ProcessWindowFunction，WindowFunction。
 时间语义
     EventTime：事件创建时间。
     IngestionTime：数据进入Flink的时间。
@@ -143,98 +150,101 @@ Watermark
         乱序数据会让窗口计算不准确
     机制
         遇到了一个时间戳达到了窗口关闭时间，不应该立刻触发窗口计算，而是等待一段时间，等迟到的数据来了再关闭窗口。
-        数据流中的wartermark，用于表示timestamp小于watermark的数据都已经到达了。因此，window的执行是由watermark触发的。
+        数据流中的Wartermark，用于表示Timestamp小于Watermark的数据都已经到达了。因此，Window的执行是由Watermark触发的。
     实现
-        watermark是一条特殊的数据记录，与数据的时间戳相关，必须单调递增。
-        watermark按设定interval周期性生成。watermark事件时间延迟需要合理设置，延迟太久可能导致获得窗口结果变慢，延迟太小可能会导致窗口结果错误（可通过延迟数据侧流解决）。
-        watermark以广播的形式传到下游分区
+        Wartermark是一条特殊的数据记录，与数据的时间戳相关，必须单调递增。
+        Wartermark按设定Interval周期性生成
+        Wartermark事件时间延迟需要合理设置，延迟太久可能导致获得窗口结果变慢，延迟太小可能会导致窗口结果错误（可通过延迟数据侧流解决）。
+        Wartermark以广播的形式传到下游分区
 状态管理
     概述
         状态可以认为是算子任务的本地变量（类似MVC架构的数据库），可以被任务的业务逻辑访问。
         状态由算子任务维护，并且用来计算某个结果的所有数据。
         Flink会进行状态管理，包括状态一致性、故障处理、存储和访问。
     算子状态（Operator State）
-        作用范围限定为算子任务（slot），状态对于同一子任务而言是共享的。
+        作用范围限定为算子任务（Slot），状态对于同一子任务而言是共享的。
         算子状态不能由相同或不同算子的另一个子任务访问
-        算子状态数据结构：
-            列表状态（List State） 
-            联合列表状态（Union List State） 
+        算子状态数据结构
+            列表状态（List State）
+            联合列表状态（Union List State）
             广播状态（Broadcast State）
     键控状态（Keyed State）
-        根据数据流中定义的键（key）来维护和访问
-        Flink为每个key维护一个状态实例，并将具有相同键的所有数据，都分区到同一个算子任务中，这个任务会维护和处理这个key对应的状态。
-        键控状态数据结构：
+        根据数据流中定义的键（Key）来维护和访问
+        Flink为每个Key维护一个状态实例，并将具有相同键的所有数据，都分区到同一个算子任务中，这个任务会维护和处理这个Key对应的状态。
+        键控状态数据结构
             值状态（Value State） 
             列表状态（List State） 
             映射状态（Map State） 
             聚合状态（Reducing State/Aggregating State）
     状态后端（State Backend）
-        负责本地状态管理，以及将检查点（checkpoint）状态写入远程存储。
-        状态后端选择：
-            MemoryStateBackend：内存级的状态后端，将键控状态作为内存中的对象进行管理，存储在TaskManager的JVM堆上（堆外内存？），而将checkpoint存储在JobManager的内存中。
-            FsStateBackend：将本地状态存储在TaskManager的JVM堆上，而将checkpoint存储在持久化文件系统（FileSystem）上。
+        负责本地状态管理，以及将检查点（Checkpoint）状态写入远程存储。
+        状态后端选择
+            MemoryStateBackend：内存级的状态后端，将键控状态作为内存中的对象进行管理，存储在TaskManager的JVM堆上（堆外内存？），而将Checkpoint存储在JobManager的内存中。
+            FsStateBackend：将本地状态存储在TaskManager的JVM堆上，而将Checkpoint存储在持久化文件系统（FileSystem）上。
             RocksDBStateBackend：将所有状态序列化后，存储在本地的RocksDB上。
 容错机制
-    一致性检查点（checkpoint）
+    一致性检查点（Checkpoint）
         Flink故障恢复机制的核心，就是应用状态的一致性检查点。
         有状态流应用的一致检查点，其实就是所有任务的状态，在某个时间点的一份拷贝（快照），这个时间点，应该是所有任务恰好都处理完一个相同的输入数据的时候。
     从检查点恢复状态
         在执行流应用程序期间，Flink会定期保存状态的一致检查点。
         如果发生故障，Flink将会使用最近的检查点来一致恢复应用程序的状态，并重新启动处理流程。
             第一步就是重启应用
-            第二步是从checkpoint中读取状态，将状态重置。
+            第二步是从Checkpoint中读取状态，将状态重置。
             第三步开始消费并处理检查点到发生故障之间的所有数据
-            这种检查点的保存和恢复机制可以为应用程序状态提供精确一次（exactly-once）的一致性
+            这种检查点的保存和恢复机制可以为应用程序状态提供精确一次（Exactly-Once）的一致性
     Flink检查点算法
         基于Chandy-Lamport算法的分布式快照
-        检查点分界线（checkpoint barrier）
-            Flink的检查点算法用到了一种称为分界线（barrier）的特殊数据形式，用来把一条流上的数据按照不同的检查点分开。
+        检查点分界线（Checkpoint Barrier）
+            Flink的检查点算法用到了一种称为分界线（Barrier）的特殊数据形式，用来把一条流上的数据按照不同的检查点分开。
             分界线之前到来的数据导致的状态更改，都会被包含在当前分界线所属的检查点中；而基于分界线之后的数据导致的所有更改，就会被包含在之后的检查点中。
         具体算法
-            假设有两个输入流的应用程序，用并行的两个source任务来读取。
-            JobManager会向每个sourec任务发送一条带有检查点ID的消息，通过这种方式来启动检查点。
-            数据源将它们的状态写入检查点，并发出一个检查点barrier。
-            状态后端在状态存入检查点之后，会返回通知给source任务，source任务就会向JobManager确认检查点完成。
-            分界线对齐：barrier向下游传递，下游任务会等待所有输入分区的barrier到达。
-                对于barrier已经到达的分区，后续到达的数据会被缓存。
-                而barrier尚未到达的分区，数据会被正常处理。
-            sink任务会向JobManager确认状态保存到checkpoint完毕
+            假设有两个输入流的应用程序，用并行的两个Source任务来读取。
+            JobManager会向每个Source任务发送一条带有检查点ID的消息，通过这种方式来启动检查点。
+            数据源将它们的状态写入检查点，并生成一份检查点Barrier数据。
+            状态后端在状态存入检查点之后，会返回通知给Source任务，Source任务就会向JobManager确认检查点完成。
+            分界线对齐：Barrier向下游传递，下游任务会等待所有输入分区的Barrier到达。
+                对于Barrier已经到达的分区，后续到达的数据会被缓存。
+                而Barrier尚未到达的分区，数据会被正常处理。
+            Sink任务会向JobManager确认状态保存到Checkpoint完毕
             当所有任务都确认已成功将状态保存到检查点时，检查点就真正完成了。
-    保存点（savepoint）
-        Flink还提供了可以自定义的镜像保存功能，就是保存点（savepoint）。
+    保存点（Savepoint）
+        Flink还提供了可以自定义的镜像保存功能，就是保存点（Savepoint）。
         原则上，创建保存点使用的算法与检查点完全相同，因此保存点可以认为就是具有一些额外元数据的检查点。
         Flink不会自动创建保存点，因此用户（或者外部调度程序）必须明确地触发创建操作。
         保存点可以用于故障恢复、有计划的手动备份、更新应用程序、版本迁移、暂停和重启应用等。
 状态一致性
     一致性分类
-        AT-MOST-ONCE（最多一次） 
-        AT-LEAST-ONCE（至少一次）
-        EXACTLY-ONCE（精确一次）
-    端到端（end-to-end）状态一致性
+        At-Most-Once（最多一次）
+        At-Least-Once（至少一次）
+        Exactly-Once（精确一次）
+    端到端（End-To-End）状态一致性
         目前我们看到的一致性保证都是由流处理器实现的，也就是说都是在Flink流处理器内部保证的。而在真实应用中，流处理应用除了流处理器外还包含了数据源（例如Kafka）和输出到持久化系统。
         端到端的一致性保证，意味着结果的正确性贯穿了整个流处理应用的始终，每一个组件都保证了它自己的一致性。
-        整个端到端的一致性级别取决于所有组件中一致性最弱的组件。
+        整个端到端的一致性级别取决于所有组件中一致性最弱的组件
 
         内部保证
-            checkpoint
-        source端
+            Checkpoint
+        Source端
             可重设数据的读取位置
-        sink端：从故障恢复时，数据不会重复写入外部系统。
+        Sink端：从故障恢复时，数据不会重复写入外部系统。
             幂等写入
             事务写入
-                实现思想：构建的事务对应着checkpoint，等到checkpoint真正完成的时候，才把所有对应的结果写入sink系统中。
+                实现思想：构建的事务对应着Checkpoint，等到Checkpoint真正完成的时候，才把所有对应的结果写入Sink系统中。
                 实现方式：预写日志，两阶段提交。
-环境（flink-1.10.1）
-    安装JDK11
-        略
+环境（Flink-1.13.1）
+    前置条件
+        Ubuntu 20.04.6 LTS（192.168.233.129）
+        JDK8
     准备文件
-        sudo wget -P /opt/module/flink https://archive.apache.org/dist/flink/flink-1.10.1/flink-1.10.1-bin-scala_2.12.tgz
-        sudo tar -zxvf /opt/module/flink/flink-1.10.1-bin-scala_2.12.tgz -C /opt/module/flink
+        sudo mkdir /opt/module/flink
         sudo chown -R sxydh:sxydh /opt/module/flink
-    配置参数
-        解释参数
-            /opt/module/flink/flink-1.10.1/conf/flink-conf.yaml
-                # JobManager RPC通信
+        wget -P /opt/module/flink https://archive.apache.org/dist/flink/flink-1.13.1/flink-1.13.1-bin-scala_2.12.tgz
+        tar -zxvf /opt/module/flink/flink-1.13.1-bin-scala_2.12.tgz -C /opt/module/flink
+    修改配置文件
+        vim /opt/module/flink/flink-1.13.1/conf/flink-conf.yaml
+            更新或追加
+                # JobManager RPC通信地址，仅在Local和Standalone模式下有效，在YARN模式下无效。
                 jobmanager.rpc.address: localhost
                 jobmanager.rpc.port: 6123
                 # JobManager堆内存
@@ -243,59 +253,96 @@ Watermark
                 taskmanager.memory.process.size: 1728m
                 # TaksManager资源槽位
                 taskmanager.numberOfTaskSlots: 1
-                # 作业默认并行度
+                ### 作业并行度 ###
                 # 并行度优先级 StreamExecutionEnvironment#setParallelism > REST客户端 > flink-conf.yaml
                 # 作业并行度会占用资源槽位，设置过大可能会导致作业无法执行。
+                # 作业默认并行度
                 parallelism.default: 1
-                
-                # 容错和检查点配置
+
+                ### 容错和检查点配置 ###
                 # 状态后端存储
-                state.backend: filesystem
+                # state.backend: filesystem
                 # 状态后端存储路径
-                sate.savepoints.dir: hdfs://xxx:port/xxx
-                
+                # sate.savepoints.dir: hdfs://xxx:port/xxx
+
                 # REST客户端通信
                 rest.port: 8081
                 rest.address: 0.0.0.0
+    Standalone模式
         启动
-            standalone模式
-                启动cluster
-                    cd /opt/module/flink/flink-1.10.1 && ./bin/start-cluster.sh
-                        停止cluster
-                            cd /opt/module/flink/flink-1.10.1 && ./bin/stop-cluster.sh
-                提交作业
-                    交互方式
-                        http://192.168.233.129:8081/#/submit
-                    命令方式
-                        cd /opt/module/flink/flink-1.10.1 && ./bin/flink run -c cn.net.bhe.flinkdemo.sourcedemo.SocketSourceDemo /opt/module/flink/flink-1.10.1/flink-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
-                            查看作业列表
-                                cd /opt/module/flink/flink-1.10.1 && ./bin/flink list -a
-                            取消作业
-                                cd /opt/module/flink/flink-1.10.1 && ./bin/flink cancel 50cb95b05222f488f8e318dbeef5b39c
-            yarn模式
-                session-cluster
-                    概述
-                        在yarn中先初始化一个flink集群，开辟指定资源。
-                        flink集群常驻内存
-                        每次提交作业都会申请占用资源
-                        若无可用资源，资源无法提交，需要等待其它作业释放资源。
-                    启动hadoop集群
-                        略
-                    启动yarn-session
-                        cd /opt/module/flink/flink-1.10.1 && ./bin/yarn-session.sh -n 2 -s 2 -jm 1024 -tm 1024 -nm test -d 
-                            -n（--container）：TaskManager的数量。
-                            -s（--slots）：每个TaskManager的slot数量，默认1，一个slot对应一个core。
-                            -jm：JobManager的内存，单位MB。
-                            -tm：每个TaskManager的内存，单位MB。
-                            -nm：yarn的appName。
-                            -d：后台运行。
-                    提交作业 
-                        cd /opt/module/flink/flink-1.10.1 && ./bin/flink run -c cn.net.bhe.flinkdemo.sourcedemo.SocketSourceDemo /opt/module/flink/flink-1.10.1/flink-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
-                per-job-cluster 
-                    概述
-                        每次提交作业都会创建一个flink集群
-                        作业之间相互独立，作业完成后集群消失。
-                    启动hadoop集群
-                        略
-                    提交作业 
-                        cd /opt/module/flink/flink-1.10.1 && ./bin/flink run -m yarn-cluster -c cn.net.bhe.flinkdemo.sourcedemo.SocketSourceDemo /opt/module/flink/flink-1.10.1/flink-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
+            cd /opt/module/flink/flink-1.13.1 && ./bin/start-cluster.sh
+                停止
+                    cd /opt/module/flink/flink-1.13.1 && ./bin/stop-cluster.sh
+        提交作业
+            交互方式
+                http://192.168.233.129:8081
+                    Submit New Job
+            命令方式
+                cd /opt/module/flink/flink-1.13.1 && ./bin/flink run -c cn.net.bhe.flinkdemo.sourcedemo.SocketSourceDemo /opt/module/tmp/flink-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
+                    查看作业列表
+                        cd /opt/module/flink/flink-1.13.1 && ./bin/flink list -a
+                    取消作业
+                        cd /opt/module/flink/flink-1.13.1 && ./bin/flink cancel 50cb95b05222f488f8e318dbeef5b39c
+            验证
+                http://192.168.233.129:8081
+                    Task Managers
+                        Stdout
+    YARN模式（https://nightlies.apache.org/flink/flink-docs-release-1.13/zh/docs/deployment/resource-providers/yarn/）
+        Session-Cluster
+            概述
+                在YARN中先初始化一个Flink集群，开辟指定资源。
+                Flink集群常驻内存，除非手动停止。
+                每次提交作业都会申请占用资源
+                若无可用资源，资源无法提交，需要等待其它作业释放资源。
+            前置条件
+                Hadoop集群已启动（3.1.3）
+                    192.168.233.129：NodeManager。
+                    192.168.233.130：ResourceManager。
+                    192.168.233.131：NodeManager。
+            启动
+                export HADOOP_CLASSPATH=`hadoop classpath`
+                cd /opt/module/flink/flink-1.13.1
+                bin/yarn-session.sh -s 4 -jm 1024 -tm 1024 -nm flink_ys_test -d
+                    -s：每个TaskManager的Slot数量，默认1，一个Slot对应一个Core。
+                    -jm：JobManager的内存，单位MB。
+                    -tm：每个TaskManager的内存，单位MB。
+                    -nm：YARN的appName。
+                    -d：后台运行。
+
+                    验证
+                        http://<resourcemanager_ip>:8088/
+                            Applications
+                                Tracking UI
+
+                    停止（控制台输出有停止命令的提示）
+                        yarn application -kill <app_id>
+            提交作业
+                cd /opt/module/flink/flink-1.13.1
+                bin/flink run -c cn.net.bhe.flinkdemo.sourcedemo.SocketSourceDemo /opt/module/tmp/flink-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
+                    验证
+                        http://<resourcemanager_ip>:8088/
+                            Applications
+                                Tracking UI
+                                    Task Managers
+                                        Stdout
+        Per-Job-Cluster
+            概述
+                每次提交作业都会创建一个Flink集群
+                作业之间相互独立，作业完成后集群消失。
+            前置条件
+                Hadoop集群已启动（3.1.3）
+                    192.168.233.129：NodeManager。
+                    192.168.233.130：ResourceManager。
+                    192.168.233.131：NodeManager。
+            提交作业
+                cd /opt/module/flink/flink-1.13.1
+                bin/flink run -t yarn-per-job --detached -c cn.net.bhe.flinkdemo.sourcedemo.SocketSourceDemo /opt/module/tmp/flink-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
+                    启动后会有报错
+                        org.apache.hadoop.hdfs.web.HftpFileSystem cannot access its superinterface org.apache.hadoop.hdfs.web.TokenAspect：手动删除Jar包内所有org.apache.hadoop内容，再次提交。
+                        Trying to access closed classloader：目前尚未解决，不影响作业运行。
+                    验证
+                        http://<resourcemanager_ip>:8088/
+                            Applications
+                        bin/flink list -t yarn-per-job -Dyarn.application.id=<app_id>
+                    停止
+                        bin/flink cancel -t yarn-per-job -Dyarn.application.id=<app_id> <job_id>
