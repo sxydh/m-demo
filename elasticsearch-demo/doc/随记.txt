@@ -1,172 +1,168 @@
-Elasticsearch7.8.0
-    安装
-        https://blog.csdn.net/qq_26039331/article/details/115024218
-    概念
-        索引Index
-        文档Document
-        字段Field
-        映射Mapping
-            type
-                keyword
-                text
-                date 
-        分片Shards
-            主分片在索引创建后无法更改
-            主分片在节点扩容后会重新分配
-        副本Replicas
-            副本分片在索引创建后可以更改，不同于主分片。
-            主分片和副本分片不会分配在同一个节点上，即单机时副本分片不可用。
-            副本分片在节点扩容后会重新分配
-    路由计算
-        保存
-            目标节点 = hash(_id) % 主分片数量
-        查询
-            目标节点可以是任何一个节点（前提是节点包含有目标数据的主分片或者副本分片），该节点称为协调节点。
-    数据写流程
-        数据通过客户端到达某一节点（协调节点），该节点通过路由计算判断自己是不是目标节点，否则转发数据到目标节点。
-        目标节点保存主分片数据，并同步至副本分片。
-        目标节点将结果反馈至客户端
-    数据读流程
-        get
-            查询请求通过客户端到达某一节点（该节点称为协调节点）
-            协调节点计算数据所在的主分片和所有副本分片位置，得到多个目标节点。
-            协调节点将查询请求转发给目标节点（负载均衡：轮询）
-            目标节点返回查询结果，反馈至客户端。
-        search（query_then_fetch）
-            查询请求通过客户端到达某一节点（该节点称为协调节点）
-            协调节点将查询请求广播到所有分片
-            每个分片在本地搜索并构建一个匹配文档的大小为from + size的优先队列
-            每个分片返回队列中的文档ID给协调节点
-            协调节点合并文档ID，根据文档ID向对应分片get完整文档。
-    倒排索引
-        词条
-            索引中最小存储和查询单元
-        词典
-            词条的集合
-        倒排表
+概述
+    索引Index
+    文档Document
+    字段Field
+    映射Mapping
+        type
+            keyword
+            text
+            date 
+    分片Shards
+        主分片在索引创建后无法更改
+        主分片在节点扩容后会重新分配
+    副本Replicas
+        副本分片在索引创建后可以更改，不同于主分片。
+        主分片和副本分片不会分配在同一个节点上，即单机时副本分片不可用。
+        副本分片在节点扩容后会重新分配
+路由计算
+    保存
+        目标节点 = hash(_id) % 主分片数量
+    查询
+        目标节点可以是任何一个节点（前提是节点包含有目标数据的主分片或者副本分片），该节点称为协调节点。
+数据写流程
+    数据通过客户端到达某一节点（协调节点），该节点通过路由计算判断自己是不是目标节点，否则转发数据到目标节点。
+    目标节点保存主分片数据，并同步至副本分片。
+    目标节点将结果反馈至客户端
+数据读流程
+    get（需要文档ID）
+        查询请求通过客户端到达某一节点（该节点称为协调节点）
+        协调节点计算数据所在的主分片和所有副本分片位置，得到多个目标节点。
+        协调节点将查询请求转发给目标节点（负载均衡：轮询）
+        目标节点返回查询结果，反馈至客户端。
+    search（query_then_fetch，不需要文档ID）
+        查询请求通过客户端到达某一节点（该节点称为协调节点）
+        协调节点将查询请求广播到所有分片
+        每个分片在本地搜索并构建一个匹配文档的大小为from + size的优先队列
+        每个分片返回队列中的文档ID给协调节点
+        协调节点合并文档ID，根据文档ID向对应分片get完整文档。
+倒排索引
+    词条
+        索引中最小存储和查询单元
+    词典
+        词条的集合
+    倒排表
     
-        倒排索引可以具有多个segment，segment维护一个del文件。
-            删除文档时产生del记录
-            更新文档时旧版本被标记为del，新版本被索引到一个新的段。
-            查询数据时被标记为del的文档依然会被检索到，只是在最后合并时被过滤掉。
-        倒排索引被写入磁盘后，是不可改变的。
-            优点
-                不涉及更新，没有线程安全问题，不需要锁。
-                不涉及更新，缓存足够的情况下可以常驻缓存，减少磁盘IO。
-                可以被压缩，减少磁盘IO和占用缓存空间。
-            缺点
-                数据更新后，索引需要重建。
-                    解决 
-                        数据更新后不需要重建整个索引，而是增加新的索引来反映数据更新。
-                        查询时先按段（segment）查询，最后将结果进行合并。
-        数据结构
-            Trie
-                根节点不包含字符，其余节点都只包含一个字符。
-                从根节点到某一结点，路径上的字符连接起来，为该节点对应的字符串。
-                每个节点的所有子节点包含的字符都不相同
-            Skip List
-            FST 
-    文档写入
-        如何保证数据写入性能
-            https://www.modb.pro/db/429561
-            引入Memory Buffer
-            引入OS Cache
-        如何保证数据不丢失
-            https://segmentfault.com/a/1190000039075240
-            引入Translog
-        刷新/刷写流程
-            请求数据write到内存
-            请求数据write到translog
-                index.translog.durability：同步还是异步，默认同步fsync。
-                index.translog.sync_interval：异步时flush到磁盘间隔，默认5s。
-                index.translog.flush_threshold_size：异步时触发flush阈值，默认512mb。
-            内存数据refresh到OS Cache（页缓存）
-                通过settings的refresh_interval设置
-            OS Cache数据flush到DISK（磁盘）
-
-        写一致性
-            写写并发 
-                乐观锁实现
-                    版本号控制
-            主副分片
-                consistency
-                    one
-                        主分片活跃
-                    all 
-                        主分片和副本分片都活跃
-                    quorum（默认值，number_of_replicas > 1时才生效）
-                        大多数分片都活跃
-                            int((primary + number_of_replicas) / 2) + 1
-                需要合理设置主分片和副本分片数，否则可能因为consistency不满足条件，导致无法写入数据。
-        读一致性
-            最终一致
-    文档分析
-        字符过滤器（char_filter）
-            用于字符转换，例如将"&"转换为"and"。
-        过滤器（filter）
-        分析器（analyzer）
-            simple
-            standard
-            ik_max_word
-    优化
-        硬件优化
-            使用SSD
-            堆内存不宜超过物理内存50%，否则OS Cache没有足够空间导致频繁落盘。
-            堆内存不宜超过32G
-        分片优化
-            一个分片底层是一个Lucene索引，会消耗一定的CPU、句柄、内存。
-            分片占用的硬盘容量不宜超过ES的最大JVM空间设置（32G），因此可以根据索引总容量预估分片数。
-            分片数不宜超过节点数3倍
-                节点数 <= 主分片数 * (副本数 + 1) <= 节点数 * 3
-            推迟分片重分配
-                节点下线会导致分片的重分配，消耗资源。
-                若节点偶然下线后可以短时间内恢复，可以通过设置合理的delayed_timeout来避免分片的重分配。
-        路由优化 
-            shard_num = hash(_routing) % num_primary_shards
-            _routing默认为文档_id，可以选择合适的业务数据作为_routing。
-        写入优化（https://www.modb.pro/db/429614）
-            增加flush时间间隔
-                减小数据写入磁盘的频率，减小磁盘IO频率。
-            增加refresh_interval的参数值
-                减少segment文件创建，减少segment的merge次数，merge是发生在JVM中的，有可能导致Full GC，增加refresh会降低搜索的实时性。
-            增加Buffer大小
-                减小refresh的时间间隔，因为导致segment文件创建的原因不仅有时间阈值，还有Buffer空间大小，写满了也会创建。默认最小值48MB < 默认值JVM空间的10% < 默认最大无限制。
-            关闭副本
-                当需要单次写入大量数据的时候，建议关闭副本，暂停搜索服务。
-        查询优化（https://www.modb.pro/db/429614）
-            使用keyword类型
-            避免单页数据过大
-            避免单个文档过大
-            使用filter代替query
-                query和filter的主要区别在：filter是结果导向的而query是过程导向。
-                query倾向于当前文档和查询的语句的相关度，而filter倾向于当前文档和查询的条件是不是相符。即在查询过程中，query是要对查询的每个结果计算相关性得分的，而filter不会。
-                filter有相应的缓存机制，可以提高查询效率。
-            避免深度分页
-    集群选主 
-        选举流程
-            由ZenDiscovery模块负责，主要包含Ping（节点之间通过RPC发现彼此）和Unicast（包含一个主机列表，控制哪些节点需要ping通）。
-            所有可以成为master的节点（node.master: true）根据nodeId字典排序。每次选举每个节点都把自己所知道的节点拍一次序，然后选出第一个节点，暂且认为它是master节点。
-        脑裂问题
-            原因：master节点失去响应。
-                网络问题
-                节点负载：节点既作为master又作为data，访问量较大时会导致节点失去响应。
-                内存回收：JVM大规模GC会导致节点失去响应。
-            解决
-                减少误判：discovery.zen.ping_timeout节点状态的响应时间，默认3s，可以适当调大。注意该值过大可能会导致选主时间变长。
-                选举触发：discovery.zen.minimum_master_nodes选举时最少的候选节点数，默认1，可以设置为：(master_eligible_nodes / 2 + 1)。
-                角色分离
-                    主节点配置
-                        node.master: true 
-                        node.data: false
-                    从节点配置
-                        node.master: false 
-                        node.data: true
-    环境（7.8.0）
-        单机
-            创建文件夹
-                sudo mkdir /opt/module 
+    倒排索引可以具有多个segment，segment维护一个del文件。
+        删除文档时产生del记录
+        更新文档时旧版本被标记为del，新版本被索引到一个新的段。
+        查询数据时被标记为del的文档依然会被检索到，只是在最后合并时被过滤掉。
+    倒排索引被写入磁盘后，是不可改变的。
+        优点
+            不涉及更新，没有线程安全问题，不需要锁。
+            不涉及更新，缓存足够的情况下可以常驻缓存，减少磁盘IO。
+            可以被压缩，减少磁盘IO和占用缓存空间。
+        缺点
+            数据更新后，索引需要重建。
+                解决 
+                    数据更新后不需要重建整个索引，而是增加新的索引来反映数据更新。
+                    查询时先按段（segment）查询，最后将结果进行合并。
+    数据结构
+        Trie
+            根节点不包含字符，其余节点都只包含一个字符。
+            从根节点到某一结点，路径上的字符连接起来，为该节点对应的字符串。
+            每个节点的所有子节点包含的字符都不相同
+        Skip List
+        FST 
+文档写入
+    如何保证数据写入性能
+        https://www.modb.pro/db/429561
+        引入Memory Buffer
+        引入OS Cache
+    如何保证数据不丢失
+        https://segmentfault.com/a/1190000039075240
+        引入Translog
+    刷新/刷写流程
+        请求数据write到内存
+        请求数据write到translog
+            index.translog.durability：同步还是异步，默认同步fsync。
+            index.translog.sync_interval：异步时flush到磁盘间隔，默认5s。
+            index.translog.flush_threshold_size：异步时触发flush阈值，默认512mb。
+        内存数据refresh到OS Cache（页缓存）
+            通过settings的refresh_interval设置
+        OS Cache数据flush到DISK（磁盘）
+    
+    写一致性
+        写写并发（数据一致）
+            乐观锁实现
+                版本号控制
+        主副分片（数据一致）
+            consistency
+                one
+                    主分片活跃
+                all 
+                    主分片和副本分片都活跃
+                quorum（默认值，number_of_replicas > 1时才生效）
+                    大多数分片都活跃
+                        int((primary + number_of_replicas) / 2) + 1
+            需要合理设置主分片和副本分片数，否则可能因为consistency不满足条件，导致无法写入数据。
+    读一致性
+        最终一致
+文档分析
+    字符过滤器（char_filter）
+        用于字符转换，例如将"&"转换为"and"。
+    过滤器（filter）
+    分析器（analyzer）
+        simple
+        standard
+        ik_max_word
+优化
+    硬件优化
+        使用SSD
+        堆内存不宜超过物理内存50%，否则OS Cache没有足够空间导致频繁落盘。
+        堆内存不宜超过32G
+    分片优化
+        一个分片底层是一个Lucene索引，会消耗一定的CPU、句柄、内存。
+        分片占用的硬盘容量不宜超过ES的最大JVM空间设置（32G），因此可以根据索引总容量预估分片数。
+        分片数不宜超过节点数3倍
+            节点数 <= 主分片数 * (副本数 + 1) <= 节点数 * 3
+        推迟分片重分配
+            节点下线会导致分片的重分配，消耗资源。
+            若节点偶然下线后可以短时间内恢复，可以通过设置合理的delayed_timeout来避免分片的重分配。
+    路由优化 
+        shard_num = hash(_routing) % num_primary_shards
+        _routing默认为文档_id，可以选择合适的业务数据作为_routing。
+    写入优化（https://www.modb.pro/db/429614）
+        增加flush时间间隔
+            减小数据写入磁盘的频率，减小磁盘IO频率。
+        增加refresh_interval的参数值
+            减少segment文件创建，减少segment的merge次数，merge是发生在JVM中的，有可能导致Full GC，增加refresh会降低搜索的实时性。
+        增加Buffer大小
+            减小refresh的时间间隔，因为导致segment文件创建的原因不仅有时间阈值，还有Buffer空间大小，写满了也会创建。默认最小值48MB < 默认值JVM空间的10% < 默认最大无限制。
+        关闭副本
+            当需要单次写入大量数据的时候，建议关闭副本，暂停搜索服务。
+    查询优化（https://www.modb.pro/db/429614）
+        使用keyword类型
+        避免单页数据过大
+        避免单个文档过大
+        使用filter代替query
+            query和filter的主要区别在：filter是结果导向的而query是过程导向。
+            query倾向于当前文档和查询的语句的相关度，而filter倾向于当前文档和查询的条件是不是相符。即在查询过程中，query是要对查询的每个结果计算相关性得分的，而filter不会。
+            filter有相应的缓存机制，可以提高查询效率。
+        避免深度分页
+集群选主 
+    选举流程
+        由ZenDiscovery模块负责，主要包含Ping（节点之间通过RPC发现彼此）和Unicast（包含一个主机列表，控制哪些节点需要ping通）。
+        所有可以成为master的节点（node.master: true）根据nodeId字典排序。每次选举每个节点都把自己所知道的节点拍一次序，然后选出第一个节点，暂且认为它是master节点。
+    脑裂问题
+        原因：master节点失去响应。
+            网络问题
+            节点负载：节点既作为master又作为data，访问量较大时会导致节点失去响应。
+            内存回收：JVM大规模GC会导致节点失去响应。
+        解决
+            减少误判：discovery.zen.ping_timeout节点状态的响应时间，默认3s，可以适当调大。注意该值过大可能会导致选主时间变长。
+            选举触发：discovery.zen.minimum_master_nodes选举时最少的候选节点数，默认1，可以设置为：(master_eligible_nodes / 2 + 1)。
+            角色分离
+                主节点配置
+                    node.master: true 
+                    node.data: false
+                从节点配置
+                    node.master: false 
+                    node.data: true
+环境
+    Elasticsearch 7.8.0
+        单机（https://blog.csdn.net/qq_26039331/article/details/115024218）
+            准备文件
                 sudo mkdir /opt/module/es 
-            ES安装
                 sudo wget -P /opt/module/es https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.8.0-linux-x86_64.tar.gz
                 sudo tar -zxvf /opt/module/es/elasticsearch-7.8.0-linux-x86_64.tar.gz -C /opt/module/es
             修改配置文件
@@ -195,28 +191,27 @@ Elasticsearch7.8.0
             创建ES用户（ES不允许root下运行）
                 sudo useradd es 
                 sudo passwd es
-            ES文件夹所有者变更
                 sudo chown -R es:es /opt/module/es
             启动
                 su es
                 cd /opt/module/es/elasticsearch-7.8.0 && bin/elasticsearch
-        集群
-        https://blog.csdn.net/li1325169021/article/details/128914484
-            VMware克隆两外两台虚拟机
-                解决IP地址冲突
-                    sudo vim /etc/netplan/00-installer-config.yaml
-                        "ens33:"下追加
-                            dhcp-identifier: mac
-                    重启虚拟机
-            ES安装到三台虚拟机  
+        集群（https://blog.csdn.net/li1325169021/article/details/128914484）
+            前置条件
+                三台主机（host01，host02，host03）
+                    VMware克隆后IP地址冲突问题
+                        sudo vim /etc/netplan/00-installer-config.yaml
+                            "ens33:"下追加
+                                dhcp-identifier: mac
+                        重启虚拟机
+            准备文件（host01）
                 略
-            修改配置文件 
+            修改配置文件（host01）
                 sudo vim /opt/module/es/elasticsearch-7.8.0/config/elasticsearch.yml
                     追加 
                         # 集群名称，集群名称相同的节点会加入到同一个集群。
-                        cluster.name: 集群名称
+                        cluster.name: <集群名称>
                         # 节点名称
-                        node.name: 节点名称
+                        node.name: <节点名称>
 
                         # 是否可作为主节点 
                         node.master: true
@@ -232,7 +227,7 @@ Elasticsearch7.8.0
                         http.max_content_length: 200mb
 
                         # es7.x之后新增的配置，初始化一个新的集群时，需要配置默认的master。
-                        cluster.initial_master_nodes: ["master节点名称"]
+                        cluster.initial_master_nodes: ["<master节点名称>"]
 
                         # es7.x之后新增的配置，节点发现，广播，节点之间通信端口号9300。
                         discovery.seed_hosts: ["IP1:9300", "IP2:9300", "IP3:9300"]
@@ -257,39 +252,38 @@ Elasticsearch7.8.0
                     略
                 sudo vim /etc/sysctl.conf
                     略
-            创建ES用户 
+            分发文件到集群（host01，host02，host03）
                 略
-            ES文件夹所有者变更
+            创建ES用户（host01，host02，host03）
                 略
-            启动（启动前建议清空path.data文件夹，默认是ES目录的data）
+            启动集群（启动前建议清空path.data文件夹，默认是ES目录的data）
                 略
             查看集群状态
-        分词器
-            elasticsearch-analysis-ik
-                下载
-                    sudo wget -P /opt/module/es/elasticsearch-7.8.0/plugins https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.8.0/elasticsearch-analysis-ik-7.8.0.zip
-                解压
-                    sudo unzip /opt/module/es/elasticsearch-7.8.0/plugins/elasticsearch-analysis-ik-7.8.0.zip -d /opt/module/es/elasticsearch-7.8.0/plugins
-                    sudo rm -rf /opt/module/es/elasticsearch-7.8.0/plugins/elasticsearch-analysis-ik-7.8.0.zip
-                扩展字典
-                    touch /opt/module/es/elasticsearch-7.8.0/plugins/elasticsearch-analysis-ik-7.8.0/config/custom.dict
-                    sudo vim /opt/module/es/elasticsearch-7.8.0/plugins/elasticsearch-analysis-ik-7.8.0/config/IKAnalyzer.cfg.xml
-                        <entry key="ext_dict">custom.dic</entry>
-                重启 
-                    略
-        Kibana
-            下载
-                sudo wget -P /opt/module/es https://artifacts.elastic.co/downloads/kibana/kibana-7.8.0-linux-x86_64.tar.gz
-            解压
-                sudo tar -zxvf /opt/module/es/kibana-7.8.0-linux-x86_64.tar.gz -C /opt/module/es
-            修改配置文件 
-                sudo vim /opt/module/es/kibana-7.8.0-linux-x86_64/config/kibana.yml
-                    追加
-                        server.port: 5601
-                        server.host: "0.0.0.0"
-                        elasticsearch.hosts: ["http://IP:9200"]
-                        kibana.index: ".kibana"
-                        i18n.locale: "zh-CN"
-            启动 
-                sudo chown -R [当前用户组]:[当前用户名] /opt/module/es/kibana-7.8.0-linux-x86_64
-                cd /opt/module/es/kibana-7.8.0-linux-x86_64/ && ./bin/kibana
+                略
+    分词器
+        elasticsearch-analysis-ik
+            准备文件
+                sudo wget -P /opt/module/es/elasticsearch-7.8.0/plugins https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.8.0/elasticsearch-analysis-ik-7.8.0.zip
+                sudo unzip /opt/module/es/elasticsearch-7.8.0/plugins/elasticsearch-analysis-ik-7.8.0.zip -d /opt/module/es/elasticsearch-7.8.0/plugins
+                sudo rm -rf /opt/module/es/elasticsearch-7.8.0/plugins/elasticsearch-analysis-ik-7.8.0.zip
+            修改配置文件
+                touch /opt/module/es/elasticsearch-7.8.0/plugins/elasticsearch-analysis-ik-7.8.0/config/custom.dict
+                sudo vim /opt/module/es/elasticsearch-7.8.0/plugins/elasticsearch-analysis-ik-7.8.0/config/IKAnalyzer.cfg.xml
+                    <entry key="ext_dict">custom.dic</entry>
+            重启 
+                略
+    Kibana
+        准备文件
+            sudo wget -P /opt/module/es https://artifacts.elastic.co/downloads/kibana/kibana-7.8.0-linux-x86_64.tar.gz
+            sudo tar -zxvf /opt/module/es/kibana-7.8.0-linux-x86_64.tar.gz -C /opt/module/es
+        修改配置文件 
+            sudo vim /opt/module/es/kibana-7.8.0-linux-x86_64/config/kibana.yml
+                追加
+                    server.port: 5601
+                    server.host: "0.0.0.0"
+                    elasticsearch.hosts: ["http://IP:9200"]
+                    kibana.index: ".kibana"
+                    i18n.locale: "zh-CN"
+        启动 
+            sudo chown -R <当前用户组>:<当前用户名> /opt/module/es/kibana-7.8.0-linux-x86_64
+            cd /opt/module/es/kibana-7.8.0-linux-x86_64/ && ./bin/kibana
