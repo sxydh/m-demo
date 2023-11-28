@@ -59,7 +59,7 @@ Kafka生产者
                 -1/all：生产者发送过来的数据，Leader和ISR队列里的所有节点收齐数据后应答。-1和all等价。
     生产者分区
         概述
-            便于合理使用存储资源，每个Partition在一个Broker上存储，可以把海量的数据按照分区切割成一块一块数据存储在多台Broker上。
+            便于合理使用存储资源，如果每个Partition在一个Broker上存储，可以把海量的数据按照分区切割成一块一块数据存储在多台Broker上。
             合理控制分区的任务，可以实现负载均衡的效果。
         分区策略
             指明partition的情况下，直接将指明的值作为partition值。
@@ -106,10 +106,10 @@ Kafka生产者
     Kafka事务管理 
         开启事务，必须开启幂等性（事务是基于幂等性实现的）。
         每个Broker都有一个事务协调器（Transaction Coordinator）
-        事务协调器上的数据存储在主题__transaction_sate上，该主题默认有50个分区，每个分区负责一部分事务。
+        事务协调器上的数据存储在主题__transaction_state上，该主题默认有50个分区，每个分区负责一部分事务。
         Producer在使用事务功能前，必须先自定义一个唯一的事务ID transactionl.id。有了transactional.id，即使客户端挂掉了，它在重启后也能继续处理未完成的事务。
         Kafka Producer事务流程：
-            根据transactionl.id的hashcode值%50，计算出本次事务属于主题__transaction_sate上的哪个分区，该分区Leader所在的Broker节点即为这个transactionl.id对应的事务协调器（Transaction Coordinator）节点。
+            根据transactionl.id的hashcode值%50，计算出本次事务属于主题__transaction_state上的哪个分区，该分区Leader所在的Broker节点即为这个transactionl.id对应的事务协调器（Transaction Coordinator）节点。
             Producer向事务协调器请求producer id（幂等性需要）
             Producer发送业务消息到BrokerX（业务消息的目标分区所在的Broker）
             Producer向事务协调器发送commit请求
@@ -127,23 +127,23 @@ Kafka生产者
                 max.in.flight.requests.per.connection<=5
                 在Kafka1.x及以后，启用幂等后，Kafka服务端会缓存Producer发来的最近5个request的元数据，故无论如何，都可以保证最近5个request的数据都是有序的（利用SeqNumber进行重排序）。
 Kafka Broker 
-    Zookeeper中存储的Kafka信息
+    ZooKeeper中存储的Kafka信息
         /kafka/brokers/ids：记录有哪些服务器。
         /kafka/brokers/topics/first/partitions/0/state
             {"leader":1,"isr":[1,0,2]}：记录谁是Leader，有哪些服务器可用。
         /kafka/controller
             {"brokerid":0}：辅助选举Leader。
     Kafka Broker总体工作流程
-        Broker启动后在Zookeeper中注册
+        Broker启动后在ZooKeeper中注册
             /brokers/ids/
-        Broker在Zookeeper中注册自己的Controller，第一个注册的Controller称为Controller Leader，负责监听所有Broker节点的变化，和后续的Broker Leader选举。
+        Broker在ZooKeeper中注册自己的Controller，第一个注册的Controller称为Controller Leader，负责监听所有Broker节点的变化，和后续的Broker Leader选举。
             /controller
         Broker Leader选举规则：
             在ISR中存活为前提，按照AR（Kafka分区中的所有副本统称）中排在前面的优先。
             例如ar[1,0,2]，isr[0,1,2]，那么Leader就会按照[1,0,2]的顺序轮询。
-        Controller Leader将分区节点信息上传到Zookeeper
+        Controller Leader将分区节点信息上传到ZooKeeper
             /brokers/topics/first/partitions/0/state
-        其它Controller从Zookeeper同步相关信息
+        其它Controller从ZooKeeper同步相关信息
         Broker Leader接收消息并同步数据到Broker Follower
         假设Broker1（Leader）宕机，Controller监听到节点变化后，获取ISR并开始新的Leader选举，选举完成后更新Leader及ISR。
     服役新节点
@@ -251,7 +251,7 @@ Kafka消费者
         消费者组内每个消费者负责消费不同分区的数据，一个分区只能由一个组内消费者消费。
         消费者组互不影响，所有的消费者都属于某个消费者组，即消费者组是逻辑上的一个订阅者。
         如果向消费者组中添加更多的消费者，超过主题分区数量，则有一部分消费者就会闲置，不会接收任何消息。
-    消费者组初始化流程：
+    消费者组初始化流程
         Coordinator：辅助实现消费者组的初始化和分区的分配，每个Broker都有一个Coordinator。
             Coordinator节点选择 = groupId的hashcode值 % 50（__consumer_offsets的分区数量）。
             例如：groupId的hashcode值 = 1，1 % 50 = 1，那么__consumer_offsets主题的1号分区在哪个Broker上，就选择这个节点的Coordinator作为这个消费者组的老大。消费者组下的所有消费者提交offset的时候就往这个分区去提交offset。
@@ -287,7 +287,7 @@ Kafka消费者
         默认策略是Range + CooperativeSticky。 
         Kafka可以同时使用多个分区分配策略。
     消费者offset保存位置
-        Kafka0.9版本之前，Consumer默认将offset保存在Zookeeper中。
+        Kafka0.9版本之前，Consumer默认将offset保存在ZooKeeper中。
         从0.9版本开始，Consumer默认将offset保存在Kafka一个内置的Topic中，该Topic为__consumer_offsets。
         __consumer_offsets主题里面采用key和value的方式存储数据。key是groupId + topic + 分区号，value就是offset值。每个一段时间，Kafka内部会对这个Topic进行compact，也就是每个groupId + topic + 分区号就保留最新数据。
     消费者提交offset
@@ -377,15 +377,17 @@ Kafka生产调优
             --bootstrap-server：指定Kafka集群地址。
             --topic：指定Topic名称。
 环境（3.0.0）
-    安装JDK11 
-        略
+    前置条件
+        三台主机（192.168.233.129，192.168.233.130，192.168.233.131）
+        JDK11
+        ZooKeeper集群（192.168.233.129，192.168.233.130，192.168.233.131）
     集群部署
-        文件准备
+        准备文件（192.168.233.129）
             sudo mkdir /opt/module/kafka
             sudo wget -P /opt/module/kafka https://archive.apache.org/dist/kafka/3.0.0/kafka_2.13-3.0.0.tgz
             sudo tar -zxvf /opt/module/kafka/kafka_2.13-3.0.0.tgz -C /opt/module/kafka
             sudo chown -R sxydh:sxydh /opt/module/kafka
-        修改配置文件
+        修改配置文件（192.168.233.129）
             vim /opt/module/kafka/kafka_2.13-3.0.0/config/server.properties
                 # Server Basics
                 # 节点唯一标识 
@@ -399,24 +401,27 @@ Kafka生产调优
                 # 数据存储路径 
                 log.dirs=/opt/module/kafka/kafka_2.13-3.0.0/log_data
                 
-                # Zookeeper 
+                # ZooKeeper 
                 # 集群信息
                 zookeeper.connect=192.168.233.129:2181,192.168.233.130:2181,192.168.233.131:2181/kafka
-        环境变量
+        配置环境变量（192.168.233.129）
             sudo vim /etc/profile.d/my_env.sh
                 追加
                     export KAFKA_HOME=/opt/module/kafka/kafka_2.13-3.0.0
                     export PATH=$PATH:$KAFKA_HOME/bin
             source /etc/profile
             echo $KAFKA_HOME
-        启动 
-            启动zookeeper
+        分发安装到集群（192.168.233.129，192.168.233.130，192.168.233.131）
+            略
+        启动
+            启动ZooKeeper集群
                 略
-            启动kafka
+            启动Kafka集群
                 cd /opt/module/kafka/kafka_2.13-3.0.0 && bin/kafka-server-start.sh -daemon config/server.properties
-                jps
-            停止kafka
-                cd /opt/module/kafka/kafka_2.13-3.0.0 && bin/kafka-server-stop.sh
+                    验证
+                        jps
+                    停止
+                        cd /opt/module/kafka/kafka_2.13-3.0.0 && bin/kafka-server-stop.sh
         命令行操作
             主题命令（kafka-topics.sh）
                 --bootstrap-server <String:server to connect to>
@@ -455,25 +460,26 @@ Kafka生产调优
     Kafka Eagle
         准备Kafka
             停止Kafka集群
-            vim /opt/module/kafka/kafka_2.13-3.0.0/bin/kafka-server-start.sh
-                修改为 
-                    if [ "x$KAFKA_HEAP_OPTS" = "x" ]; then
-                        export KAFKA_HEAP_OPTS="-Xms2G -Xmx2G -Djava.rmi.server.hostname=192.168.233.129"
-                        export JMX_PORT="9999"
-                        # export KAFKA_HEAP_OPTS="-Xmx1G -Xms1G"
-                    fi
+            修改配置文件
+                vim /opt/module/kafka/kafka_2.13-3.0.0/bin/kafka-server-start.sh
+                    更新或追加 
+                        if [ "x$KAFKA_HEAP_OPTS" = "x" ]; then
+                            export KAFKA_HEAP_OPTS="-Xms2G -Xmx2G -Djava.rmi.server.hostname=192.168.233.129"
+                            export JMX_PORT="9999"
+                            # export KAFKA_HEAP_OPTS="-Xmx1G -Xms1G"
+                        fi
             启动Kafka集群
         安装MySQL8.0.35
             sudo apt update
             sudo apt install mysql-server
             systemctl status mysql 
-
+            
             sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
                 注释掉
                     bind-address          = 127.0.0.1
             sudo systemctl restart mysql 
             systemctl status mysql 
-
+            
             sudo mysql -u root -p 
                 alter user 'root'@'localhost' identified with mysql_native_password by '123';
             mysql -u root -p 
@@ -481,7 +487,7 @@ Kafka生产调优
                 select user, host from user;
                 update user set host = '%' where user = 'root';
         安装Kafka Eagle（2.0.8）
-            文件准备
+            准备文件
                 sudo mkdir /opt/module/kafka_eagle
                 chown -R sxydh:sxydh /opt/module/kafka_eagle
                 sudo wget -P /opt/module/kafka_eagle https://github.com/smartloli/kafka-eagle-bin/archive/refs/tags/v2.0.8.tar.gz
@@ -489,19 +495,19 @@ Kafka生产调优
                 tar -zxvf /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8-bin.tar.gz -C /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/
             修改配置文件 
                 vim /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8/conf/system-config.properties
-                    修改为
+                    更新或追加
                         efak.zk.cluster.alias=cluster1
                         cluster1.zk.list=192.168.233.129:2181,192.168.233.130:2181,192.168.233.131:2181/kafka
                         # cluster2.zk.list=xdn10:2181,xdn11:2181,xdn12:2181
-
+                        
                         cluster1.efak.offset.storage=kafka
                         # cluster2.efak.offset.storage=zk
-
+                        
                         efak.driver=com.mysql.jdbc.Driver
                         efak.url=jdbc:mysql://192.168.233.129:3306/ke?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
                         efak.username=root
                         efak.password=123
-            环境变量
+            配置环境变量
                 sudo vim /etc/profile.d/my_env.sh
                     追加
                         export KE_HOME=/opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8
@@ -510,6 +516,6 @@ Kafka生产调优
                 echo $KE_HOME
             启动 
                 cd /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8 && bin/ke.sh start 
-            停止
-                cd /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8 && bin/ke.sh stop 
+                    停止
+                        cd /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8 && bin/ke.sh stop 
             
