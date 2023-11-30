@@ -194,7 +194,10 @@
                 sudo chown -R es:es /opt/module/es
             启动
                 su es
-                cd /opt/module/es/elasticsearch-7.8.0 && bin/elasticsearch
+                cd /opt/module/es/elasticsearch-7.8.0
+                bin/elasticsearch -d
+                    验证
+                        http://192.168.233.129:9200
         集群（https://blog.csdn.net/li1325169021/article/details/128914484）
             前置条件
                 三台主机（host01，host02，host03）
@@ -204,7 +207,7 @@
                                 dhcp-identifier: mac
                         重启虚拟机
             准备文件（host01）
-                略
+                同单机
             修改配置文件（host01）
                 sudo vim /opt/module/es/elasticsearch-7.8.0/config/elasticsearch.yml
                     追加 
@@ -212,12 +215,12 @@
                         cluster.name: <集群名称>
                         # 节点名称
                         node.name: <节点名称>
-
+                        
                         # 是否可作为主节点 
                         node.master: true
                         # 是否可作为数据节点
                         node.data: true
-
+                        
                         # 网络
                         network.host: 0.0.0.0
                         http.port: 9200
@@ -225,10 +228,10 @@
                         http.cors.allow-origin: "*"
                         http.cors.allow-credentials: true
                         http.max_content_length: 200mb
-
+                        
                         # es7.x之后新增的配置，初始化一个新的集群时，需要配置默认的master。
                         cluster.initial_master_nodes: ["<master节点名称>"]
-
+                        
                         # es7.x之后新增的配置，节点发现，广播，节点之间通信端口号9300。
                         discovery.seed_hosts: ["IP1:9300", "IP2:9300", "IP3:9300"]
                         # 选举时最少的候选节点数，默认1。该值设置不合理可能会导致脑裂问题，合理的数值为(master_eligible_nodes / 2 + 1)。
@@ -239,7 +242,7 @@
                         network.tcp.keep_alive: true
                         network.tcp.no_delay: true
                         transport.tcp.compress: true
-
+                        
                         # 集群内同时启动的数据任务个数，默认是2个。
                         cluster.routing.allocation.cluster_concurrent_rebalance: 16
                         # 添加或删除节点及负载均衡时并发恢复的线程个数，默认4个。 
@@ -247,19 +250,17 @@
                         # 初始化数据恢复时，并发恢复线程的个数，默认4个。
                         cluster.routing.allocation.node_initial_primaries_recoveries: 16
                 sudo vim /etc/security/limits.conf 
-                    略
+                    同单机
                 sudo vim /etc/security/limits.d/20-nproc.conf（可选）
-                    略
+                    同单机
                 sudo vim /etc/sysctl.conf
-                    略
+                    同单机
             分发文件到集群（host01，host02，host03）
                 略
             创建ES用户（host01，host02，host03）
-                略
+                同单机
             启动集群（启动前建议清空path.data文件夹，默认是ES目录的data）
-                略
-            查看集群状态
-                略
+                同单机
     分词器
         elasticsearch-analysis-ik
             准备文件
