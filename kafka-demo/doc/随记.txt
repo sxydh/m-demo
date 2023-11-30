@@ -384,18 +384,18 @@ Kafka生产调优
     集群部署
         准备文件（192.168.233.129）
             sudo mkdir /opt/module/kafka
-            sudo wget -P /opt/module/kafka https://archive.apache.org/dist/kafka/3.0.0/kafka_2.13-3.0.0.tgz
-            sudo tar -zxvf /opt/module/kafka/kafka_2.13-3.0.0.tgz -C /opt/module/kafka
             sudo chown -R sxydh:sxydh /opt/module/kafka
+            wget -P /opt/module/kafka https://archive.apache.org/dist/kafka/3.0.0/kafka_2.13-3.0.0.tgz
+            tar -zxvf /opt/module/kafka/kafka_2.13-3.0.0.tgz -C /opt/module/kafka
         修改配置文件（192.168.233.129）
             vim /opt/module/kafka/kafka_2.13-3.0.0/config/server.properties
                 # Server Basics
                 # 节点唯一标识 
-                broker.id=0
+                broker.id=<数字>
                 
                 # Socket Server Settings
                 # 监听地址
-                listeners=PLAINTEXT://192.168.233.129:9092
+                listeners=PLAINTEXT://<主机IP>:9092
                 
                 # Log Basics
                 # 数据存储路径 
@@ -413,46 +413,35 @@ Kafka生产调优
             echo $KAFKA_HOME
         分发安装到集群（192.168.233.129，192.168.233.130，192.168.233.131）
             略
-        启动
-            启动ZooKeeper集群
-                略
-            启动Kafka集群
-                cd /opt/module/kafka/kafka_2.13-3.0.0 && bin/kafka-server-start.sh -daemon config/server.properties
-                    验证
-                        jps
-                    停止
-                        cd /opt/module/kafka/kafka_2.13-3.0.0 && bin/kafka-server-stop.sh
+        启动Kafka集群
+            cd /opt/module/kafka/kafka_2.13-3.0.0
+            bin/kafka-server-start.sh -daemon config/server.properties
+                验证
+                    jps
+                停止
+                    bin/kafka-server-stop.sh
         命令行操作
             主题命令（kafka-topics.sh）
-                --bootstrap-server <String:server to connect to>
-                    连接的Kafka Broker主机和端口
+                --bootstrap-server <String:server to connect to>：连接的Kafka Broker主机和端口。
                     bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --list
-                --topic <String:topic>
-                    操作的topic名称
+                --topic <String:topic>：操作的topic名称。
                     bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --describe
-                --create 
-                    创建主题
+                --create：创建主题。
                     bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --create --partitions 1 --replication-factor 3
-                --delete
-                    删除主题
+                        replication-factor：分区副本数（包括Leader）。
+                --delete：删除主题。
                     bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --delete
-                --alter 
-                    修改主题
+                --alter：修改主题。
                     bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --alter --partitions 6
-                --list 
-                    查看主题列表
+                --list：查看主题列表。
                     bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --list
-                --describe
-                    查看主题详情
+                --describe：查看主题详情。
                     bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --describe
-                --partitions <Integer:# of partitions>
-                    设置分区数
+                --partitions <Integer:# of partitions>：设置分区数。
                     bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --create --partitions 1 --replication-factor 3
-                --replication-factor <Integer:replication factor>
-                    设置分区副本数
+                --replication-factor <Integer:replication factor>：设置分区副本数。
                     bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic word --create --partitions 1 --replication-factor 3
-                --config <String:name=value> 
-                    更新配置
+                --config <String:name=value>：更新配置。
             生产者命令
                 bin/kafka-console-producer.sh --bootstrap-server 192.168.233.129:9092 --topic word
             消费者命令
@@ -490,7 +479,7 @@ Kafka生产调优
             准备文件
                 sudo mkdir /opt/module/kafka_eagle
                 chown -R sxydh:sxydh /opt/module/kafka_eagle
-                sudo wget -P /opt/module/kafka_eagle https://github.com/smartloli/kafka-eagle-bin/archive/refs/tags/v2.0.8.tar.gz
+                wget -P /opt/module/kafka_eagle https://github.com/smartloli/kafka-eagle-bin/archive/refs/tags/v2.0.8.tar.gz
                 tar -zxvf /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8.tar.gz -C /opt/module/kafka_eagle/
                 tar -zxvf /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8-bin.tar.gz -C /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/
             修改配置文件 
@@ -515,7 +504,8 @@ Kafka生产调优
                 source /etc/profile
                 echo $KE_HOME
             启动 
-                cd /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8 && bin/ke.sh start 
+                cd /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8
+                bin/ke.sh start 
                     停止
-                        cd /opt/module/kafka_eagle/kafka-eagle-bin-2.0.8/efak-web-2.0.8 && bin/ke.sh stop 
+                        bin/ke.sh stop 
             
