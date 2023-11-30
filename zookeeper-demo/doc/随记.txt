@@ -1,5 +1,7 @@
 环境（3.4.10）
     集群部署 
+        前置条件
+            三台主机（hadoop01，hadoop02，hadoop03）
         准备文件
             sudo mkdir /opt/module/zookeeper
             sudo chown -R sxydh:sxydh /opt/module/zookeeper
@@ -23,7 +25,9 @@
         分发文件到集群（hadoop02，hadoop03）
             略
         启动集群（hadoop01，hadoop02，hadoop03）
-            cd /opt/module/zookeeper/zookeeper-3.4.10 && bin/zkServer.sh start
+            cd /opt/module/zookeeper/zookeeper-3.4.10
+            bin/zkServer.sh start
+                验证
+                    bin/zkServer.sh status
                 停止
-                    cd /opt/module/zookeeper/zookeeper-3.4.10 && bin/zkServer.sh stop
-            cd /opt/module/zookeeper/zookeeper-3.4.10 && bin/zkServer.sh status
+                    bin/zkServer.sh stop
