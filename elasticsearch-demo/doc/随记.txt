@@ -8,17 +8,17 @@
             text
             date 
     分片Shards
-        主分片在索引创建后无法更改
+        主分片数在索引创建后无法更改
         主分片在节点扩容后会重新分配
     副本Replicas
-        副本分片在索引创建后可以更改，不同于主分片。
+        副本分片数在索引创建后可以更改，不同于主分片。
         主分片和副本分片不会分配在同一个节点上，即单机时副本分片不可用。
         副本分片在节点扩容后会重新分配
 路由计算
     保存
         目标节点 = hash(_id) % 主分片数量
     查询
-        目标节点可以是任何一个节点（前提是节点包含有目标数据的主分片或者副本分片），该节点称为协调节点。
+        目标节点可以是任何一个节点，该节点称为协调节点。
 数据写流程
     数据通过客户端到达某一节点（协调节点），该节点通过路由计算判断自己是不是目标节点，否则转发数据到目标节点。
     目标节点保存主分片数据，并同步至副本分片。
@@ -74,26 +74,43 @@
     刷新/刷写流程
         请求数据write到内存
         请求数据write到translog
-            index.translog.durability：同步还是异步，默认同步fsync。
-            index.translog.sync_interval：异步时flush到磁盘间隔，默认5s。
-            index.translog.flush_threshold_size：异步时触发flush阈值，默认512mb。
+            index.translog.durability：默认值request，表示每个请求的translog落盘后，才会向客户端返回成功。配置为async表示translog异步落盘。
+            index.translog.sync_interval：translog异步落盘时，flush到磁盘的间隔时间，默认5s。
+            index.translog.flush_threshold_size：translog异步落盘时，触发flush的阈值，默认512mb。
+
+            以上参数可以通过API设置
+                PUT _all/_settings
+                {
+                    "index": {
+                        "translog.durability": "async",
+                        "translog.sync_interval": "5s",
+                        "translog.flush_threshold_size": "512m"
+                    }
+                }
         内存数据refresh到OS Cache（页缓存）
-            通过settings的refresh_interval设置
-        OS Cache数据flush到DISK（磁盘）
-    
+            PUT _all/_settings
+            {
+                "index" : {
+                    "refresh_interval" : "30s"
+                }
+            }
+        OS Cache数据flush到DISK（磁盘），并清理translog。
+
     写一致性
         写写并发（数据一致）
             乐观锁实现
-                版本号控制
+                客户端写请求附加参数if_seq_no和if_primary_term
+                    ?if_seq_no=<_seq_no>&if_primary_term=<_primary_term>
         主副分片（数据一致）
-            consistency
-                one
-                    主分片活跃
-                all 
-                    主分片和副本分片都活跃
-                quorum（默认值，number_of_replicas > 1时才生效）
-                    大多数分片都活跃
-                        int((primary + number_of_replicas) / 2) + 1
+            客户端写请求附加参数consistency
+                ?consistency=
+                    one
+                        只要主分片是活跃的，就可以执行写操作。
+                    all
+                        主要主分片和副本分片都是活跃的，就可以执行写操作。
+                    quorum（默认值，number_of_replicas > 1时才生效）
+                        只要大多数分片都是活跃的，就可以执行写操作。
+                            int((primary + number_of_replicas) / 2) + 1
             需要合理设置主分片和副本分片数，否则可能因为consistency不满足条件，导致无法写入数据。
     读一致性
         最终一致
@@ -110,14 +127,31 @@
         使用SSD
         堆内存不宜超过物理内存50%，否则OS Cache没有足够空间导致频繁落盘。
         堆内存不宜超过32G
+            在config/jvm.options.d文件夹内添加自定义的配置文件，用来配置堆内存，不要直接修改jvm.options文件。
+                追加
+                    -Xms4g
+                    -Xmx4g
     分片优化
         一个分片底层是一个Lucene索引，会消耗一定的CPU、句柄、内存。
         分片占用的硬盘容量不宜超过ES的最大JVM空间设置（32G），因此可以根据索引总容量预估分片数。
         分片数不宜超过节点数3倍
             节点数 <= 主分片数 * (副本数 + 1) <= 节点数 * 3
+            PUT <index_name>
+            {
+                "settings": {
+                    "number_of_shards": 3, // 主分片数
+                    "number_of_replicas": 3 // 分片副本数
+                }
+            }
         推迟分片重分配
             节点下线会导致分片的重分配，消耗资源。
             若节点偶然下线后可以短时间内恢复，可以通过设置合理的delayed_timeout来避免分片的重分配。
+                PUT _all/_settings
+                {
+                    "index": {
+                        "unassigned.node_left.delayed_timeout": "5m" // 默认1m。如果某个节点已经下线，需要立刻对该节点的分片进行重分配，可以将delayed_timeout设置为0。
+                    }
+                }
     路由优化 
         shard_num = hash(_routing) % num_primary_shards
         _routing默认为文档_id，可以选择合适的业务数据作为_routing。
@@ -126,8 +160,18 @@
             减小数据写入磁盘的频率，减小磁盘IO频率。
         增加refresh_interval的参数值
             减少segment文件创建，减少segment的merge次数，merge是发生在JVM中的，有可能导致Full GC，增加refresh会降低搜索的实时性。
+                PUT _all/_settings
+                {
+                    "index": {
+                        "refresh_interval": "30s"
+                    }
+                }
         增加Buffer大小
-            减小refresh的时间间隔，因为导致segment文件创建的原因不仅有时间阈值，还有Buffer空间大小，写满了也会创建。默认最小值48MB < 默认值JVM空间的10% < 默认最大无限制。
+            减小refresh的时间间隔，因为导致segment文件创建的原因不仅有时间阈值，还有Buffer空间大小，写满了也会创建。
+            默认最小值48MB < 默认值JVM空间的10% < 默认最大无限制
+                config/elasticsearch.yml（需要重启）
+                    追加
+                        indices.memory.index_buffer_size: 1024m
         关闭副本
             当需要单次写入大量数据的时候，建议关闭副本，暂停搜索服务。
     查询优化（https://www.modb.pro/db/429614）
@@ -139,10 +183,11 @@
             query倾向于当前文档和查询的语句的相关度，而filter倾向于当前文档和查询的条件是不是相符。即在查询过程中，query是要对查询的每个结果计算相关性得分的，而filter不会。
             filter有相应的缓存机制，可以提高查询效率。
         避免深度分页
+            假设分页参数from=5000，size=10，查询时elasticsearch需要在各个分片都取5010条数据，排序合并后再取符合条件的10条数据，开销比较大。
 集群选主 
     选举流程
-        由ZenDiscovery模块负责，主要包含Ping（节点之间通过RPC发现彼此）和Unicast（包含一个主机列表，控制哪些节点需要ping通）。
-        所有可以成为master的节点（node.master: true）根据nodeId字典排序。每次选举每个节点都把自己所知道的节点拍一次序，然后选出第一个节点，暂且认为它是master节点。
+        由ZenDiscovery模块负责，主要包含Ping（节点之间通过RPC发现彼此）和Unicast（包含一个主机列表，控制哪些节点需要Ping通）。
+        所有可以成为master的节点（node.master: true）根据nodeId字典排序。每次选举时每个节点都把自己所知道的节点排一次序，然后选出第一个节点，暂且认为它是master节点。
     脑裂问题
         原因：master节点失去响应。
             网络问题
