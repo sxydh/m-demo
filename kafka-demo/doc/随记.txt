@@ -97,7 +97,7 @@ Kafka生产者
         精确一次（Exactly Once） 
             至少一次（At Least Once），且幂等性。
             幂等性就是指Producer不论向Broker发送多少次重复数据，Broker端都只会持久化一条，保证了不重复。
-            重复数据的判断标准：具有相同主键<PID，Partition，SeqNumber>的消息提交时，Broker指挥持久化一条。
+            重复数据的判断标准：具有相同主键<PID，Partition，SeqNumber>的消息提交时，Broker只会持久化一条。
                 其中PID是Kafka每次重启都会分配一个新的
                 Partition表示分区号
                 Sequence Number是单调自增的
@@ -285,7 +285,7 @@ Kafka消费者
             CooperativeSticky
         可以通过配置参数partition.assignment.strategy，修改分区的分配策略。
         默认策略是Range + CooperativeSticky。 
-        Kafka可以同时使用多个分区分配策略。
+        Kafka可以同时使用多个分区分配策略
     消费者offset保存位置
         Kafka0.9版本之前，Consumer默认将offset保存在ZooKeeper中。
         从0.9版本开始，Consumer默认将offset保存在Kafka一个内置的Topic中，该Topic为__consumer_offsets。
