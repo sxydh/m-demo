@@ -22,8 +22,8 @@ public class _Main {
     private static class UserProp {
         private String brokers = "192.168.233.129:9092,192.168.233.130:9092,192.168.233.131:9092";
         private String topic = "word";
-        private Integer partition = NumUtils.TWO;
-        private String partitioner = PartitionerDemo.class.getName();
+        private Integer partition = null; // NumUtils.TWO
+        private String partitioner = null; // PartitionerDemo.class.getName()
         private String compression = "snappy";
         private Boolean isAsync = true;
         private Boolean isTransaction = false;
@@ -41,17 +41,17 @@ public class _Main {
             producer.beginTransaction();
         }
         try {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 10; i++) {
                 ProducerRecord<String, String> record;
+                String value = NmUtils.randomName();
+                String key = String.valueOf(value.charAt(0));
                 // 指定分区
                 if (userProp.getPartition() != null) {
-                    String value = NmUtils.randomName();
-                    String key = String.valueOf(value.charAt(0));
                     record = new ProducerRecord<>(userProp.getTopic(), userProp.getPartition(), key, value);
                 }
                 // 不指定分区
                 else {
-                    record = new ProducerRecord<>(userProp.getTopic(), NmUtils.randomName());
+                    record = new ProducerRecord<>(userProp.getTopic(), key, value);
                 }
                 // 异步发送
                 if (userProp.getIsAsync()) {
@@ -104,10 +104,10 @@ public class _Main {
         }
         // 缓冲区大小
         // 默认32m
-        properties.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
+        properties.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432 * 2);
         // 批次大小
         // 默认16k
-        properties.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384);
+        properties.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384 * 8);
         // 每批次数据缓冲时间阈值
         // 默认0ms
         properties.put(ProducerConfig.LINGER_MS_CONFIG, 5);

@@ -63,9 +63,9 @@ Kafka生产者
             合理控制分区的任务，可以实现负载均衡的效果。
         分区策略
             指明partition的情况下，直接将指明的值作为partition值。
-                例如：指明partition=0，所有数据写入分区0.
+                例如：指明partition=0，所有数据写入分区0。
             没有指明partition值但有key的情况下，将key的hash值与topic的partition数进行取余得到partition值。
-            既没有partition值有没有key值的情况下，Kafka采用Sticky Partition（黏性分区器），会随机选择一个分区，并尽可能一直使用该分区，待该分区的batch已满或者已完成，Kafka再随机一个分区进行使用（和上一次分区不同）。
+            既没有partition值也没有key值的情况下，Kafka采用Sticky Partition（黏性分区器），会随机选择一个分区，并尽可能一直使用该分区，待该分区的batch已满或者已完成，Kafka再随机一个分区进行使用（和上一次分区不同）。
                 例如：第一次随机选择0号分区，等0号分区当前批次满了（默认16k）或者linger.ms设置的时间到，Kafka再随机一个分区进行使用（如果还是0会继续随机）。
         自定义分区
             实现org.apache.kafka.clients.producer.Partitioner
@@ -83,7 +83,7 @@ Kafka生产者
             -1/all：生产者发送过来的数据，Leader和ISR队列里的所有节点收齐数据后应答。-1和all等价。
                 Leader维护了一个动态in-sync replica set（ISR），意为和Leader保持同步的Follower+Leader集合（leader:0，isr:0,1,2）。
                 如果Follower长时间未向Leader发送通信请求或同步数据，则该Follower将被踢出ISR。该时间阈值由replica.lag.time.max.ms参数设定，默认30s。
-                这样就不用等长期联系不上或者已经故障的节点。
+                这样就不用等长期联系不上或者已经故障的节点
                 如果分区副本设置为1个，或者ISR里应答的最小副本数量（min.insync.replicas默认为1）设置为1，和acks=1的效果是一样的，仍然有丢数的风险（leader:0，isr:0）。
         数据完全可靠条件
             acks级别设置为-1，且分区副本大于等于2，且ISR里应答的最小副本数量大于等于2。
@@ -101,8 +101,9 @@ Kafka生产者
                 其中PID是Kafka每次重启都会分配一个新的
                 Partition表示分区号
                 Sequence Number是单调自增的
-            所以幂等性只能保证的是在单分区单会话内不重复。
-            幂等性配置：enable.idempotencce，默认为true，false关闭。
+                上述信息在Producer端产生
+            所以幂等性只能保证的是在单分区单会话内不重复
+            幂等性配置：enable.idempotence，默认为true，false关闭。
     Kafka事务管理 
         开启事务，必须开启幂等性（事务是基于幂等性实现的）。
         每个Broker都有一个事务协调器（Transaction Coordinator）
@@ -117,7 +118,7 @@ Kafka生产者
             事务协调器发送commit请求到BrokerX
     数据有序
         概述
-            InFlightRequests默认给每个broker节点最多缓存5个请求，这有可能导致消息乱序。例如请求3可能因为网络等原因导致失败并重试，重试期间请求4和5成功到达Broker端并落盘，3重试成功后消息顺序就变成了（3，5，4），而不是（5，4，3）。
+            InFlightRequests默认给每个Broker节点最多缓存5个请求，这有可能导致消息乱序。例如请求3可能因为网络等原因导致失败并重试，重试期间请求4和5成功到达Broker端并落盘，3重试成功后消息顺序就变成了（3，5，4），而不是（5，4，3）。
         Kafka在1.x版本之前保证数据单分区有序，条件如下：
             max.in.flight.requests.per.connection=1（不需要考虑是否开启幂等性）
         Kafka在1.x及以后版本保证数据单分区有序，条件如下：
@@ -177,7 +178,7 @@ Kafka Broker
         LEO（Log End Offset）：每个副本的最后一个offset，LEO其实就是最新的offset + 1。
         HW（High Watermark）：所有副本中最小的LEO。
         Follower发生故障后会被临时踢出ISR
-        这个期间Leader和Follower继续接收数据
+        这个期间Leader和其它Follower继续接收数据
         待该Follower恢复后，Follower会读取本地磁盘记录的上次HW，并将log文件高于HW的部分截取掉，从HW开始从Leader进行同步。
         等该Follower的LEO大于等于该Partition的HW，即Follower追上Leader之后，就可以重新加入ISR了。
     Leader故障 
@@ -245,7 +246,9 @@ Kafka Broker
 Kafka消费者
     概述
         每个分区的数据只能由消费者组中的一个消费者消费，一个消费者可以消费多个分区数据。
-        每个消费者的offset由消费者提交到系统主题（__consumer_offsets）保存。
+            如果消费者显示指定消费分区，一个分区是可以被多个消费者消费的。
+                参考kafka-demo/kafkaclient-demo/src/main/java
+        每个消费者的offset由消费者提交到系统主题（__consumer_offsets）保存
     消费者组
         消费者组（Consumer Group，CG）由多个consumer组成，形成一个消费者组的条件，是所有消费者的groupId相同。
         消费者组内每个消费者负责消费不同分区的数据，一个分区只能由一个组内消费者消费。
@@ -354,7 +357,7 @@ Kafka生产调优
     消费者调优
         增加分区数
             创建一个只有1个分区的Topic
-            测试这个Topic的Producer吞吐量和Consuer吞吐量，假设分别是Tp和Tc，单位是MB/s。
+            测试这个Topic的Producer吞吐量和Consumer吞吐量，假设分别是Tp和Tc，单位是MB/s。
             建设总的目标吞吐量是Tt，那么分区数 = Tt / min(Tp, Tc)。
             分区数不是越多越好，也不是越少越好，需要搭建完集群，进行压测，再灵活调整分区数。一般设置为3~10个。
         fetch.max.bytes，默认52428800（50m）。消费者获取服务端一批消息的最大字节数，如果服务端一批次的数据大于该值，仍然可以拉取回来这批数据，因此，这不是一个绝对最大值。一批次的大小受message.max.bytes（服务端配置）或max.message.bytes（主题配置）影响。

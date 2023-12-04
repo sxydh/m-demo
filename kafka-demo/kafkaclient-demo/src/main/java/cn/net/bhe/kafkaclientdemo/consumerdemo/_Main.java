@@ -21,7 +21,7 @@ public class _Main {
         private String brokers = "192.168.233.129:9092,192.168.233.130:9092,192.168.233.131:9092";
         private String topic = "word";
         private String groupId = "group_id_word_01";
-        private Integer[] partitions = null; // new Integer[]{0, 1, 2}
+        private Integer[] partitions = new Integer[]{0, 1, 2}; // new Integer[]{0, 1, 2}
         private Long[] offsets = null; // new Long[]{System.currentTimeMillis(), System.currentTimeMillis(), System.currentTimeMillis()}
         private Boolean isOffsetTs = true;
         private Boolean autoCommit = false;
