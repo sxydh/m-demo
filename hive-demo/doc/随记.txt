@@ -31,8 +31,12 @@ Hive基础架构
 环境
     前置条件
         Ubuntu 20.04.6 LTS
+        Hadoop集群
+            192.168.233.129（hadoop01）
+            192.168.233.130（hadoop02）
+            192.168.233.131（hadoop03）
     安装Hive（3.1.2）
-        准备文件
+        准备文件（hadoop01）
             sudo mkdir /opt/module/hive 
             sudo chown -R sxydh:bhe /opt/module/hive
             wget -P /opt/module/hive/ https://downloads.apache.org/hive/hive-3.1.2/apache-hive-3.1.2-bin.tar.gz
@@ -47,18 +51,22 @@ Hive基础架构
                     export HIVE_HOME=/opt/module/hive/apache-hive-3.1.2-bin
                     export PATH=$PATH:$HIVE_HOME/bin
             source /etc/profile 
-        分发文件到集群
+        修改配置文件（hadoop01）
+            vim /opt/module/hive/apache-hive-3.1.2-bin/conf/log4j.properties
+                追加
+                    log4j.rootLogger=WARN
+        分发文件到集群（hadoop02，hadoop03）
             略
-        启动
+        启动（hadoop01/hadoop02/hadoop03）
             cd /opt/module/hive/apache-hive-3.1.2-bin
             bin/hive
                 如果使用Derby存储元数据，需要先执行以下命令：
                     bin/schematool -dbType derby -initSchema
                         注意，Derby存储的元数据不会与集群中其它机器共享。
                         建议将元数据存储在MySQL
-                            准备MySQL驱动
+                            准备MySQL驱动（hadoop01）
                                 cp /opt/module/tmp/mysql-connector-j-8.0.33.jar $HIVE_HOME/lib
-                            修改配置文件
+                            修改配置文件（hadoop01）
                                 vim $HIVE_HOME/conf/hive-site.xml
                                     追加
                                         <?xml version="1.0"?>
@@ -71,7 +79,7 @@ Hive基础架构
                                             <!-- JDBC DriverName -->
                                             <property>
                                                 <name>javax.jdo.option.ConnectionDriverName</name>
-                                                <value>com.mysql.jdbc.Driver</value>
+                                                <value>com.mysql.cj.jdbc.Driver</value>
                                             </property>
                                             <!-- JDBC UserName -->
                                             <property>
@@ -99,21 +107,22 @@ Hive基础架构
                                                 <value>/user/hive/warehouse</value>
                                             </property>
                                         </configuration>
-                            分发文件到集群
+                            分发文件到集群（hadoop02，hadoop03）
                                 xsync.sh $HIVE_HOME/lib/mysql-connector-j-8.0.33.jar
                                 xsync.sh $HIVE_HOME/conf/hive-site.xml
                             新建MySQL数据库：metastore。
                                 略
-                            初始化Hive元数据库
+                            初始化Hive元数据库（hadoop01）
                                 cd /opt/module/hive/apache-hive-3.1.2-bin
                                 bin/schematool -dbType mysql -initSchema -verbose
-                            启动Hive
+                            启动Hive（hadoop01/hadoop02/hadoop03）
                                 略
                 验证
                     show databases;
                     show tables;
+                    exit;
         连接客户端（JDBC）
-            修改配置文件
+            修改配置文件（hadoop01）
                 vim $HIVE_HOME/conf/hive-site.xml
                     追加
                         <!-- 指定Host -->
@@ -131,9 +140,9 @@ Hive基础架构
                             <name>hive.server2.enable.doAs</name>
                             <value>false</value> 
                         </property>
-            分发文件到集群
+            分发文件到集群（hadoop02，hadoop03）
                 略
-            启动HiveServer2
+            启动HiveServer2（hadoop01/hadoop02/hadoop03）
                 cd /opt/module/hive/apache-hive-3.1.2-bin
                 bin/hive --service hiveserver2
                     如果报错可以忽略，等60秒后会正常启动。
