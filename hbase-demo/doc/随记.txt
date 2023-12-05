@@ -9,7 +9,7 @@ HBase存储结构
             Region由一个或多个Store组成，Store的划分以列族为单位。
         数据存储整体有序，按照RowKey的字典序排列，RowKey为Byte数组。
     物理结构
-        物理结构为数据映射关系KV。K：Row Key + Column Family + Column Qualifier + Timestamp，V：数据值。
+        物理结构为数据映射关系KV。K = Row Key + Column Family + Column Qualifier + Timestamp，V = 数据值。
         逻辑结构上为空的数据，物理上并不存储。
         HBase把表格数据存储在HDFS上，按照Namespace -> Table -> Region -> Store的格式划分文件夹，在Store中存储HFile，HFile内部为数据Cell。
             HFile存储有多种数据信息，包括数据本身（KV键值对）、元数据记录、文件信息、元数据索引、数据索引和一个固定长度的尾部信息（记录文件的修改情况）。
@@ -72,7 +72,7 @@ HBase写流程
     客户端根据Put请求中的RowKey在meta表中查找数据Region所在的RegionServer。
         meta表信息会缓存在客户端的MetaCache中，便于下次访问。
         如果下次访问时找不到数据Region的位置信息，则需要重新从ZooKeeper拉取meta表的最新信息。
-    客户端与目标RegionServer进行通讯，执行Put操作。
+    客户端与目标RegionServer进行通信，执行Put操作。
         将操作日志追加到WAL并落盘HDFS
         将数据放在写缓存MemStore中并排序
         MemStore刷写到HDFS中的Store
@@ -106,7 +106,7 @@ HBase写流程
     RegionServer向客户端返回ACK
 HBase读流程
     获取目标RegionServer与写流程一致
-    客户端与目标RegionServer进行通讯，执行Get操作。
+    客户端与目标RegionServer进行通信，执行Get操作。
         将操作日志追加到WAL并落盘HDFS
         查询读缓存BlockCache
             BlockCache优先存储索引文件、布隆过滤器和元数据，其余内存按照64k块存储数据。
@@ -217,10 +217,14 @@ HBase二级索引
 HBase环境
     前置条件
         Ubuntu 20.04.6 LTS
-    安装ZooKeeper
-        参考m-demo/zookeeper-demo
-    安装Hadoop
-        参考m-demo/hadoop-demo
+        ZooKeeper集群
+            192.168.233.129
+            192.168.233.130
+            192.168.233.131
+        Hadoop集群
+            192.168.233.129（hadoop01）
+            192.168.233.130（hadoop02）
+            192.168.233.131（hadoop03）
     安装HBase（2.4.11）
         准备文件（hadoop01）
             sudo mkdir /opt/module/hbase
@@ -232,7 +236,7 @@ HBase环境
                     export HBASE_HOME=/opt/module/hbase/hbase-2.4.11
                     export PATH=$PATH:$HBASE_HOME/bin
             source /etc/profile
-        修改配置文件
+        修改配置文件（hadoop01）
             vim /opt/module/hbase/hbase-2.4.11/conf/hbase-env.sh 
                 更新
                     export HBASE_MANAGES_ZK=false
@@ -277,7 +281,7 @@ HBase环境
             cd /opt/module/hbase/hbase-2.4.11
                 bin/hbase-daemon.sh start master 
                 bin/hbase-daemon.sh start regionserver
-        启动集群
+        启动集群（hadoop01）
             cd /opt/module/hbase/hbase-2.4.11
             bin/start-hbase.sh
                 如果出现日志包冲突问题
@@ -287,20 +291,24 @@ HBase环境
                 停止
                     bin/stop-hbase.sh
         Master高可用（可选）
-            修改配置文件
+            修改配置文件（hadoop01）
                 vim /opt/module/hbase/hbase-2.4.11/conf/backup-masters 
                     追加
                         hadoop02 
-            分发文件到集群 
+            分发文件到集群（hadoop02，hadoop03）
                 略
-            启动集群
+            启动集群（hadoop01）
                 略
             验证
                 http://hadoop02:16010/
     安装Phoenix（5.1.2，可选）
         前置条件
             Python 3.6.15
+                sudo add-apt-repository ppa:deadsnakes/ppa
+                sudo apt update
+                sudo apt install python3.6
                 sudo ln -s /usr/bin/python3 /usr/bin/python
+                python3.6 --version
         准备文件（hadoop01）
             sudo mkdir /opt/module/phoenix
             sudo chown -R sxydh:sxydh /opt/module/phoenix
@@ -313,15 +321,15 @@ HBase环境
                     export PHOENIX_CLASSPATH=$PHOENIX_HOME
                     export PATH=$PATH:$PHOENIX_HOME/bin
             source /etc/profile
-        分发文件到集群
+        分发文件到集群（hadoop02，hadoop03）
             sudo /opt/module/mybin/xsync.sh /etc/profile.d/my_env.sh
-            xsync.sh /opt/module/hbase/hbase-2.4.11/lib/phoenix-server-hbase-2.4-5.1.2.jar
-        重启集群（HBase）
+            xsync.sh /opt/module/phoenix
+        重启集群（hadoop01）
             cd /opt/module/hbase/hbase-2.4.11
             bin/stop-hbase.sh
             bin/start-hbase.sh
-        连接Phoenix
-            cd /opt/module/phoenix/phoenix-hbase-2.4-5.1.2-bin/
+        连接Phoenix（hadoop01/hadoop02/hadoop03）
+            cd /opt/module/phoenix/phoenix-hbase-2.4-5.1.2-bin
             bin/sqlline.py hadoop01,hadoop02,hadoop03:2181
                 默认情况下，HBase中已存在的表，Phoenix是不可见的，需要进行表的映射。
                 退出
