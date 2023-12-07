@@ -22,6 +22,8 @@
         <lombok.version>1.18.26</lombok.version>
         <log4j-core.version>2.22.0</log4j-core.version>
         <log4j-api.version>2.22.0</log4j-api.version>
+
+        <scala-library.version>2.13.12</scala-library.version>
     </properties>
 
     <dependencies>
@@ -60,6 +62,13 @@
             <artifactId>log4j-api</artifactId>
             <version>${log4j-api.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.scala-lang/scala-library -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala-library.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -72,6 +81,31 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.2</version>
+                <executions>
+                    <execution>
+                        <id>scala-compile</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/*.scala</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>scala-test-compile</id>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
