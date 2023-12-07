@@ -1,5 +1,37 @@
+概述
+    Python是解释型语言
+    Python是动态强类型语言
+基础
+    数据类型 
+        数字（Number）：int，float，complex（复数），bool。
+        字符串（String）
+        列表（List）
+        元组（Tuple）
+        集合（Set）
+        字典（Dictionary）
+        参见python-demo/src/main
+    流程控制
+        参见python-demo/src/main
+    函数 
+        参见python-demo/src/main
+    异常
+        参见python-demo/src/main
+    模块
+        参见python-demo/src/main
+    包 
+        参见python-demo/src/main
 环境
     Python 3.10.4
+        Windows 11
+            安装软件
+                略
+            环境变量
+                更新或追加（如果没有的话）
+                    PYTHON_HOME
+                        C:\Users\Administrator\AppData\Local\Programs\Python\Python312
+                    PATH
+                        %PYTHON_HOME%
+                        %PYTHON_HOME%\Scripts
         Ubuntu 20.04.6 LTS
             前置依赖
                 sudo apt update
@@ -16,9 +48,16 @@
                 ./configure --prefix=/usr/local/python3104
                 make
                 make install
-            创建软连接
+            创建软连接（或者配置环境变量，二选一即可）
                 sudo rm -f /usr/bin/python
                 sudo ln -s /usr/local/python3104/bin/python3.10 /usr/bin/python
                 sudo chown sxydh:sxydh /usr/bin/python
+                
+                sudo rm -f /usr/bin/pip
+                sudo ln -s /usr/local/python3104/bin/pip3.10 /usr/bin/pip
+                sudo chown sxydh:sxydh /usr/bin/pip
             验证安装
                 python --version
+    pip 
+        安装第三方包
+            pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <包名称>
