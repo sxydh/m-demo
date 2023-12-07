@@ -4,7 +4,8 @@ def f():
 
 
 # 有参数
-def f2(o):
+# 参数类型是可选的
+def f2(o: object):
     print(f'{type(o)} = {o}')
 
 

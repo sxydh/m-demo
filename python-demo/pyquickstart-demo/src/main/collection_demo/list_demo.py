@@ -1,3 +1,5 @@
+from typing import Union
+
 if __name__ == '__main__':
     # 创建列表
     list_ = ['a', 'b', 'c']
@@ -22,3 +24,9 @@ if __name__ == '__main__':
     # 转换类型
     print(set(list_))
     print(tuple(list_))
+
+    # 元素类型是可选的
+    list2_: list[str] = ['a', 'b', 'c']
+    print(list2_)
+    list3_: list[Union[str, int]] = ['a', 'b', 'c', 1, 2, 3]
+    print(list3_)

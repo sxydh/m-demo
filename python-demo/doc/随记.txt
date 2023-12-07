@@ -20,6 +20,14 @@
         参见python-demo/src/main
     包 
         参见python-demo/src/main
+    类
+        参见python-demo/src/main
+    对象
+        参见python-demo/src/main
+    继承 
+        参见python-demo/src/main
+    多态
+        参见python-demo/src/main
 环境
     Python 3.10.4
         Windows 11

@@ -1,3 +1,5 @@
+from typing import Union
+
 if __name__ == '__main__':
     # 创建元组
     # 元组是不可变的
@@ -10,3 +12,9 @@ if __name__ == '__main__':
     # 转换类型
     print(list(tuple_))
     print(set(tuple_))
+
+    # 元素类型是可选的
+    tuple2_: tuple[int, int, int] = (1, 2, 3)
+    print(tuple2_)
+    tuple3_: tuple[int, Union[int, str]] = (1, 'a')
+    print(tuple3_)
