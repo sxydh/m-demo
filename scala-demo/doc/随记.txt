@@ -160,9 +160,4 @@
     上限：TypeName[T <: SuperName]。
     下限：TypeName[T >: SubName]。
 环境
-    IDEA
-        File
-            Project Structure
-                Global Libraries
-                    New Global Library
-                        Scala SDK
+    Maven配合IDEA
