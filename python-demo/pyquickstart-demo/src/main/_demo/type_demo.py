@@ -4,7 +4,7 @@ if __name__ == '__main__':
     print(type(int_), int_)
     complex_ = 1 + 2j
     print('%s = %s' % (type(complex_), complex_))
-    bool_ = bool(1)
+    bool_ = True
     print('%s = %s' % (type(bool_), bool_))
 
     # 字符串

@@ -6,13 +6,13 @@ class Class:
 class SubClass(Class):
 
     def f(self):
-        print("SubClass.f()")
+        print('SubClass.f()')
 
 
 class SubClass2(Class):
 
     def f(self):
-        print("SubClass2.f()")
+        print('SubClass2.f()')
 
 
 def f(clazz: Class):

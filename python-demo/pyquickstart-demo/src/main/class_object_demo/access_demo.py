@@ -4,4 +4,4 @@ class Man:
 
     # 类的私有方法命名以__开头
     def __private(self):
-        print("private method")
+        print('private method')

@@ -3,6 +3,7 @@ from typing import Union
 if __name__ == '__main__':
     # 创建元组
     # 元组是不可变的
+    # 元组中的逗号是必需的，即使只有一个元素。
     tuple_ = ('a', 'b', 'c')
     print(tuple_)
 
