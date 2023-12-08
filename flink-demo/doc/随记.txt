@@ -339,13 +339,15 @@ Watermark
                 export HADOOP_CLASSPATH=`hadoop classpath`
                 cd /opt/module/flink/flink-1.13.1
                 bin/flink run -t yarn-per-job --detached -c cn.net.bhe.flinkdemo.sourcedemo.SocketSourceDemo /opt/module/tmp/flink-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
-                    启动后会有报错
-                        org.apache.hadoop.hdfs.web.HftpFileSystem cannot access its superinterface org.apache.hadoop.hdfs.web.TokenAspect：手动删除Jar包内所有org.apache.hadoop内容，再次提交。
-                        Trying to access closed classloader：目前尚未解决，不影响作业运行。
-                        如果单个TaskManager的Slot设置过大，可能会导致NoResourceAvailableException，任务无法执行。
                     验证
                         http://<resourcemanager_ip>:8088/
                             Applications
                         bin/flink list -t yarn-per-job -Dyarn.application.id=<app_id>
                     停止
                         bin/flink cancel -t yarn-per-job -Dyarn.application.id=<app_id> <job_id>
+                    解决报错
+                        org.apache.hadoop.hdfs.web.HftpFileSystem cannot access its superinterface org.apache.hadoop.hdfs.web.TokenAspect：程序打包时排除所有Hadoop依赖，或者手动删除包内所有org.apache.hadoop内容，再次提交。
+                        Trying to access closed classloader：目前尚未解决，不影响作业运行。
+                        NoResourceAvailableException：TaskManager的Slot设置过大，调小即可。
+                            /opt/module/flink/flink-1.13.1/conf/flink-conf.yaml
+                                taskmanager.numberOfTaskSlots: 1
