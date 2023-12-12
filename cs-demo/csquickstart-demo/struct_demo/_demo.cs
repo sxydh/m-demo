@@ -7,7 +7,7 @@ namespace StructDemo
     // 结构体成员的默认访问修饰符 private
     struct StructDemo
     {
-        // 成员属性
+        // 成员变量
         public int varInt; 
         public string varString;
 

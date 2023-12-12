@@ -6,10 +6,10 @@ namespace ClassDemo
     // 类的默认访问修饰符 internal，成员的默认访问修饰符 private。
     class ClassDemo
     {
-        /************ 成员属性 ************/
+        /************ 成员变量 ************/
         private int varInt = 1;
         private string varString = "Hello World!";
-        // 静态成员属性
+        // 静态成员变量
         public static int staticInt = 1;
 
         /************ 构造函数 ************/
