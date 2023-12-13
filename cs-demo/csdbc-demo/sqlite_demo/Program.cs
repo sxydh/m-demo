@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SQLite;
+using System.IO;
 
 namespace SqliteDemo
 {
@@ -10,8 +11,9 @@ namespace SqliteDemo
         SQLiteConnection CreateConnDemo()
         {
             string path = "Data Source=";
-            path = path + System.IO.Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
+            path = path + Directory.GetCurrentDirectory();
             path = path + @"\sqlite_demo.sqlite";
+            Console.WriteLine("数据库文件为：" + path);
             SQLiteConnection connection = new SQLiteConnection(path);
             return connection;
         }
@@ -66,18 +68,26 @@ namespace SqliteDemo
         }
         static void Main(string[] args)
         {
-            Program program = new Program();
-            Console.WriteLine("\n///////////// CreateConnDemo");
-            program.CreateConnDemo();
+            try
+            {
+                Program program = new Program();
+                Console.WriteLine("\n///////////// CreateConnDemo");
+                program.CreateConnDemo();
 
-            Console.WriteLine("\n///////////// CreateTableDemo");
-            program.CreateTableDemo();
+                Console.WriteLine("\n///////////// CreateTableDemo");
+                program.CreateTableDemo();
 
-            Console.WriteLine("\n///////////// InsertDemo");
-            program.InsertDemo();
+                Console.WriteLine("\n///////////// InsertDemo");
+                program.InsertDemo();
 
-            Console.WriteLine("\n///////////// QueryDemo");
-            program.QueryDemo();
+                Console.WriteLine("\n///////////// QueryDemo");
+                program.QueryDemo();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            Console.ReadLine();
         }
     }
 }
