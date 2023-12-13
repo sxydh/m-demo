@@ -1,0 +1,6 @@
+环境
+    IDE
+        Visual Studio
+            sqlite_demo
+                NuGet
+                    System.Data.SQLite
