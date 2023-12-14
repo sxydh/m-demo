@@ -1,7 +1,5 @@
 package cn.net.bhe.kotlinqsdemo.exception_demo
 
-import java.lang.Exception
-
 fun main() {
     println(">>>>>>>>>>>>> 异常处理")
     try {
