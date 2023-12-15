@@ -20,7 +20,9 @@ def server_init():
     def recv_data(conn: socket, address: tuple):
         while True:
             # 阻塞获取数据
-            data = conn.recv(1024)
+            # 第一个字节是数据长度
+            len_ = conn.recv(1)[0]
+            data = conn.recv(len_)
             print(f'from client {address}: {data.decode('utf-8')}')
 
     threading.Thread(target=accept_conn, args=(socket_server,)).start()
@@ -33,7 +35,10 @@ def client_init():
     while True:
         time.sleep(random.randint(1, 10))
         msg = str(random.randint(1, 1000))
-        socket_client.send(msg.encode('utf-8'))
+        data = bytearray(msg.encode('utf-8'))
+        # 第一个字节是数据长度
+        data.insert(0, len(msg))
+        socket_client.send(data)
 
 
 if __name__ == '__main__':
