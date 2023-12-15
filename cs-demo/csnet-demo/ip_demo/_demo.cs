@@ -11,6 +11,7 @@ namespace IpDemo
         {
             List<string> subnetIpList = GetSubnetIpList();
             List<string> aliveIpList = GetAliveIpList(subnetIpList);
+            Console.WriteLine($"Alive IP List[{aliveIpList.Count}]:");
             foreach (string ip in aliveIpList)
             {
                 System.Console.WriteLine(ip);
