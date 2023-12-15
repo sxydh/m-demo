@@ -22,7 +22,7 @@ namespace SocketServerDemo
             {
                 // 阻塞接收客户端连接
                 Socket conn = socket.Accept();
-                Console.WriteLine("Client connected: " + conn.RemoteEndPoint.ToString());
+                Console.WriteLine("[" + Thread.CurrentThread.ManagedThreadId + "] Client connected: " + conn.RemoteEndPoint.ToString());
                 ThreadPool.QueueUserWorkItem(o => ConnHandler(conn));
             }
         }
@@ -42,7 +42,9 @@ namespace SocketServerDemo
 
                 if (conn.Poll(1000, SelectMode.SelectRead) && conn.Available == 0)
                 {
-                    Console.WriteLine("Client disconnected: " + conn.RemoteEndPoint.ToString());
+                    Console.WriteLine("[" + Thread.CurrentThread.ManagedThreadId + "] Client disconnected: " + conn.RemoteEndPoint.ToString());
+                    conn.Close();
+                    Console.WriteLine("[" + Thread.CurrentThread.ManagedThreadId + "] Connection closed: " + conn.RemoteEndPoint.ToString());
                     break;
                 }
             }

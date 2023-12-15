@@ -62,11 +62,10 @@ namespace TypeDemo
             varDynamic = new object();
 
             // 字符串类型
-            // 使用 @ 可以对后续字符串转义，包括换行。
             string varString = "Hello World!";
-            string varString2 = @"\m-demo\cs-demo";
-            System.Console.WriteLine("varString = " + varString);
-            System.Console.WriteLine("varString2 = " + varString2);
+            string varString2 = @"\m-demo\cs-demo"; // 使用 @ 可以对后续字符串转义，包括换行。
+            System.Console.WriteLine($"varString = {varString}");
+            System.Console.WriteLine($"varString2 = {varString2}");
         }
 
         /************ 可空类型 ************/
