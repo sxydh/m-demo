@@ -11,6 +11,7 @@
     <url>http://maven.apache.org</url>
     <modules>
         <module>kotlinqs-demo</module>
+        <module>kotlindbc-demo</module>
     </modules>
 
     <properties>
