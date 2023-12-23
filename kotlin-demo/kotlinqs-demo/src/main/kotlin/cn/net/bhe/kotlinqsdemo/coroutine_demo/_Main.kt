@@ -1,6 +1,6 @@
 @file:Suppress("OPT_IN_USAGE")
 
-package cn.net.bhe.kotlinqsdemo.concurrent_demo
+package cn.net.bhe.kotlinqsdemo.coroutine_demo
 
 import cn.net.bhe.mutil.StrUtils
 import kotlinx.coroutines.*
@@ -65,7 +65,7 @@ suspend fun launchDemo() {
         }
         println("[${Thread.currentThread().name}] 协程 2 已执行")
         job
-    }.join()
+    }
 }
 
 /************ async 构建器 ************/
@@ -81,8 +81,7 @@ suspend fun asyncDemo() {
         }
         println("[${Thread.currentThread().name}] 协程 1 返回值 = ${deferred.await()}")
         println("[${Thread.currentThread().name}] 协程 2 已执行")
-        deferred
-    }.join()
+    }
 }
 
 suspend fun main() {
