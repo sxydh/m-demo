@@ -52,9 +52,15 @@ fun scopeFunDemo() {
 
 /************ Lambda表达式 ************/
 fun lambdaFunDemo() {
+    // Lambda 作为变量
     val f = { a: Int, b: Int -> a + b }
-    // 表达式隐式返回最后一个值
     val valInt = f(1, 1)
+
+    // Lambda 作为参数
+    fun f(runner: Runnable) {
+        runner.run()
+    }
+    f { println() }
 }
 
 /************ 扩展函数 ************/
