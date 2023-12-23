@@ -5,7 +5,7 @@ namespace AccessDemo
     {
         // public：外部可见。
         public int publicInt = 1;
-        // private：内部可见。
+        // private：内部可见。类成员默认值。
         private int privateInt = 1;
         // protected：内部和子类可见。
         protected int protectedInt = 1;

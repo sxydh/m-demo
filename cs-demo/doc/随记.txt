@@ -34,6 +34,8 @@
     Visual Studio
         常用快捷键
             格式化：Ctrl + D，Ctrl + K。
+            删除行：Ctrl + Shift + L。
+            冲组织：Ctrl + R + G。
             运行（针对启动项目）：Ctrl + F5。
             编译（针对当前文件）：Ctrl + F7。
             生成（启动项目可执行文件）：Ctrl + B。

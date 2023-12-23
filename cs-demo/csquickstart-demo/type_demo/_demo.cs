@@ -75,10 +75,12 @@ namespace TypeDemo
             int? varInt = null;
             float? varFloat = null;
             double? varDouble = null;
+            string varString = null;
 
             System.Console.WriteLine("varInt = " + varInt);
             System.Console.WriteLine("varFloat = " + varFloat);
             System.Console.WriteLine("varDouble = " + varDouble);
+            System.Console.WriteLine("varString = " + (varString?.ToString() ?? "1"));
         }
 
         /************ 指针类型 ************/

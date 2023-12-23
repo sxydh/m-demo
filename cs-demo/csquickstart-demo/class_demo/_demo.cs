@@ -1,4 +1,6 @@
 ﻿/************ 类 ************/
+using System;
+
 namespace ClassDemo
 {
     /************ 类定义 ************/
@@ -9,6 +11,7 @@ namespace ClassDemo
         /************ 成员变量 ************/
         private int varInt = 1;
         private string varString = "Hello World!";
+        public long VarLong { get; set; }
         // 静态成员变量
         public static int staticInt = 1;
 
@@ -44,6 +47,18 @@ namespace ClassDemo
             return this.varString;
         }
 
+        // Func<in T, out TResult>
+        public string FuncDemo(Func<string, string> func)
+        {
+            return func.Invoke(varString);
+        }
+
+        // Action<in T>
+        public void ActionDemo(Action<string> action)
+        {
+            action.Invoke(varString);
+        }
+
         // 静态成员方法
         public static void StaticMethodDemo()
         {
@@ -75,6 +90,8 @@ namespace ClassDemo
             ClassDemo classDemo = new ClassDemo();
             classDemo.SetVarInt(1);
             classDemo.SetVarString("Hello World!");
+            classDemo.FuncDemo(str => str += 2); // Lambda 表达式
+            classDemo.ActionDemo(str => str += 2);
             System.Console.WriteLine("ClassDemo.varInt = " + classDemo.GetVarInt());
             System.Console.WriteLine("ClassDemo.varString = " + classDemo.GetVarString());
         }
