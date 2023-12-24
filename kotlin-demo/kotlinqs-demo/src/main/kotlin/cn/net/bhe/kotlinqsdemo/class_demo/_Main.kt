@@ -14,6 +14,11 @@ constructor(
     // 成员属性必须初始化
     var varLong = argLong // 声明并初始化
 
+    /************ 初始化块 ************/
+    init {
+        println("${this.javaClass.simpleName} 初始化块执行")
+    }
+
     /************ 辅助构造函数 ************/
     // 辅助构造函数需要显示调用主构造函数
     constructor(argInt: Int) : this(argInt, "Hello World!", 1L) {

@@ -19,9 +19,14 @@ import androidx.activity.ComponentActivity
  * 2、流转过程相当于先从根节点 Activity 传播到叶子节点 View，再从叶子节点回溯到根节点，回溯过程触发各节点的 onTouchEvent。
  *
  * TouchEvent 的处理
- * 1、fun onTouchEvent：一般用来处理事件，返回值表示事件是否被消费（是用 true 表示，否用 false 表示）。
- * 2、fun dispatchTouchEvent：该函数默认调用子节点的 dispatchTouchEvent 函数，返回值表示事件是否被消费，默认取 onTouchEvent 函数的返回值（如果 onTouchEvent 返回了 true，但是 dispatchTouchEvent 返回 false，则以后者为准，即事件未被消费，继续向父节点传播。上述情况可能会造成一些不想要的结果，例如：子节点消费了 ACTION_DOWN 事件，并且显示返回 true，但是子节点或者本节点 dispatchTouchEvent 显示返回 false，造成 ACTION_DOWN 实际未被消费，ACTION_MOVE 在本节点无法触发）。一般情况下不要（也不需要） override 本函数。
+ * 1、fun onTouchEvent：一般用来处理事件，返回值表示事件是否被消费（是用 true 表示，否用 false 表示）。如果事件在子节点被消费了，本函数不会被回调。
+ * 2、fun dispatchTouchEvent：该函数默认调用子节点的 dispatchTouchEvent 函数，返回值表示事件是否被消费，默认取 onTouchEvent 函数的返回值。
+ * 2.1、如果 onTouchEvent 返回了 true，但是 dispatchTouchEvent 返回 false，则以后者为准，即事件未被消费，继续向父节点传播。
+ * 2.2、上述情况可能会造成一些不想要的结果，例如：子节点消费了 ACTION_DOWN 事件，并且显示返回 true，但是子节点或者本节点 dispatchTouchEvent 显示返回 false，造成 ACTION_DOWN 实际未被消费，ACTION_MOVE 在本节点无法触发。
+ * 2.3、一般情况下不要（也不需要） override 本函数。
+ * 2.4、只要事件未被拦截，且未显示取消 super.dispatchTouchEvent，本函数都会向子节点链式调用。
  * 3、fun onInterceptTouchEvent：该函数用来拦截事件，返回值表示是否拦截事件（是用 true 表示，否用 false 表示）。
+ * 3.1、事件被拦截后，dispatchTouchEvent 的链式调用被终止，事件不能向子节点传递。
  *
  * TouchEvent 的种类（以下只列举常用事件类型）
  * 1、ACTION_DOWN
