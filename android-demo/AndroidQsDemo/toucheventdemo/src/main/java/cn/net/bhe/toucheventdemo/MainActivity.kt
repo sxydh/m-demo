@@ -106,7 +106,6 @@ class SecondLayout : LinearLayout {
         println("[$tag    dispatchTouchEvent]   ${MotionEvent.actionToString(ev.action)}")
         var ret = super.dispatchTouchEvent(ev)
         println("[$tag    dispatchTouchEvent]   super.dispatchTouchEvent = $ret}")
-        ret = false
         println("[$tag    dispatchTouchEvent]   return = $ret}")
         return ret
     }
