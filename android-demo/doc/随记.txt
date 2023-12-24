@@ -1,0 +1,9 @@
+快速开始
+    触摸事件
+        详见代码 android-demo/androidqsdemo/touchevent-demo
+环境
+    Android Studio
+        管理 SDK
+            Settings
+                Languages & Frameworks
+                    Android SDK
