@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
         recyclerView.adapter = RecyclerViewAdapter(mutableListOf("Hello", "World"))
 
         // 列表向支持位置拖动，左滑删除。
+        // 参考：https://juejin.cn/post/7243725952788922405。
         val callBack = CallBack(recyclerView.adapter as RecyclerViewAdapter)
         val itemTouchHelper = ItemTouchHelper(callBack)
         itemTouchHelper.attachToRecyclerView(recyclerView)
