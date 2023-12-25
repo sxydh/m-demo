@@ -15,5 +15,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "AndroidQsDemo"
 include(":app")
-include(":toucheventdemo")
 include(":surfaceviewdemo")
+include(":motioneventdemo")
+include(":recyclerviewdemo")

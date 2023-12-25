@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.net.bhe.motioneventdemo.FirstLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#3C3F41">
+
+    <cn.net.bhe.motioneventdemo.SecondLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="100dp"
+        android:background="#81888C">
+
+        <cn.net.bhe.motioneventdemo.CustomTextView
+            android:id="@+id/customTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="100dp"
+            android:background="#BCC7CD" />
+    </cn.net.bhe.motioneventdemo.SecondLayout>
+</cn.net.bhe.motioneventdemo.FirstLayout>
