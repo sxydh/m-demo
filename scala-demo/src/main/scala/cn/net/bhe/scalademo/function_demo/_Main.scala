@@ -152,6 +152,14 @@ object _Main {
     val excitedGreeting: String = greeting.exclaim
   }
 
+  ///////////// 偏函数 /////////////
+  // 偏函数是指对于某些输入值有定义，而对于其他输入值则没有定义的函数。
+  def partialFunction(): Unit = {
+    val divide: PartialFunction[Int, Int] = {
+      case x if x != 0 => 42 / x // 只对 x 不为 0 有定义
+    }
+  }
+
   def main(args: Array[String]): Unit = {
     argFun()
     argFun2(NumUtils.ranInt())

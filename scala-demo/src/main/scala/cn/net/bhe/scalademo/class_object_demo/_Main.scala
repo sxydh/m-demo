@@ -1,6 +1,7 @@
 package cn.net.bhe.scalademo.class_object_demo
 
 ///////////// 类定义 /////////////
+//noinspection ScalaUnusedSymbol
 class ClassDemo
 ///////////// 主构造函数 /////////////
 // var 和 val 修饰的参数是类成员
@@ -8,6 +9,7 @@ class ClassDemo
 
   ///////////// 成员属性 /////////////
   var varString = "Hello World!"
+  var varAny: Any = _ // 如果成员属性值未确定，可以初始化为通配符 _ 。
 
   ///////////// 辅助构造函数 /////////////
   // 辅助构造函数需要显示调用主构造函数

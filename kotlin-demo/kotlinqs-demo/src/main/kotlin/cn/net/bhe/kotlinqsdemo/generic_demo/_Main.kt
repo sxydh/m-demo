@@ -1,4 +1,4 @@
-package cn.net.bhe.kotlinqsdemo.generics_demo
+package cn.net.bhe.kotlinqsdemo.generic_demo
 
 /************ 泛型定义 ************/
 class ClassDemo<T>(val valT: T)

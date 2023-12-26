@@ -2,8 +2,6 @@
 
 package cn.net.bhe.kotlinqsdemo.type_demo
 
-import jdk.jfr.Unsigned
-
 fun main() {
     /************ 数字 ************/
     var varByte: Byte = 1 // 1个字节
