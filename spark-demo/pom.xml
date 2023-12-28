@@ -23,8 +23,8 @@
         <log4j-core.version>2.22.0</log4j-core.version>
         <log4j-api.version>2.22.0</log4j-api.version>
 
-        <scala-library.version>2.13.12</scala-library.version>
-        <spark-core_2.13.version>3.3.2</spark-core_2.13.version>
+        <scala-library.version>2.12.12</scala-library.version>
+        <spark-core.version>3.0.0</spark-core.version>
 
         <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
     </properties>
@@ -76,8 +76,8 @@
         <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.13</artifactId>
-            <version>${spark-core_2.13.version}</version>
+            <artifactId>spark-core_2.12</artifactId>
+            <version>${spark-core.version}</version>
         </dependency>
     </dependencies>
 
