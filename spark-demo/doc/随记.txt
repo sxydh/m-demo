@@ -247,3 +247,18 @@ Spark SQL
                         http://hadoop02:8088
                             Applications
                                 History
+    Spark Hive 
+        前置条件 
+            Hive（3.1.2）集群
+                192.168.233.129（hadoop01）
+                192.168.233.130（hadoop02）
+                192.168.233.131（hadoop03）
+        准备文件（hadoop01，hadoop02，hadoop03）
+            cp /opt/module/hive/apache-hive-3.1.2-bin/conf/hive-site.xml /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/
+            cp /opt/module/tmp/mysql-connector-j-8.0.33.jar /opt/module/spark/spark-3.0.0-bin-hadoop3.2/jars/
+        启动（hadoop01/hadoop02/hadoop03）
+            cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2
+                bin/spark-shell
+                    验证
+                        spark.sql(" show databases ").show 
+                        spark.sql(" show tables ").show 

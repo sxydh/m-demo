@@ -12,6 +12,7 @@
     <modules>
         <module>sparkcore-demo</module>
         <module>sparksql-demo</module>
+        <module>sparkhive-demo</module>
     </modules>
 
     <properties>
