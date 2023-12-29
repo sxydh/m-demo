@@ -12,7 +12,7 @@
 
     核心模块
         Spark SQL
-        Spark Stream
+        Spark Streaming
         Spark MLib
         Spark GraphX
         Spark Core
@@ -77,6 +77,15 @@ Spark SQL
         UDF
             UDF（User-Defined Function）是一种用户自定义的函数，允许用户使用编程语言（如 Scala、Java、Python）编写自定义函数，并将其应用于 Spark 数据处理操作。
             UDF 使得用户能够扩展 Spark SQL 的功能，以便进行更复杂的数据处理和转换。
+
+Spark Streaming
+    概述
+        Spark Streaming 用于实现准实时数据流处理
+        Spark Streaming 使用微批处理模型，将连续的实时数据流划分为一系列小的、有限的批次。每个批次的数据被表示为一个弹性分布式数据集（Resilient Distributed Dataset，RDD），这是 Spark 引擎的基本数据结构。
+    概念
+        DStream
+            DStream（Discretized Stream）是 Spark Streaming 的核心抽象，表示连续的数据流。
+            DStream 是由一系列时间间隔内的 RDD 组成的，每个时间间隔的数据都会形成一个 RDD，而这一系列 RDD 就构成了 DStream。
 
 环境
     独立部署（3.0.0）

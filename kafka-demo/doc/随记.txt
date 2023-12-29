@@ -416,7 +416,7 @@ Kafka生产调优
             echo $KAFKA_HOME
         分发安装到集群（192.168.233.129，192.168.233.130，192.168.233.131）
             略
-        启动Kafka集群
+        启动Kafka集群（192.168.233.129，192.168.233.130，192.168.233.131）
             cd /opt/module/kafka/kafka_2.13-3.0.0
             bin/kafka-server-start.sh -daemon config/server.properties
                 验证

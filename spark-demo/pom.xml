@@ -13,6 +13,7 @@
         <module>sparkcore-demo</module>
         <module>sparksql-demo</module>
         <module>sparkhive-demo</module>
+        <module>sparkstreaming-demo</module>
     </modules>
 
     <properties>
