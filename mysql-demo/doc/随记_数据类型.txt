@@ -1,0 +1,29 @@
+数值类型
+    type                  size
+    tinyint               1 Bytes  
+    smallint              2 Bytes      
+    mediumint             3 Bytes     
+    int / integer         4 Bytes 
+    bigint                8 Bytes        
+    float                 4 Bytes         
+    double                8 Bytes        
+    decimal
+日期和时间类型
+    type                  size 
+    date                  3 Bytes      
+    time                  3 Bytes       
+    year                  1 Bytes
+    datetime              8 Bytes
+    timestamp             4 Bytes
+字符串类型
+    type                  size 
+    char                  0-255 bytes               
+    varchar               0-65535 bytes          
+    tinyblob              0-255 bytes           
+    tinytext              0-255 bytes           
+    blob                  0-65535 bytes            
+    text                  0-65535 bytes            
+    mediumblob            0-16777215 bytes  
+    mediumtext            0-16777215 bytes  
+    longblob              0-4294967295 bytes 
+    longtext              0-4294967295 bytes 
