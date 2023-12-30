@@ -4,14 +4,18 @@ import cn.net.bhe.mutil.*
 import cn.net.bhe.mysqlpetdemo.helper.getConn
 import java.math.BigDecimal
 import java.util.*
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.system.measureTimeMillis
 
+val EXECUTOR_SERVICE: ExecutorService = Executors.newFixedThreadPool(20)
+val SNOW_FLAKE = Snowflake(ProcessHandle.current().pid() % 1024)
+val RANDOM = Random()
+
 fun main() {
     initTable()
-    val executorService = Executors.newFixedThreadPool(20)
-    for (i in 0..<1) {
-        executorService.execute {
+    for (i in 0..<5) {
+        EXECUTOR_SERVICE.execute {
             try {
                 val data = initData(10000, 120)
                 val mills = measureTimeMillis {
@@ -67,19 +71,17 @@ fun doInsert(list: List<Order>) {
 }
 
 fun initData(n: Int, allocSec: Int): List<Order> {
-    val snowflake = Snowflake(Thread.currentThread().threadId())
-    val random = Random()
     val userIds = ArrayList<Long>()
     for (i in 0..500) {
-        userIds.add(snowflake.nextId())
+        userIds.add(SNOW_FLAKE.nextId())
     }
     val promIds = ArrayList<Long>()
     for (i in 0..100) {
-        promIds.add(snowflake.nextId())
+        promIds.add(SNOW_FLAKE.nextId())
     }
     val prodMap = HashMap<Long, String>()
     for (i in 0..20) {
-        prodMap[snowflake.nextId()] = StrUtils.randomChs(random.nextInt(7))
+        prodMap[SNOW_FLAKE.nextId()] = StrUtils.randomChs(RANDOM.nextInt(7))
     }
     val prodIds = prodMap.keys.toList()
     val date = DtUtils.date()
@@ -88,36 +90,36 @@ fun initData(n: Int, allocSec: Int): List<Order> {
     val list = ArrayList<Order>()
     for (i in 0..<n) {
         val order = Order()
-        order.orderId = snowflake.nextId()
+        order.orderId = SNOW_FLAKE.nextId()
         order.orderNumber = StrUtils.randomEn(3) + order.orderId
-        order.userId = userIds[random.nextInt(userIds.size)]
-        order.orderDate = DtUtils.addSeconds(date, random.nextInt(allocSec).toLong())
-        order.orderStatus = os[random.nextInt(os.size)]
-        order.paymentMethod = pm[random.nextInt(pm.size)]
+        order.userId = userIds[RANDOM.nextInt(userIds.size)]
+        order.orderDate = DtUtils.addSeconds(date, RANDOM.nextInt(allocSec).toLong())
+        order.orderStatus = os[RANDOM.nextInt(os.size)]
+        order.paymentMethod = pm[RANDOM.nextInt(pm.size)]
         order.shippingAddress = AddrUtils.ranChn(5)
         order.contactNumber = StrUtils.randomPhone()
         order.email = null
         order.shippingCompany = CpUtils.ranChnCp()
         order.trackingNumber = StrUtils.randomEn(5) + order.orderId.toString().substring(8)
-        order.shippingCost = BigDecimal(random.nextInt(1000) / 100 + 10)
-        order.totalAmount = BigDecimal(random.nextInt(50000) / 100.0 + 200)
-        order.discountAmount = BigDecimal(random.nextInt(10000) / 100.0)
+        order.shippingCost = BigDecimal(RANDOM.nextInt(1000) / 100 + 10)
+        order.totalAmount = BigDecimal(RANDOM.nextInt(50000) / 100.0 + 200)
+        order.discountAmount = BigDecimal(RANDOM.nextInt(10000) / 100.0)
         order.paidAmount = order.totalAmount!!.subtract(order.discountAmount)
         order.invoiceTitle = CpUtils.ranChnCp()
         order.taxNumber = StrUtils.randomEn(7) + order.orderId.toString().substring(11)
         order.notes = "${order.orderNumber}###${order.orderStatus}###${order.paymentMethod}###${order.totalAmount}"
-        order.promotionId = promIds[random.nextInt(promIds.size)]
+        order.promotionId = promIds[RANDOM.nextInt(promIds.size)]
         order.orderDetailList = ArrayList()
-        for (li in 0..<random.nextInt(10)) {
+        for (li in 0..<RANDOM.nextInt(10)) {
             val orderDetail = OrderDetail()
-            orderDetail.detailId = snowflake.nextId()
+            orderDetail.detailId = SNOW_FLAKE.nextId()
             orderDetail.orderId = order.orderId
-            orderDetail.productId = prodIds[random.nextInt(prodIds.size)]
+            orderDetail.productId = prodIds[RANDOM.nextInt(prodIds.size)]
             orderDetail.productName = prodMap[orderDetail.productId]
-            orderDetail.unitPrice = BigDecimal(random.nextInt(80000) / 100.0)
-            orderDetail.quantity = BigDecimal(random.nextInt(2000) / 100.0)
+            orderDetail.unitPrice = BigDecimal(RANDOM.nextInt(80000) / 100.0)
+            orderDetail.quantity = BigDecimal(RANDOM.nextInt(2000) / 100.0)
             orderDetail.subtotal = orderDetail.unitPrice!!.multiply(orderDetail.quantity)
-            orderDetail.discount = BigDecimal(random.nextInt(15000) / 100.0)
+            orderDetail.discount = BigDecimal(RANDOM.nextInt(15000) / 100.0)
             orderDetail.productStatus = order.orderStatus
             order.orderDetailList!!.add(orderDetail)
         }
