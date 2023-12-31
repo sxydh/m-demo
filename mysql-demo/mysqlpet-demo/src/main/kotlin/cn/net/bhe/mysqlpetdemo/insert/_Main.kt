@@ -6,32 +6,37 @@ import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
 import kotlin.math.max
 import kotlin.system.measureTimeMillis
 
 val EXECUTOR_SERVICE: ExecutorService = Executors.newFixedThreadPool(64)
 val SNOW_FLAKE = Snowflake(ProcessHandle.current().pid() % 1024)
 val RANDOM = Random()
+val QUEUE: LinkedBlockingQueue<Order> = LinkedBlockingQueue(10000)
+var FLAG = false
 
 fun main() {
     initTable(index = false)
     val threads = 32
-    val tableSize = 500000
+    val tableSize = 20000000
     val allocSec = 1800
     val isBatch = true
-    val dataList = ArrayList<List<Order>>()
-    for (i in 0..<threads) {
-        dataList.add(initData(tableSize, allocSec))
+    EXECUTOR_SERVICE.execute {
+        try {
+            initData(tableSize, allocSec)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
     for (i in 0..<threads) {
         EXECUTOR_SERVICE.execute {
             try {
-                val data = dataList[i]
-                val maxMills: Long
+                val insertResult: Array<Long>
                 val mills = measureTimeMillis {
-                    maxMills = doInsert(data, isBatch)
+                    insertResult = doInsert(isBatch)
                 }
-                println("[${Thread.currentThread().name.padStart(16)}] tps = ${(data.size / (mills / 1000))}, maxMills = $maxMills")
+                println("[${Thread.currentThread().name.padStart(16)}] size = ${insertResult[0]}, tps = ${(insertResult[0] / (mills / 1000))}, maxMills = ${insertResult[1]}")
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -39,8 +44,7 @@ fun main() {
     }
 }
 
-fun doInsert(list: List<Order>, isBatch: Boolean): Long {
-    var maxMills = 0L
+fun doInsert(isBatch: Boolean): Array<Long> {
     val conn = getConn()
     conn.use {
         val statement = conn.prepareStatement(
@@ -52,8 +56,11 @@ fun doInsert(list: List<Order>, isBatch: Boolean): Long {
                     " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
         )
         statement.use {
-
-            for ((index, order) in list.withIndex()) {
+            var index = 0
+            var maxMills = 0L
+            while (!FLAG) {
+                val order = QUEUE.take()
+                index++
                 val start = System.currentTimeMillis()
                 statement.setLong(1, order.orderId!!)
                 statement.setString(2, order.orderNumber)
@@ -85,7 +92,7 @@ fun doInsert(list: List<Order>, isBatch: Boolean): Long {
                 statement.setString(28, order.rattr7)
                 statement.addBatch()
                 if (isBatch) {
-                    if ((index != 0 && index % 100 == 0) || index == list.size - 1) {
+                    if ((index != 0 && index % 100 == 0) || FLAG) {
                         statement.executeBatch()
                     }
                 } else {
@@ -93,12 +100,12 @@ fun doInsert(list: List<Order>, isBatch: Boolean): Long {
                 }
                 maxMills = max(maxMills, System.currentTimeMillis() - start)
             }
+            return arrayOf(index.toLong(), maxMills)
         }
     }
-    return maxMills
 }
 
-fun initData(n: Int, allocSec: Int): List<Order> {
+fun initData(n: Int, allocSec: Int) {
     val userIds = ArrayList<Long>()
     for (i in 0..500) {
         userIds.add(SNOW_FLAKE.nextId())
@@ -115,7 +122,6 @@ fun initData(n: Int, allocSec: Int): List<Order> {
     val date = DtUtils.date()
     val os = arrayOf("U", "P", "D", "A", "L")
     val pm = arrayOf("A", "W", "C", "D")
-    val list = ArrayList<Order>()
     for (i in 0..<n) {
         val order = Order()
         order.orderId = SNOW_FLAKE.nextId()
@@ -161,9 +167,12 @@ fun initData(n: Int, allocSec: Int): List<Order> {
             orderDetail.productStatus = order.orderStatus
             order.orderDetailList!!.add(orderDetail)
         }
-        list.add(order)
+        QUEUE.put(order)
+        if (i != 0 && i % 10000 == 0) {
+            println(i)
+        }
     }
-    return list
+    FLAG = true
 }
 
 @Synchronized
