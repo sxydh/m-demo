@@ -6,22 +6,32 @@ import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.math.max
 import kotlin.system.measureTimeMillis
 
-val EXECUTOR_SERVICE: ExecutorService = Executors.newFixedThreadPool(20)
+val EXECUTOR_SERVICE: ExecutorService = Executors.newFixedThreadPool(64)
 val SNOW_FLAKE = Snowflake(ProcessHandle.current().pid() % 1024)
 val RANDOM = Random()
 
 fun main() {
-    initTable()
-    for (i in 0..<5) {
+    initTable(index = false)
+    val threads = 32
+    val tableSize = 500000
+    val allocSec = 1800
+    val isBatch = true
+    val dataList = ArrayList<List<Order>>()
+    for (i in 0..<threads) {
+        dataList.add(initData(tableSize, allocSec))
+    }
+    for (i in 0..<threads) {
         EXECUTOR_SERVICE.execute {
             try {
-                val data = initData(10000, 120)
+                val data = dataList[i]
+                val maxMills: Long
                 val mills = measureTimeMillis {
-                    doInsert(data)
+                    maxMills = doInsert(data, isBatch)
                 }
-                println("[${Thread.currentThread().name}] mills = $mills, size = ${data.size}, tps = ${data.size / (mills / 1000)}")
+                println("[${Thread.currentThread().name.padStart(16)}] tps = ${(data.size / (mills / 1000))}, maxMills = $maxMills")
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -29,18 +39,22 @@ fun main() {
     }
 }
 
-fun doInsert(list: List<Order>) {
+fun doInsert(list: List<Order>, isBatch: Boolean): Long {
+    var maxMills = 0L
     val conn = getConn()
     conn.use {
         val statement = conn.prepareStatement(
             " insert into t_order (order_id, order_number, user_id, order_date, order_status, payment_method, " +
                     " shipping_address, contact_number, email, shipping_company, tracking_number, " +
                     " shipping_cost, total_amount, discount_amount, paid_amount, invoice_title, " +
-                    " tax_number, notes, promotion_id) " +
-                    " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                    " tax_number, notes, promotion_id, create_time, update_time, rattr, rattr2, " +
+                    " rattr3, rattr4, rattr5, rattr6, rattr7) " +
+                    " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
         )
         statement.use {
+
             for ((index, order) in list.withIndex()) {
+                val start = System.currentTimeMillis()
                 statement.setLong(1, order.orderId!!)
                 statement.setString(2, order.orderNumber)
                 statement.setLong(3, order.userId!!)
@@ -60,14 +74,28 @@ fun doInsert(list: List<Order>) {
                 statement.setString(17, order.taxNumber)
                 statement.setString(18, order.notes)
                 statement.setLong(19, order.promotionId!!)
+                statement.setObject(20, order.createTime)
+                statement.setObject(21, order.updateTime)
+                statement.setString(22, order.rattr)
+                statement.setString(23, order.rattr2)
+                statement.setString(24, order.rattr3)
+                statement.setString(25, order.rattr4)
+                statement.setString(26, order.rattr5)
+                statement.setString(27, order.rattr6)
+                statement.setString(28, order.rattr7)
                 statement.addBatch()
-                if (index % 100 == 0) {
-                    statement.executeBatch()
+                if (isBatch) {
+                    if ((index != 0 && index % 100 == 0) || index == list.size - 1) {
+                        statement.executeBatch()
+                    }
+                } else {
+                    statement.execute()
                 }
+                maxMills = max(maxMills, System.currentTimeMillis() - start)
             }
-            statement.executeBatch()
         }
     }
+    return maxMills
 }
 
 fun initData(n: Int, allocSec: Int): List<Order> {
@@ -109,6 +137,16 @@ fun initData(n: Int, allocSec: Int): List<Order> {
         order.taxNumber = StrUtils.randomEn(7) + order.orderId.toString().substring(11)
         order.notes = "${order.orderNumber}###${order.orderStatus}###${order.paymentMethod}###${order.totalAmount}"
         order.promotionId = promIds[RANDOM.nextInt(promIds.size)]
+        order.createTime = order.orderDate
+        order.updateTime = order.orderDate
+        val rattrFun = { if (RANDOM.nextBoolean()) WdUtils.random(RANDOM.nextInt(10) + 1) else null }
+        order.rattr = rattrFun()
+        order.rattr2 = rattrFun()
+        order.rattr3 = rattrFun()
+        order.rattr4 = rattrFun()
+        order.rattr5 = rattrFun()
+        order.rattr6 = rattrFun()
+        order.rattr7 = rattrFun()
         order.orderDetailList = ArrayList()
         for (li in 0..<RANDOM.nextInt(10)) {
             val orderDetail = OrderDetail()
@@ -129,12 +167,12 @@ fun initData(n: Int, allocSec: Int): List<Order> {
 }
 
 @Synchronized
-fun initTable() {
+fun initTable(index: Boolean) {
     val conn = getConn()
     conn.use {
         val statement = conn.createStatement()
         statement.use {
-            val torder = statement.execute(
+            statement.execute(
                 " create table if not exists t_order ( " +
                         " order_id bigint, " +
                         " order_number varchar(20), " +
@@ -155,13 +193,30 @@ fun initTable() {
                         " tax_number varchar(20), " +
                         " notes varchar(200), " +
                         " promotion_id bigint, " +
-                        " primary key (order_id) " +
+                        " create_time datetime, " +
+                        " update_time datetime, " +
+                        " rattr varchar(100), " +
+                        " rattr2 varchar(100), " +
+                        " rattr3 varchar(100), " +
+                        " rattr4 varchar(100), " +
+                        " rattr5 varchar(100), " +
+                        " rattr6 varchar(100), " +
+                        " rattr7 varchar(100) " +
                         " ) "
             )
-            if (torder) {
-                statement.execute(" create unique index idx_order_number on t_order (order_number) ")
-                statement.execute(" create index idx_order_date on t_order (order_date) ")
-                statement.execute(" create index idx_order_date_order_status on t_order (order_date, order_status) ")
+            if (index) {
+                try {
+                    statement.execute(" alter table t_order add primary key (order_id) ")
+                    statement.execute(" create unique index idx_order_number on t_order (order_number) ")
+                    statement.execute(" create index idx_order_date on t_order (order_date) ")
+                    statement.execute(" create index idx_create_time on t_order (create_time) ")
+                    statement.execute(" create index idx_update_time on t_order (update_time) ")
+                    statement.execute(" create index idx_order_date_user_id on t_order (order_date, user_id) ")
+                    statement.execute(" create index idx_order_date_order_status on t_order (order_date, order_status) ")
+                    statement.execute(" create index idx_order_date_payment_method on t_order (order_date, payment_method) ")
+                } catch (e: Exception) {
+                    // TODO NOTHING
+                }
             }
             statement.execute(
                 " create table if not exists t_order_li ( " +
@@ -202,6 +257,15 @@ class Order {
     var taxNumber: String? = null
     var notes: String? = null
     var promotionId: Long? = null
+    var createTime: Date? = null
+    var updateTime: Date? = null
+    var rattr: String? = null
+    var rattr2: String? = null
+    var rattr3: String? = null
+    var rattr4: String? = null
+    var rattr5: String? = null
+    var rattr6: String? = null
+    var rattr7: String? = null
     var orderDetailList: ArrayList<OrderDetail>? = null
 }
 
