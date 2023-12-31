@@ -1,0 +1,21 @@
+环境
+    MySQL 8.0.35
+        安装服务
+            sudo apt update
+            sudo apt install mysql-server
+            sudo systemctl status mysql 
+        启用远程登录
+            sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
+                更新
+                    # bind-address          = 127.0.0.1
+            sudo systemctl restart mysql 
+            sudo systemctl status mysql 
+            sudo mysql -u root -p 
+                alter user 'root'@'localhost' identified with mysql_native_password by '123';
+                exit;
+            mysql -u root -p123
+                use mysql;
+                select user, host from user;
+                update user set host = '%' where user = 'root';
+                exit;
+            sudo systemctl restart mysql 

@@ -1,0 +1,18 @@
+环境
+    前置条件
+        Ubuntu 20.04.6 LTS
+    安装服务
+        sudo apt update # 更新源
+        sudo apt install openssh-server # 安装
+        sudo systemctl status ssh # 查看状态
+        sudo ufw allow ssh # 防火墙
+
+        sudo systemctl stop ssh # 停止
+        sudo systemctl start ssh # 启动
+        sudo systemctl disable ssh # 禁用
+        sudo systemctl enable ssh # 启用
+    启用 root 账号
+        vim /etc/ssh/sshd_config
+            更新
+                PermitRootLogin yes
+        systemctl restart ssh

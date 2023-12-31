@@ -462,23 +462,7 @@ Kafka生产调优
                         fi
             启动Kafka集群
         安装MySQL8.0.35
-            sudo apt update
-            sudo apt install mysql-server
-            sudo systemctl status mysql 
-            
-            sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
-                注释掉
-                    bind-address          = 127.0.0.1
-            sudo systemctl restart mysql 
-            sudo systemctl status mysql 
-            
-            sudo mysql -u root -p 
-                alter user 'root'@'localhost' identified with mysql_native_password by '123';
-            mysql -u root -p 
-                use mysql;
-                select user, host from user;
-                update user set host = '%' where user = 'root';
-            sudo systemctl status mysql 
+            参考mysql-demo/doc
         安装Kafka Eagle（2.0.8）
             准备文件
                 sudo mkdir /opt/module/kafka_eagle

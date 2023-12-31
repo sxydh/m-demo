@@ -1,0 +1,16 @@
+环境
+    Ubuntu 20.04.6 LTS
+        配置国内镜像
+            https://mirrors.tuna.tsinghua.edu.cn/ubuntu
+        配置静态 IP
+            sudo vim /etc/netplan/00-installer-config.yaml
+                更新或追加
+				    ens33:
+				        dhcp4: false
+				        dhcp6: false
+				        addresses:
+				    	    - 192.168.233.129/24 # 本机IP地址
+				        gateway4: 192.168.233.2 # VMware Workstation网关地址
+				        nameservers:
+                            addresses: [114.114.114.114, 8.8.8.8, 1.1.1.1]
+            sudo netplan apply
