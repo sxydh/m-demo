@@ -106,6 +106,10 @@ fun doInsert(isBatch: Boolean): Array<Long> {
 }
 
 fun initData(n: Int, allocSec: Int) {
+    val en3Arr = ArrayList<String>()
+    for (i in 0..<100) {
+        en3Arr.add(StrUtils.randomEn(3))
+    }
     val userIds = ArrayList<Long>()
     for (i in 0..500) {
         userIds.add(SNOW_FLAKE.nextId())
@@ -122,53 +126,101 @@ fun initData(n: Int, allocSec: Int) {
     val date = DtUtils.date()
     val os = arrayOf("U", "P", "D", "A", "L")
     val pm = arrayOf("A", "W", "C", "D")
+    val saArr = ArrayList<String>()
+    for (i in 0..<1000) {
+        saArr.add(AddrUtils.ranChn(5))
+    }
+    val phArr = ArrayList<String>()
+    for (i in 0..<1000) {
+        phArr.add(StrUtils.randomPhone())
+    }
+    val scArr = ArrayList<String>()
+    for (i in 0..<500) {
+        scArr.add(CpUtils.ranChnCp())
+    }
+    val en5Arr = ArrayList<String>()
+    for (i in 0..<500) {
+        en5Arr.add(StrUtils.randomEn(5))
+    }
+    val scBigArr = ArrayList<BigDecimal>()
+    for (i in 0..<100) {
+        scBigArr.add(BigDecimal(RANDOM.nextInt(1000) / 100 + 10))
+    }
+    val taBigArr = ArrayList<BigDecimal>()
+    for (i in 0..<100) {
+        taBigArr.add(BigDecimal(RANDOM.nextInt(50000) / 100.0 + 200))
+    }
+    val daBigArr = ArrayList<BigDecimal>()
+    for (i in 0..<100) {
+        daBigArr.add(BigDecimal(RANDOM.nextInt(10000) / 100.0))
+    }
+    val itArr = ArrayList<String>()
+    for (i in 0..<500) {
+        itArr.add(CpUtils.ranChnCp())
+    }
+    val upBigArr = ArrayList<BigDecimal>()
+    for (i in 0..<100) {
+        upBigArr.add(BigDecimal(RANDOM.nextInt(80000) / 100.0))
+    }
+    val qtyBigArr = ArrayList<BigDecimal>()
+    for (i in 0..<100) {
+        qtyBigArr.add(BigDecimal(RANDOM.nextInt(2000) / 100.0))
+    }
+    val discBigArr = ArrayList<BigDecimal>()
+    for (i in 0..<100) {
+        discBigArr.add(BigDecimal(RANDOM.nextInt(15000) / 100.0))
+    }
+    val rattrArr = ArrayList<String>()
+    for (i in 0..<100) {
+        rattrArr.add(WdUtils.random(RANDOM.nextInt(10) + 1))
+    }
     for (i in 0..<n) {
         val order = Order()
         order.orderId = SNOW_FLAKE.nextId()
-        order.orderNumber = StrUtils.randomEn(3) + order.orderId
+        order.orderNumber = en3Arr[RANDOM.nextInt(en3Arr.size)] + order.orderId
         order.userId = userIds[RANDOM.nextInt(userIds.size)]
         order.orderDate = DtUtils.addSeconds(date, RANDOM.nextInt(allocSec).toLong())
         order.orderStatus = os[RANDOM.nextInt(os.size)]
         order.paymentMethod = pm[RANDOM.nextInt(pm.size)]
-        order.shippingAddress = AddrUtils.ranChn(5)
-        order.contactNumber = StrUtils.randomPhone()
+        order.shippingAddress = saArr[RANDOM.nextInt(saArr.size)]
+        order.contactNumber = phArr[RANDOM.nextInt(phArr.size)]
         order.email = null
-        order.shippingCompany = CpUtils.ranChnCp()
-        order.trackingNumber = StrUtils.randomEn(5) + order.orderId.toString().substring(8)
-        order.shippingCost = BigDecimal(RANDOM.nextInt(1000) / 100 + 10)
-        order.totalAmount = BigDecimal(RANDOM.nextInt(50000) / 100.0 + 200)
-        order.discountAmount = BigDecimal(RANDOM.nextInt(10000) / 100.0)
+        order.shippingCompany = scArr[RANDOM.nextInt(scArr.size)]
+        order.trackingNumber = en5Arr[RANDOM.nextInt(en5Arr.size)] + order.orderId.toString().substring(8)
+        order.shippingCost = scBigArr[RANDOM.nextInt(scBigArr.size)]
+        order.totalAmount = taBigArr[RANDOM.nextInt(taBigArr.size)]
+        order.discountAmount = daBigArr[RANDOM.nextInt(daBigArr.size)]
         order.paidAmount = order.totalAmount!!.subtract(order.discountAmount)
-        order.invoiceTitle = CpUtils.ranChnCp()
-        order.taxNumber = StrUtils.randomEn(7) + order.orderId.toString().substring(11)
+        order.invoiceTitle = itArr[RANDOM.nextInt(itArr.size)]
+        order.taxNumber = en5Arr[RANDOM.nextInt(en5Arr.size)] + order.orderId.toString().substring(11)
         order.notes = "${order.orderNumber}###${order.orderStatus}###${order.paymentMethod}###${order.totalAmount}"
         order.promotionId = promIds[RANDOM.nextInt(promIds.size)]
         order.createTime = order.orderDate
         order.updateTime = order.orderDate
-        val rattrFun = { if (RANDOM.nextBoolean()) WdUtils.random(RANDOM.nextInt(10) + 1) else null }
+        val rattrFun = { if (RANDOM.nextBoolean()) rattrArr[RANDOM.nextInt(rattrArr.size)] else null }
         order.rattr = rattrFun()
         order.rattr2 = rattrFun()
-        order.rattr3 = rattrFun()
-        order.rattr4 = rattrFun()
-        order.rattr5 = rattrFun()
-        order.rattr6 = rattrFun()
-        order.rattr7 = rattrFun()
+        order.rattr3 = null
+        order.rattr4 = null
+        order.rattr5 = null
+        order.rattr6 = null
+        order.rattr7 = null
         order.orderDetailList = ArrayList()
-        for (li in 0..<RANDOM.nextInt(10)) {
+        for (li in 0..<RANDOM.nextInt(4)) {
             val orderDetail = OrderDetail()
             orderDetail.detailId = SNOW_FLAKE.nextId()
             orderDetail.orderId = order.orderId
             orderDetail.productId = prodIds[RANDOM.nextInt(prodIds.size)]
             orderDetail.productName = prodMap[orderDetail.productId]
-            orderDetail.unitPrice = BigDecimal(RANDOM.nextInt(80000) / 100.0)
-            orderDetail.quantity = BigDecimal(RANDOM.nextInt(2000) / 100.0)
+            orderDetail.unitPrice = upBigArr[RANDOM.nextInt(upBigArr.size)]
+            orderDetail.quantity = qtyBigArr[RANDOM.nextInt(qtyBigArr.size)]
             orderDetail.subtotal = orderDetail.unitPrice!!.multiply(orderDetail.quantity)
-            orderDetail.discount = BigDecimal(RANDOM.nextInt(15000) / 100.0)
+            orderDetail.discount = discBigArr[RANDOM.nextInt(discBigArr.size)]
             orderDetail.productStatus = order.orderStatus
             order.orderDetailList!!.add(orderDetail)
         }
         QUEUE.put(order)
-        if (i != 0 && i % 10000 == 0) {
+        if (i != 0 && i % 1000000 == 0) {
             println(i)
         }
     }
