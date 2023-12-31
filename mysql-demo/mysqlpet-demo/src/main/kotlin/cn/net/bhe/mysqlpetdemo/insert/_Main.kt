@@ -17,9 +17,9 @@ val QUEUE: LinkedBlockingQueue<Order> = LinkedBlockingQueue(10000)
 var FLAG = false
 
 fun main() {
-    initTable(index = false)
+    initTable(index = true)
     val threads = 32
-    val tableSize = 20000000
+    val tableSize = 320000
     val allocSec = 1800
     val isBatch = true
     EXECUTOR_SERVICE.execute {
@@ -220,7 +220,7 @@ fun initData(n: Int, allocSec: Int) {
             order.orderDetailList!!.add(orderDetail)
         }
         QUEUE.put(order)
-        if (i != 0 && i % 1000000 == 0) {
+        if (i != 0 && i % 320000 == 0) {
             println(i)
         }
     }
