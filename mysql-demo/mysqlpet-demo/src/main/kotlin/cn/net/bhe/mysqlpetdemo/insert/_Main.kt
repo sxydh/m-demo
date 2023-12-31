@@ -4,16 +4,16 @@ import cn.net.bhe.mutil.*
 import cn.net.bhe.mysqlpetdemo.helper.getConn
 import java.math.BigDecimal
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.LinkedBlockingQueue
 import kotlin.math.max
 import kotlin.system.measureTimeMillis
 
 val EXECUTOR_SERVICE: ExecutorService = Executors.newFixedThreadPool(64)
 val SNOW_FLAKE = Snowflake(ProcessHandle.current().pid() % 1024)
 val RANDOM = Random()
-val QUEUE: LinkedBlockingQueue<Order> = LinkedBlockingQueue(10000)
+val QUEUE = ConcurrentLinkedQueue<Order>()
 var FLAG = false
 
 fun main() {
@@ -58,8 +58,14 @@ fun doInsert(isBatch: Boolean): Array<Long> {
         statement.use {
             var index = 0
             var maxMills = 0L
-            while (!FLAG) {
-                val order = QUEUE.take()
+            while (true) {
+                val order = QUEUE.poll()
+                if (order == null) {
+                    if (FLAG) {
+                        break
+                    }
+                    continue
+                }
                 index++
                 val start = System.currentTimeMillis()
                 statement.setLong(1, order.orderId!!)
@@ -175,6 +181,10 @@ fun initData(n: Int, allocSec: Int) {
         rattrArr.add(WdUtils.random(RANDOM.nextInt(10) + 1))
     }
     for (i in 0..<n) {
+        if (QUEUE.size > 50000) {
+            Thread.yield()
+            continue
+        }
         val order = Order()
         order.orderId = SNOW_FLAKE.nextId()
         order.orderNumber = en3Arr[RANDOM.nextInt(en3Arr.size)] + order.orderId
@@ -219,7 +229,7 @@ fun initData(n: Int, allocSec: Int) {
             orderDetail.productStatus = order.orderStatus
             order.orderDetailList!!.add(orderDetail)
         }
-        QUEUE.put(order)
+        QUEUE.add(order)
         if (i != 0 && i % 320000 == 0) {
             println(i)
         }
