@@ -30,7 +30,7 @@
 
         <kotlin-stdlib.version>1.9.22</kotlin-stdlib.version>
         <sharding-jdbc-core.version>4.1.1</sharding-jdbc-core.version>
-        <commons-dbcp2.version>2.11.0</commons-dbcp2.version>
+        <druid.version>1.2.20</druid.version>
 
         <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
@@ -81,11 +81,11 @@
                 <version>${sharding-jdbc-core.version}</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-dbcp2 -->
+            <!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-dbcp2</artifactId>
-                <version>${commons-dbcp2.version}</version>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -17,10 +17,10 @@ val QUEUE = ConcurrentLinkedQueue<Order>()
 var FLAG = false
 
 fun main() {
-    val threads = 32
+    val threads = 8
     val tableSize = 320000
     val allocSec = 1800
-    val isBatch = false
+    val isBatch = true
     EXECUTOR_SERVICE.execute {
         try {
             initData(tableSize, allocSec)
@@ -97,7 +97,7 @@ fun doInsert(isBatch: Boolean): Array<Long> {
                 statement.setString(28, order.rattr7)
                 if (isBatch) {
                     statement.addBatch()
-                    if ((index != 0 && index % 100 == 0) || FLAG) {
+                    if ((index != 0 && index % 200 == 0) || FLAG) {
                         statement.executeBatch()
                     }
                 } else {
