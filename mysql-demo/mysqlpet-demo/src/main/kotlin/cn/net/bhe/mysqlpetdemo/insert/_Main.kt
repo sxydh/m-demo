@@ -96,8 +96,8 @@ fun doInsert(isBatch: Boolean): Array<Long> {
                 statement.setString(26, order.rattr5)
                 statement.setString(27, order.rattr6)
                 statement.setString(28, order.rattr7)
-                statement.addBatch()
                 if (isBatch) {
+                    statement.addBatch()
                     if ((index != 0 && index % 100 == 0) || FLAG) {
                         statement.executeBatch()
                     }
