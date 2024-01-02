@@ -1,4 +1,4 @@
-package cn.net.bhe.mysqlpetdemo.helper
+package cn.net.bhe.shardingjdbcqsdemo.helper
 
 import cn.net.bhe.mutil.*
 import com.alibaba.fastjson2.JSON
@@ -87,7 +87,7 @@ object Data {
     }
 
     fun create(n: Int, threads: Int, allocSec: Int): List<String> {
-        this.allocSec = allocSec
+        Data.allocSec = allocSec
         val files = ArrayList<String>()
         for (i in 0..<threads) {
             val path = "${FlUtils.getRootTmp()}${File.separator}order"
