@@ -10,7 +10,6 @@
     <name>shardingjdbc-demo</name>
     <url>http://maven.apache.org</url>
     <modules>
-        <module>shardingjdbcqs-demo</module>
         <module>shardingjdbcpet-demo</module>
     </modules>
 
