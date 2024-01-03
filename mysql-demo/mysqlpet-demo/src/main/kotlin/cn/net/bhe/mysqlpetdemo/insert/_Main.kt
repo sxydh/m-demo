@@ -15,7 +15,7 @@ import kotlin.system.measureTimeMillis
 
 fun main() {
     val threads = 1
-    val tableSize = 10000
+    val tableSize = 120000
     val allocSec = 1800
     val isBatch = true
 
