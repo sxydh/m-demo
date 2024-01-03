@@ -1,0 +1,7 @@
+前置条件
+    Kafka 集群
+        192.168.233.129:9092
+        192.168.233.130:9092
+        192.168.233.131:9092
+    初始化主题
+        bin/kafka-topics.sh --bootstrap-server 192.168.233.129:9092 --topic pet_order --create --partitions 3 --replication-factor 3

@@ -11,6 +11,7 @@
     <url>http://maven.apache.org</url>
     <modules>
         <module>kafkaclient-demo</module>
+        <module>kafkapet-demo</module>
     </modules>
 
     <properties>
