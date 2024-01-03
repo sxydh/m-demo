@@ -1,49 +1,16 @@
 JDBC
+    前置条件
+        Ubuntu 20.04.6 LTS
+            处理器：16 核
+            内存：16 G
+            磁盘：SSD
+        MySQL 8.0.35-0ubuntu0.20.04.1
     执行测试
-        参考 mysql-demo/mysqlpet-demo
+        参考模块 mysql-demo/mysqlpet-demo
     参考结论
-        线程数 = 1
-            READ = 0
-            WRITE = 120000
-            TPS = 1000
-            RT = [0=99%]
-sysbench（https://github.com/akopytov/sysbench）
-    准备文件
-        curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.deb.sh | sudo bash
-        sudo apt -y install sysbench
-    执行测试
-        前置条件
-            create database sbtest
-        准备数据
-            sysbench --mysql-host=127.0.0.1 \
-                     --mysql-port=3306 \
-                     --mysql-user=root \
-                     --mysql-password=123 \
-                     /usr/share/sysbench/oltp_common.lua \
-                     --tables=1 \
-                     --table_size=100000 \
-                     prepare
-        测试写入（其它测试将 oltp_insert 替换为 /usr/share/sysbench 下的脚本）
-            sysbench --threads=1 \
-                     --report-interval=5 \
-                     --mysql-host=127.0.0.1 \
-                     --mysql-port=3306 \
-                     --mysql-user=root \
-                     --mysql-password=123 \
-                     /usr/share/sysbench/oltp_insert.lua \
-                     --tables=1 \
-                     --table_size=100000 \
-                     run
-        清除测试
-            sysbench --mysql-host=127.0.0.1 \
-                     --mysql-port=3306 \
-                     --mysql-user=root \
-                     --mysql-password=123 \
-                     /usr/share/sysbench/oltp_common.lua \
-                     cleanup
-环境
-    Ubuntu 20.04.6 LTS
-        处理器：16 核
-        内存：16 G 
-        磁盘：SSD
-    MySQL 8.0.35-0ubuntu0.20.04.1
+        插入
+            线程数 = 1
+                READ = 0
+                WRITE = 120000
+                TPS = 1000
+                RT = [0=99%]

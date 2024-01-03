@@ -1,0 +1,5 @@
+前置条件
+    mysql -uroot -p123
+        create database pet_demo;
+插入
+    参考代码 src/main/kotlin/cn/net/bhe/mysqlpetdemo/insert/_Main.kt

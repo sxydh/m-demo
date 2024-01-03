@@ -1,0 +1,21 @@
+Sharding-JDBC
+    前置条件
+        Ubuntu 20.04.6 LTS
+            192.168.233.129
+                处理器：16 核
+                内存：16 G
+                磁盘：SSD
+            192.168.233.130
+                处理器：16 核
+                内存：16 G
+                磁盘：SSD
+        MySQL 8.0.35-0ubuntu0.20.04.1
+    执行测试
+        参考模块 shardingjdbc-demo/shardingjdbcpet-demo
+    参考结论
+        插入
+            线程数 = 1
+                READ = 0
+                WRITE = 120000
+                TPS = 1900
+                RT = [0=99%]
