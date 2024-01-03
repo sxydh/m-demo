@@ -15,12 +15,12 @@ public class ProducerHelper {
     @Data
     @Accessors(chain = true)
     public static class Config {
-        private String brokers = "192.168.233.129:9092,192.168.233.130:9092,192.168.233.131:9092";
-        private String topic = "pet_order";
-        private Integer partition = null;
-        private String partitioner = null;
-        private String compression = null;
-        private Boolean isAsync = true;
+        private String brokers;
+        private String topic;
+        private Integer partition;
+        private String partitioner;
+        private String compression;
+        private Boolean isAsync;
     }
 
     public static KafkaProducer<String, String> buildProducer(Config config) {

@@ -22,9 +22,16 @@ import java.util.concurrent.Executors;
 public class _Main {
 
     public static void main(String[] args) {
-        int n = 10000000;
+        int n = 5000000;
         int threads = 1;
         int allocSec = 3600;
+        Config config = new Config()
+                .setBrokers("192.168.233.129:9092,192.168.233.130:9092,192.168.233.131:9092")
+                .setTopic("pet_order")
+                .setPartition(null)
+                .setPartitioner(null)
+                .setCompression(null)
+                .setIsAsync(true);
 
         List<String> files = DataHelper.create(n, threads, allocSec);
         ExecutorService executorService = Executors.newFixedThreadPool(files.size());
@@ -33,7 +40,6 @@ public class _Main {
                 try {
                     long mills = System.currentTimeMillis();
 
-                    Config config = new Config();
                     Map<String, Object> res = send(config, file);
 
                     mills = System.currentTimeMillis() - mills;
