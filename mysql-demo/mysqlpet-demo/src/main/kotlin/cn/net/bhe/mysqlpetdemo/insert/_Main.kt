@@ -7,12 +7,15 @@ import cn.net.bhe.mysqlpetdemo.helper.getConn
 import com.alibaba.fastjson2.JSON
 import java.io.BufferedReader
 import java.io.FileReader
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.util.*
 import java.util.concurrent.Executors
 import kotlin.system.measureTimeMillis
 
 fun main() {
     val threads = 1
-    val tableSize = 80000
+    val tableSize = 10000
     val allocSec = 1800
     val isBatch = true
 
@@ -28,9 +31,11 @@ fun main() {
                 }
                 val size = res["size"] as Int
                 val tps = (size / (mills / 1000.0)).toInt()
-
-                @Suppress("UNCHECKED_CAST")
-                val rtMap = (res["rtMap"] as Map<Long, Int>).toSortedMap(compareBy { it })
+                val rtMap = TreeMap<Long, BigDecimal>()
+                for (entry in (res["rtMap"] as Map<*, *>)) {
+                    val value = ((entry.value as Int) * 1.0 / size * 100).toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+                    rtMap[entry.key as Long] = value
+                }
                 println("[${Thread.currentThread().name.padStart(16)}] size = $size, tps = $tps, rtMap = $rtMap")
             } catch (e: Exception) {
                 e.printStackTrace()
