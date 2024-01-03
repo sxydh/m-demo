@@ -8,12 +8,11 @@ import com.alibaba.fastjson2.JSON
 import java.io.BufferedReader
 import java.io.FileReader
 import java.util.concurrent.Executors
-import kotlin.math.max
 import kotlin.system.measureTimeMillis
 
 fun main() {
-    val threads = 32
-    val tableSize = 320000
+    val threads = 1
+    val tableSize = 80000
     val allocSec = 1800
     val isBatch = true
 
@@ -23,11 +22,16 @@ fun main() {
     for (file in files) {
         service.execute {
             try {
-                val res: Array<Long>
+                val res: Map<String, Any>
                 val mills = measureTimeMillis {
                     res = doInsert(file, isBatch)
                 }
-                println("[${Thread.currentThread().name.padStart(16)}] size = ${res[0]}, tps = ${(res[0] / (mills / 1000.0)).toInt()}, maxMills = ${res[1]}")
+                val size = res["size"] as Int
+                val tps = (size / (mills / 1000.0)).toInt()
+
+                @Suppress("UNCHECKED_CAST")
+                val rtMap = (res["rtMap"] as Map<Long, Int>).toSortedMap(compareBy { it })
+                println("[${Thread.currentThread().name.padStart(16)}] size = $size, tps = $tps, rtMap = $rtMap")
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -35,7 +39,7 @@ fun main() {
     }
 }
 
-fun doInsert(file: String, isBatch: Boolean): Array<Long> {
+fun doInsert(file: String, isBatch: Boolean): Map<String, Any> {
     val conn = getConn()
     conn.use {
         val statement = conn.prepareStatement(
@@ -49,8 +53,8 @@ fun doInsert(file: String, isBatch: Boolean): Array<Long> {
         statement.use {
             FileReader(file).use { fr ->
                 BufferedReader(fr).use { br ->
-                    var count = 0
-                    var maxMills = 0L
+                    var size = 0
+                    val rtMap: HashMap<Long, Int> = HashMap()
                     while (true) {
                         val orderString = br.readLine()
                         if (orderString != null) {
@@ -86,14 +90,15 @@ fun doInsert(file: String, isBatch: Boolean): Array<Long> {
                             statement.setString(28, order.rattr7)
                             if (isBatch) {
                                 statement.addBatch()
-                                if (count != 0 && count % 100 == 0) {
+                                if (size != 0 && size % 100 == 0) {
                                     statement.executeBatch()
                                 }
                             } else {
                                 statement.execute()
                             }
-                            count++
-                            maxMills = max(maxMills, System.currentTimeMillis() - start)
+                            size++
+                            val rt = (System.currentTimeMillis() - start) / 10 * 10
+                            rtMap[rt] = if (rtMap[rt] == null) 1 else (rtMap[rt] as Int) + 1
                         } else {
                             if (isBatch) {
                                 statement.executeBatch()
@@ -101,7 +106,10 @@ fun doInsert(file: String, isBatch: Boolean): Array<Long> {
                             break
                         }
                     }
-                    return arrayOf(count.toLong(), maxMills)
+                    val res = HashMap<String, Any>()
+                    res["size"] = size
+                    res["rtMap"] = rtMap
+                    return res
                 }
             }
         }
