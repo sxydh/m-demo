@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.support.WriteRequest;
+import org.elasticsearch.action.support.WriteRequest.RefreshPolicy;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -29,7 +29,7 @@ public class _Main {
         int threads = 1;
         int allocSec = 3600;
         boolean isBulk = true;
-        String refreshPolicy = WriteRequest.RefreshPolicy.IMMEDIATE.getValue();
+        RefreshPolicy refreshPolicy = RefreshPolicy.IMMEDIATE;
         String index = "pet_order";
         String[] hosts = new String[]{"192.168.233.129", "192.168.233.130", "192.168.233.131"};
         int port = 9200;
@@ -67,7 +67,7 @@ public class _Main {
         }
     }
 
-    private static Map<String, Object> doInsert(RestHighLevelClient client, String index, String file, boolean isBulk, String refreshPolicy) throws Exception {
+    private static Map<String, Object> doInsert(RestHighLevelClient client, String index, String file, boolean isBulk, RefreshPolicy refreshPolicy) throws Exception {
         try (FileReader fileReader = new FileReader(file)) {
             try (BufferedReader bufferedReader = new BufferedReader(fileReader)) {
                 int size = 0;
@@ -114,7 +114,7 @@ public class _Main {
         }
     }
 
-    private static void doInsert(RestHighLevelClient client, String index, Order order, String refreshPolicy) throws Exception {
+    private static void doInsert(RestHighLevelClient client, String index, Order order, RefreshPolicy refreshPolicy) throws Exception {
         IndexRequest request = new IndexRequest();
         request.index(index).id(order.getOrderId().toString());
         request.source(JSON.toJSONString(order), XContentType.JSON);
@@ -122,7 +122,7 @@ public class _Main {
         client.index(request, RequestOptions.DEFAULT);
     }
 
-    private static void doInsert(RestHighLevelClient client, String index, List<Order> orders, String refreshPolicy) throws Exception {
+    private static void doInsert(RestHighLevelClient client, String index, List<Order> orders, RefreshPolicy refreshPolicy) throws Exception {
         BulkRequest request = new BulkRequest();
         for (Order order : orders) {
             IndexRequest indexRequest = new IndexRequest();
