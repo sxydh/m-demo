@@ -11,6 +11,7 @@
     <url>http://maven.apache.org</url>
     <modules>
         <module>erhlc-demo</module>
+        <module>espet-demo</module>
     </modules>
 
     <properties>
@@ -24,6 +25,7 @@
         <junit-jupiter.version>5.9.3</junit-jupiter.version>
         <lombok.version>1.18.30</lombok.version>
         <slf4j-log4j12.version>1.7.30</slf4j-log4j12.version>
+
         <elasticsearch-rest-high-level-client.version>7.8.0</elasticsearch-rest-high-level-client.version>
         <fastjson2.version>2.0.41</fastjson2.version>
     </properties>

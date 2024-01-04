@@ -1,0 +1,111 @@
+前置条件
+    创建索引
+        curl --location --request PUT 'http://192.168.233.129:9200/pet_order' \
+        --data '{
+            "settings": {
+                "number_of_shards": 3, // 分片数
+                "number_of_replicas": 3, // 副本数
+                "analysis": { // 分析器
+                    "analyzer": {
+                        "default": {
+                            "type": "simple"
+                        }
+                    }
+                }
+            },
+            "mappings": {
+                "properties": {
+                    "orderId": {
+                        "type": "long"
+                    },
+                    "orderNumber": {
+                        "type": "text"
+                    },
+                    "userId": {
+                        "type": "long"
+                    },
+                    "orderDate": {
+                        "type": "date",
+                        "format": "yyyy-MM-dd HH:mm:ss.SSS"
+                    },
+                    "orderStatus": {
+                        "type": "keyword"
+                    },
+                    "paymentMethod": {
+                        "type": "keyword"
+                    },
+                    "shippingAddress": {
+                        "type": "text"
+                    },
+                    "contactNumber": {
+                        "type": "text"
+                    },
+                    "email": {
+                        "type": "text"
+                    },
+                    "shippingCompany": {
+                        "type": "text"
+                    },
+                    "trackingNumber": {
+                        "type": "text"
+                    },
+                    "shippingCost": {
+                        "type": "scaled_float",
+                        "scaling_factor": 100
+                    },
+                    "totalAmount": {
+                        "type": "scaled_float",
+                        "scaling_factor": 100
+                    },
+                    "discountAmount": {
+                        "type": "scaled_float",
+                        "scaling_factor": 100
+                    },
+                    "paidAmount": {
+                        "type": "scaled_float",
+                        "scaling_factor": 100
+                    },
+                    "invoiceTitle": {
+                        "type": "text"
+                    },
+                    "taxNumber": {
+                        "type": "text"
+                    },
+                    "notes": {
+                        "type": "text"
+                    },
+                    "promotionId": {
+                        "type": "long"
+                    },
+                    "createTime": {
+                        "type": "date",
+                        "format": "yyyy-MM-dd HH:mm:ss.SSS"
+                    },
+                    "updateTime": {
+                        "type": "date",
+                        "format": "yyyy-MM-dd HH:mm:ss.SSS"
+                    },
+                    "rattr": {
+                        "type": "text"
+                    },
+                    "rattr2": {
+                        "type": "text"
+                    },
+                    "rattr3": {
+                        "type": "text"
+                    },
+                    "rattr4": {
+                        "type": "text"
+                    },
+                    "rattr5": {
+                        "type": "text"
+                    },
+                    "rattr6": {
+                        "type": "text"
+                    },
+                    "rattr7": {
+                        "type": "text"
+                    }
+                }
+            }
+        }'
