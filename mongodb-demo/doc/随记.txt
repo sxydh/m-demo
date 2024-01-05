@@ -41,9 +41,9 @@
                         mongo localhost:27017
                             use db_demo
                             show dbs
-                            db.tb_demo.insert({str:"Hello World!"})
+                            db.cl_demo.insert({str:"Hello World!"})
                             show collections
-                            db.tb_demo.find()
+                            db.cl_demo.find()
                     停止
                         mongod --dbpath /opt/module/mongodb/5023/data/db --logpath /opt/module/mongodb/5023/log/mongod.log --shutdown
         副本集
@@ -105,14 +105,14 @@
                     插入（任一节点）
                         mongo localhost:27017
                             use db_demo
-                            db.tb_demo.insert({str:"Hello World!"})
-                            db.tb_demo.find()
+                            db.cl_demo.insert({str:"Hello World!"})
+                            db.cl_demo.find()
                     查询（任一节点）
                         mongo localhost:27017
                             rs.secondaryOk()
                             show dbs
                             use db_demo
-                            db.tb_demo.find()
+                            db.cl_demo.find()
                 选主
                     停止 hadoop01 服务后，查看其它节点（hadoop02，hadoop03）状态。
                 节点增删（主节点）
@@ -181,7 +181,7 @@
                             replSet=rs_cl_configsvr
                 启动配置服务（hadoop01，hadoop02，hadoop03）
                     mongod -f /opt/module/mongodb/5023/cldemo/config/configsvr.conf --ipv6
-                初始化副本集（任一节点）
+                初始化副本集（hadoop01）
                     mongo localhost:27000
                         config={"_id":"rs_cl_configsvr","members":[{"_id":0,"host":"hadoop01:27000"},{"_id":1,"host":"hadoop02:27000"},{"_id":2,"host":"hadoop03:27000"}]}
                         rs.initiate(config)
@@ -263,9 +263,21 @@
                         sh.addShard("rs_cl_shard2/hadoop01:27018,hadoop02:27018,hadoop03:27018")
                         sh.addShard("rs_cl_shard3/hadoop01:27019,hadoop02:27019,hadoop03:27019")
                         sh.status()
-                启用指定数据库的分片支持
+                启用指定数据库的分片支持（任一节点）
                     mongo localhost:30000
+                        use admin
                         db.runCommand({"enablesharding":"db_demo"})
-                设置指定表的分片策略
+                设置指定表的分片策略（任一节点）
                     mongo localhost:30000
-                        db.runCommand({"shardcollection":"db_demo.tb_demo","key":{"id":"hashed"}})
+                        use admin
+                        db.runCommand({"shardcollection":"db_demo.cl_demo","key":{"id":"hashed"}})
+            启停集群
+                停止（hadoop01，hadoop02，hadoop03）
+                    killall mongos
+                    killall mongod
+                启动（hadoop01，hadoop02，hadoop03）
+                    mongod -f /opt/module/mongodb/5023/cldemo/config/configsvr.conf --ipv6
+                    mongod -f /opt/module/mongodb/5023/cldemo/config/shard1.conf --ipv6
+                    mongod -f /opt/module/mongodb/5023/cldemo/config/shard2.conf --ipv6
+                    mongod -f /opt/module/mongodb/5023/cldemo/config/shard3.conf --ipv6
+                    mongos -f /opt/module/mongodb/5023/cldemo/config/mongos.conf --ipv6
