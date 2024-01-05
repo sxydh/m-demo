@@ -119,7 +119,7 @@
                     mongo localhost:27017
                         rs.add({"host":"IP:PORT"})
                         rs.remove("IP:PORT")
-        集群（分片集 + 副本集）
+        集群（分片集 + 副本集，https://cloud.tencent.com/developer/article/2136493）
             前置条件
                 Ubuntu 20.04.6 LTS
                     hadoop01
