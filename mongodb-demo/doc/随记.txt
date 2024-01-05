@@ -36,6 +36,7 @@
                 mkdir -p /opt/module/mongodb/5023/data/db
                 mkdir -p /opt/module/mongodb/5023/log
             启动服务
+                touch /opt/module/mongodb/5023/log/mongod.log
                 mongod --dbpath /opt/module/mongodb/5023/data/db --logpath /opt/module/mongodb/5023/log/mongod.log --fork
                     验证
                         mongo localhost:27017
