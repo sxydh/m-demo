@@ -1,0 +1,271 @@
+概念    
+    Database：数据库。
+    Collection：数据库表/集合。
+    Field：字段/域。
+    Primary Key：主键，MongoDB 默认将 _id 字段设置为主键。
+    Index：索引。
+    Document：数据记录行/文档。
+组件
+    MongoDB Shard Server：即 mongos，用于分片集群中的查询路由。
+        mongos 所承担的主要功能有：查询路由、分片集群的全局视图、错误处理。
+    Config Server：存储集群元数据信息。
+        mongos 本身没有物理存储分片服务器和数据路由信息，只是缓存在内存里，实际由配置服务器存储这些数据。
+        mongos 第一次启动或者重启时会从 Config Server 加载配置信息，如果配置服务器信息发生变化会通知所有的 mongos 更新自己的状态。
+        在生产环境通常设置多个 Config Server，防止单点数据丢失。
+    Shard Server：存储实际的数据块。
+        在生产环境 Shard Server 可由多个服务器节点组成，形成一个副本集（Replica Set），防止单点故障。
+环境
+    MongoDB 5.0.23
+        单机
+            前置条件
+                Ubuntu 20.04.6 LTS
+                    hadoop01
+            安装依赖
+                sudo apt-get install libcurl4 openssl liblzma5
+            准备文件
+                sudo mkdir -p /opt/module/mongodb 
+                sudo chown -R sxydh:sxydh /opt/module/mongodb
+                wget -P /opt/module/mongodb/ https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.23.tgz
+                tar -zxvf /opt/module/mongodb/mongodb-linux-x86_64-ubuntu2004-5.0.23.tgz -C /opt/module/mongodb/
+                mv /opt/module/mongodb/mongodb-linux-x86_64-ubuntu2004-5.0.23 /opt/module/mongodb/5023
+                sudo vim /etc/profile.d/my_env.sh
+                    追加
+                        export MONGODB_HOME=/opt/module/mongodb/5023
+                        export PATH=$PATH:$MONGODB_HOME/bin
+                source /etc/profile
+                mkdir -p /opt/module/mongodb/5023/data/db
+                mkdir -p /opt/module/mongodb/5023/log
+            启动服务
+                mongod --dbpath /opt/module/mongodb/5023/data/db --logpath /opt/module/mongodb/5023/log/mongod.log --fork
+                    验证
+                        mongo localhost:27017
+                            use db_demo
+                            show dbs
+                            db.tb_demo.insert({str:"Hello World!"})
+                            show collections
+                            db.tb_demo.find()
+                    停止
+                        mongod --dbpath /opt/module/mongodb/5023/data/db --logpath /opt/module/mongodb/5023/log/mongod.log --shutdown
+        副本集
+            前置条件
+                Ubuntu 20.04.6 LTS
+                    hadoop01
+                    hadoop02
+                    hadoop03
+            安装依赖（hadoop01，hadoop02，hadoop03）
+                sudo apt-get install libcurl4 openssl liblzma5
+            准备文件（hadoop01）
+                sudo mkdir -p /opt/module/mongodb 
+                sudo chown -R sxydh:sxydh /opt/module/mongodb
+                wget -P /opt/module/mongodb/ https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.23.tgz
+                tar -zxvf /opt/module/mongodb/mongodb-linux-x86_64-ubuntu2004-5.0.23.tgz -C /opt/module/mongodb/
+                mv /opt/module/mongodb/mongodb-linux-x86_64-ubuntu2004-5.0.23 /opt/module/mongodb/5023
+                sudo vim /etc/profile.d/my_env.sh
+                    追加
+                        export MONGODB_HOME=/opt/module/mongodb/5023
+                        export PATH=$PATH:$MONGODB_HOME/bin
+                source /etc/profile
+                mkdir -p /opt/module/mongodb/5023/rsdemo/config
+                mkdir -p /opt/module/mongodb/5023/rsdemo/data/db
+                mkdir -p /opt/module/mongodb/5023/rsdemo/log
+                touch /opt/module/mongodb/5023/rsdemo/log/mongod.log
+            修改配置（hadoop01）
+                vim /opt/module/mongodb/5023/rsdemo/config/myconf.conf
+                    追加
+                        port=27017
+                        bind_ip=::,0.0.0.0
+                        dbpath=/opt/module/mongodb/5023/rsdemo/data/db
+                        logpath=/opt/module/mongodb/5023/rsdemo/log/mongod.log
+                        fork=true 
+                        replSet=rs_demo
+            分发文件（hadoop02，hadoop03）
+                略
+            启动服务（hadoop01，hadoop02，hadoop03）
+                mongod -f /opt/module/mongodb/5023/rsdemo/config/myconf.conf
+                    验证
+                        lsof -i:27017
+            初始化副本集（任一节点）
+                执行初始化的节点会成为主节点，以下两种模式二选一即可。
+                    PSS 模式（主节点 + 从节点 + 从节点）
+                        mongo localhost:27017
+                            use admin
+                            config={"_id":"rs_demo","members":[{"_id":0,"host":"hadoop01:27017"},{"_id":1,"host":"hadoop02:27017"},{"_id":2,"host":"hadoop03:27017"}]}
+                            rs.initiate(config)
+                                回车（多次）确认当前节点已成为主节点
+                            rs.status()
+                    PSA 模式（主节点 + 从节点 + 仲裁节点）
+                        mongo localhost:27017
+                            use admin
+                            config={"_id":"rs_demo","members":[{"_id":0,"host":"hadoop01:27017","priority":2},{"_id":1,"host":"hadoop02:27017","priority":1},{"_id":2,"host":"hadoop03:27017","arbiterOnly":true}]}
+                            rs.initiate()
+                                回车（多次）确认当前节点已成为主节点
+                            rs.status()
+            验证
+                增删改查
+                    插入（任一节点）
+                        mongo localhost:27017
+                            use db_demo
+                            db.tb_demo.insert({str:"Hello World!"})
+                            db.tb_demo.find()
+                    查询（任一节点）
+                        mongo localhost:27017
+                            rs.secondaryOk()
+                            show dbs
+                            use db_demo
+                            db.tb_demo.find()
+                选主
+                    停止 hadoop01 服务后，查看其它节点（hadoop02，hadoop03）状态。
+                节点增删（主节点）
+                    mongo localhost:27017
+                        rs.add({"host":"IP:PORT"})
+                        rs.remove("IP:PORT")
+        集群（分片集 + 副本集）
+            前置条件
+                Ubuntu 20.04.6 LTS
+                    hadoop01
+                    hadoop02
+                    hadoop03
+            规划集群
+                Name            Type         Node          Port
+                shard server 1  primary      hadoop01      27017
+                                secondary    hadoop02      27017
+                                arbiter      hadoop03      27017
+                shard server 2  arbiter      hadoop01      27018
+                                primary      hadoop02      27018
+                                secondary    hadoop03      27018
+                shard server 3  secondary    hadoop01      27019
+                                arbiter      hadoop02      27019
+                                primary      hadoop03      27019
+                config server   primary      hadoop01      27000
+                                secondary    hadoop02      27000
+                                secondary    hadoop03      27000
+                mongos server                hadoop01      30000
+                                             hadoop02      30000
+                                             hadoop03      30000
+            安装依赖（hadoop01，hadoop02，hadoop03）
+                sudo apt-get install libcurl4 openssl liblzma5
+            准备文件（hadoop01）
+                sudo mkdir -p /opt/module/mongodb 
+                sudo chown -R sxydh:sxydh /opt/module/mongodb
+                wget -P /opt/module/mongodb/ https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-5.0.23.tgz
+                tar -zxvf /opt/module/mongodb/mongodb-linux-x86_64-ubuntu2004-5.0.23.tgz -C /opt/module/mongodb/
+                mv /opt/module/mongodb/mongodb-linux-x86_64-ubuntu2004-5.0.23 /opt/module/mongodb/5023
+                sudo vim /etc/profile.d/my_env.sh
+                    追加
+                        export MONGODB_HOME=/opt/module/mongodb/5023
+                        export PATH=$PATH:$MONGODB_HOME/bin
+                source /etc/profile
+                mkdir -p /opt/module/mongodb/5023/cldemo/config
+                mkdir -p /opt/module/mongodb/5023/cldemo/mongos/log
+                mkdir -p /opt/module/mongodb/5023/cldemo/configsvr/data/db
+                mkdir -p /opt/module/mongodb/5023/cldemo/configsvr/log
+                mkdir -p /opt/module/mongodb/5023/cldemo/shard1/data/db
+                mkdir -p /opt/module/mongodb/5023/cldemo/shard1/log
+                mkdir -p /opt/module/mongodb/5023/cldemo/shard2/data/db
+                mkdir -p /opt/module/mongodb/5023/cldemo/shard2/log
+                mkdir -p /opt/module/mongodb/5023/cldemo/shard3/data/db
+                mkdir -p /opt/module/mongodb/5023/cldemo/shard3/log
+            分发文件（hadoop02，hadoop03）
+                略
+            部署配置服务
+                修改配置（hadoop01，hadoop02，hadoop03）
+                    touch /opt/module/mongodb/5023/cldemo/configsvr/log/mongod.log
+                    vim /opt/module/mongodb/5023/cldemo/config/configsvr.conf
+                        追加
+                            dbpath=/opt/module/mongodb/5023/cldemo/configsvr/data/db
+                            logpath=/opt/module/mongodb/5023/cldemo/configsvr/log/mongod.log
+                            bind_ip=::,0.0.0.0
+                            port=27000
+                            fork=true
+                            configsvr=true
+                            replSet=rs_cl_configsvr
+                启动配置服务（hadoop01，hadoop02，hadoop03）
+                    mongod -f /opt/module/mongodb/5023/cldemo/config/configsvr.conf --ipv6
+                初始化副本集（任一节点）
+                    mongo localhost:27000
+                        config={"_id":"rs_cl_configsvr","members":[{"_id":0,"host":"hadoop01:27000"},{"_id":1,"host":"hadoop02:27000"},{"_id":2,"host":"hadoop03:27000"}]}
+                        rs.initiate(config)
+            部署分片服务
+                shard 1
+                    修改配置（hadoop01，hadoop02，hadoop03）
+                        touch /opt/module/mongodb/5023/cldemo/shard1/log/mongod.log
+                        vim /opt/module/mongodb/5023/cldemo/config/shard1.conf
+                            追加
+                                dbpath=/opt/module/mongodb/5023/cldemo/shard1/data/db
+                                logpath=/opt/module/mongodb/5023/cldemo/shard1/log/mongod.log
+                                bind_ip=::,0.0.0.0
+                                port=27017
+                                fork=true
+                                shardsvr=true
+                                replSet=rs_cl_shard1
+                    启动分片服务（hadoop01，hadoop02，hadoop03）
+                        mongod -f /opt/module/mongodb/5023/cldemo/config/shard1.conf --ipv6
+                    初始化副本集（hadoop01）
+                        mongo localhost:27017
+                            config={"_id":"rs_cl_shard1","members":[{"_id":0,"host":"hadoop01:27017"},{"_id":1,"host":"hadoop02:27017"},{"_id":2,"host":"hadoop03:27017","arbiterOnly":true}]}
+                            rs.initiate(config)
+                            rs.status()
+                shard2
+                    修改配置（hadoop01，hadoop02，hadoop03）
+                        touch /opt/module/mongodb/5023/cldemo/shard2/log/mongod.log
+                        vim /opt/module/mongodb/5023/cldemo/config/shard2.conf
+                            追加
+                                dbpath=/opt/module/mongodb/5023/cldemo/shard2/data/db
+                                logpath=/opt/module/mongodb/5023/cldemo/shard2/log/mongod.log
+                                bind_ip=::,0.0.0.0
+                                port=27018
+                                fork=true
+                                shardsvr=true
+                                replSet=rs_cl_shard2
+                    启动分片服务（hadoop01，hadoop02，hadoop03）
+                        mongod -f /opt/module/mongodb/5023/cldemo/config/shard2.conf --ipv6
+                    初始化副本集（hadoop02）
+                        mongo localhost:27018
+                            config={"_id":"rs_cl_shard2","members":[{"_id":0,"host":"hadoop01:27018","arbiterOnly":true},{"_id":1,"host":"hadoop02:27018"},{"_id":2,"host":"hadoop03:27018"}]}
+                            rs.initiate(config)
+                            rs.status()
+                shard3
+                    修改配置（hadoop01，hadoop02，hadoop03）
+                        touch /opt/module/mongodb/5023/cldemo/shard3/log/mongod.log
+                        vim /opt/module/mongodb/5023/cldemo/config/shard3.conf
+                            追加
+                                dbpath=/opt/module/mongodb/5023/cldemo/shard3/data/db
+                                logpath=/opt/module/mongodb/5023/cldemo/shard3/log/mongod.log
+                                bind_ip=::,0.0.0.0
+                                port=27019
+                                fork=true
+                                shardsvr=true
+                                replSet=rs_cl_shard3
+                    启动分片服务（hadoop01，hadoop02，hadoop03）
+                        mongod -f /opt/module/mongodb/5023/cldemo/config/shard3.conf --ipv6
+                    初始化副本集（hadoop03）
+                        mongo localhost:27019
+                            config={"_id":"rs_cl_shard3","members":[{"_id":0,"host":"hadoop01:27019"},{"_id":1,"host":"hadoop02:27019","arbiterOnly":true},{"_id":2,"host":"hadoop03:27019"}]}
+                            rs.initiate(config)
+                            rs.status()
+            部署路由服务
+                修改配置（hadoop01，hadoop02，hadoop03）
+                    touch /opt/module/mongodb/5023/cldemo/mongos/log/mongod.log
+                    vim /opt/module/mongodb/5023/cldemo/config/mongos.conf
+                        追加
+                            logpath=/opt/module/mongodb/5023/cldemo/mongos/log/mongod.log
+                            bind_ip=::,0.0.0.0
+                            port=30000
+                            fork=true
+                            configdb=rs_cl_configsvr/hadoop01:27000,hadoop02:27000,hadoop03:27000
+                启动路由服务（hadoop01，hadoop02，hadoop03）
+                    mongos -f /opt/module/mongodb/5023/cldemo/config/mongos.conf --ipv6
+            使用集群
+                添加路由服务的分片信息（任一节点）
+                    mongo localhost:30000
+                        use admin
+                        sh.addShard("rs_cl_shard1/hadoop01:27017,hadoop02:27017,hadoop03:27017")
+                        sh.addShard("rs_cl_shard2/hadoop01:27018,hadoop02:27018,hadoop03:27018")
+                        sh.addShard("rs_cl_shard3/hadoop01:27019,hadoop02:27019,hadoop03:27019")
+                        sh.status()
+                启用指定数据库的分片支持
+                    mongo localhost:30000
+                        db.runCommand({"enablesharding":"db_demo"})
+                设置指定表的分片策略
+                    mongo localhost:30000
+                        db.runCommand({"shardcollection":"db_demo.tb_demo","key":{"id":"hashed"}})
