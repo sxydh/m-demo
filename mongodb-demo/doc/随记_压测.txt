@@ -1,0 +1,18 @@
+JDBC
+    前置条件
+        Ubuntu 20.04.6 LTS
+            处理器：16 核
+            内存：16 G
+            磁盘：SSD
+        MongoDB 5.0.23
+    执行测试
+        参考模块 mongodb-demo/mongodbpet-demo
+    参考结论
+        插入
+            基础量 = 10,000,000
+            线程数 = 1
+                READ = 0
+                WRITE = 50000
+                MANY = FALSE
+                TPS = 1500
+                RT = {0=98.7980, 10=0.6700, 20=0.1500, 30=0.3800, 40=0.0020}

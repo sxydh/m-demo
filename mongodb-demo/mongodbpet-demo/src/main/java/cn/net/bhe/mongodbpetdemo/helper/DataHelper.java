@@ -141,8 +141,8 @@ public class DataHelper {
         order.setRattr5(null);
         order.setRattr6(null);
         order.setRattr7(null);
-        order.setOrderDetailList(new ArrayList<>());
-        for (int i = 0; i < RANDOM.nextInt(4) + 1; i++) {
+        //noinspection ConstantValue
+        for (int i = 0; i < RANDOM.nextInt(1); i++) {
             OrderDetail orderDetail = getOrderDetail(order);
             order.getOrderDetailList().add(orderDetail);
         }

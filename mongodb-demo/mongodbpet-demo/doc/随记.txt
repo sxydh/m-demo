@@ -1,0 +1,11 @@
+前置条件
+    mongo 192.168.233.129:27017
+        use pet_demo
+        db.c_order.createIndex({"orderId":1},{"unique":true,"background":true})
+        db.c_order.createIndex({"orderNumber":1},{"unique":true,"background":true})
+        db.c_order.createIndex({"orderDate":-1},{"background":true})
+        db.c_order.createIndex({"createTime":-1},{"background":true})
+        db.c_order.createIndex({"updateTime":-1},{"background":true})
+        db.c_order.createIndex({"orderDate":-1,"userId":1},{"background":true})
+        db.c_order.createIndex({"orderDate":-1,"orderStatus":1},{"background":true})
+        db.c_order.createIndex({"orderDate":-1,"paymentMethod":1},{"background":true})

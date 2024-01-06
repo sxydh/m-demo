@@ -33,7 +33,7 @@ fun main() {
                 val tps = (size / (mills / 1000.0)).toInt()
                 val rtMap = TreeMap<Long, BigDecimal>()
                 for (entry in (res["rtMap"] as Map<*, *>)) {
-                    val value = ((entry.value as Int) * 1.0 / size * 100).toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+                    val value = ((entry.value as Int) * 1.0 / size * 100).toBigDecimal().setScale(4, RoundingMode.HALF_UP)
                     rtMap[entry.key as Long] = value
                 }
                 println("[${Thread.currentThread().name.padStart(16)}] size = $size, tps = $tps, rtMap = $rtMap")
