@@ -24,7 +24,7 @@ public class _Main {
         int threads = 1;
         int allocSec = 3600;
         boolean isMany = false;
-        String conn = "mongodb://192.168.233.129:30000";
+        String conn = "mongodb://192.168.233.129:27017";
 
         List<String> files = DataHelper.create(n, threads, allocSec);
         ExecutorService executorService = Executors.newFixedThreadPool(files.size());

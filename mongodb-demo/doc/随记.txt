@@ -33,11 +33,15 @@
                         export MONGODB_HOME=/opt/module/mongodb/5023
                         export PATH=$PATH:$MONGODB_HOME/bin
                 source /etc/profile
+            启动服务
                 mkdir -p /opt/module/mongodb/5023/data/db
                 mkdir -p /opt/module/mongodb/5023/log
-            启动服务
                 touch /opt/module/mongodb/5023/log/mongod.log
-                mongod --dbpath /opt/module/mongodb/5023/data/db --logpath /opt/module/mongodb/5023/log/mongod.log --fork
+                mongod --dbpath /opt/module/mongodb/5023/data/db \
+                       --logpath /opt/module/mongodb/5023/log/mongod.log \
+                       --bind_ip ::,0.0.0.0 \
+                       --port 27017 \
+                       --fork
                     验证
                         mongo localhost:27017
                             use db_demo
@@ -46,7 +50,11 @@
                             show collections
                             db.cl_demo.find()
                     停止
-                        mongod --dbpath /opt/module/mongodb/5023/data/db --logpath /opt/module/mongodb/5023/log/mongod.log --shutdown
+                        mongod --dbpath /opt/module/mongodb/5023/data/db \
+                               --logpath /opt/module/mongodb/5023/log/mongod.log \
+                               --bind_ip ::,0.0.0.0 \
+                               --port 27017 \
+                               --shutdown
         副本集
             前置条件
                 Ubuntu 20.04.6 LTS
