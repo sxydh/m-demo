@@ -1,0 +1,4 @@
+概念
+    流式结果集（Streaming Result Set）
+        在 JDBC 中，可以使用流式处理结果集的方式，逐行获取查询结果而不是一次性将整个结果集加载到内存中。这对于处理大量数据时非常有用，因为它可以减少内存消耗。
+        参考代码 mysql-demo/mysqljdbc-demo/src/main/java/cn/net/bhe/mysqljdbcdemo/streamingresultsetdemo
