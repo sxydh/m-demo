@@ -1,4 +1,4 @@
-package cn.net.bhe.sparkcoredemo.sparklauncherdemo
+package cn.net.bhe.sparkcoredemo
 
 import cn.net.bhe.mutil.DtUtils
 import com.sun.net.httpserver.{HttpExchange, HttpServer}
@@ -7,7 +7,7 @@ import org.apache.spark.launcher.{SparkAppHandle, SparkLauncher}
 import java.net.InetSocketAddress
 import java.nio.charset.StandardCharsets
 
-object _Main {
+object SparkLauncherDemo {
 
   def main(args: Array[String]): Unit = {
     val server = HttpServer.create(new InetSocketAddress(30006), 0)
