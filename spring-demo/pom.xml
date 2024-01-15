@@ -11,6 +11,7 @@
     <url>http://maven.apache.org</url>
     <modules>
         <module>springmvc-demo</module>
+        <module>springboot-demo</module>
     </modules>
 
     <properties>
@@ -25,6 +26,8 @@
         <lombok.version>1.18.26</lombok.version>
         <log4j-core.version>2.22.0</log4j-core.version>
         <log4j-api.version>2.22.0</log4j-api.version>
+
+        <spring-boot-starter-parent.version>2.7.11</spring-boot-starter-parent.version>
     </properties>
 
     <dependencyManagement>
@@ -63,6 +66,15 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
                 <version>${log4j-api.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-parent -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-parent</artifactId>
+                <version>${spring-boot-starter-parent.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
