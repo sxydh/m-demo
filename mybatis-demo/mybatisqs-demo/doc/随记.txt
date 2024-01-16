@@ -1,0 +1,17 @@
+环境
+    前置条件
+        Ubuntu 20.04.6 LTS
+        MySQL 8.0.35-0ubuntu0.20.04.1
+    初始化
+        mysql -uroot -p123
+            create database mb_demo;
+            use mb_demo;
+
+            create table if not exists t_order (order_id bigint, order_number varchar(20), user_id bigint, order_date datetime, order_status char(1), payment_method char(1), shipping_address varchar(200), contact_number char(11), email varchar(50), shipping_company varchar(200), tracking_number varchar(20), shipping_cost decimal(10, 2), total_amount decimal(10, 2), discount_amount decimal(10, 2), paid_amount decimal(10, 2), invoice_title varchar(50), tax_number varchar(20), notes varchar(200), promotion_id bigint, create_time datetime, update_time datetime, rattr varchar(100), rattr2 varchar(100), rattr3 varchar(100), rattr4 varchar(100), rattr5 varchar(100), rattr6 varchar(100), rattr7 varchar(100), primary key (order_id));
+            create unique index idx_order_number on t_order (order_number);
+            create index idx_order_date on t_order (order_date);
+            create index idx_create_time on t_order (create_time);
+            create index idx_update_time on t_order (update_time);
+            create index idx_order_date_user_id on t_order (order_date, user_id);
+            create index idx_order_date_order_status on t_order (order_date, order_status);
+            create index idx_order_date_payment_method on t_order (order_date, payment_method);
