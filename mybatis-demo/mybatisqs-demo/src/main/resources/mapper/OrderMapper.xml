@@ -4,7 +4,34 @@
 <mapper namespace="cn.net.bhe.mybatisqsdemo.mapper.OrderMapper">
 
     <select id="selectOrderList" resultType="cn.net.bhe.mybatisqsdemo.entity.Order">
-        select *
+        select order_id         as "orderId",
+               order_number     as "orderNumber",
+               user_id          as "userId",
+               order_date       as "orderDate",
+               order_status     as "orderStatus",
+               payment_method   as "paymentMethod",
+               shipping_address as "shippingAddress",
+               contact_number   as "contactNumber",
+               email            as "email",
+               shipping_company as "shippingCompany",
+               tracking_number  as "trackingNumber",
+               shipping_cost    as "shippingCost",
+               total_amount     as "totalAmount",
+               discount_amount  as "discountAmount",
+               paid_amount      as "paidAmount",
+               invoice_title    as "invoiceTitle",
+               tax_number       as "taxNumber",
+               notes            as "notes",
+               promotion_id     as "promotionId",
+               create_time      as "createTime",
+               update_time      as "updateTime",
+               rattr            as "rattr",
+               rattr2           as "rattr2",
+               rattr3           as "rattr3",
+               rattr4           as "rattr4",
+               rattr5           as "rattr5",
+               rattr6           as "rattr6",
+               rattr7           as "rattr7"
         from t_order limit 10
     </select>
 
