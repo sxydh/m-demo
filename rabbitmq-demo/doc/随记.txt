@@ -1,0 +1,28 @@
+环境
+    前置条件
+        Ubuntu 20.04.6 LTS
+    安装服务
+        sudo apt update
+        sudo apt install -y erlang
+        sudo apt install -y rabbitmq-server
+    启动服务
+        sudo service rabbitmq-server start
+            验证
+                sudo service rabbitmq-server status
+                管理后台
+                    sudo rabbitmq-plugins enable rabbitmq_management
+                        验证
+                            http://192.168.233.129:15672/
+    用户管理
+        创建用户
+            sudo rabbitmqctl add_user <username> <password>
+                验证
+                    sudo rabbitmqctl list_users
+                更改密码
+                    sudo rabbitmqctl change_password <username> <your_new_password>
+                删除用户
+                    sudo rabbitmqctl delete_user <username>
+        分配角色
+            sudo rabbitmqctl set_user_tags <username> <administrator|monitoring|policymaker|management|none>
+        分配主机
+            sudo rabbitmqctl set_permissions -p <virtual_host> <username> ".*" ".*" ".*"
