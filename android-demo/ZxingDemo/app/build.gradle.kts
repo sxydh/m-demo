@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "cn.net.bhe.zxingdemo"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "cn.net.bhe.zxingdemo"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -63,4 +63,9 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // https://mvnrepository.com/artifact/com.google.zxing/core
+    implementation("com.google.zxing:core:3.5.2")
+    // https://mvnrepository.com/artifact/com.journeyapps/zxing-android-embedded
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
