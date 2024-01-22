@@ -1,5 +1,11 @@
 环境
     前置条件
-        Spark Hive（参考 spark-demo/doc/随记.txt）
+        Spark Hive集群
+            参考 spark-demo/doc/随记.txt
     准备文件
-        cp /opt/module/hive/apache-hive-3.1.2-bin/conf/hive-site.xml <项目 resources 文件夹内>
+        Hive数据目录初始化（hadoop01/hadoop02/hadoop03）
+            cd /opt/module/hive/apache-hive-3.1.2-bin
+                bin/hive
+                    create database sh_demo;
+        项目配置
+            cp /opt/module/hive/apache-hive-3.1.2-bin/conf/hive-site.xml <项目 resources 文件夹内>
