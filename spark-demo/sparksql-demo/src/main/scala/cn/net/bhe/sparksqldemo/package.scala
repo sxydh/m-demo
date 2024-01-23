@@ -15,7 +15,7 @@ package object sparksqldemo {
     val random = new Random()
     val opArr = Array("INSERT", "UPDATE", "DELETE", "SELECT")
     for (it <- 1 to 10000) {
-      list.append((snowflake.nextId(), random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256), opArr(random.nextInt(opArr.length)), it.toString))
+      list.append((String.valueOf(snowflake.nextId()), random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256), opArr(random.nextInt(opArr.length)), it.toString))
     }
     list
   }
