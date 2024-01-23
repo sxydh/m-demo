@@ -1,6 +1,6 @@
 package cn.net.bhe
 
-import cn.net.bhe.mutil.{DtUtils, FlUtils}
+import cn.net.bhe.mutil.{DtUtils, FlUtils, Snowflake}
 
 import java.io.{File, FileWriter}
 import scala.collection.mutable.ListBuffer
@@ -11,10 +11,11 @@ package object sparksqldemo {
 
   val logSeq: Seq[(String, String, String, String)] = {
     val list = new ListBuffer[(String, String, String, String)]
+    val snowflake = new Snowflake()
     val random = new Random()
     val opArr = Array("INSERT", "UPDATE", "DELETE", "SELECT")
     for (it <- 1 to 10000) {
-      list.append((DtUtils.ts17(), random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256), opArr(random.nextInt(opArr.length)), it.toString))
+      list.append((snowflake.nextId(), random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256) + "." + random.nextInt(256), opArr(random.nextInt(opArr.length)), it.toString))
     }
     list
   }
