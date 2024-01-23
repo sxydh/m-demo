@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- 线性布局 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFC145"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_border"
+            android:text="垂直" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_border"
+            android:text="排列" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFC145"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_border"
+            android:text="水平" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_border"
+            android:text="排列" />
+    </LinearLayout>
+
+    <!-- 相对布局 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1CDDFF"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/textViewAbove"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_border"
+            android:text="上方" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewAbove"
+            android:background="@drawable/textview_border"
+            android:text="下方" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1CDDFF"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/textViewLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_border"
+            android:text="左边" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/textViewLeft"
+            android:background="@drawable/textview_border"
+            android:text="右边" />
+    </RelativeLayout>
+
+    <!-- 抽屉布局 -->
+    <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/drawerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:background="#00B6FF"
+        android:padding="10dp">
+
+        <!-- 主页面 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/drawerLeftButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="打开左侧栏" />
+
+            <Button
+                android:id="@+id/drawerRightButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="打开右侧栏" />
+        </LinearLayout>
+
+        <!-- 左侧栏 -->
+        <LinearLayout
+            android:id="@+id/drawerLeftLayout"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="#7D0DFF"
+            android:orientation="vertical" />
+
+        <!-- 右侧栏 -->
+        <LinearLayout
+            android:id="@+id/drawerRightLayout"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="#7D0DFF"
+            android:orientation="vertical" />
+    </androidx.drawerlayout.widget.DrawerLayout>
+</LinearLayout>

@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "cn.net.bhe.layoutdemo"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "cn.net.bhe.layoutdemo"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -63,4 +63,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // https://mvnrepository.com/artifact/androidx.drawerlayout/drawerlayout
+    implementation("androidx.drawerlayout:drawerlayout:1.2.0")
 }
