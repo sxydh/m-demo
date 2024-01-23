@@ -63,4 +63,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // https://mvnrepository.com/artifact/androidx.drawerlayout/drawerlayout
+    implementation("androidx.drawerlayout:drawerlayout:1.2.0")
 }

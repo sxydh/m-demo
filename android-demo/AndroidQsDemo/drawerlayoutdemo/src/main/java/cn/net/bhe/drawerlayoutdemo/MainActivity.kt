@@ -1,20 +1,25 @@
 package cn.net.bhe.drawerlayoutdemo
 
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import cn.net.bhe.drawerlayoutdemo.ui.theme.AndroidQsDemoTheme
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
+        var leftButton: Button = findViewById(R.id.leftButton)
+        leftButton.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
+        var rightButton: Button = findViewById(R.id.rightButton)
+        rightButton.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.END)
+        }
     }
+
 }
