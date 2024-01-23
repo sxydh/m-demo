@@ -1,0 +1,6 @@
+环境
+    初始化
+        192.168.233.129
+            mysql -uroot -p123
+                create database sparksql_demo;
+                create table if not exists t_log(id bigint, ip varchar(50), op varchar(10), value int);

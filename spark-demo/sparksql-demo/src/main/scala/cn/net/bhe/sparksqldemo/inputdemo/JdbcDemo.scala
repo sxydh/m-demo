@@ -1,8 +1,9 @@
-package cn.net.bhe.sparksqldemo.outputdemo
+package cn.net.bhe.sparksqldemo.inputdemo
 
-import cn.net.bhe.sparksqldemo.logInput
 import org.apache.spark.SparkConf
-import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
+import org.apache.spark.sql.{DataFrame, SparkSession}
+
+import java.util.Properties
 
 //noinspection DuplicatedCode
 object JdbcDemo {
@@ -16,14 +17,18 @@ object JdbcDemo {
     val spark: SparkSession = SparkSession.builder().config(sparkConf).getOrCreate()
 
     // 数据输入
-    val df: DataFrame = spark.read.json(logInput)
-
-    // 数据输出
-    val url = "jdbc:mysql://192.168.233.129:3306/sparksql_demo"
-    val properties = new java.util.Properties()
+    val properties = new Properties()
     properties.setProperty("user", "root")
     properties.setProperty("password", "123")
-    df.write.mode(SaveMode.Append).jdbc(url, "t_log", properties)
+    properties.setProperty("driver", "com.mysql.cj.jdbc.Driver")
+    val df: DataFrame = spark.read.jdbc(
+      url = "jdbc:mysql://192.168.233.129:3306/sparksql_demo",
+      table = "t_log",
+      predicates = Array(" value < 5 "),
+      connectionProperties = properties)
+
+    // 数据处理
+    println(df.count())
 
     // 释放资源
     spark.close()
