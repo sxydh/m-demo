@@ -14,4 +14,5 @@
             全局代理
                 export http_proxy=socks5://127.0.0.1:10808
                 export https_proxy=socks5://127.0.0.1:10808
+                export ftp_proxy=socks5://127.0.0.1:10808
                 export no_proxy="<local_ip>"
