@@ -1,0 +1,17 @@
+环境
+    前置条件
+        Ubuntu 20.04.6 LTS
+    准备文件
+        sudo mkdir -p /opt/module/v2ray
+        sudo chown -R sxydh:sxydh /opt/module/v2ray
+        wget -P /opt/module/v2ray https://github.com/v2fly/v2ray-core/releases/download/v4.31.0/v2ray-linux-64.zip
+        unzip /opt/module/v2ray/v2ray-linux-64.zip -d /opt/module/v2ray/
+    启动服务
+        cd /opt/module/v2ray
+        ./v2ray -config=/opt/module/v2ray/config_japan.json
+            验证
+                curl --socks5 127.0.0.1:10808 https://www.google.com
+            全局代理
+                export http_proxy=socks5://127.0.0.1:10808
+                export https_proxy=socks5://127.0.0.1:10808
+                export no_proxy="<local_ip>"
