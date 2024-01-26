@@ -66,4 +66,6 @@ dependencies {
 
     // https://mvnrepository.com/artifact/androidx.drawerlayout/drawerlayout
     implementation("androidx.drawerlayout:drawerlayout:1.2.0")
+    // https://mvnrepository.com/artifact/androidx.constraintlayout/constraintlayout
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 }
