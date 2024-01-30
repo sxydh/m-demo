@@ -1,0 +1,12 @@
+磁盘列表
+    list disk
+        进入磁盘
+            select disk <disk_id>
+                分区列表
+                    list partition
+                        进入分区
+                            select partition <partition_id>
+                                分配盘符
+                                    assign letter=<letter>
+                                移除盘符
+                                    remove letter=<letter>
