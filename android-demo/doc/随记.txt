@@ -1,13 +1,63 @@
-快速开始
-    事件动作
-        详见代码 android-demo/AndroidQsDemo/motioneventdemo
-    RecyclerView 
-        详见代码 android-demo/AndroidQsDemo/recyclerviewdemo
-    SurfaceView
-        详见代码 android-demo/AndroidQsDemo/surfaceviewdemo
+基础
+    核心组件
+        Activity
+            概述
+                Activity 通常代表应用中的一个屏幕，用户可以在这个屏幕上进行交互。
+                Activity 是一个类，负责管理用户界面、处理用户的输入和操作。
+            生命周期
+                onCreate()
+                    Activity 首次创建时调用
+                    一般在这里处理初始化任务
+                onStart()
+                onPause()
+                    Activity 失去焦点时触发，此时 Activity 仍然部分可见，只是未处于栈顶。
+                onResume()
+                    Activity 获得焦点时触发，此时 Activity 处于栈顶。
+                onStop()
+                    Activity 不可见时触发
+                onRestart()
+                    Activity 从 onStop() 恢复到可见时触发
+                onDestroy()
+                    Activity 被用户或系统关闭时触发
+            实例管理
+                Activity 栈（Activity Stack）是 Android 系统用于管理 Activity 的一种数据结构，按照 LIFO 的原则维护 Activity 的顺序。
+                在 Activity 栈中，用户看到的是位于栈顶的 Activity。
+            启动方式
+                显示启动
+                    指定目标 Activity 全限定名
+                隐式启动
+                    通过规则匹配目标 Activity
+                    通过协议跳转目标 Activity
+            启动模式
+                standard
+                    无条件新建实例
+                singleTop
+                    Activity 栈顶不是目标 Activity 则新建实例
+                singleTask
+                    Activity 栈内目标 Activity 是单例（针对一个应用）
+                singleInstance
+                    Activity 栈内目标 Activity 是单例（针对所有应用）
+            退出方式
+                finish()
+                throw new Exception()
+            重要回调
+                onSaveInstanceState()
+                    Activity 销毁之前触发
+                    一般用来保存销毁前的实例状态
 环境
     Android Studio
-        管理 SDK
-            Settings
-                Languages & Frameworks
-                    Android SDK
+        SDK
+            配置 
+                Settings
+                    Languages & Frameworks
+                        Android SDK
+            ADB
+                前置条件
+                    Windows 11
+                配置系统环境变量 path
+                    追加
+                        <Android SDK Location>\platform-tools
+                设备列表
+                    adb devices
+                进入设备
+                    adb -s <device_id> shell
