@@ -44,6 +44,43 @@
                 onSaveInstanceState()
                     Activity 销毁之前触发
                     一般用来保存销毁前的实例状态
+        Service
+            概述
+                Service 通常用于在后台运行任务，不需要与用户交互。
+                Service 在主线程中运行，应当避免执行耗时操作。
+            生命周期
+                startService 方式启动
+                    onCreate()
+                    onStartCommand()
+                        启动 Service 时调用，多次启动会触发多次调用。
+                        不同的返回值含义
+                            START_STICKY
+                                服务被杀死后将尝试重新创建，并且不会重新传递最后一个 Intent。
+                                适用于处理不断运行的服务，例如后台音乐播放器。
+                            START_NOT_STICKY
+                                服务被杀死后不会重新创建
+                                适用于执行一次性任务的服务，如下载任务完成后即可停止服务。
+                            START_REDELIVER_INTENT
+                                服务被杀死后将尝试重新创建，并且会重新传递最后一个 Intent。
+                                适用于需要确保所有启动请求都被处理的服务，例如下载文件的服务。
+                    onDestroy()
+                bindService 方式启动
+                    onCreate()
+                    onBind()
+                    onUnBind()
+                    onDestroy
+            启动方式
+                startService
+                    无法获取启动后的 Service 实例
+                    即使应用停止后 Service 仍然可以继续运行
+                    停止方式
+                        stopService()
+                        stopSelf()
+                bindService
+                    可以获取启动后的 Service 实例
+                    当被解除绑定后 Service 会被销毁
+                    停止方式
+                        unbindService()
 环境
     Android Studio
         SDK
