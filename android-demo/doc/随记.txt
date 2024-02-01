@@ -37,7 +37,7 @@
                     Activity 栈内目标 Activity 是单例（针对一个应用）
                 singleInstance
                     Activity 栈内目标 Activity 是单例（针对所有应用）
-            退出方式
+            停止方式
                 finish()
                 throw new Exception()
             重要回调

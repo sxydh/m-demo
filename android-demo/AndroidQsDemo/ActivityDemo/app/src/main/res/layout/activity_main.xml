@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="MainActivity" />
+
+    <Button
+        android:id="@+id/to2Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="启动 SecondActivity" />
+
+    <Button
+        android:id="@+id/to3Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="启动 ThirdActivity" />
+
+    <Button
+        android:id="@+id/to4Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="启动 FourthActivity" />
+
+    <Button
+        android:id="@+id/stopButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="停止所有 Activity" />
+</LinearLayout>

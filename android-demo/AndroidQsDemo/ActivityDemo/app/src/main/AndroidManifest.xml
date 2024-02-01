@@ -19,8 +19,33 @@
             android:theme="@style/Theme.ActivityDemo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".SecondActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ActivityDemo" />
+        <activity
+            android:name=".ThirdActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ActivityDemo">
+            <intent-filter>
+                <action android:name="anyId.ThirdActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".FourthActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ActivityDemo">
+            <intent-filter>
+                <data
+                    android:host="any_host"
+                    android:path="/any_path_fourth_activity"
+                    android:scheme="any_schema" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
     </application>
