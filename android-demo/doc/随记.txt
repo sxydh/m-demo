@@ -88,6 +88,18 @@
                 ContentProvider 用于提供数据的访问和管理，允许应用程序之间共享数据。
                 ContentProvider 提供了一种标准化的接口，允许应用程序通过 URI（Uniform Resource Identifier）来访问和操作数据，而不需要了解底层数据存储的细节。
                 ContentProvider 是应用之间共享数据的方式之一，如果想要轻量化，可以选择 SharedPreferences。
+        Broadcast
+            概述
+                Broadcast（广播）是一种用于在应用组或件之间传递消息的机制
+                Broadcast 允许一个组件发送事件，而其他组件可以注册接收这些事件并作出响应。
+            广播方式
+                显示广播
+                    显示指定接收者
+                隐式广播
+                    根据规则匹配接收者
+            注册方式
+                静态注册
+                动态注册
     进程管理
         进程创建
         进程分类
