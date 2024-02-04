@@ -74,13 +74,24 @@
                     无法获取启动后的 Service 实例
                     即使应用停止后 Service 仍然可以继续运行
                     停止方式
-                        stopService()
-                        stopSelf()
+                        this.stopService()
+                        this.stopSelf()
                 bindService
                     可以获取启动后的 Service 实例
-                    当被解除绑定后 Service 会被销毁
+                    当解除所有绑定后 Service 会被销毁
                     停止方式
-                        unbindService()
+                        <caller>.unbindService()
+            如何保活
+                将 Service 设置为前台服务
+        ContentProvider
+            概述
+                ContentProvider 用于提供数据的访问和管理，允许应用程序之间共享数据。
+                ContentProvider 提供了一种标准化的接口，允许应用程序通过 URI（Uniform Resource Identifier）来访问和操作数据，而不需要了解底层数据存储的细节。
+                ContentProvider 是应用之间共享数据的方式之一，如果想要轻量化，可以选择 SharedPreferences。
+    进程管理
+        进程创建
+        进程分类
+        进程通信
 环境
     Android Studio
         SDK
