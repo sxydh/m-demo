@@ -100,6 +100,47 @@
             注册方式
                 静态注册
                 动态注册
+    View
+        概述
+            View 是用户界面的可见元素的基类，提供测量、布局、绘制、事件处理等功能。
+        绘制流程
+            重要的类（接口）和它们之间的关系
+                PhoneWindow
+                    PhoneWindow 是 Window 接口的一个实现
+                    一般情况下一个 Activity 对应一个 PhoneWindow
+                DecorView
+                    DecorView 是 Window 的根视图，包含 Window 要显示的内容。
+                        以 PhoneWindow 为例，它的 DecorView 可以通过 Activity 的 setContentView() 进行设置。
+                    DecorView 本质是 FrameLayout
+                ViewRootImpl
+                    ViewRootImpl 持有 Window 的根视图 DecorView ，负责视图树的绘制、用户事件分发等。
+                    一般情况下一个 Window 对应一个 ViewRootImpl
+                WindowManager
+                    WindowManager 负责管理一个或多个 Window 的位置、大小、显示等。
+                WindowManagerService
+                    WindowManagerService 是系统级的 Service ， WindowManager 对 Window 的操作实际上由 WindowManagerService 执行。
+                逻辑层次关系
+                    Activity
+                        PhoneWindow
+                            DecorView
+                                TitleView
+                                ContentView
+                                    ViewGroup
+                                        View
+                                        ViewGroup
+                                        ...
+                        Dialog
+                        ...
+            ViewRootImpl.performMeasure()
+                执行视图树的测量操作，确定绘制空间的大小，会触发视图树节点的 onMeasure() 方法。
+            ViewRootImpl.performLayout()
+                执行视图树的布局操作，确定每个视图的大小、位置，会触发视图树节点的 onLayout() 方法。
+            ViewRootImpl.performDraw()
+                执行视图树的绘制操作，对每个视图进行绘制，会触发视图树节点的 onDraw() 方法。
+        ViewGroup
+            概述
+                在视图树中， ViewGroup 是 View 的父节点。
+                ViewGroup 继承自 View ，且实现了 ViewParent 接口，每个 View 都持有一个 ViewParent ，以此形成视图树。
     进程管理
         进程创建
             应用启动后，系统自动创建一个进程来运行程序组件。
