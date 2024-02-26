@@ -292,7 +292,7 @@ Kafka消费者
     消费者offset保存位置
         Kafka0.9版本之前，Consumer默认将offset保存在ZooKeeper中。
         从0.9版本开始，Consumer默认将offset保存在Kafka一个内置的Topic中，该Topic为__consumer_offsets。
-        __consumer_offsets主题里面采用key和value的方式存储数据。key是groupId + topic + 分区号，value就是offset值。每个一段时间，Kafka内部会对这个Topic进行compact，也就是每个groupId + topic + 分区号就保留最新数据。
+        __consumer_offsets主题里面采用key和value的方式存储数据。key是groupId + topic + 分区号，value就是offset值。每过一段时间，Kafka内部会对这个Topic进行compact，也就是每个groupId + topic + 分区号就保留最新数据。
     消费者提交offset
         自动提交offset
             为了使我们能够专注于自己的业务逻辑，Kafka提供了自动提交offset的功能。
