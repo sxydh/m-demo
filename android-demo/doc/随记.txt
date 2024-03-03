@@ -157,7 +157,8 @@
             空进程
                 进程中包含的组件处于未活动状态，获取资源的优先级最低。
         进程通信
-            Binder / Bundle
+            Binder（https://xuyonghong.cn/2022/02/08/Android-Binder%E5%B0%8F%E8%AE%B0.md/）
+            Bundle
             文件共享
             AIDL
             Messenger
