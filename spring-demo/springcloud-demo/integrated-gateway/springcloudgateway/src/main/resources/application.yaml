@@ -1,0 +1,16 @@
+server:
+  port: 20010
+spring:
+  application:
+    name: springcloudgateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        group: integrated-gateway
+    gateway:
+      routes:
+        - id: servicename
+          uri: lb://servicename
+          predicates:
+            - Path=/servicename/**
