@@ -1,4 +1,4 @@
-package cn.net.bhe.springbootdemo;
+package cn.net.bhe.quickstartdemo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
