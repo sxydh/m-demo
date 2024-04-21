@@ -1,8 +1,16 @@
 server:
   port: 20010
 
+spring:
+  application:
+    name: prometheus-demo
+
 management:
   endpoints:
     web:
       exposure:
-        include: prometheus
+        include: "*"
+  metrics:
+    tags:
+      # 所有的指标都会带上 application 这个标签
+      application: ${spring.application.name}

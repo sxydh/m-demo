@@ -1,0 +1,29 @@
+环境
+    前置条件
+        Windows
+            192.168.243.185
+                SpringBoot 2.7.11
+        Ubuntu 20.04.6 LTS
+            192.168.233.129
+                Prometheus 2.51.2
+                    参考 m-demo/prometheus-demo/随记.txt
+    修改配置
+        SpringBoot
+            略
+        Prometheus
+            vim /opt/module/prometheus/prometheus-2.51.2.linux-amd64/prometheus.yml
+                追加
+                    - job_name: "prometheus-demo"
+                      scrape_interval: 5s
+                      scrape_timeout: 5s
+                      metrics_path: '/actuator/prometheus'
+                      static_configs:
+                        - targets: ['192.168.243.185:20010']
+    启动服务
+        SpringBoot
+            略
+        Prometheus
+            cd /opt/module/prometheus/prometheus-2.51.2.linux-amd64
+                ./prometheus --config.file=prometheus.yml
+                    验证
+                        http://192.168.233.129:9090/targets
