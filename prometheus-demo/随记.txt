@@ -1,0 +1,39 @@
+概述
+    Prometheus 可以采集指标数据，存储在时序数据库内，然后基于这些时许数据进行指标监控。
+架构
+    Prometheus Server
+        数据收集（ Retrieval ）
+        数据存储（ Storage ）
+        数据查询（ PromQL ）
+    Service Discovery
+        目标发现
+            Prometheus 主要通过拉模式来采集监控目标的指标数据，因此需要通过 Service Discovery 来发现目标列表。
+    Pushgateway
+        中转支持
+            如果一些监控目标的生命周期比较短，则不适合使用拉模式来对其采集数据，这是可以先使用推模式将指标数据传到 Pushgateway ，再使用拉模式从 Pushgateway 将数据传到 Prometheus Server 。
+    Job / Exporter
+        数据导出
+            Job / Exporter 通常集成在监控目标中（即一个依赖库）
+            Job 是监控目标列表的逻辑分组，一个 Job 通常代表一类服务或应用程序的实例集合。
+            Exporter 负责提取指标数据，并转换数据格式，对外提供数据采集的接口。
+    Web UI 
+        数据展示
+            Grafana
+    Alertmanager
+        监控告警
+环境
+    前置条件
+        Ubuntu 20.04.6 LTS
+            192.168.233.129
+    安装服务（ 2.51.2 ）
+        sudo mkdir -p /opt/module/prometheus
+        sudo chown -R sxydh:sxydh /opt/module/prometheus
+        wget -P /opt/module/prometheus https://github.com/prometheus/prometheus/releases/download/v2.51.2/prometheus-2.51.2.linux-amd64.tar.gz
+        tar -zxvf /opt/module/prometheus/prometheus-2.51.2.linux-amd64.tar.gz -C /opt/module/prometheus
+    修改配置
+        无
+    启动服务
+        cd /opt/module/prometheus/prometheus-2.51.2.linux-amd64
+            ./prometheus --config.file=prometheus.yml
+                验证
+                    http://192.168.233.129:9090/
