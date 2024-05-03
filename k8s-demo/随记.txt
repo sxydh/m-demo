@@ -29,7 +29,7 @@
         Kube-proxy
             Kube-proxy 可以实现流量负载均衡的功能，将到达 Service 的流量分配到合适的 Pod 。
                 对 Service 的访问可以使用 NodePort 方式
-                    NodePort 是将每个节点指定端口的流量，映射到指定的 Service 。
+                    NodePort 是将每个节点指定端口的流量，转发到指定的 Service 。
             Kube-proxy 提供的负载均衡主要有两种场景：
                 节点外客户端访问 Service
                 节点内 Pod 访问 Service
@@ -38,8 +38,12 @@
 功能组件
     网络
         Ingress
-            Ingress 可以实现流量路由、负载均衡的功能，将到达 Ingress 的流量分配到合适的 Service 。
-            Ingress 的功能类似于 Nginx ，先收到外部客户端的请求（一般带有域名），然后根据用户定义的规则，映射到正确的 Service 。
+            Ingress 可以实现流量路由、负载均衡的功能，将到达 Ingress 的流量转发到合适的 Service 。
+            Ingress 的功能类似于 Nginx ，先收到外部客户端的请求（一般带有域名），然后根据用户定义的规则，转发到正确的 Service 。
+            Ingress 组件包含 Nginx 、 Ingress Controller 、 Ingress 。
+                Ingress 是流量路由规则对象
+                Nginx 负责流量路由
+                Ingress Controller 负责感知路由规则的变化，并动态应用到 Nginx 。
             
         Flannel
         Calico
@@ -121,7 +125,7 @@
         apt update
         apt install -y docker-ce=5:20.10.16~3-0~ubuntu-focal
             验证
-                docker -v
+                docker version
         systemctl enable docker
             添加开机自启
 
@@ -130,7 +134,7 @@
           "exec-opts": ["native.cgroupdriver=systemd"]
         }
         EOF
-            告诉 Docker 使用 systemd 作为其 cgroup 驱动程序，这样做的目的通常是为了与宿主系统的 cgroup 配置保持一致，以便更好地管理容器的资源。
+            告诉 Docker 使用 systemd 作为其 cgroup 驱动程序，这样做的目的是为了与宿主系统的 cgroup 配置保持一致，以便更好地管理容器的资源。
 
         systemctl daemon-reload
             重新加载 systemd 守护程序的配置文件
@@ -149,16 +153,17 @@
         apt install -y kubelet=1.23.9-00 kubeadm=1.23.9-00 kubectl=1.23.9-00
         systemctl enable kubelet
 
+    启动集群（ hadoop01 ）
         kubeadm init \
-        --apiserver-advertise-address=<master_ip> \
+        --apiserver-advertise-address=192.168.233.129 \
         --image-repository registry.aliyuncs.com/google_containers \
         --pod-network-cidr=10.244.0.0/16 \
         --ignore-preflight-errors='all'
-            初始化 K8s Master ，注意仅在 hadoop01 上执行。
+            初始化 K8s Master ，执行之后需要按照控制台提示进行操作。
 
-    安装 K8s 网络组件 Flannel （ hadoop01/hadoop02/hadoop03 ，为集群提供虚拟网络，让各节点上的 Pod 之间可以互相通信）
         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+            安装网络组件 Flannel ，为集群提供虚拟网络，让各节点上的 Pod 之间可以互相通信。
 
-    加入集群
-        kubeadm join <master_ip:master_port> --token <token> \
+    加入集群（ hadoop02/hadoop03 ）
+        kubeadm join 192.168.233.129:6443 --token <token> \
                 --discovery-token-ca-cert-hash sha256:<sha256>
