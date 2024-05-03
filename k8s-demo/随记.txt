@@ -84,7 +84,7 @@
             Logstash
             Kibana
 
-环境
+环境（ https://bbs.huaweicloud.com/blogs/380596 ）
     前置条件
         Ubuntu 20.04.6 LTS
             192.168.233.129   hadoop01
@@ -153,7 +153,7 @@
         apt install -y kubelet=1.23.9-00 kubeadm=1.23.9-00 kubectl=1.23.9-00
         systemctl enable kubelet
 
-    启动集群（ hadoop01 ）
+    启动 K8s 集群（ hadoop01 ）
         kubeadm init \
         --apiserver-advertise-address=192.168.233.129 \
         --image-repository registry.aliyuncs.com/google_containers \
@@ -164,6 +164,25 @@
         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
             安装网络组件 Flannel ，为集群提供虚拟网络，让各节点上的 Pod 之间可以互相通信。
 
-    加入集群（ hadoop02/hadoop03 ）
+    加入 K8s 集群（ hadoop02/hadoop03 ）
         kubeadm join 192.168.233.129:6443 --token <token> \
                 --discovery-token-ca-cert-hash sha256:<sha256>
+
+    安装 K8s Dashboard （ hadoop01 ， 2.5.1 ， https://skyao.io/learning-kubernetes/docs/installation/kubeadm/dashboard ）
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.1/aio/deploy/recommended.yaml
+            安装完成后，是以 ClusterIP 的形式对外曝露服务，只能在集群内部访问，需要将 ClusterIP 更新为 NodePort ：
+                kubectl -n kubernetes-dashboard edit service kubernetes-dashboard
+                    更新
+                        spec:
+                            ...
+                            type: NodePort
+            查看 Dashboard 所在节点：
+                kubectl get pods -A -o wide | grep kubernetes-dashboard
+            查看 Dashboard 所在端口：
+                kubectl -n kubernetes-dashboard get service kubernetes-dashboard
+            获取 Dashboard 登录 token
+                kubectl -n kube-system describe $(kubectl -n kube-system get secret -n kube-system -o name | grep namespace) | grep token
+            登录 Dashboard
+                https://<ip>:<port>
+                    如果浏览器因为安全问题无法进入，可以在页面空白处输入以下内容即可：
+                        thisisunsafe
