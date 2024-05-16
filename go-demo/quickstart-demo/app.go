@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"quickstart-demo/collection_demo"
 	"quickstart-demo/function_demo"
+	"quickstart-demo/goroutine_demo"
 	"quickstart-demo/package_demo"
 	"quickstart-demo/pointer_demo"
 	"quickstart-demo/struct_demo"
@@ -45,5 +46,9 @@ func main() {
 
 	fmt.Println(">>>>>>>>>>> StructDemo")
 	struct_demo.StructDemo()
+	fmt.Println()
+
+	fmt.Println(">>>>>>>>>>> GoroutineDemo")
+	goroutine_demo.GoroutineDemo()
 	fmt.Println()
 }
