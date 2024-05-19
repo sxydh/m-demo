@@ -8,9 +8,19 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 )
 
 func main() {
+	i := 0
+	for {
+		i += 1
+		log.Printf("%v", i)
+		SshTunnel()
+	}
+}
+
+func SshTunnel() {
 	/* 创建远程主机的连接配置 */
 	homePath, _ := os.UserHomeDir()
 	privateKeyPath := filepath.Join(homePath, ".ssh", "id_rsa")
@@ -34,7 +44,9 @@ func main() {
 	/* 创建远程主机的连接 */
 	sshConn, err := ssh.Dial("tcp", "124.71.35.157:22", sshConfig)
 	if err != nil {
-		log.Fatalf("Failed to dial: %v", err)
+		log.Printf("Failed to dial: %v", err)
+		time.Sleep(5 * time.Second)
+		return
 	}
 	defer func(closeable *ssh.Client) {
 		err := closeable.Close()
@@ -46,7 +58,9 @@ func main() {
 	/* 监听远程主机端口 */
 	remoteListen, err := sshConn.Listen("tcp", "localhost:10006")
 	if err != nil {
-		log.Fatalf("Failed to create reverse tunnel: %v", err)
+		log.Printf("Failed to create reverse tunnel: %v", err)
+		time.Sleep(5 * time.Second)
+		return
 	}
 	log.Printf("Listening on remote side...")
 	defer func(closeable net.Listener) {
@@ -61,6 +75,7 @@ func main() {
 		userConn, err := remoteListen.Accept()
 		if err != nil {
 			log.Printf("Failed to accept connection: %v", err)
+			return
 		}
 		go handleTunnel(userConn)
 	}
