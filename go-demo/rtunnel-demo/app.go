@@ -11,6 +11,15 @@ import (
 	"time"
 )
 
+/*
+ * 前置条件：
+ * 1、与远程主机可以免密登录。
+ *
+ * 编译命令：
+ * set GOOS=windows
+ * set GOARCH=amd64
+ * go build -o rtunnel_demo.exe
+ */
 func main() {
 	i := 0
 	for {
