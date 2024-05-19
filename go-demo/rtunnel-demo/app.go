@@ -150,7 +150,7 @@ func handleKeepAlive() {
 	for {
 		aliveEle := <-aliveChan
 		go func() {
-			log.Printf("[handleKeepAlive] Alive detect => %v", aliveEle.id)
+			log.Printf("[handleKeepAlive] Detecting => %v", aliveEle.id)
 			session, err := aliveEle.remoteClient.NewSession()
 			if err != nil {
 				log.Printf("[handleKeepAlive] Failed to newSession => %v", err)
