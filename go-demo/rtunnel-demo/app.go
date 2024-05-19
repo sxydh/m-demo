@@ -27,6 +27,7 @@ var aliveChan = make(chan *TunnelBo)
 var reChan = make(chan *TunnelBo)
 
 func main() {
+	log.SetFlags(log.Llongfile)
 	go handleKeepAlive()
 	i := 0
 	for {
@@ -101,7 +102,6 @@ func handleTunnel(tunnelBo *TunnelBo) {
 	}()
 	for {
 		status, _ := m.Load(tunnelBo.id)
-		log.Printf("[handleTunnel] %v.status = %v", tunnelBo.id, status)
 		if status != nil && status == "0" {
 			return
 		}
@@ -150,7 +150,6 @@ func handleKeepAlive() {
 	for {
 		aliveEle := <-aliveChan
 		go func() {
-			log.Printf("[handleKeepAlive] Detecting => %v", aliveEle.id)
 			session, err := aliveEle.remoteClient.NewSession()
 			if err != nil {
 				log.Printf("[handleKeepAlive] Failed to newSession => %v", err)
