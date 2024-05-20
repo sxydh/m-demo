@@ -27,7 +27,6 @@ var aliveChan = make(chan *TunnelBo)
 var reChan = make(chan *TunnelBo)
 
 func main() {
-	log.SetFlags(log.Llongfile)
 	go handleKeepAlive()
 	i := 0
 	for {
