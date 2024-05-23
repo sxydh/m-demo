@@ -302,9 +302,9 @@
                     同单机
             分发文件到集群（host01，host02，host03）
                 略
-            创建ES用户（host01，host02，host03）
+            创建ES用户（host01/host02/host03）
                 同单机
-            启动集群（启动前建议清空path.data文件夹，默认是ES目录的data）
+            启动集群（host01/host02/host03，启动前建议清空path.data文件夹，默认是ES目录的data）
                 同单机
     分词器
         elasticsearch-analysis-ik
