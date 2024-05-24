@@ -1,0 +1,1489 @@
+{
+	"info": {
+		"_postman_id": "94d40989-f1e1-457b-957b-d9907a857a3e",
+		"name": "Elasticsearch",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6094256"
+	},
+	"item": [
+		{
+			"name": "Quick Start",
+			"item": [
+				{
+					"name": "索引",
+					"item": [
+						{
+							"name": "创建索引",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"settings\": {\r\n        \"number_of_shards\": 3, // 分片数\r\n        \"number_of_replicas\": 3, // 副本数\r\n        \"analysis\": { // 分析器\r\n            \"analyzer\": {\r\n                \"default\": {\r\n                    \"type\": \"simple\"\r\n                }\r\n            }\r\n        }\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/shopping",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"settings\": {\r\n        \"number_of_shards\": 3, // 分片数\r\n        \"number_of_replicas\": 3, // 副本数\r\n        \"analysis\": { // 分析器\r\n            \"analyzer\": {\r\n                \"default\": {\r\n                    \"type\": \"simple\"\r\n                }\r\n            }\r\n        }\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:9200/shopping",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "9200",
+											"path": [
+												"shopping"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "access-control-allow-credentials",
+											"value": "true"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "74"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"acknowledged\": true,\n    \"shards_acknowledged\": true,\n    \"index\": \"shopping\"\n}"
+								}
+							]
+						},
+						{
+							"name": "查询索引",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/shopping",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/shopping",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "193"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"shopping\": {\n        \"aliases\": {},\n        \"mappings\": {},\n        \"settings\": {\n            \"index\": {\n                \"creation_date\": \"1698566324485\",\n                \"number_of_shards\": \"1\",\n                \"number_of_replicas\": \"1\",\n                \"uuid\": \"IhFNkRUySPyuwrO-C7FW-w\",\n                \"version\": {\n                    \"created\": \"7080099\"\n                },\n                \"provided_name\": \"shopping\"\n            }\n        }\n    }\n}"
+								},
+								{
+									"name": "404",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/shopping",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping"
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "162"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"error\": {\n        \"root_cause\": [\n            {\n                \"type\": \"index_not_found_exception\",\n                \"reason\": \"no such index [shopping]\",\n                \"resource.type\": \"index_or_alias\",\n                \"resource.id\": \"shopping\",\n                \"index_uuid\": \"_na_\",\n                \"index\": \"shopping\"\n            }\n        ],\n        \"type\": \"index_not_found_exception\",\n        \"reason\": \"no such index [shopping]\",\n        \"resource.type\": \"index_or_alias\",\n        \"resource.id\": \"shopping\",\n        \"index_uuid\": \"_na_\",\n        \"index\": \"shopping\"\n    },\n    \"status\": 404\n}"
+								}
+							]
+						},
+						{
+							"name": "查询索引列表",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/_cat/indices?v",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"_cat",
+										"indices"
+									],
+									"query": [
+										{
+											"key": "v",
+											"value": null
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/_cat/indices?v",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"_cat",
+												"indices"
+											],
+											"query": [
+												{
+													"key": "v",
+													"value": null
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "plain",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "text/plain; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "192"
+										}
+									],
+									"cookie": [],
+									"body": "health status index    uuid                   pri rep docs.count docs.deleted store.size pri.store.size\nyellow open   book     v4zRZCzSQuaVfbwBmEhqwg   1   1          0            0       208b           208b\nyellow open   shopping IhFNkRUySPyuwrO-C7FW-w   1   1          0            0       208b           208b\n"
+								}
+							]
+						},
+						{
+							"name": "删除索引",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/shopping",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/shopping",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "47"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"acknowledged\": true\n}"
+								},
+								{
+									"name": "404",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/shopping",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping"
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "162"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"error\": {\n        \"root_cause\": [\n            {\n                \"type\": \"index_not_found_exception\",\n                \"reason\": \"no such index [shopping]\",\n                \"resource.type\": \"index_or_alias\",\n                \"resource.id\": \"shopping\",\n                \"index_uuid\": \"_na_\",\n                \"index\": \"shopping\"\n            }\n        ],\n        \"type\": \"index_not_found_exception\",\n        \"reason\": \"no such index [shopping]\",\n        \"resource.type\": \"index_or_alias\",\n        \"resource.id\": \"shopping\",\n        \"index_uuid\": \"_na_\",\n        \"index\": \"shopping\"\n    },\n    \"status\": 404\n}"
+								}
+							]
+						},
+						{
+							"name": "设置索引",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"index\": {\r\n        \"number_of_replicas\": 3 // 每个主分片的副本分片数\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/shopping/_settings",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping",
+										"_settings"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"number_of_replicas\": 3 // 每个主分片的副本分片数\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/shopping/_settings",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_settings"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "47"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"acknowledged\": true\n}"
+								}
+							]
+						},
+						{
+							"name": "查询设置",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/shopping/_settings",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping",
+										"_settings"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/shopping/_settings",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_settings"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "210"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"shopping\": {\n        \"settings\": {\n            \"index\": {\n                \"number_of_shards\": \"3\",\n                \"provided_name\": \"shopping\",\n                \"creation_date\": \"1698731544103\",\n                \"analysis\": {\n                    \"analyzer\": {\n                        \"default\": {\n                            \"type\": \"simple\"\n                        }\n                    }\n                },\n                \"number_of_replicas\": \"1\",\n                \"uuid\": \"3ykwVsu2SECohGjNh7IlLQ\",\n                \"version\": {\n                    \"created\": \"7080099\"\n                }\n            }\n        }\n    }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "映射",
+					"item": [
+						{
+							"name": "创建映射",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"properties\": {\r\n        \"id\": {\r\n            \"type\": \"long\", // text/keyword/date\r\n            \"index\": true // 默认true\r\n        },\r\n        \"name\": {\r\n            \"type\": \"text\",\r\n            \"index\": true,\r\n            \"analyzer\": \"ik_max_word\", // 索引分析器\r\n            \"search_analyzer\": \"ik_max_word\" // 查询分析器\r\n        },\r\n        \"create_time\": {\r\n            \"type\": \"long\",\r\n            \"index\": true\r\n        }\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/shopping/_mapping",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping",
+										"_mapping"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"properties\": {\r\n        \"id\": {\r\n            \"type\": \"long\", // text/keyword/date\r\n            \"index\": true // 默认true\r\n        },\r\n        \"name\": {\r\n            \"type\": \"text\",\r\n            \"index\": true\r\n        },\r\n        \"create_time\": {\r\n            \"type\": \"long\",\r\n            \"index\": true\r\n        }\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/shopping/_mapping",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_mapping"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "47"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"acknowledged\": true\n}"
+								}
+							]
+						},
+						{
+							"name": "查询映射",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/shopping/_mapping",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping",
+										"_mapping"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/shopping/_mapping",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_mapping"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "133"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"shopping\": {\n        \"mappings\": {\n            \"properties\": {\n                \"create_time\": {\n                    \"type\": \"long\"\n                },\n                \"id\": {\n                    \"type\": \"long\"\n                },\n                \"name\": {\n                    \"type\": \"text\",\n                    \"fields\": {\n                        \"keyword\": {\n                            \"type\": \"keyword\",\n                            \"ignore_above\": 256\n                        }\n                    }\n                }\n            }\n        }\n    }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "文档",
+					"item": [
+						{
+							"name": "高级查询",
+							"item": [
+								{
+									"name": "匹配查询",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"query\": {\r\n        \"match\": { // 模糊匹配\r\n            \"name\": {\r\n                \"query\": \"Georgia\",\r\n                \"analyzer\": \"ik_max_word\"\r\n            }\r\n        }\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/shopping/_search",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_search"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "200",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"query\": {\r\n        \"match\": { // 模糊匹配\r\n            \"name\": \"Market\"\r\n        }\r\n    }\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{url}}/shopping/_search",
+													"host": [
+														"{{url}}"
+													],
+													"path": [
+														"shopping",
+														"_search"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "content-type",
+													"value": "application/json; charset=UTF-8"
+												},
+												{
+													"key": "content-encoding",
+													"value": "gzip"
+												},
+												{
+													"key": "content-length",
+													"value": "242"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"took\": 1,\n    \"timed_out\": false,\n    \"_shards\": {\n        \"total\": 1,\n        \"successful\": 1,\n        \"skipped\": 0,\n        \"failed\": 0\n    },\n    \"hits\": {\n        \"total\": {\n            \"value\": 1,\n            \"relation\": \"eq\"\n        },\n        \"max_score\": 2.1548986,\n        \"hits\": [\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1001\",\n                \"_score\": 2.1548986,\n                \"_source\": {\n                    \"id\": 1698572147,\n                    \"name\": \"reboot Market\",\n                    \"create_time\": 1698572147\n                }\n            }\n        ]\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "分页查询",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"query\": {\r\n        \"match_all\": {}\r\n    },\r\n    \"from\": 0,\r\n    \"size\": 2\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/shopping/_search",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_search"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "200",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"query\": {\r\n        \"match_all\": {}\r\n    },\r\n    \"from\": 0,\r\n    \"size\": 2\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{url}}/shopping/_search",
+													"host": [
+														"{{url}}"
+													],
+													"path": [
+														"shopping",
+														"_search"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "content-type",
+													"value": "application/json; charset=UTF-8"
+												},
+												{
+													"key": "content-encoding",
+													"value": "gzip"
+												},
+												{
+													"key": "content-length",
+													"value": "298"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"took\": 3,\n    \"timed_out\": false,\n    \"_shards\": {\n        \"total\": 1,\n        \"successful\": 1,\n        \"skipped\": 0,\n        \"failed\": 0\n    },\n    \"hits\": {\n        \"total\": {\n            \"value\": 8,\n            \"relation\": \"eq\"\n        },\n        \"max_score\": 1,\n        \"hits\": [\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1001\",\n                \"_score\": 1,\n                \"_source\": {\n                    \"id\": 1698572147,\n                    \"name\": \"reboot Market\",\n                    \"create_time\": 1698572147\n                }\n            },\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1002\",\n                \"_score\": 1,\n                \"_source\": {\n                    \"id\": 1698572150,\n                    \"name\": \"Fantastic Buckinghamshire Illinois Industrial Georgia\",\n                    \"create_time\": 1698572150\n                }\n            }\n        ]\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "聚合查询",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"aggs\": { // 聚合查询\r\n        \"group\": { // 随意起名\r\n            \"terms\": { // 分组\r\n                \"field\": \"create_time\" // 聚合字段\r\n            }\r\n        },\r\n        \"max\": {\r\n            \"max\": { // 最大值\r\n                \"field\": \"create_time\" // 聚合字段\r\n            }\r\n        }\r\n    },\r\n    \"size\": 0 // 仅查询聚合结果\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/shopping/_search",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_search"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "200",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"aggs\": { // 聚合查询\r\n        \"group\": { // 随意起名\r\n            \"terms\": { // 分组\r\n                \"field\": \"create_time\" // 聚合字段\r\n            }\r\n        },\r\n        \"max\": {\r\n            \"max\": { // 最大值\r\n                \"field\": \"create_time\" // 聚合字段\r\n            }\r\n        }\r\n    },\r\n    \"size\": 0 // 仅查询聚合结果\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{url}}/shopping/_search",
+													"host": [
+														"{{url}}"
+													],
+													"path": [
+														"shopping",
+														"_search"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "content-type",
+													"value": "application/json; charset=UTF-8"
+												},
+												{
+													"key": "content-encoding",
+													"value": "gzip"
+												},
+												{
+													"key": "content-length",
+													"value": "262"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"took\": 2,\n    \"timed_out\": false,\n    \"_shards\": {\n        \"total\": 1,\n        \"successful\": 1,\n        \"skipped\": 0,\n        \"failed\": 0\n    },\n    \"hits\": {\n        \"total\": {\n            \"value\": 8,\n            \"relation\": \"eq\"\n        },\n        \"max_score\": null,\n        \"hits\": []\n    },\n    \"aggregations\": {\n        \"max\": {\n            \"value\": 1698572165\n        },\n        \"group\": {\n            \"doc_count_error_upper_bound\": 0,\n            \"sum_other_doc_count\": 0,\n            \"buckets\": [\n                {\n                    \"key\": 1698572147,\n                    \"doc_count\": 1\n                },\n                {\n                    \"key\": 1698572150,\n                    \"doc_count\": 1\n                },\n                {\n                    \"key\": 1698572152,\n                    \"doc_count\": 1\n                },\n                {\n                    \"key\": 1698572154,\n                    \"doc_count\": 1\n                },\n                {\n                    \"key\": 1698572156,\n                    \"doc_count\": 1\n                },\n                {\n                    \"key\": 1698572160,\n                    \"doc_count\": 1\n                },\n                {\n                    \"key\": 1698572163,\n                    \"doc_count\": 1\n                },\n                {\n                    \"key\": 1698572165,\n                    \"doc_count\": 1\n                }\n            ]\n        }\n    }\n}"
+										}
+									]
+								},
+								{
+									"name": "综合查询",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"query\": {\r\n        \"bool\": {\r\n            \"must\": [ // 相当于 SQL 查询中的 and\r\n                {\r\n                    \"match\": { // 模糊匹配\r\n                        \"id\": 1698572150\r\n                    }\r\n                },\r\n                {\r\n                    \"match\": {\r\n                        \"name\": \"Fantastic\"\r\n                    }\r\n                },\r\n                {\r\n                    \"match_phrase\": { // 完全匹配\r\n                        \"name\": \"Fantastic Buckinghamshire Illinois Industrial Georgia\"\r\n                    }\r\n                }\r\n            ],\r\n            \"should\": [ // 相当于 SQL 查询中的 or\r\n                {\r\n                    \"match\": { // 模糊匹配\r\n                        \"name\": \"Buckinghamshire\"\r\n                    }\r\n                },\r\n                {\r\n                    \"match\": {\r\n                        \"name\": \"Illinois\"\r\n                    }\r\n                }\r\n            ],\r\n            \"filter\": {\r\n                \"range\": { // 范围过滤\r\n                    \"create_time\": {\r\n                        \"gte\": 1698572150,\r\n                        \"lte\": 1698572150\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    },\r\n    \"highlight\": { // 字段高亮\r\n        \"fields\": {\r\n            \"name\": {}\r\n        }\r\n    },\r\n    \"from\": 0,\r\n    \"size\": 2,\r\n    \"_source\": [ // 字段过滤\r\n        \"id\",\r\n        \"name\"\r\n    ],\r\n    \"sort\": { // 字段排序\r\n        \"create_time\": {\r\n            \"order\": \"desc\"\r\n        }\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/shopping/_search",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_search"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "200",
+											"originalRequest": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"query\": {\r\n        \"bool\": {\r\n            \"must\": [ // 相当于 SQL 查询中的 and\r\n                {\r\n                    \"match\": { // 模糊匹配\r\n                        \"id\": 1698572150\r\n                    }\r\n                },\r\n                {\r\n                    \"match\": {\r\n                        \"name\": \"Fantastic\"\r\n                    }\r\n                },\r\n                {\r\n                    \"match_phrase\": { // 完全匹配\r\n                        \"name\": \"Fantastic Buckinghamshire Illinois Industrial Georgia\"\r\n                    }\r\n                }\r\n            ],\r\n            \"should\": [ // 相当于 SQL 查询中的 or\r\n                {\r\n                    \"match\": { // 模糊匹配\r\n                        \"name\": \"Buckinghamshire\"\r\n                    }\r\n                },\r\n                {\r\n                    \"match\": {\r\n                        \"name\": \"Illinois\"\r\n                    }\r\n                }\r\n            ],\r\n            \"filter\": {\r\n                \"range\": { // 范围过滤\r\n                    \"create_time\": {\r\n                        \"gte\": 1698572150,\r\n                        \"lte\": 1698572150\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    },\r\n    \"highlight\": { // 字段高亮\r\n        \"fields\": {\r\n            \"name\": {}\r\n        }\r\n    },\r\n    \"from\": 0,\r\n    \"size\": 2,\r\n    \"_source\": [ // 字段过滤\r\n        \"id\",\r\n        \"name\"\r\n    ],\r\n    \"sort\": { // 字段排序\r\n        \"create_time\": {\r\n            \"order\": \"desc\"\r\n        }\r\n    }\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{url}}/shopping/_search",
+													"host": [
+														"{{url}}"
+													],
+													"path": [
+														"shopping",
+														"_search"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "content-type",
+													"value": "application/json; charset=UTF-8"
+												},
+												{
+													"key": "content-encoding",
+													"value": "gzip"
+												},
+												{
+													"key": "content-length",
+													"value": "293"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"took\": 3,\n    \"timed_out\": false,\n    \"_shards\": {\n        \"total\": 1,\n        \"successful\": 1,\n        \"skipped\": 0,\n        \"failed\": 0\n    },\n    \"hits\": {\n        \"total\": {\n            \"value\": 1,\n            \"relation\": \"eq\"\n        },\n        \"max_score\": null,\n        \"hits\": [\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1002\",\n                \"_score\": null,\n                \"_source\": {\n                    \"name\": \"Fantastic Buckinghamshire Illinois Industrial Georgia\",\n                    \"id\": 1698572150\n                },\n                \"highlight\": {\n                    \"name\": [\n                        \"<em>Fantastic</em> <em>Buckinghamshire</em> <em>Illinois</em> <em>Industrial</em> <em>Georgia</em>\"\n                    ]\n                },\n                \"sort\": [\n                    1698572150\n                ]\n            }\n        ]\n    }\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "创建文档",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{$timestamp}},\r\n    \"name\": \"{{$randomWords}}\",\r\n    \"create_time\": {{$timestamp}}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/shopping/_doc/1003",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping",
+										"_doc",
+										"1003"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"id\": \"{{$timestamp}}\",\r\n    \"name\": \"{{$randomWords}}\",\r\n    \"create_time\": \"{{$timestamp}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/shopping/_doc",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_doc"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Location",
+											"value": "/shopping/_doc/4K5-eosBPbace8i5b3E-"
+										},
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "164"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"_index\": \"shopping\",\n    \"_type\": \"_doc\",\n    \"_id\": \"1002\",\n    \"_version\": 1,\n    \"result\": \"created\",\n    \"_shards\": {\n        \"total\": 2,\n        \"successful\": 1,\n        \"failed\": 0\n    },\n    \"_seq_no\": 10,\n    \"_primary_term\": 1\n}"
+								}
+							]
+						},
+						{
+							"name": "查询文档",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/shopping/_doc/1001",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping",
+										"_doc",
+										"1001"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/shopping/_doc/1001",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_doc",
+												"1001"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "172"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"_index\": \"shopping\",\n    \"_type\": \"_doc\",\n    \"_id\": \"1001\",\n    \"_version\": 1,\n    \"_seq_no\": 6,\n    \"_primary_term\": 1,\n    \"found\": true,\n    \"_source\": {\n        \"id\": 1698572147,\n        \"name\": \"reboot Market\",\n        \"create_time\": 1698572147\n    }\n}"
+								},
+								{
+									"name": "404",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/shopping/_doc/1011",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_doc",
+												"1011"
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "82"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"_index\": \"shopping\",\n    \"_type\": \"_doc\",\n    \"_id\": \"1011\",\n    \"found\": false\n}"
+								}
+							]
+						},
+						{
+							"name": "查询文档列表",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"query\": {\r\n        \"match_all\": {}\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/shopping/_search",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping",
+										"_search"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"name": "Content-Type",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"query\": {\r\n        \"match_all\": {}\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/shopping/_search",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_search"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "504"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"took\": 1,\n    \"timed_out\": false,\n    \"_shards\": {\n        \"total\": 1,\n        \"successful\": 1,\n        \"skipped\": 0,\n        \"failed\": 0\n    },\n    \"hits\": {\n        \"total\": {\n            \"value\": 8,\n            \"relation\": \"eq\"\n        },\n        \"max_score\": 1,\n        \"hits\": [\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1001\",\n                \"_score\": 1,\n                \"_source\": {\n                    \"id\": 1698572147,\n                    \"name\": \"reboot Market\",\n                    \"create_time\": 1698572147\n                }\n            },\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1002\",\n                \"_score\": 1,\n                \"_source\": {\n                    \"id\": 1698572150,\n                    \"name\": \"Fantastic Buckinghamshire Illinois Industrial Georgia\",\n                    \"create_time\": 1698572150\n                }\n            },\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1003\",\n                \"_score\": 1,\n                \"_source\": {\n                    \"id\": 1698572152,\n                    \"name\": \"optimal Luxembourg Liaison payment\",\n                    \"create_time\": 1698572152\n                }\n            },\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1004\",\n                \"_score\": 1,\n                \"_source\": {\n                    \"id\": 1698572154,\n                    \"name\": \"program Investment index\",\n                    \"create_time\": 1698572154\n                }\n            },\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1005\",\n                \"_score\": 1,\n                \"_source\": {\n                    \"id\": 1698572156,\n                    \"name\": \"generation demand-driven programming Bike Lead\",\n                    \"create_time\": 1698572156\n                }\n            },\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1006\",\n                \"_score\": 1,\n                \"_source\": {\n                    \"id\": 1698572160,\n                    \"name\": \"Reduced National hub\",\n                    \"create_time\": 1698572160\n                }\n            },\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1007\",\n                \"_score\": 1,\n                \"_source\": {\n                    \"id\": 1698572163,\n                    \"name\": \"Cambridgeshire Soft Money ROI Soft\",\n                    \"create_time\": 1698572163\n                }\n            },\n            {\n                \"_index\": \"shopping\",\n                \"_type\": \"_doc\",\n                \"_id\": \"1008\",\n                \"_score\": 1,\n                \"_source\": {\n                    \"id\": 1698572165,\n                    \"name\": \"Mali withdrawal transmit Organic\",\n                    \"create_time\": 1698572165\n                }\n            }\n        ]\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "查询文档数量",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/shopping/_count",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping",
+										"_count"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/shopping/_count",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_count"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "access-control-allow-credentials",
+											"value": "true"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "86"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"count\": 0,\n    \"_shards\": {\n        \"total\": 3,\n        \"successful\": 3,\n        \"skipped\": 0,\n        \"failed\": 0\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "修改文档（局部）",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"doc\": {\r\n        \"name\": \"{{$randomWords}}\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/shopping/_update/1002",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping",
+										"_update",
+										"1002"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"doc\": {\r\n        \"name\": \"{{$randomWords}}\"\r\n    }\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/shopping/_update/1002",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_update",
+												"1002"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "141"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"_index\": \"shopping\",\n    \"_type\": \"_doc\",\n    \"_id\": \"1002\",\n    \"_version\": 2,\n    \"result\": \"updated\",\n    \"_shards\": {\n        \"total\": 2,\n        \"successful\": 1,\n        \"failed\": 0\n    },\n    \"_seq_no\": 11,\n    \"_primary_term\": 1\n}"
+								}
+							]
+						},
+						{
+							"name": "删除文档",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/shopping/_doc/1002",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"shopping",
+										"_doc",
+										"1002"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/shopping/_doc/1002",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_doc",
+												"1002"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "146"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"_index\": \"shopping\",\n    \"_type\": \"_doc\",\n    \"_id\": \"1002\",\n    \"_version\": 7,\n    \"result\": \"deleted\",\n    \"_shards\": {\n        \"total\": 2,\n        \"successful\": 1,\n        \"failed\": 0\n    },\n    \"_seq_no\": 16,\n    \"_primary_term\": 1\n}"
+								},
+								{
+									"name": "404",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{url}}/shopping/_doc/1002",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"shopping",
+												"_doc",
+												"1002"
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "148"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"_index\": \"shopping\",\n    \"_type\": \"_doc\",\n    \"_id\": \"1002\",\n    \"_version\": 8,\n    \"result\": \"not_found\",\n    \"_shards\": {\n        \"total\": 2,\n        \"successful\": 1,\n        \"failed\": 0\n    },\n    \"_seq_no\": 17,\n    \"_primary_term\": 1\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "集群",
+					"item": [
+						{
+							"name": "查询节点列表",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/_cat/nodes",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"_cat",
+										"nodes"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "其它",
+					"item": [
+						{
+							"name": "分析词条",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"analyzer\": \"ik_max_word\", // 分词器名称，如standard，ik_max_word等。\r\n    \"text\": \"弗雷尔卓德\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/_analyze",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"_analyze"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "200",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"analyzer\": \"ik_max_word\", // 分词器名称，如standard，ik_max_word等。\r\n    \"text\": \"中文分词器\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/_analyze",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"_analyze"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "content-type",
+											"value": "application/json; charset=UTF-8"
+										},
+										{
+											"key": "access-control-allow-credentials",
+											"value": "true"
+										},
+										{
+											"key": "content-encoding",
+											"value": "gzip"
+										},
+										{
+											"key": "content-length",
+											"value": "156"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"tokens\": [\n        {\n            \"token\": \"中文\",\n            \"start_offset\": 0,\n            \"end_offset\": 2,\n            \"type\": \"CN_WORD\",\n            \"position\": 0\n        },\n        {\n            \"token\": \"分词器\",\n            \"start_offset\": 2,\n            \"end_offset\": 5,\n            \"type\": \"CN_WORD\",\n            \"position\": 1\n        },\n        {\n            \"token\": \"分词\",\n            \"start_offset\": 2,\n            \"end_offset\": 4,\n            \"type\": \"CN_WORD\",\n            \"position\": 2\n        },\n        {\n            \"token\": \"器\",\n            \"start_offset\": 4,\n            \"end_offset\": 5,\n            \"type\": \"CN_CHAR\",\n            \"position\": 3\n        }\n    ]\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}
