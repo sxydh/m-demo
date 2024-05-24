@@ -333,3 +333,27 @@
         启动 
             sudo chown -R <当前用户组>:<当前用户名> /opt/module/es/kibana-7.8.0-linux-x86_64
             cd /opt/module/es/kibana-7.8.0-linux-x86_64/ && ./bin/kibana
+    Logstash
+        准备文件
+            sudo mkdir -p /opt/module/logstash
+            sudo chown -R sxydh:sxydh /opt/module/logstash
+            sudo wget -P /opt/module/logstash https://artifacts.elastic.co/downloads/logstash/logstash-7.8.1.tar.gz
+            sudo tar -zxvf /opt/module/logstash/logstash-7.8.1.tar.gz -C /opt/module/logstash
+        修改配置文件 
+            vim /opt/module/logstash/logstash-7.8.1/config/logstash.conf
+                更新或追加
+                    input {
+                      tcp {
+                        port => 30000
+                        type => logstash-demo # 自定义标识符
+                      }
+                    }
+
+                    output {
+                      stdout { codec => rubydebug }
+                    }
+        启动 
+            cd /opt/module/logstash/logstash-7.8.1
+            bin/logstash -f config/logstash.conf
+                启动在另一个窗口执行输入
+                    telnet localhost 30000
