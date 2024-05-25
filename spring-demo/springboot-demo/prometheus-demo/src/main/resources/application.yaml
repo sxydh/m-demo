@@ -12,5 +12,5 @@ management:
         include: "*"
   metrics:
     tags:
-      # 所有的指标都会带上 application 这个标签
+      # 所有的指标都会带上 application="${spring.application.name}" 这个标签
       application: ${spring.application.name}

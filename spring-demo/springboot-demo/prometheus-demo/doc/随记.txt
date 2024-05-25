@@ -12,18 +12,26 @@
             略
         Prometheus
             vim /opt/module/prometheus/prometheus-2.51.2.linux-amd64/prometheus.yml
-                追加
-                    - job_name: "prometheus-demo"
-                      scrape_interval: 5s
-                      scrape_timeout: 5s
-                      metrics_path: '/actuator/prometheus'
-                      static_configs:
-                        - targets: ['192.168.243.185:20010']
+                更新
+                    scrape_configs:
+                      - job_name: "prometheus-demo"
+                        scrape_interval: 5s
+                        scrape_timeout: 5s
+                        metrics_path: '/actuator/prometheus'
+                        static_configs:
+                          - targets: ['192.168.243.185:20010']
     启动服务
         SpringBoot
             略
+                验证
+                    Metrics
+                        http://192.168.243.185:20010/actuator/prometheus
+                            上述地址可以看到应用 192.168.243.185:20010 当前有哪些指标
         Prometheus
             cd /opt/module/prometheus/prometheus-2.51.2.linux-amd64
                 ./prometheus --config.file=prometheus.yml
                     验证
-                        http://192.168.233.129:9090/targets
+                        Endpoint
+                            http://192.168.233.129:9090/targets
+                        Expression
+                            http://192.168.233.129:9090/graph
