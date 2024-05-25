@@ -1,5 +1,18 @@
 概述
     Grafana 是可视化的监控平台，支持多种数据源，包含 Prometheus 、 InfluxDB 等。
+查询
+    通用函数
+    二元函数
+    区间函数
+    聚合函数
+    时间函数
+    三角函数
+图表
+    折线图
+    柱状图
+    饼状图
+    仪表盘
+    单元格
 环境
     前置条件
         Ubuntu 20.04.6 LTS
@@ -13,6 +26,6 @@
         无
     启动服务
         cd /opt/module/grafana/grafana-v10.4.2
-            ./bin/grafana-server
-                验证
-                    http://192.168.233.129:3000/
+        ./bin/grafana-server
+            验证
+                http://192.168.233.129:3000/
