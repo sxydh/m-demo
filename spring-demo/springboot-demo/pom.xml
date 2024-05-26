@@ -15,6 +15,7 @@
         <module>quickstart-demo</module>
         <module>prometheus-demo</module>
         <module>logstash-demo</module>
+        <module>skywalking-demo</module>
     </modules>
 
     <properties>
