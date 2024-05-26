@@ -1,0 +1,39 @@
+概述
+    SkyWalking 是针对分布式系统的应用程序性能监控（ APM ， Application Performance Management ）工具。
+    SkyWalking 提供了一系列功能：
+        服务拓扑：提供服务的拓扑图分析，帮助理解服务间的依赖关系。
+        链路追踪：实现分布式跟踪和上下文传播，帮助追踪请求在系统中的流动。
+        指标分析：对服务、实例、端点的指标进行分析。
+        服务告警：提供服务告警功能。
+        ...
+核心组件
+    SkyWalking Agent
+        Agent 是部署在应用程序实例上的轻量级探针，负责收集应用的性能数据和分布式追踪信息。
+        Agent 基于字节码增强技术，无需修改应用程序代码，可以在运行时自动进行数据收集。
+        Agent 支持多种语言和框架，如 Java 、 .NET Core 、 Node.js 、 Golang 等。
+    OAP Server
+        OAP （ Observability Analysis Platform ） Server 是 SkyWalking 的后端服务，负责接收来自 Agent 的数据。
+    Web UI
+        Web UI 提供了一个图形化的用户界面，用于展示监控数据和追踪信息。
+环境
+    前置条件
+        Ubuntu 20.04.6 LTS
+            192.168.233.129
+    安装服务
+        sudo mkdir -p /opt/module/skywalking
+        sudo chown -R sxydh:sxydh /opt/module/skywalking
+        wget -P /opt/module/skywalking https://archive.apache.org/dist/skywalking/9.4.0/apache-skywalking-apm-9.4.0.tar.gz
+        tar -zxvf /opt/module/skywalking/apache-skywalking-apm-9.4.0.tar.gz -C /opt/module/skywalking
+    启动服务
+        cd /opt/module/skywalking/apache-skywalking-apm-bin
+        ./bin/startup.sh
+            验证
+                Web UI
+                    http://192.168.233.129:8080
+    关闭服务
+        OAP Server
+            lsof -i:11800
+            kill -9 <pid>
+        Web UI
+            lsof -i:11800
+            kill -9 <pid>
