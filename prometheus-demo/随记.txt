@@ -21,6 +21,11 @@
             Grafana
     Alertmanager
         监控告警
+            短信
+            电子邮件
+            钉钉机器人
+            微信机器人
+            Webhook
 环境
     前置条件
         Ubuntu 20.04.6 LTS
