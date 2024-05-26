@@ -102,3 +102,12 @@ Docker Compose
                 重新登录
                 验证
                     docker run --rm hello-world
+    配置镜像源
+        sudo vi sudo vi /etc/docker/daemon.json
+            追加或更新
+                {
+                    "registry-mirrors": [
+                        "https://registry.docker-cn.com"
+                    ]
+                }
+        systemctl restart docker
