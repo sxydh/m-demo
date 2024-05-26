@@ -3,6 +3,7 @@ package cn.net.bhe.skywalkingdemo;
 import cn.net.bhe.mutil.DbUtils;
 import cn.net.bhe.mutil.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.skywalking.apm.toolkit.trace.TraceContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -30,9 +31,9 @@ public class _Skywalking {
     }
 
     @GetMapping("/")
-    public String get() throws Exception {
+    public void api() throws Exception {
         List<HashMap<String, Object>> list = dbUtils.executeQuery("select uuid() as uuid");
-        return list.toString();
+        System.out.println(TraceContext.traceId() + " : " + list);
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -41,8 +42,7 @@ public class _Skywalking {
             try {
                 Random random = new Random();
                 while (true) {
-                    String getStr = HttpUtils.get("http://localhost:20010/");
-                    System.out.println(getStr);
+                    HttpUtils.get("http://localhost:20010/");
                     // noinspection BusyWait
                     Thread.sleep(random.nextInt(500));
                 }
