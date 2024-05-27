@@ -103,7 +103,7 @@ Docker Compose
                 验证
                     docker run --rm hello-world
     配置镜像源
-        sudo vi sudo vi /etc/docker/daemon.json
+        sudo vi /etc/docker/daemon.json
             追加或更新
                 {
                     "registry-mirrors": [
