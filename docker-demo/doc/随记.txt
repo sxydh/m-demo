@@ -96,7 +96,7 @@ Docker Compose
         sudo apt-get update
         sudo apt-get install docker-ce docker-ce-cli containerd.io
             验证
-                sudo systemctl status docker
+                systemctl status docker
         sudo usermod -aG docker sxydh
             将当前用户添加到 docker 用户组
                 重新登录
