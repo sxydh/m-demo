@@ -19,15 +19,15 @@ import java.util.Random;
 @SpringBootApplication
 @Slf4j
 @RestController
-public class _Skywalking {
+public class _SkywalkingApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(_Skywalking.class);
+        SpringApplication.run(_SkywalkingApp.class);
     }
 
     private final DbUtils dbUtils = DbUtils.build("jdbc:mysql://192.168.233.129:3306/sw_demo", "root", "123");
 
-    public _Skywalking() throws SQLException {
+    public _SkywalkingApp() throws SQLException {
     }
 
     @GetMapping("/")

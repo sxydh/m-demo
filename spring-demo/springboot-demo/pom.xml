@@ -16,6 +16,7 @@
         <module>prometheus-demo</module>
         <module>logstash-demo</module>
         <module>skywalking-demo</module>
+        <module>pinpoint-demo</module>
     </modules>
 
     <properties>

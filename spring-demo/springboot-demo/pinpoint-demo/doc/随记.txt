@@ -1,0 +1,26 @@
+环境
+    前置条件
+        Windows
+            192.168.243.185
+                SpringBoot 2.7.11
+                Pinpoint Agent
+        Ubuntu 20.04.6 LTS
+            192.168.233.129
+                Pinpoint
+                    参考 m-demo/apm-demo/pinpoint-demo/随记.txt
+    修改配置
+        Pinpoint Agent（ https://github.com/pinpoint-apm/pinpoint/releases/download/v2.5.4/pinpoint-agent-2.5.4.tar.gz ）
+            profiles\release\pinpoint.config
+                更新
+                    profiler.transport.grpc.collector.ip=192.168.233.129
+                    profiler.collector.ip=192.168.233.129
+        SpringBoot
+            IDEA
+                VM Options
+                    -Dpinpoint.applicationName=pinpoint_demo -Dpinpoint.agentId=agent_pinpoint_demo -javaagent:C:/Users/Administrator/Downloads/pinpoint-agent-2.5.4/pinpoint-bootstrap-2.5.4.jar
+                        在 Pinpoint Agent 内可以找到 pinpoint-bootstrap-2.5.4.jar
+    启动服务
+        SpringBoot
+            略
+        Pinpoint
+            参考 m-demo/apm-demo/pinpoint-demo/随记.txt
