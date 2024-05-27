@@ -17,7 +17,7 @@
             192.168.233.129
                 Docker
                 Docker Compose
-    安装服务
+    安装服务（ https://github.com/pinpoint-apm/pinpoint-docker ）
         sudo mkdir -p /opt/module/pinpoint
         sudo chown -R sxydh:sxydh /opt/module/pinpoint
         cd /opt/module/pinpoint
