@@ -72,16 +72,12 @@
         一个 Docker Registry 中可以包含多个 仓库（Repository），每个仓库可以包含多个 标签（Tag），每个标签对应一个 镜像（Image）。
 Docker Compose
     概述
-        Compose 项目是 Docker 官方的开源项目，负责实现对 Docker 容器集群的快速编排。
-        Compose 定位是 定义和运行多个 Docker 容器的应用（Defining and running multi-container Docker applications）
-        Compose 项目由 Python 编写，实现上调用了 Docker 服务提供的 API 来对容器进行管理。因此，只要所操作的平台支持 Docker API，就可以在其上利用 Compose 来进行编排管理。
-        Compose 中的两个重要的概念
-            服务 (Service)：一个应用的容器，实际上可以包括若干运行相同镜像的容器实例。
-            项目 (Project)：由一组关联的应用容器组成的一个完整业务单元，在 docker-compose.yml 文件中定义。
+        Docker Compose 是一个用于定义和运行多个 Docker 的工具
+        Docker Compose 使用 YAML 文件（通常命名为 docker-compose.yml ）来配置多个容器服务，这些服务可以是 Web 服务器、数据库、缓存等。
 环境（https://yeasy.gitbook.io/docker_practice/）
     前置条件
         Ubuntu 20.04.6 LTS（192.168.233.129）
-    安装服务
+    安装 Docker
         sudo apt-get update
         sudo apt-get install \
             apt-transport-https \
@@ -98,16 +94,17 @@ Docker Compose
             验证
                 systemctl status docker
         sudo usermod -aG docker sxydh
-            将当前用户添加到 docker 用户组
-            注意重新登录
-                验证
-                    docker run --rm hello-world
-    配置镜像源
-        sudo vi /etc/docker/daemon.json
-            追加或更新
-                {
-                    "registry-mirrors": [
-                        "https://registry.docker-cn.com"
-                    ]
-                }
-        systemctl restart docker
+            将当前用户添加到 docker 用户组，注意需要重新登录。
+            配置镜像源
+                sudo vi /etc/docker/daemon.json
+                    追加或更新
+                        {
+                            "registry-mirrors": [
+                                "https://mirror.ccs.tencentyun.com"
+                            ]
+                        }
+                systemctl restart docker
+            验证
+                docker run --rm hello-world
+    安装 Docker Compose
+        sudo apt-get install docker-compose
