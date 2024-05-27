@@ -1,0 +1,30 @@
+概述
+    Pinpoint 是应用性能管理（ APM ， Application Performance Management ）工具，它用于监控和管理大规模分布式系统中的性能问题。
+    Pinpoint 通过在应用程序中嵌入探针（ Agent ），收集分布式追踪数据，并将其发送到后端存储，然后用户可以通过界面查询和可视化这些数据。
+核心组件
+    Pinpoint Agent
+        Agent 负责收集应用程序的运行时信息，包括方法调用、跨服务调用等，并生成追踪数据。
+    Pinpoint Collector
+        Collector 是一个中央服务，用于接收来自各个 Agent 的数据。
+        Collector 负责将收集到的数据进行处理和存储，以便后续的查询和分析。
+    HBase Storage
+        HBase 作为 Pinpoint 的后端存储解决方案，能够处理和存储大量的监控数据。
+    Pinpoint Web
+        Web 组件提供了一个用户界面，允许用户查看监控数据和应用性能。
+环境
+    前置条件
+        Ubuntu 20.04.6 LTS
+            192.168.233.129
+                Docker
+                Docker Compose
+    安装服务
+        sudo mkdir -p /opt/module/pinpoint
+        sudo chown -R sxydh:sxydh /opt/module/pinpoint
+        cd /opt/module/pinpoint
+        git clone https://github.com/pinpoint-apm/pinpoint-docker.git
+        cd pinpoint-docker
+        docker-compose pull
+    启动服务
+        docker-compose up
+            验证
+                http://192.168.233.129:8080
