@@ -28,3 +28,6 @@
         docker-compose up
             验证
                 http://192.168.233.129:8080
+            如果 MySQL 服务不能启动，建议更新 docker-compose.yml 内容：
+                pinpoint-mysql:
+                    restart: unless-stopped
