@@ -103,7 +103,8 @@ Docker Compose
                                 "https://mirror.ccs.tencentyun.com"
                             ]
                         }
-                systemctl restart docker
+                sudo systemctl daemon-reload
+                sudo systemctl restart docker
             验证
                 docker run --rm hello-world
     安装 Docker Compose
