@@ -1,8 +1,11 @@
 module docker-demo
 
-go 1.22
+go 1.22.1
 
-require github.com/docker/docker v26.1.3+incompatible
+require (
+	github.com/docker/docker v26.1.3+incompatible
+	github.com/sxydh/mgo-util v0.0.2-alpha
+)
 
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
