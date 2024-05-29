@@ -15,10 +15,8 @@ import (
 
 //goland:noinspection GoUnhandledErrorResult
 func main() {
-	cli, err := client.NewClientWithOpts()
-	if err != nil {
-		log.Fatalf("NewClientWithOpts error: %v", err)
-	}
+	// 创建客户端
+	cli := getRemoteCli()
 	defer cli.Close()
 	ctx := context.Background()
 
@@ -57,4 +55,21 @@ func main() {
 			log.Printf("Tag: %v\n", tag)
 		}
 	}
+}
+
+func getLocalCli() *client.Client {
+	cli, err := client.NewClientWithOpts()
+	if err != nil {
+		log.Fatalf("NewClientWithOpts error: %v", err)
+	}
+	return cli
+}
+
+func getRemoteCli() *client.Client {
+	// 远程客户端需要按照 doc/随记.txt 进行配置
+	cli, err := client.NewClientWithOpts(client.WithHost("tcp://192.168.233.129:2375"))
+	if err != nil {
+		log.Fatalf("NewClientWithOpts error: %v", err)
+	}
+	return cli
 }
