@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ServiceDemo"
 include(":startservicedemo")
+include(":bindservicedemo")
