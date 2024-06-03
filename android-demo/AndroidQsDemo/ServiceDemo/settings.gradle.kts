@@ -14,5 +14,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ServiceDemo"
-include(":app")
- 
+include(":startservicedemo")
