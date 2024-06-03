@@ -1,5 +1,6 @@
 package cn.net.bhe.startservicedemo
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import cn.net.bhe.startservicedemo.service.MyService
 import cn.net.bhe.startservicedemo.ui.theme.ServiceDemoTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,6 +25,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        /* startService 方式启动 Service */
+        val intent = Intent(this, MyService::class.java)
+        startService(intent)
     }
 }
 
