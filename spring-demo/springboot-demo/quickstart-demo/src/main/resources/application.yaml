@@ -1,2 +1,6 @@
+spring:
+  application:
+    name: quickstart-demo
+
 server:
   port: 20010
