@@ -1,0 +1,9 @@
+环境（https://github.com/xuxueli/xxl-job）
+    安装服务
+        略
+    启动服务
+        略
+            验证
+                http://localhost:8080/xxl-job-admin
+                    admin
+                        123456

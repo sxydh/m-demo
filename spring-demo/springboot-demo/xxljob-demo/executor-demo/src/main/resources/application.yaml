@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: executor-demo1
+
+server:
+  port: 30010
