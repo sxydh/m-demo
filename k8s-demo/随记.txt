@@ -121,10 +121,10 @@
         apt update
         apt install -y apt-transport-https ca-certificates curl software-properties-common
             安装依赖
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        curl -fsSL https://mirrors.tencent.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
             添加 Docker GPG 密钥到受信任列表。查看 GPG 密钥列表：
                 apt-key list
-        add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        add-apt-repository "deb [arch=amd64] https://mirrors.tencent.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
             添加 Docker 软件源到系统 APT 源列表。查看 APT 源列表：
                 cat /etc/apt/sources.list
 

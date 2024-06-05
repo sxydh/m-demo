@@ -11,12 +11,11 @@
     Spark 相对于传统的 MapReduce 计算框架更为快速，主要原因是它将数据存储在内存中，减少了磁盘读写的开销。
 
     核心模块
+        Spark Core
         Spark SQL
-        Spark Streaming
         Spark MLib
         Spark GraphX
-        Spark Core
-
+        Spark Streaming
 Spark Core
     概述
         一个 Spark 应用程序由两部分组成（http://xueai8.com/course/60/article）
@@ -33,7 +32,8 @@ Spark Core
     概念
         作业（Job）
             一个 Spark 应用程序通常由多个作业（Job）组成，每个作业包含了一个或多个阶段。
-            一个作业通常由一个动作操作触发，例如 collect 或 saveAsTextFile。
+                一个作业沿着 RDD 依赖路径，每遇到一个 Shuffle 就形成该作业的一个阶段。
+                一个作业通常由一个动作操作触发，例如 collect 或 saveAsTextFile。
         阶段（Stage）
             一个阶段是由一系列的转换操作组成的逻辑执行单元，这些转换操作形成一个有向无环图（DAG），表示了数据的流动和计算的依赖关系。
             通常，一个阶段内的所有转换操作都可以在一个节点上执行，无需进行数据混洗（Shuffle）。

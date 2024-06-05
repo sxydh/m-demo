@@ -1,0 +1,6 @@
+Build Output
+    中文乱码
+        Help
+            Edit Custom VM Options...
+                追加或更新
+                    -Dfile.encoding=UTF-8

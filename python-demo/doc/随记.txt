@@ -69,10 +69,16 @@
                 sudo chown sxydh:sxydh /usr/bin/pip
             验证安装
                 python --version
-    pip（包管理工具） 
-        安装第三方包
-            pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <包名称>
-    PyCharm
-        生成依赖清单
-            Tools
-                Sync python requirements
+    包管理
+        pip
+            指定源
+                pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <包名称>
+        Anaconda
+    虚拟环境
+        venv
+        virtualenv
+    IDE
+        PyCharm
+            生成依赖清单
+                Tools
+                    Sync python requirements

@@ -4,15 +4,16 @@
 快速开始
     普通用户
         ssh-keygen -t rsa
-        ssh-copy-id 192.168.233.130
+        ssh-copy-id <user_name>@<target_ip>
+            ssh-copy-id 192.168.233.130
         验证免密
             ssh 192.168.233.130
     root用户
         sudo su
         ssh-keygen -t rsa
-        ssh-copy-id 192.168.233.130
-            目标机器
-                需要开启root登录
+        ssh-copy-id <user_name>@<target_ip>
+            ssh-copy-id 192.168.233.130
+                目标机器需要开启root登录
                     sudo vim /etc/ssh/sshd_config
                         修改为
                             PermitRootLogin yes
