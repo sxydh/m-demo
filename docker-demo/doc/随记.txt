@@ -117,8 +117,12 @@ Docker Compose
                     [Service]
                     Environment="HTTP_PROXY=socks5://192.168.139.185:10808"
                     Environment="HTTPS_PROXY=socks5://192.168.139.185:10808"
+
                 sudo systemctl daemon-reload
                 sudo systemctl restart docker
+                
+                验证
+                    sudo systemctl show --property=Environment docker
 
         sudo usermod -aG docker sxydh
             将当前用户添加到 docker 用户组，注意需要重新登录。
