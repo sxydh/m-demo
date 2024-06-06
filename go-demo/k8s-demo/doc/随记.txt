@@ -1,0 +1,6 @@
+环境
+    前置条件
+        K8s v1.23.17 集群
+    获得配置
+        kubectl config view --raw
+            存储到 C:/Users/Administrator/.kube/config 文件
