@@ -118,20 +118,9 @@
             sysctl --system
 
     安装 Docker （ hadoop01/hadoop02/hadoop03 ， 20.10.16 ）
-        apt update
-        apt install -y apt-transport-https ca-certificates curl software-properties-common
-            安装依赖
-        curl -fsSL https://mirrors.tencent.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
-            添加 Docker GPG 密钥到受信任列表。查看 GPG 密钥列表：
-                apt-key list
-        add-apt-repository "deb [arch=amd64] https://mirrors.tencent.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
-            添加 Docker 软件源到系统 APT 源列表。查看 APT 源列表：
-                cat /etc/apt/sources.list
+        略
+            参考 docker-demo
 
-        apt update
-        apt install -y docker-ce=5:20.10.16~3-0~ubuntu-focal
-            验证
-                docker version
         systemctl enable docker
             添加开机自启
 
