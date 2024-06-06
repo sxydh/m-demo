@@ -95,12 +95,14 @@ Docker Compose
                 sudo apt-get install docker-ce=5:20.10.16~3-0~ubuntu-focal docker-ce-cli=5:20.10.16~3-0~ubuntu-focal containerd.io
             验证
                 systemctl status docker
+            查看日志
+                journalctl -u docker.service
         sudo vi /etc/docker/daemon.json
             配置镜像源
                 追加或更新
                     {
                         "registry-mirrors": [
-                            "https://mirror.ccs.tencentyun.com"
+                            "https://xdsjndfq.mirror.aliyuncs.com"
                         ]
                     }
                 sudo systemctl daemon-reload
