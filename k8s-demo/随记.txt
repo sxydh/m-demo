@@ -96,6 +96,19 @@
             192.168.233.129   hadoop01
             192.168.233.130   hadoop02
             192.168.233.131   hadoop03
+
+            sudo vim /etc/hostname
+                配置主机名
+                三台主机都要进行配置
+                需要重启
+            sudo vim /etc/hosts
+                配置主机列表
+                三台主机都要进行配置
+                追加或更新
+                    192.168.233.129 hadoop01
+                    192.168.233.130 hadoop02
+                    192.168.233.131 hadoop03
+                需要重启
         规划资源
             Master   hadoop01   192.168.233.129
             Node     hadoop02   192.168.233.130
@@ -124,16 +137,17 @@
         systemctl enable docker
             添加开机自启
 
-        cat > /etc/docker/daemon.json << EOF
-        {
-          "exec-opts": ["native.cgroupdriver=systemd"]
-        }
-        EOF
-            告诉 Docker 使用 systemd 作为其 cgroup 驱动程序，这样做的目的是为了与宿主系统的 cgroup 配置保持一致，以便更好地管理容器的资源。
+        vim /etc/docker/daemon.json
+            追加
+                {
+                  ...
+                  "exec-opts": ["native.cgroupdriver=systemd"]
+                }
+                    告诉 Docker 使用 systemd 作为其 cgroup 驱动程序，这样做的目的是为了与宿主系统的 cgroup 配置保持一致，以便更好地管理容器的资源。
 
-        systemctl daemon-reload
-            重新加载 systemd 守护程序的配置文件
-        systemctl restart docker
+            systemctl daemon-reload
+                重新加载 systemd 守护程序的配置文件
+            systemctl restart docker
 
     安装 K8s 核心组件（ hadoop01/hadoop02/hadoop03 ）
         curl http://mirrors.huaweicloud.com/kubernetes/yum/doc/apt-key.gpg | apt-key add -
@@ -158,6 +172,9 @@
 
         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
             安装网络组件 Flannel ，为集群提供虚拟网络，让各节点上的 Pod 之间可以互相通信。
+            建议 docker 使用 socks5 代理的情况下安装 Flannel
+            如果安装失败，通过以下命令删除后再重试：
+                kubectl delete -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
     加入 K8s 集群（ hadoop02/hadoop03 ）
         kubeadm join 192.168.233.129:6443 --token <token> \
