@@ -98,7 +98,7 @@ Docker Compose
             查看日志
                 journalctl -u docker.service
         sudo vi /etc/docker/daemon.json
-            配置镜像源
+            配置镜像源（如果 pull 失败优先排查镜像源问题）
                 追加或更新
                     {
                         "registry-mirrors": [
