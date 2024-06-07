@@ -8,21 +8,54 @@
         Servie 是一组 Pod 的抽象
     Namespace
         Namespace 是一组资源的抽象，提供了一个逻辑隔离的空间。
+资源对象
+    概述
+        资源是 K8s 中所有内容的抽象，如 Pod 、 Service 等都是资源。 K8s 已经内置多种资源，如工作负载、存储资源、网络资源等。
+        资源对象就是资源的实例，是持久化的实体，如某个具体的 Pod 、某个具体的 Node 等。 K8s 使用这些实体去表示整个集群的状态。
+        资源对象通过配置文件来创建，配置文件是资源对象属性的描述文件，配置文件格式可以是 JSON 、 YAML 等。
+    分类
+        基本资源
+            Pod
+            Service
+            Volume
+        工作负载
+            Deployment
+            StatefulSet
+            DaemonSet
+            ReplicaSet
+        配置存储
+            ConfigMap
+            Secret
+            PersistentVolume
+            PersistentVolumeClaim
+        网络资源
+            Ingress
+            NetworkPolicy
+        集群管理
+            Node
+            Namespace
+        用户权限
+            Role
+        ...
+    定制
+        资源可以自定义（ Custom Resource Definition ， CRD ）
+        CRD 创建后，在 K8s 内仅表现为一个被存储的定义，需要借助用户实现的 Controller 来进一步发挥其作用。
+        Controller 可以监听 CRD 资源对象的增删改查事件，用户可以根据这些事件来做不同的处理。
 核心组件
     Kubernetes Master
         API Server
             API Server 向外部客户端暴露 K8s 的 API ，外部客户端可以通过这些 API 来发出请求以处理自己的工作。
         Scheduler
             Scheduler 根据集群 Node 的资源信息，将 Pod 调度到合适的 Node 上运行。
-        Controller Manager
+        Controller
             Replication Controller
                 Replication Controller 用于确保 Pod 的副本数量与期望数量一致，并监控 Pod 的健康状态。
             Node Controller
                 Node Controller 用于确保集群中 Node 数量与期望数量一致，并监控 Node 的健康状态。
             ...
-        Etcd
-            Etcd 是 K8s 集群的后台数据库，内部实现是键值存储，类似 Redis 。
-            Etcd 存储的数据包括集群配置、节点状态信息、服务信息、 Pod 信息、事件信息等。
+        ETCD
+            ETCD 是 K8s 集群的后台数据库，内部实现是键值存储，类似 Redis 。
+            ETCD 存储的数据包括集群配置、节点状态信息、服务信息、 Pod 信息、事件信息等。
     Kubernetes Node
         Kubelet
             Kubelet 负责与 API Server 通信、容器生命周期管理（通过 Container Runtime 实现）、资源信息（例如计算、内存、存储、网络资源）上报等。
@@ -83,35 +116,6 @@
             Elasticsearch
             Logstash
             Kibana
-资源对象
-    概述
-        K8s 中的所有内容都被抽象为资源，如 Pod 、 Service 等都是资源。
-        资源对象就是资源的实例，是持久化的实体。如某个具体的 Pod 、某个具体的 Node 等， K8s 使用这些实体去表示整个集群的状态。
-        K8s 中的资源有多种类别， kubectl 通过配置文件来创建资源对象，配置文件是描述对象属性的文件，配置文件格式可以是 JSON 、 YAML 等。
-    分类
-        基本资源
-            Pod
-            Service
-            Volume
-        工作负载
-            Deployment
-            StatefulSet
-            DaemonSet
-            ReplicaSet
-        配置存储
-            ConfigMap
-            Secret
-            PersistentVolume
-            PersistentVolumeClaim
-        网络资源
-            Ingress
-            NetworkPolicy
-        集群管理
-            Node
-            Namespace
-        用户权限
-            Role
-        ...
 常用命令
     Pod 列表
         kubectl get pod -A -o wide
