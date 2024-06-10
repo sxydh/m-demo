@@ -9,7 +9,9 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/tools/remotecommand"
 	"k8s.io/client-go/util/homedir"
 	"log"
 	"os"
@@ -37,7 +39,27 @@ func main() {
 		log.Fatalf("NewForConfig error: %v", err)
 	}
 
-	/* 查询版本 */
+	scanner := bufio.NewScanner(os.Stdin)
+
+	/* 创建 namespace */
+	fmt.Println("create namespace or not (y/n)")
+	scanner.Scan()
+	if input := scanner.Text(); input == "y" {
+		namespace := &corev1.Namespace{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "namespace-demo",
+				Labels: map[string]string{
+					"purpose": "demo",
+				},
+			},
+		}
+		_, err = client.CoreV1().Namespaces().Create(context.TODO(), namespace, metav1.CreateOptions{})
+		if err != nil {
+			log.Fatalf("Namespaces.Create error: %v", err)
+		}
+	}
+
+	/* 查询 version */
 	version, err := client.ServerVersion()
 	if err != nil {
 		log.Fatalf("ServerVersion error: %v", err)
@@ -45,7 +67,7 @@ func main() {
 	log.Printf("ServerVersion: %v", version)
 
 	/* 查询 pod 列表 */
-	podList, err := client.CoreV1().Pods("default").List(context.TODO(), metav1.ListOptions{})
+	podList, err := client.CoreV1().Pods("namespace-demo").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Fatalf("Pods.List error: %v", err)
 	}
@@ -54,7 +76,7 @@ func main() {
 	}
 
 	/* 查询 service 列表 */
-	serviceList, err := client.CoreV1().Services("default").List(context.TODO(), metav1.ListOptions{})
+	serviceList, err := client.CoreV1().Services("namespace-demo").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Fatalf("Services.List error: %v", err)
 	}
@@ -62,13 +84,11 @@ func main() {
 		log.Printf("Services.List.Items[%v]: %v", index, service.Name)
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
-
 	/* 新增 deployment */
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "tomcat-demo",
-			Namespace: "default",
+			Namespace: "namespace-demo",
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: int32Ptr(3),
@@ -102,7 +122,7 @@ func main() {
 	fmt.Println("create deployment or not (y/n)")
 	scanner.Scan()
 	if input := scanner.Text(); input == "y" {
-		createdDeployment, err := client.AppsV1().Deployments("default").Create(context.TODO(), deployment, metav1.CreateOptions{})
+		createdDeployment, err := client.AppsV1().Deployments("namespace-demo").Create(context.TODO(), deployment, metav1.CreateOptions{})
 		if err != nil {
 			log.Printf("Deployments.Create error: %v", err)
 		}
@@ -117,9 +137,46 @@ func main() {
 		deleteOptions := metav1.DeleteOptions{
 			PropagationPolicy: &deletePropagation,
 		}
-		err := client.AppsV1().Deployments("default").Delete(context.TODO(), deployment.Name, deleteOptions)
+		err := client.AppsV1().Deployments("namespace-demo").Delete(context.TODO(), deployment.Name, deleteOptions)
 		if err != nil {
 			log.Printf("Deployments.Delete error: %v", err)
+		}
+	}
+
+	/* 进入 pod 终端 */
+	/* https://xuliangtang.github.io/posts/k8s-pod-shell/ */
+	fmt.Println("stream with context or not (y/n)")
+	scanner.Scan()
+	if input := scanner.Text(); input == "y" {
+		option := &corev1.PodExecOptions{
+			Container: "tomcat-demo",
+			// bash -c 表示后面要执行的是多个命令的脚本
+			Command: []string{"bash", "-c", "stty -echo; exec bash"},
+			Stdin:   true,
+			Stdout:  true,
+			Stderr:  true,
+			TTY:     true,
+		}
+
+		req := client.CoreV1().RESTClient().Post().Resource("pods").
+			Namespace("namespace-demo").
+			Name(podList.Items[0].Name).
+			SubResource("exec").
+			VersionedParams(option, scheme.ParameterCodec)
+
+		exec, err := remotecommand.NewSPDYExecutor(config, "POST", req.URL())
+		if err != nil {
+			log.Fatalf("NewSPDYExecutor error: %v", err)
+		}
+
+		err = exec.StreamWithContext(context.Background(), remotecommand.StreamOptions{
+			Stdin:  os.Stdin,
+			Stdout: os.Stdout,
+			Stderr: os.Stderr,
+			Tty:    true,
+		})
+		if err != nil {
+			log.Fatalf("StreamWithContext error: %v", err)
 		}
 	}
 }
