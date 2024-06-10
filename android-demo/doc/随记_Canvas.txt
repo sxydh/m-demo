@@ -1,0 +1,7 @@
+概述
+    Canvas 提供了绘制接口，但是本身并不持有图形像素点，真正的绘制操作是由底层绘图引擎完成的。
+    Bitmap 位图是一个像素数组，数组元素是一个像素点，每个像素点都有一个颜色，位图扮演了画布的角色。
+    一般情况下，可以在 Bitmap 对象上创建一个 Canvas ，从而实现图形绘制。
+其它
+    cn.net.bhe.quickstartdemo.view.CanvasView#onDraw
+        onDraw 调用时，参数中的 canvas 会完全重新绘制，也就是会清空之前的内容。
