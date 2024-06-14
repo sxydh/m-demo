@@ -31,10 +31,9 @@ var todoChan = make(chan *TunnelBo, 20)
 
 func main() {
 	/* 初始化待处理的隧道 */
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40010, remoteIp: "124.71.35.157", remotePort: 40010, status: 0}
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40020, remoteIp: "124.71.35.157", remotePort: 40020, status: 0}
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40030, remoteIp: "124.71.35.157", remotePort: 40030, status: 0}
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40040, remoteIp: "124.71.35.157", remotePort: 40040, status: 0}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20010, remoteIp: "124.71.35.157", remotePort: 40010, status: 0}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20020, remoteIp: "124.71.35.157", remotePort: 40020, status: 0}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 3000, remoteIp: "124.71.35.157", remotePort: 40030, status: 0}
 
 	/* 隧道保活协程 */
 	go handleKeepAlive()
@@ -90,7 +89,7 @@ func initTunnelBo(tunnelBo *TunnelBo) error {
 		log.Printf("Listen remote server error, ip=%v, port=%v, err=%v", tunnelBo.remoteIp, tunnelBo.remotePort, err)
 		return err
 	}
-	log.Printf("Listening remote server..., ip=%v, port=%v", tunnelBo.remoteIp, tunnelBo.remotePort)
+	log.Printf("Listening remote server..., localPort=%v, remoteIp=%v, remotePort=%v", tunnelBo.localPort, tunnelBo.remoteIp, tunnelBo.remotePort)
 
 	tunnelBo.remoteClient = remoteClient
 	tunnelBo.remoteListener = &remoteListener
