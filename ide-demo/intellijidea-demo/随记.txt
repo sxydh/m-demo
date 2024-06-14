@@ -1,0 +1,7 @@
+File
+    Settings
+        Editor
+            Inspections
+                Java
+                    Resource management
+                        AutoCloseable used without 'try'-with-resources
