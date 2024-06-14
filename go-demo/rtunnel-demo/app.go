@@ -43,13 +43,15 @@ func main() {
 		tunnelBo := <-todoChan
 		err := initTunnelBo(tunnelBo)
 		if err != nil {
+			// 构建失败重新放入待处理列表
+			todoChan <- tunnelBo
 			time.Sleep(2 * time.Second)
 			continue
 		}
 		// 构建成功后放入存活列表
 		tunnelBo.status = 1
 		doingChan <- tunnelBo
-		// 隧道通信协程
+		// 处理隧道通信
 		go handleTunnel(tunnelBo)
 		time.Sleep(5 * time.Second)
 	}
