@@ -33,10 +33,10 @@ var todoChan = make(chan *TunnelBo)
 
 func main() {
 	/* 初始化待处理的隧道 */
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20010, remoteIp: "124.71.35.157", remotePort: 20010}
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20020, remoteIp: "124.71.35.157", remotePort: 20020}
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20030, remoteIp: "124.71.35.157", remotePort: 20030}
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20040, remoteIp: "124.71.35.157", remotePort: 20040}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40010, remoteIp: "124.71.35.157", remotePort: 40010}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40020, remoteIp: "124.71.35.157", remotePort: 40020}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40030, remoteIp: "124.71.35.157", remotePort: 40030}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40040, remoteIp: "124.71.35.157", remotePort: 40040}
 
 	/* 隧道保活协程 */
 	go handleKeepAlive()
