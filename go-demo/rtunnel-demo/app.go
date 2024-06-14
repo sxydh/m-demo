@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -26,10 +27,10 @@ import (
 var m = sync.Map{}
 
 /* 存活的隧道 */
-var doingChan = make(chan *TunnelBo)
+var doingChan = make(chan *TunnelBo, 20)
 
 /* 待处理的隧道 */
-var todoChan = make(chan *TunnelBo)
+var todoChan = make(chan *TunnelBo, 20)
 
 func main() {
 	/* 初始化待处理的隧道 */
@@ -85,10 +86,10 @@ func initTunnelBo(tunnelBo *TunnelBo) error {
 		log.Printf("Dial remote server error, err=%v", err)
 		return err
 	}
-	remoteListener, err := remoteClient.Listen("tcp", "localhost:"+string(tunnelBo.remotePort))
+	remoteListener, err := remoteClient.Listen("tcp", "localhost:"+strconv.Itoa(tunnelBo.remotePort))
 	if err != nil {
 		_ = remoteClient.Close()
-		log.Printf("Listen remote server error, port=%v, err=%v", tunnelBo.remotePort, err)
+		log.Printf("Listen remote server error, ip=%v, port=%v, err=%v", tunnelBo.remoteIp, tunnelBo.remotePort, err)
 		return err
 	}
 	log.Printf("Listening remote server..., ip=%v, port=%v", tunnelBo.remoteIp, tunnelBo.remotePort)
@@ -120,7 +121,7 @@ func handleTunnel(tunnelBo *TunnelBo) {
 }
 
 func handleTunnelDo(tunnelBo *TunnelBo, userConn *net.Conn) {
-	localConn, err := net.Dial("tcp", "localhost:"+string(tunnelBo.localPort))
+	localConn, err := net.Dial("tcp", "localhost:"+strconv.Itoa(tunnelBo.localPort))
 	if err != nil {
 		log.Printf("Dial local error, port=%v, err=%v", tunnelBo.localPort, err)
 		return
@@ -179,7 +180,7 @@ type TunnelBo struct {
 	remoteClient   *ssh.Client
 	remoteListener *net.Listener
 	id             string
-	localPort      int32
+	localPort      int
 	remoteIp       string
-	remotePort     int32
+	remotePort     int
 }
