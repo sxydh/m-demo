@@ -33,7 +33,7 @@ func main() {
 	/* 初始化待处理的隧道 */
 	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20010, remoteIp: "124.71.35.157", remotePort: 40010, status: 0}
 	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20020, remoteIp: "124.71.35.157", remotePort: 40020, status: 0}
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 3000, remoteIp: "124.71.35.157", remotePort: 40030, status: 0}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 10006, remoteIp: "124.71.35.157", remotePort: 40030, status: 0}
 
 	/* 隧道保活协程 */
 	go handleKeepAlive()
