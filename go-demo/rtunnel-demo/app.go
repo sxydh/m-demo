@@ -23,9 +23,6 @@ import (
  * go build -o rtunnel_demo.exe
  */
 
-/* 哈希表存储隧道状态 */
-var m = sync.Map{}
-
 /* 存活的隧道 */
 var doingChan = make(chan *TunnelBo, 20)
 
@@ -34,10 +31,10 @@ var todoChan = make(chan *TunnelBo, 20)
 
 func main() {
 	/* 初始化待处理的隧道 */
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40010, remoteIp: "124.71.35.157", remotePort: 40010}
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40020, remoteIp: "124.71.35.157", remotePort: 40020}
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40030, remoteIp: "124.71.35.157", remotePort: 40030}
-	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40040, remoteIp: "124.71.35.157", remotePort: 40040}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40010, remoteIp: "124.71.35.157", remotePort: 40010, status: 0}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40020, remoteIp: "124.71.35.157", remotePort: 40020, status: 0}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40030, remoteIp: "124.71.35.157", remotePort: 40030, status: 0}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 40040, remoteIp: "124.71.35.157", remotePort: 40040, status: 0}
 
 	/* 隧道保活协程 */
 	go handleKeepAlive()
@@ -51,6 +48,7 @@ func main() {
 			continue
 		}
 		// 构建成功后放入存活列表
+		tunnelBo.status = 1
 		doingChan <- tunnelBo
 		// 隧道通信协程
 		go handleTunnel(tunnelBo)
@@ -107,8 +105,7 @@ func handleTunnel(tunnelBo *TunnelBo) {
 	//goland:noinspection GoUnhandledErrorResult
 	defer remoteClient.Close()
 	for {
-		status, _ := m.Load(tunnelBo.id)
-		if status != nil && status == "0" {
+		if tunnelBo.status == 0 {
 			return
 		}
 		userConn, err := (*remoteListener).Accept()
@@ -160,14 +157,14 @@ func handleKeepAlive() {
 			if err != nil {
 				log.Printf("NewSession from remote server error, remoteIp=%v, remotePort=%v, err=%v", tunnelBo.remoteIp, tunnelBo.remotePort, err)
 				todoChan <- tunnelBo
-				m.Store(tunnelBo.id, "0")
+				tunnelBo.status = 0
 				return
 			}
 			_, err = session.CombinedOutput("echo 1")
 			if err != nil {
 				log.Printf("CombinedOutput from remote session error, remoteIp=%v, remotePort=%v, err=%v", tunnelBo.remoteIp, tunnelBo.remotePort, err)
 				todoChan <- tunnelBo
-				m.Store(tunnelBo.id, "0")
+				tunnelBo.status = 0
 				return
 			}
 			doingChan <- tunnelBo
@@ -183,4 +180,5 @@ type TunnelBo struct {
 	localPort      int
 	remoteIp       string
 	remotePort     int
+	status         int
 }
