@@ -22,42 +22,52 @@ import (
  * go build -o rtunnel_demo.exe
  */
 
+/* 哈希表存储隧道状态 */
 var m = sync.Map{}
-var aliveChan = make(chan *TunnelBo)
-var reChan = make(chan *TunnelBo)
+
+/* 存活的隧道 */
+var doingChan = make(chan *TunnelBo)
+
+/* 待处理的隧道 */
+var todoChan = make(chan *TunnelBo)
 
 func main() {
+	/* 初始化待处理的隧道 */
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20010, remoteIp: "124.71.35.157", remotePort: 20010}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20020, remoteIp: "124.71.35.157", remotePort: 20020}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20030, remoteIp: "124.71.35.157", remotePort: 20030}
+	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20040, remoteIp: "124.71.35.157", remotePort: 20040}
+
+	/* 隧道保活协程 */
 	go handleKeepAlive()
-	i := 0
+
 	for {
-		i += 1
-		log.Printf("Try to tunnel => %v", i)
-		/* 构建隧道 */
-		tunnelBo, err := buildTunnelBo()
+		/* 构建待处理的隧道 */
+		tunnelBo := <-todoChan
+		err := initTunnelBo(tunnelBo)
 		if err != nil {
 			time.Sleep(2 * time.Second)
 			continue
 		}
-		aliveChan <- tunnelBo
-		/* 处理隧道 */
+		// 构建成功后放入存活列表
+		doingChan <- tunnelBo
+		// 隧道通信协程
 		go handleTunnel(tunnelBo)
-		/* 重建隧道 */
-		<-reChan
 		time.Sleep(5 * time.Second)
 	}
 }
 
-func buildTunnelBo() (*TunnelBo, error) {
+func initTunnelBo(tunnelBo *TunnelBo) error {
 	/* 创建配置 */
 	homePath, _ := os.UserHomeDir()
 	privateKeyPath := filepath.Join(homePath, ".ssh", "id_rsa")
 	privateKeyBytes, err := os.ReadFile(privateKeyPath)
 	if err != nil {
-		log.Fatalf("[buildTunnelBo] Failed to read => %v", privateKeyPath)
+		log.Fatalf("os.ReadFile error: %v", privateKeyPath)
 	}
 	privateKey, err := ssh.ParsePrivateKey(privateKeyBytes)
 	if err != nil {
-		log.Fatalf("[buildTunnelBo] Failed to parse private key => %v", err)
+		log.Fatalf("ssh.ParsePrivateKey error: %v", err)
 	}
 
 	clientConfig := &ssh.ClientConfig{
@@ -70,35 +80,31 @@ func buildTunnelBo() (*TunnelBo, error) {
 	}
 
 	/* 创建隧道 */
-	remoteClient, err := ssh.Dial("tcp", "124.71.35.157:22", clientConfig)
+	remoteClient, err := ssh.Dial("tcp", tunnelBo.remoteIp+":22", clientConfig)
 	if err != nil {
-		log.Printf("[buildTunnelBo] Failed to dial => %v", err)
-		return nil, err
+		log.Printf("ssh.Dial error: %v", err)
+		return err
 	}
-	remoteListener, err := remoteClient.Listen("tcp", "localhost:10006")
+	remoteListener, err := remoteClient.Listen("tcp", "localhost:"+string(tunnelBo.remotePort))
 	if err != nil {
 		_ = remoteClient.Close()
-		log.Printf("[buildTunnelBo] Failed to create reverse tunnel => %v", err)
-		return nil, err
+		log.Printf("remoteClient.Listen error: %v", err)
+		return err
 	}
-	log.Printf("[buildTunnelBo] Listening on remote side...")
-	tunnelBo := TunnelBo{
-		remoteClient:   remoteClient,
-		remoteListener: &remoteListener,
-		id:             uuid.New().String(),
-	}
-	return &tunnelBo, nil
+	log.Printf("remoteClient.Listening...")
+
+	tunnelBo.remoteClient = remoteClient
+	tunnelBo.remoteListener = &remoteListener
+	return nil
 }
 
 func handleTunnel(tunnelBo *TunnelBo) {
 	remoteListener := tunnelBo.remoteListener
 	remoteClient := tunnelBo.remoteClient
-	defer func() {
-		_ = (*remoteListener).Close()
-	}()
-	defer func() {
-		_ = remoteClient.Close()
-	}()
+	//goland:noinspection GoUnhandledErrorResult
+	defer (*remoteListener).Close()
+	//goland:noinspection GoUnhandledErrorResult
+	defer remoteClient.Close()
 	for {
 		status, _ := m.Load(tunnelBo.id)
 		if status != nil && status == "0" {
@@ -106,64 +112,64 @@ func handleTunnel(tunnelBo *TunnelBo) {
 		}
 		userConn, err := (*remoteListener).Accept()
 		if err != nil {
-			log.Printf("[handleTunnel] Failed to accept connection => %v", err)
+			log.Printf("remoteListener.Accept error: %v", err)
 			return
 		}
-		go handleTunnelDo(userConn)
+		go handleTunnelDo(tunnelBo, &userConn)
 	}
 }
 
-func handleTunnelDo(userConn net.Conn) {
-	localConn, err := net.Dial("tcp", "localhost:10006")
+func handleTunnelDo(tunnelBo *TunnelBo, userConn *net.Conn) {
+	localConn, err := net.Dial("tcp", "localhost:"+string(tunnelBo.localPort))
 	if err != nil {
-		log.Printf("[handleTunnelDo] Failed to connect to local service => %v", err)
+		log.Printf("net.Dial error: %v", err)
 		return
 	}
-	defer func() {
-		_ = userConn.Close()
-	}()
-	defer func() {
-		_ = localConn.Close()
-	}()
+	//goland:noinspection GoUnhandledErrorResult
+	defer (*userConn).Close()
+	//goland:noinspection GoUnhandledErrorResult
+	defer localConn.Close()
 
 	wg := sync.WaitGroup{}
 	wg.Add(2)
+
 	go func() {
-		_, err := io.Copy(localConn, userConn)
+		_, err := io.Copy(localConn, *userConn)
 		if err != nil {
-			log.Printf("[handleTunnelDo] Failed to copy => %v", err)
+			log.Printf("io.Copy error: %v", err)
 		}
 		wg.Done()
 	}()
 	go func() {
-		_, err := io.Copy(userConn, localConn)
+		_, err := io.Copy(*userConn, localConn)
 		if err != nil {
-			log.Printf("[handleTunnelDo] Failed to copy => %v", err)
+			log.Printf("io.Copy error: %v", err)
 		}
 		wg.Done()
 	}()
+
 	wg.Wait()
 }
 
 func handleKeepAlive() {
 	for {
-		aliveEle := <-aliveChan
+		tunnelBo := <-doingChan
 		go func() {
-			session, err := aliveEle.remoteClient.NewSession()
+			session, err := tunnelBo.remoteClient.NewSession()
 			if err != nil {
-				log.Printf("[handleKeepAlive] Failed to newSession => %v", err)
-				reChan <- aliveEle
-				m.Store(aliveEle.id, "0")
+				log.Printf("remoteClient.NewSession error: %v", err)
+				todoChan <- tunnelBo
+				m.Store(tunnelBo.id, "0")
 				return
 			}
 			_, err = session.CombinedOutput("echo 1")
 			if err != nil {
-				log.Printf("[handleKeepAlive] Failed to combinedOutput => %v", err)
-				reChan <- aliveEle
-				m.Store(aliveEle.id, "0")
+				log.Printf("session.CombinedOutput error: %v", err)
+				todoChan <- tunnelBo
+				m.Store(tunnelBo.id, "0")
 				return
 			}
-			aliveChan <- aliveEle
+			doingChan <- tunnelBo
 		}()
 		time.Sleep(5 * time.Second)
 	}
@@ -173,4 +179,7 @@ type TunnelBo struct {
 	remoteClient   *ssh.Client
 	remoteListener *net.Listener
 	id             string
+	localPort      int32
+	remoteIp       string
+	remotePort     int32
 }
