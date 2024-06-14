@@ -63,11 +63,11 @@ func initTunnelBo(tunnelBo *TunnelBo) error {
 	privateKeyPath := filepath.Join(homePath, ".ssh", "id_rsa")
 	privateKeyBytes, err := os.ReadFile(privateKeyPath)
 	if err != nil {
-		log.Fatalf("os.ReadFile error: %v", privateKeyPath)
+		log.Fatalf("Read private key file error, err=%v", err)
 	}
 	privateKey, err := ssh.ParsePrivateKey(privateKeyBytes)
 	if err != nil {
-		log.Fatalf("ssh.ParsePrivateKey error: %v", err)
+		log.Fatalf("Parse private key error, err=%v", err)
 	}
 
 	clientConfig := &ssh.ClientConfig{
@@ -82,16 +82,16 @@ func initTunnelBo(tunnelBo *TunnelBo) error {
 	/* 创建隧道 */
 	remoteClient, err := ssh.Dial("tcp", tunnelBo.remoteIp+":22", clientConfig)
 	if err != nil {
-		log.Printf("ssh.Dial error: %v", err)
+		log.Printf("Dial remote server error, err=%v", err)
 		return err
 	}
 	remoteListener, err := remoteClient.Listen("tcp", "localhost:"+string(tunnelBo.remotePort))
 	if err != nil {
 		_ = remoteClient.Close()
-		log.Printf("remoteClient.Listen error: %v", err)
+		log.Printf("Listen remote server error, port=%v, err=%v", tunnelBo.remotePort, err)
 		return err
 	}
-	log.Printf("remoteClient.Listening...")
+	log.Printf("Listening remote server..., ip=%v, port=%v", tunnelBo.remoteIp, tunnelBo.remotePort)
 
 	tunnelBo.remoteClient = remoteClient
 	tunnelBo.remoteListener = &remoteListener
@@ -112,7 +112,7 @@ func handleTunnel(tunnelBo *TunnelBo) {
 		}
 		userConn, err := (*remoteListener).Accept()
 		if err != nil {
-			log.Printf("remoteListener.Accept error: %v", err)
+			log.Printf("Accept remote user error, ip=%v, port=%v, err=%v", tunnelBo.remoteIp, tunnelBo.remotePort, err)
 			return
 		}
 		go handleTunnelDo(tunnelBo, &userConn)
@@ -122,7 +122,7 @@ func handleTunnel(tunnelBo *TunnelBo) {
 func handleTunnelDo(tunnelBo *TunnelBo, userConn *net.Conn) {
 	localConn, err := net.Dial("tcp", "localhost:"+string(tunnelBo.localPort))
 	if err != nil {
-		log.Printf("net.Dial error: %v", err)
+		log.Printf("Dial local error, port=%v, err=%v", tunnelBo.localPort, err)
 		return
 	}
 	//goland:noinspection GoUnhandledErrorResult
@@ -136,14 +136,14 @@ func handleTunnelDo(tunnelBo *TunnelBo, userConn *net.Conn) {
 	go func() {
 		_, err := io.Copy(localConn, *userConn)
 		if err != nil {
-			log.Printf("io.Copy error: %v", err)
+			log.Printf("Copy user to local error: localPort=%v, remoteIp=%v, remotePort=%v, err=%v", tunnelBo.localPort, tunnelBo.remoteIp, tunnelBo.remotePort, err)
 		}
 		wg.Done()
 	}()
 	go func() {
 		_, err := io.Copy(*userConn, localConn)
 		if err != nil {
-			log.Printf("io.Copy error: %v", err)
+			log.Printf("Copy local to user error: localPort=%v, remoteIp=%v, remotePort=%v, err=%v", tunnelBo.localPort, tunnelBo.remoteIp, tunnelBo.remotePort, err)
 		}
 		wg.Done()
 	}()
@@ -157,14 +157,14 @@ func handleKeepAlive() {
 		go func() {
 			session, err := tunnelBo.remoteClient.NewSession()
 			if err != nil {
-				log.Printf("remoteClient.NewSession error: %v", err)
+				log.Printf("NewSession from remote server error, remoteIp=%v, remotePort=%v, err=%v", tunnelBo.remoteIp, tunnelBo.remotePort, err)
 				todoChan <- tunnelBo
 				m.Store(tunnelBo.id, "0")
 				return
 			}
 			_, err = session.CombinedOutput("echo 1")
 			if err != nil {
-				log.Printf("session.CombinedOutput error: %v", err)
+				log.Printf("CombinedOutput from remote session error, remoteIp=%v, remotePort=%v, err=%v", tunnelBo.remoteIp, tunnelBo.remotePort, err)
 				todoChan <- tunnelBo
 				m.Store(tunnelBo.id, "0")
 				return
