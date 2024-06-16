@@ -16,7 +16,7 @@
     查询 Chart
         helm search <repo_type> <chart_name>
             helm search hub wordpress
-                hub ：表示公共仓库内查找。
+                hub ：表示公共仓库内查找，公共仓库地址： https://artifacthub.io/ 。
             helm search repo wordpress
                 repo ：表示本地仓库内查找。
 环境
