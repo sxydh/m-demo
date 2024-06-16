@@ -131,6 +131,9 @@
                 kubectl exec -it -n <namespace> <pod_name> -- bash
     Pod 详情
         kubectl describe pod <pod_name> 
+    Service 创建
+        NodePort
+            kubectl expose <resource_type> <resource_name> --port=<service_port> --target-port=<pod_port> --type=NodePort
     Service 列表
         kubectl get service -A -o wide
     Deployment 列表
