@@ -1,7 +1,7 @@
 网络隧道
     本地转发到远程
         ssh -L <local_port>:<target_ip>:<target_port> <ssh_user>@<ssh_host>
-            注意 target_ip 和 ssh_host 不要求是同一个主机
+            注意 target_ip 和 ssh_host 不要求是同一个主机，建议 target_ip 和 ssh_host 在一个局域网内。
     远程转发到本地
         ssh -R <remote_port>:<target_ip>:<target_port> <ssh_user>@<ssh_host>
             ssh -R 9090:127.0.0.1:30010 root@172.234.88.99
