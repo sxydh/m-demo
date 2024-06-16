@@ -29,4 +29,10 @@
         vim /etc/ssh/sshd_config
             更新
                 PermitRootLogin yes
+
+        sudo su
+        passwd
+            以上命令用于更改主机 root 密码
+            如果远程需要 root 账号登录，以上步骤是必需的。
+            
         systemctl restart ssh
