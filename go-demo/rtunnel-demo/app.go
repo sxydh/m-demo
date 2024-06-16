@@ -30,7 +30,7 @@ var doingChan = make(chan *TunnelBo, 20)
 var todoChan = make(chan *TunnelBo, 20)
 
 func main() {
-	/* 初始化待处理的隧道 */
+	/* 创建待处理的隧道 */
 	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20010, remoteIp: "124.71.35.157", remotePort: 40010, status: 0}
 	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 20020, remoteIp: "124.71.35.157", remotePort: 40020, status: 0}
 	todoChan <- &TunnelBo{id: uuid.New().String(), localPort: 10006, remoteIp: "124.71.35.157", remotePort: 40030, status: 0}
@@ -39,16 +39,16 @@ func main() {
 	go handleKeepAlive()
 
 	for {
-		/* 构建待处理的隧道 */
+		/* 初始化待处理的隧道 */
 		tunnelBo := <-todoChan
 		err := initTunnelBo(tunnelBo)
 		if err != nil {
-			// 构建失败重新放入待处理列表
+			// 初始化失败重新放入待处理列表
 			todoChan <- tunnelBo
 			time.Sleep(2 * time.Second)
 			continue
 		}
-		// 构建成功后放入存活列表
+		// 初始化成功后放入存活列表
 		tunnelBo.status = 1
 		doingChan <- tunnelBo
 		// 处理隧道通信
