@@ -67,6 +67,15 @@ func main() {
 	}
 	log.Printf("ServerVersion: %v", version)
 
+	/* 查询 deployment 列表 */
+	deploymentList, err := client.AppsV1().Deployments("namespace-demo").List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		log.Fatalf("Deployments.List error: %v", err)
+	}
+	for index, deployment := range deploymentList.Items {
+		log.Printf("Deployments.List.Items[%v]: %v", index, deployment.Name)
+	}
+
 	/* 查询 pod 列表 */
 	podList, err := client.CoreV1().Pods("namespace-demo").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
