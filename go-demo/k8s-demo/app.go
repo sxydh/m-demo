@@ -73,7 +73,7 @@ func main() {
 		log.Fatalf("Deployments.List error: %v", err)
 	}
 	for index, deployment := range deploymentList.Items {
-		log.Printf("Deployments.List.Items[%v]: %v", index, deployment.Name)
+		log.Printf("Deployments.List.Items[%v]: %v, %v", index, deployment.Name, deployment.UID)
 	}
 
 	/* 查询 pod 列表 */
