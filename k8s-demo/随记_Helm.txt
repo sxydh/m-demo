@@ -1,0 +1,30 @@
+概述（ https://helm.sh/zh/docs/intro/using_helm/ ）
+    Helm 用于管理 Kubernetes 集群上的软件包
+核心概念
+    Chart
+        Chart 是 Helm 的包，可以类比为 Apt 的 dpkg 或 Yum 的 RPM 的文件，它包含了 Kubernetes 内的特定应用运行时所需要的资源定义。
+    Repository
+        Repository 是 Chart 的存储仓库
+    Release
+        Release 是 Chart 在 Kubernetes 内运行时的实例
+    Helm
+        Helm 从 Repository 拉取 Chart 并安装到 Kubernetes 中，产生 Release 实例。
+常用命令
+    添加 Repository
+        helm repo add <local_repo_name> <remote_repo_url>
+            helm repo add brigade https://brigadecore.github.io/charts
+    查询 Chart
+        helm search <repo_type> <chart_name>
+            helm search hub wordpress
+                hub ：表示公共仓库内查找。
+            helm search repo wordpress
+                repo ：表示本地仓库内查找。
+环境
+    前置条件
+        K8s v1.23.17 集群
+    安装服务
+        curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+        sudo apt-get install apt-transport-https --yes
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+        sudo apt-get update
+        sudo apt-get install helm
