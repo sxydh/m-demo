@@ -5,7 +5,15 @@
         Pod 是一组容器的抽象
         Pod 内的不同容器可以通过 localhost 互相访问
     Service
-        Servie 是一组 Pod 的抽象
+        Service 是一组 Pod 的抽象，是外界对这组 Pod 的访问入口。
+            Pod 的新建和销毁可能导致 IP 发生变化，外界直接通过 IP 访问 Pod 就会产生问题。
+            Service 服务创建后，外界访问 Service 的 IP ，然后再由 Service 将流量路由到合适的 Pod 。
+        Service 对外曝露的方式有：
+            ClusterIP 
+                以集群内部 IP 对外曝露，这种类型的 Service 只能集群内部访问。
+            NodePort
+                以每个集群节点端口映射的方式对外曝露，这种类型的 Service 可以从外部访问。
+            ...
     Namespace
         Namespace 是一组资源的抽象，提供了一个逻辑隔离的空间。
 资源对象
@@ -121,6 +129,8 @@
         kubectl get pod -A -o wide
             进入 Pod
                 kubectl exec -it -n <namespace> <pod_name> -- bash
+    Pod 详情
+        kubectl describe pod <pod_name> 
     Service 列表
         kubectl get service -A -o wide
     Deployment 列表
