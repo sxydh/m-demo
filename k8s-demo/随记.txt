@@ -130,7 +130,6 @@
             kubectl get pod -A -o wide
                 进入 Pod
                     kubectl exec -it -n <namespace> <pod_name> -- bash
-    Pod     
         详情
             kubectl describe pod <pod_name> 
     Service 
