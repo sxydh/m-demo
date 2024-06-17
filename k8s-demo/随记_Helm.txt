@@ -21,6 +21,8 @@
                     hub ：表示公共仓库内查找，公共仓库地址： https://artifacthub.io/ 。
                 helm search repo wordpress
                     repo ：表示本地仓库内查找。
+        安装
+            helm install [release_name] <local_repo_name>/<chart_name>
 环境
     前置条件
         K8s v1.23.17 集群
