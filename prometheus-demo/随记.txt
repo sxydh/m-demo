@@ -27,18 +27,21 @@
             微信机器人
             Webhook
 环境
-    前置条件
-        Ubuntu 20.04.6 LTS
-            192.168.233.129
-    安装服务（ 2.51.2 ）
-        sudo mkdir -p /opt/module/prometheus
-        sudo chown -R sxydh:sxydh /opt/module/prometheus
-        wget -P /opt/module/prometheus https://github.com/prometheus/prometheus/releases/download/v2.51.2/prometheus-2.51.2.linux-amd64.tar.gz
-        tar -zxvf /opt/module/prometheus/prometheus-2.51.2.linux-amd64.tar.gz -C /opt/module/prometheus
-    修改配置
-        无
-    启动服务
-        cd /opt/module/prometheus/prometheus-2.51.2.linux-amd64
-            ./prometheus --config.file=prometheus.yml
-                验证
-                    http://192.168.233.129:9090/
+    TAR 方式
+        前置条件
+            Ubuntu 20.04.6 LTS
+                192.168.233.129
+        安装服务（ 2.51.2 ）
+            sudo mkdir -p /opt/module/prometheus
+            sudo chown -R sxydh:sxydh /opt/module/prometheus
+            wget -P /opt/module/prometheus https://github.com/prometheus/prometheus/releases/download/v2.51.2/prometheus-2.51.2.linux-amd64.tar.gz
+            tar -zxvf /opt/module/prometheus/prometheus-2.51.2.linux-amd64.tar.gz -C /opt/module/prometheus
+        修改配置
+            无
+        启动服务
+            cd /opt/module/prometheus/prometheus-2.51.2.linux-amd64
+                ./prometheus --config.file=prometheus.yml
+                    验证
+                        http://192.168.233.129:9090/
+    K8s 方式
+        https://juejin.cn/post/7099725768212611085
