@@ -149,6 +149,8 @@
     Deployment 
         列表
             kubectl get deployment -o wide -n <namespace_name>
+        缩放
+            kubectl scale deployment/<deployment_name> --replicas=<target_number>
     Namespace 
         创建
             kubectl create namespace <namespace_name>
