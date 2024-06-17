@@ -136,7 +136,6 @@
         创建
             NodePort
                 kubectl expose <resource_type> <resource_name> --port=<service_port> --target-port=<pod_port> --type=NodePort
-    Service 
         列表
             kubectl get service -A -o wide
     Deployment 
