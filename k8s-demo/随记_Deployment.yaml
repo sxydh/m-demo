@@ -39,7 +39,13 @@ spec:
         app: app-demo
     # 配置模板规格和行为
     spec:
-      # 配置容器列表
+      # 配置存储卷
+      volumes:
+      - name: volume-demo
+        configMap:
+          # 引用的 ConfigMap 名称
+          name: configmap-demo
+      # 配置容器
       containers:
       - name: container-demo
         # 容器镜像
@@ -65,10 +71,11 @@ spec:
         envFrom:
         - configMapRef:
             name: configmap-demo
-        # 容器挂载点
+        # 容器挂载卷
         volumeMounts:
-        - name: mount-demo
-          mountPath: "/path/to/mount"
+        - mountPath: "/path/to/file"
+          # 引用的 volume 名称
+          name: volume-demo
         # 容器存活探针
         livenessProbe:
           httpGet:
@@ -83,11 +90,6 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
-      # 配置模板存储卷
-      volumes:
-      - name: volume-demo
-        configMap:
-          name: configmap-demo
   # 配置旧版本保留数量
   revisionHistoryLimit: 10
   # 配置部署超时时间
