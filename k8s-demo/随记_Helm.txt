@@ -22,9 +22,9 @@
                 helm search repo wordpress
                     repo ：表示本地仓库内查找。
         安装
-            helm install <release_name> <local_repo_name>/<chart_name> --namespace <namespace_name>
+            helm install <release_name> <local_repo_name>/<chart_name> -n <namespace_name>
         卸载
-            helm uninstall <release_name> --namespace <namespace_name>
+            helm uninstall <release_name> -n <namespace_name>
     Release
         列表
             helm list --all-namespaces
