@@ -43,5 +43,5 @@
                 ./prometheus --config.file=prometheus.yml
                     验证
                         http://192.168.233.129:9090/
-    K8s 方式
-        https://juejin.cn/post/7099725768212611085
+    Helm 方式
+        https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack
