@@ -126,9 +126,12 @@
             Logstash
             Kibana
 常用命令
+    ConfigMap
+        列表
+            kubectl get configmap -o wide -n <namespace_name>
     Pod     
         列表
-            kubectl get pod -A -o wide
+            kubectl get pod -o wide -n <namespace_name>
                 进入 Pod
                     kubectl exec -it -n <namespace> <pod_name> -- bash
         详情
@@ -138,10 +141,10 @@
             NodePort
                 kubectl expose <resource_type> <resource_name> --port=<service_port> --target-port=<pod_port> --type=NodePort
         列表
-            kubectl get service -A -o wide
+            kubectl get service -o wide -n <namespace_name>
     Deployment 
         列表
-            kubectl get deployment -A -o wide
+            kubectl get deployment -o wide -n <namespace_name>
     Namespace 
         创建
             kubectl create namespace <namespace_name>
