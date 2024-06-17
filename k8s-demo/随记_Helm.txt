@@ -22,7 +22,12 @@
                 helm search repo wordpress
                     repo ：表示本地仓库内查找。
         安装
-            helm install [release_name] <local_repo_name>/<chart_name> --namespace <namespace_name>
+            helm install <release_name> <local_repo_name>/<chart_name> --namespace <namespace_name>
+        卸载
+            helm uninstall <release_name> --namespace <namespace_name>
+    Release
+        列表
+            helm list --all-namespaces
 环境
     前置条件
         K8s v1.23.17 集群
