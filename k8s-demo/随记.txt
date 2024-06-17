@@ -125,19 +125,29 @@
             Logstash
             Kibana
 常用命令
-    Pod 列表
-        kubectl get pod -A -o wide
-            进入 Pod
-                kubectl exec -it -n <namespace> <pod_name> -- bash
-    Pod 详情
-        kubectl describe pod <pod_name> 
-    Service 创建
-        NodePort
-            kubectl expose <resource_type> <resource_name> --port=<service_port> --target-port=<pod_port> --type=NodePort
-    Service 列表
-        kubectl get service -A -o wide
-    Deployment 列表
-        kubectl get deployment -A -o wide
+    Pod     
+        列表
+            kubectl get pod -A -o wide
+                进入 Pod
+                    kubectl exec -it -n <namespace> <pod_name> -- bash
+    Pod     
+        详情
+            kubectl describe pod <pod_name> 
+    Service 
+        创建
+            NodePort
+                kubectl expose <resource_type> <resource_name> --port=<service_port> --target-port=<pod_port> --type=NodePort
+    Service 
+        列表
+            kubectl get service -A -o wide
+    Deployment 
+        列表
+            kubectl get deployment -A -o wide
+    Namespace 
+        创建
+            kubectl create namespace <namespace_name>
+        列表
+            kubectl get namespace -o wide
 
 开发环境（ https://bbs.huaweicloud.com/blogs/380596 ）
     前置条件
