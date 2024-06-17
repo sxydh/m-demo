@@ -137,6 +137,9 @@
                     kubectl exec -it -n <namespace> <pod_name> -- bash
         详情
             kubectl describe pod <pod_name> 
+        重启
+            常规方式
+                kubectl get pod <pod_name> -n <namespace_name> -o yaml | kubectl replace --force -f -
     Service 
         创建
             NodePort
