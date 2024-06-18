@@ -1,0 +1,5 @@
+概述
+    export 用于导出 golang 函数给其它语言调用
+环境
+    编译
+        go build -o app.dll -buildmode=c-shared app.go
