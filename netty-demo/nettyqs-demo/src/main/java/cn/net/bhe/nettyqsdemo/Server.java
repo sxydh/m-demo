@@ -29,6 +29,7 @@ public class Server {
                         @Override
                         protected void initChannel(Channel channel) {
                             channel.pipeline()
+                                    // 防止粘包
                                     .addLast(new LengthFieldPrepender(4))
                                     .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4))
                                     .addLast(new MsgHandler());

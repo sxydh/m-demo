@@ -30,6 +30,7 @@ public class Client {
                         @Override
                         protected void initChannel(Channel ch) {
                             ch.pipeline()
+                                    // 防止粘包
                                     .addLast(new LengthFieldPrepender(4))
                                     .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4))
                                     .addLast(new MsgHandler());
