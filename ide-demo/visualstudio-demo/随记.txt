@@ -1,0 +1,9 @@
+快捷键
+    格式化
+        Ctrl + D 然后 Ctrl + K
+    复制行
+        Ctrl + C 然后 Ctrl + V
+    删除行
+        Ctrl + Shift + L
+    重组织
+        Ctrl + R + G
