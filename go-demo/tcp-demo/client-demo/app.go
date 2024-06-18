@@ -44,7 +44,7 @@ func main() {
 	/* 发送消息 */
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		fmt.Print("Enter message: ")
+		fmt.Println("Enter message: ")
 		scanner.Scan()
 		input := scanner.Text()
 
