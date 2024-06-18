@@ -15,7 +15,8 @@ import (
 
 /*
  * 前置条件：
- * 1、与远程主机可以免密登录。
+ * 1、两边主机可以免密建立 SSH 连接
+ * 2、本机私钥文件路径为： C:/Users/Administrator/.ssh/id_rsa 。
  *
  * 编译命令：
  * set GOOS=windows
