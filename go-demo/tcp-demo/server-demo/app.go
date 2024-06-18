@@ -53,7 +53,7 @@ func main() {
 				/* 回复消息 */
 				// 解决粘包问题
 				bytes = make([]byte, 4)
-				binary.BigEndian.PutUint32(bytes, uint32(len(bytes)))
+				binary.BigEndian.PutUint32(bytes, uint32(len(msg)))
 				_, err = conn.Write(bytes)
 				if err != nil {
 					log.Printf("Write body length error: err=%v", err)
