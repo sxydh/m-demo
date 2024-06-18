@@ -1,59 +1,69 @@
 package main
 
 import (
-	"fmt"
+	"bufio"
+	"encoding/binary"
+	"io"
+	"log"
 	"net"
+	"strconv"
 )
 
+//goland:noinspection GoUnhandledErrorResult
 func main() {
 	/* 监听端口 */
-	listener, err := net.Listen("tcp", "localhost:8080")
+	port := 30010
+	listener, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	if err != nil {
-		fmt.Println("Error listening: ", err)
+		log.Printf("Listen on port for tcp error: port=%v, err=%v", port, err)
 		return
 	}
-	defer func(listener net.Listener) {
-		err := listener.Close()
-		if err != nil {
-			fmt.Println("Error closing: ", err)
-		}
-	}(listener)
-	fmt.Println("Server started, listening on port 8080")
+	defer listener.Close()
+	log.Printf("Listening for tcp: port=%v", port)
 
 	/* 接收连接 */
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println("Error accepting connection: ", err)
+			log.Printf("Accept connection error: port=%v, err=%v", port, err)
 			return
 		}
-		go handleConnection(conn)
-	}
-}
+		log.Printf("Accepting connection: localAddr=%v， remoteAddr=%v", conn.LocalAddr(), conn.RemoteAddr())
 
-func handleConnection(conn net.Conn) {
-	defer func(conn net.Conn) {
-		err := conn.Close()
-		if err != nil {
-			fmt.Println("Error closing: ", err)
-		}
-	}(conn)
+		/* 接收消息 */
+		go func() {
+			defer conn.Close()
+			reader := bufio.NewReader(conn)
+			for {
+				bytes := make([]byte, 4)
+				_, err = io.ReadFull(reader, bytes)
+				if err != nil {
+					log.Printf("Read body length error, localAddr=%v， remoteAddr=%v", conn.LocalAddr(), conn.RemoteAddr())
+					return
+				}
+				bytes = make([]byte, binary.BigEndian.Uint32(bytes))
+				_, err = io.ReadFull(reader, bytes)
+				if err != nil {
+					log.Printf("Read body error, localAddr=%v， remoteAddr=%v", conn.LocalAddr(), conn.RemoteAddr())
+					return
+				}
+				log.Printf("Get message: msg=%v", string(bytes))
 
-	for {
-		/* 读入消息 */
-		bytes := make([]byte, 1024)
-		_, err := conn.Read(bytes)
-		if err != nil {
-			fmt.Println("Error reading: ", err)
-			return
-		}
-		fmt.Println("Message reading: ", string(bytes))
-
-		/* 写出消息 */
-		_, err = conn.Write(bytes)
-		if err != nil {
-			fmt.Println("Error writing: ", err)
-			return
-		}
+				/* 回复消息 */
+				// 解决粘包问题
+				bytes = make([]byte, 4)
+				binary.BigEndian.PutUint32(bytes, uint32(len(bytes)))
+				_, err = conn.Write(bytes)
+				if err != nil {
+					log.Printf("Write body length error: err=%v", err)
+					return
+				}
+				_, err = conn.Write(bytes)
+				if err != nil {
+					log.Printf("Write body error: err=%v", err)
+					return
+				}
+			}
+		}()
 	}
 }
