@@ -36,6 +36,10 @@ func main() {
 	collection_demo.MapDemo()
 	fmt.Println()
 
+	fmt.Println(">>>>>>>>>>> SliceDemo")
+	collection_demo.SliceDemo()
+	fmt.Println()
+
 	fmt.Println(">>>>>>>>>>> PackageDemo")
 	package_demo.PackageDemo()
 	fmt.Println()
