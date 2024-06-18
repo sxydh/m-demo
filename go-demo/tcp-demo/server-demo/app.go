@@ -47,7 +47,8 @@ func main() {
 					log.Printf("Read body error, localAddr=%v， remoteAddr=%v", conn.LocalAddr(), conn.RemoteAddr())
 					return
 				}
-				log.Printf("Get message: msg=%v", string(bytes))
+				msg := string(bytes)
+				log.Printf("Get message: msg=%v", msg)
 
 				/* 回复消息 */
 				// 解决粘包问题
@@ -58,6 +59,7 @@ func main() {
 					log.Printf("Write body length error: err=%v", err)
 					return
 				}
+				bytes = []byte(msg)
 				_, err = conn.Write(bytes)
 				if err != nil {
 					log.Printf("Write body error: err=%v", err)
