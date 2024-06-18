@@ -20,7 +20,7 @@ func main() {
 	}(listener)
 	fmt.Println("Server started, listening on port 8080")
 
-	/* 处理连接 */
+	/* 接收连接 */
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -40,7 +40,7 @@ func handleConnection(conn net.Conn) {
 	}(conn)
 
 	for {
-		/* 接收消息 */
+		/* 读入消息 */
 		bytes := make([]byte, 1024)
 		_, err := conn.Read(bytes)
 		if err != nil {
@@ -49,7 +49,7 @@ func handleConnection(conn net.Conn) {
 		}
 		fmt.Println("Message reading: ", string(bytes))
 
-		/* 发送消息 */
+		/* 写出消息 */
 		_, err = conn.Write(bytes)
 		if err != nil {
 			fmt.Println("Error writing: ", err)
