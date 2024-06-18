@@ -31,7 +31,7 @@ func main() {
 				log.Printf("Read body length error, localAddr=%v， remoteAddr=%v", conn.LocalAddr(), conn.RemoteAddr())
 				return
 			}
-			bytes = make([]byte, binary.BigEndian.Uint64(bytes))
+			bytes = make([]byte, binary.BigEndian.Uint32(bytes))
 			_, err = io.ReadFull(reader, bytes)
 			if err != nil {
 				log.Printf("Read body error, localAddr=%v， remoteAddr=%v", conn.LocalAddr(), conn.RemoteAddr())
@@ -50,7 +50,7 @@ func main() {
 
 		// 解决粘包问题
 		bytes := make([]byte, 4)
-		binary.BigEndian.PutUint64(bytes, uint64(len(input)))
+		binary.BigEndian.PutUint32(bytes, uint32(len(input)))
 		_, err = conn.Write(bytes)
 		if err != nil {
 			log.Printf("Write body length error: err=%v", err)
