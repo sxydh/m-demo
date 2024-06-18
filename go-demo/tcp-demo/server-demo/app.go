@@ -28,7 +28,7 @@ func main() {
 			log.Printf("Accept connection error: port=%v, err=%v", port, err)
 			return
 		}
-		log.Printf("Accepting connection: localAddr=%v， remoteAddr=%v", conn.LocalAddr(), conn.RemoteAddr())
+		log.Printf("Accepting connection: localAddr=%v, remoteAddr=%v", conn.LocalAddr(), conn.RemoteAddr())
 
 		/* 接收消息 */
 		go func() {
@@ -38,13 +38,13 @@ func main() {
 				bytes := make([]byte, 4)
 				_, err = io.ReadFull(reader, bytes)
 				if err != nil {
-					log.Printf("Read body length error, localAddr=%v， remoteAddr=%v", conn.LocalAddr(), conn.RemoteAddr())
+					log.Printf("Read body length error, localAddr=%v, remoteAddr=%v, err=%v", conn.LocalAddr(), conn.RemoteAddr(), err)
 					return
 				}
 				bytes = make([]byte, binary.BigEndian.Uint32(bytes))
 				_, err = io.ReadFull(reader, bytes)
 				if err != nil {
-					log.Printf("Read body error, localAddr=%v， remoteAddr=%v", conn.LocalAddr(), conn.RemoteAddr())
+					log.Printf("Read body error, localAddr=%v, remoteAddr=%v, err=%v", conn.LocalAddr(), conn.RemoteAddr(), err)
 					return
 				}
 				msg := string(bytes)
