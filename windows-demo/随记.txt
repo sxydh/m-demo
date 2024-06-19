@@ -1,0 +1,3 @@
+常用命令
+    端口占用
+        netstat -an | findstr "<target_port>"
