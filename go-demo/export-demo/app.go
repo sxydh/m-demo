@@ -1,11 +1,13 @@
 package main
 
-import "time"
+import (
+	"C"
+)
 
 func main() {
 }
 
-//export FunctionName
-func NowString() string {
-	return time.Now().String()
+//export Add
+func Add(a int, b int) int {
+	return a + b
 }

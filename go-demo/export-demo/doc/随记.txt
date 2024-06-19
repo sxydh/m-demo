@@ -2,4 +2,10 @@
     export 用于导出 golang 函数给其它语言调用
 环境
     编译
-        go build -o app.dll -buildmode=c-shared app.go
+        set GOOS=windows
+        set GOARCH=amd64
+        set CGO_ENABLED=1
+        go build -ldflags "-s -w" -buildmode=c-shared -o app.dll app.go
+            -ldflags "-s -w" ： -ldflags 是 Go 编译器的选项，用来指定链接器的标志。
+                "-s" ：这个标志会剥离（ strip ）生成的二进制文件中的符号信息，减小最终文件的大小。
+                "-w" ：这个标志会阻止写入调试信息到二进制文件中，进一步减小文件大小并提高加载速度。
