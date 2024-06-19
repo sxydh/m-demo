@@ -19,7 +19,7 @@ import (
  * 编译命令：
  * set GOOS=windows
  * set GOARCH=amd64
- * go build -o rtunnel_demo.exe
+ * go build -o bin/rtunnel_demo.exe
  */
 
 //goland:noinspection GoUnhandledErrorResult
