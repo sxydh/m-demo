@@ -12,27 +12,36 @@
                         ClientAliveCountMax 3
                 service sshd restart
 免密登录
-    普通用户
+    免密到目标机普通用户
         ssh-keygen -t rsa
+            在本机生成 RSA 密钥对，即一个私钥 id_rsa 文件，和一个公钥 id_rsa.pub 文件。
+            密钥文件路径：
+                Windows = <user_home>/.ssh
         ssh-copy-id <user_name>@<target_ip>
-            ssh-copy-id 192.168.233.130
+            将本机公钥复制到目标服务器
+            示例：
+                ssh-copy-id 192.168.233.130
         验证免密
             ssh 192.168.233.130
-    超级用户
+    免密到目标机超级用户
         sudo su
         ssh-keygen -t rsa
+            在本机生成 RSA 密钥对，即一个私钥 id_rsa 文件，和一个公钥 id_rsa.pub 文件。
+            密钥文件路径：
+                Windows = <user_home>/.ssh
         ssh-copy-id <user_name>@<target_ip>
-            ssh-copy-id 192.168.233.130
-                目标机器需要开启 root 登录
-                    sudo vim /etc/ssh/sshd_config
-                        修改为
-                            PermitRootLogin yes
-                    sudo systemctl restart ssh
-                需要显示设置 root 账号密码
-                    sudo passwd root
+            将本机公钥复制到目标服务器
+            示例：
+                ssh-copy-id 192.168.233.130
+                    目标机器需要开启 root 登录
+                        sudo vim /etc/ssh/sshd_config
+                            修改为
+                                PermitRootLogin yes
+                        sudo systemctl restart ssh
+                    需要显示设置 root 账号密码
+                        sudo passwd root
         验证免密
             ssh 192.168.233.130
-
 
 环境
     前置条件
