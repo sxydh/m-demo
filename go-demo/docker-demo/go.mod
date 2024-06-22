@@ -4,7 +4,7 @@ go 1.22.1
 
 require (
 	github.com/docker/docker v26.1.3+incompatible
-	github.com/sxydh/mgo-util v0.0.2-alpha
+	github.com/sxydh/mgo-util v0.0.3-alpha
 )
 
 require (
