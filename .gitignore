@@ -1,2 +1,5 @@
 ### User ###
 *.drawio.bkp
+log
+logs
+tmp
