@@ -1,0 +1,9 @@
+环境
+    代理
+        set http_proxy=socks5://127.0.0.1:10808
+        set https_proxy=socks5://127.0.0.1:10808
+    模块
+        引入
+            go get <target_package>
+        清理
+            go mod tidy
