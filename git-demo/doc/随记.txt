@@ -1,5 +1,20 @@
 常用命令
-    配置
+    branch
+        列表
+            git branch -a
+        新建
+            git branch <branch_name>
+        切换
+            git checkout <target_branch_name>
+    stage
+        列表
+            git diff --staged
+    stash
+        列表
+            git stash list
+        检出
+            git stash pop
+    config
         列表
             git config --list
         详情
