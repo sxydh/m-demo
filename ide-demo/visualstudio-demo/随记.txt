@@ -1,9 +1,13 @@
 快捷键
     格式化
         Ctrl + D 然后 Ctrl + K
+    格式化引入
+        Ctrl + R + G
     复制行
         Ctrl + C 然后 Ctrl + V
     删除行
         Ctrl + Shift + L
-    重组织
-        Ctrl + R + G
+    注释行
+        Ctrl + K 然后 Ctrl + C
+    返回上一个位置
+        Ctrl + -
