@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaElementDemo", "MediaElementDemo\MediaElementDemo.csproj", "{CF5266D6-5689-4934-95C8-0E03913077EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF5266D6-5689-4934-95C8-0E03913077EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF5266D6-5689-4934-95C8-0E03913077EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF5266D6-5689-4934-95C8-0E03913077EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF5266D6-5689-4934-95C8-0E03913077EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {727F092F-DF0A-49D5-BE23-57FCB2DF40F2}
+	EndGlobalSection
+EndGlobal
