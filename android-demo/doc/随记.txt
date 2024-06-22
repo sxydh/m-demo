@@ -157,12 +157,11 @@
             空进程
                 进程中包含的组件处于未活动状态，获取资源的优先级最低。
         进程通信
-            Binder（https://xuyonghong.cn/2022/02/08/Android-Binder%E5%B0%8F%E8%AE%B0.md/）
-            Bundle
+            Binder （ https://zhuanlan.zhihu.com/p/35519585 ）
+            AIDL （基于 Binder 实现）
+            Messenger （基于 AIDL 实现）
+            ContentProvider （基于 Binder 实现）
             文件共享
-            AIDL
-            Messenger
-            ContentProvider
             Socket
         进程销毁
             应用结束后，进程销毁和资源回收由系统处理。
