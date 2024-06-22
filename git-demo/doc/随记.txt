@@ -1,0 +1,14 @@
+常用命令
+    配置
+        列表
+            git config --list
+        详情
+            git config --show-origin --get-regexp credential.helper
+                查看配置项 credential.helper 的文件位置
+        认证
+            git config --global credential.helper store
+                避免每次输入密码或凭证，如果该方式无效，需要修改以下文件：
+                    <git_installed_dir>/etc/gitconfig
+                        更新
+                            [credential]
+                            	helper = store
