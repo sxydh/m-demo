@@ -17,17 +17,17 @@ namespace webview2_demo
 
         private void InitializeComponent()
         {
-            var webView2 = new WebView2
-            {
-                Dock = System.Windows.Forms.DockStyle.Fill,
-                Source = new System.Uri("https://www.baidu.com")
-            };
+            var webView2 = new WebView2();
+            (webView2 as System.ComponentModel.ISupportInitialize).BeginInit();
+            webView2.Dock = System.Windows.Forms.DockStyle.Fill;
+            webView2.Source = new System.Uri("https://www.baidu.com", System.UriKind.Absolute);
+            this.Controls.Add(webView2);
+            (webView2 as System.ComponentModel.ISupportInitialize).EndInit();
 
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1800, 900);
             this.Text = "Form1";
-            this.Controls.Add(webView2);
         }
 
     }
