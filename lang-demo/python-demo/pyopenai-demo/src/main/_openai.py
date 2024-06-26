@@ -1,9 +1,16 @@
+import logging
 import sys
 
 import httpx
 from openai import OpenAI
 
 from definition import root
+
+logging.basicConfig(
+    filename='logs/openai.log',
+    filemode='a',
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 client = OpenAI(
     api_key=sys.argv[1],
@@ -16,6 +23,7 @@ for line in file:
     prompt += line
 
 messages = [{"role": "system", "content": prompt}]
+logging.info(messages[-1])
 content = ""
 while True:
     line = input()
@@ -25,6 +33,7 @@ while True:
     message = {"role": "user", "content": content}
     messages.append(message)
 
+    logging.info(messages[-1])
     completion = client.chat.completions.create(
         model="gpt-4",
         messages=messages
@@ -32,3 +41,4 @@ while True:
 
     content = completion.choices[0].message.content
     print(content)
+    logging.info(content)
