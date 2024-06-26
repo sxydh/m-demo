@@ -1,0 +1,7 @@
+File
+    Settings
+        Editor
+            Code Style
+                JavaScript
+                    Punctuation
+                        Use semicolon always
