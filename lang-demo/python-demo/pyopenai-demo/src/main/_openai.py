@@ -7,7 +7,7 @@ from openai import OpenAI
 from definition import root
 
 logging.basicConfig(
-    filename='logs/openai.log',
+    filename='_openai.log',
     filemode='a',
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
