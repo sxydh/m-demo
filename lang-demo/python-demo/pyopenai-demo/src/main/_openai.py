@@ -27,8 +27,8 @@ messages = [{"role": "system", "content": prompt}]
 logging.info(messages[-1])
 question = ""
 while True:
-    line = input()
-    if line != "\\n":
+    line = sys.stdin.readline()
+    if line != "\\n\n":
         question = question + line
         continue
     message = {"role": "user", "content": question}
