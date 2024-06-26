@@ -25,14 +25,15 @@ for line in file:
 
 messages = [{"role": "system", "content": prompt}]
 logging.info(messages[-1])
-content = ""
+question = ""
 while True:
     line = input()
     if line != "\\n":
-        content = content + line
+        question = question + line
         continue
-    message = {"role": "user", "content": content}
+    message = {"role": "user", "content": question}
     messages.append(message)
+    question = ""
 
     logging.info(messages[-1])
     completion = client.chat.completions.create(
@@ -40,6 +41,6 @@ while True:
         messages=messages
     )
 
-    content = completion.choices[0].message.content
-    print(content)
-    logging.info(content)
+    answer = completion.choices[0].message.content
+    print(answer)
+    logging.info(answer)
