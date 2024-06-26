@@ -20,20 +20,20 @@ def get_key(pwd):
 
 
 if __name__ == '__main__':
-    password = input("Enter your password: ")
+    password = input('Enter your password: ')
 
     key = get_key(password)
     cipher_suite = Fernet(key)
 
-    text = "Hello, World!"
+    text = 'Hello, World!'
 
     cipher_text = cipher_suite.encrypt(text.encode())
-    print("Encrypted: ", cipher_text)
+    print('Encrypted: ', cipher_text)
 
-    password = input("Enter your password: ")
+    password = input('Enter your password: ')
 
     key = get_key(password)
     cipher_suite = Fernet(key)
 
     plain_text = cipher_suite.decrypt(cipher_text).decode()
-    print("Decrypted: ", plain_text)
+    print('Decrypted: ', plain_text)
