@@ -35,5 +35,6 @@ if __name__ == '__main__':
 
     key = get_key(password)
     cipher_suite = Fernet(key)
+
     plain_text = cipher_suite.decrypt(cipher_text).decode()
     print("Decrypted: ", plain_text)
