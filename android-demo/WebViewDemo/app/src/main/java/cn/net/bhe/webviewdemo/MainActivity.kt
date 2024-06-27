@@ -1,43 +1,29 @@
 package cn.net.bhe.webviewdemo
 
 import android.os.Bundle
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import cn.net.bhe.webviewdemo.ui.theme.WebViewDemoTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            WebViewDemoTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    Greeting("Android")
-                }
+        setContentView(R.layout.activity_main)
+
+        val webView = findViewById<WebView>(R.id.webView)
+        /* 启用脚本 */
+        webView.settings.javaScriptEnabled = true
+        /* 禁用缓存 */
+        webView.settings.cacheMode = WebSettings.LOAD_NO_CACHE
+        /* 设置网页链接在内部打开 */
+        webView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView, request: String): Boolean {
+                webView.loadUrl(request)
+                return true
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    WebViewDemoTheme {
-        Greeting("Android")
+        // 访问 http 地址需要显示配置 android:usesCleartextTraffic="true"
+        webView.loadUrl("http://192.168.211.185:10006")
     }
 }

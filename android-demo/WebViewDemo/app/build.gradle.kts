@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "cn.net.bhe.webviewdemo"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "cn.net.bhe.webviewdemo"
         minSdk = 31
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
