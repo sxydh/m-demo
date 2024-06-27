@@ -16,13 +16,6 @@ class MainActivity : ComponentActivity() {
         webView.settings.javaScriptEnabled = true
         /* 禁用缓存 */
         webView.settings.cacheMode = WebSettings.LOAD_NO_CACHE
-        /* 设置网页链接在内部打开 */
-        webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, request: String): Boolean {
-                webView.loadUrl(request)
-                return true
-            }
-        }
         // 访问 http 地址需要显示配置 android:usesCleartextTraffic="true"
         webView.loadUrl("http://192.168.211.185:10006")
     }
