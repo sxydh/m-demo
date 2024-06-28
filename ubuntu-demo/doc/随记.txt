@@ -1,9 +1,17 @@
 常用命令
     进程
-        ps aux
-            a ： 包括所有进程。
-            u ： 以用户友好的格式显示信息。
-            x ： 包括没有控制终端的进程。
+        列表
+            ps aux
+                a ： 包括所有进程。
+                u ： 以用户友好的格式显示信息。
+                x ： 包括没有控制终端的进程。
+    软件
+        列表
+            apt list --installed
+        卸载
+            apt remove <package_name>
+        清理
+            apt purge <package_name>
 环境
     Ubuntu 20.04.6 LTS
         配置国内镜像
