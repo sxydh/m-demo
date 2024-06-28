@@ -8,6 +8,9 @@
     软件
         列表
             apt list --installed
+        搜索
+            apt search <package_key_name>
+                使用关键字搜索可安装的包
         卸载
             apt remove <package_name>
         清理
