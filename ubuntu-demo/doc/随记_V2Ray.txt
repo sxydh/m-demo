@@ -12,6 +12,6 @@
             验证
                 curl --socks5 127.0.0.1:10808 https://www.google.com
             全局代理
-                export http_proxy=http://127.0.0.1:10809
-                export https_proxy=http://127.0.0.1:10809
+                export http_proxy=http://192.168.211.185:10809
+                export https_proxy=http://192.168.211.185:10809
                     以上配置注意是 HTTP 的端口
