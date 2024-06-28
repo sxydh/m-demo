@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class _MavenAssemblyPluginApp {
 
     public static void main(String[] args) {
-        log.info("env={}", System.getenv());
+        log.info("properties={}", System.getProperties());
         log.info("args={}", Arrays.toString(args));
     }
 
