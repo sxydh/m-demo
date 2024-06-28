@@ -12,7 +12,6 @@
             验证
                 curl --socks5 127.0.0.1:10808 https://www.google.com
             全局代理
-                export http_proxy=socks5://127.0.0.1:10808
-                export https_proxy=socks5://127.0.0.1:10808
-                export ftp_proxy=socks5://127.0.0.1:10808
-                export no_proxy="<local_ip>"
+                export http_proxy=http://127.0.0.1:10809
+                export https_proxy=http://127.0.0.1:10809
+                    以上配置注意是 HTTP 的端口
