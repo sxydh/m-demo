@@ -1,14 +1,16 @@
 常用命令
-    jar
-        java -D<env_var_name>=<value> \
-             -D<env_var_name2>=<value2> \
-             -jar <jar_name> \
-             <main_args_value> \
-             <main_args_value2>
-            -D ： 附加系统参数，可以通过 System.getProperties() 获取。
-    classpath
-        java [-classpath|-cp] <jar_name> <main_class_name>
-            指定类加载器的搜索入口
+    java
+        https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html
+            jar
+                java -D<env_var_name>=<value> \
+                     -D<env_var_name2>=<value2> \
+                     -jar <jar_name> \
+                     <main_args_value> \
+                     <main_args_value2>
+                    -D ： 附加系统参数，可以通过 System.getProperties() 获取。
+            classpath
+                java [-classpath|-cp] <jar_name> <main_class_name>
+                    指定类加载器的搜索入口
 环境
     JDK11
         sudo mkdir /opt/module/jdk
