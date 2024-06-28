@@ -36,4 +36,4 @@
                         启动服务（远程主机）
                             jstatd \
                                  -J-Djava.security.policy=<your_path>/tools.policy \
-                                 -J-Djava.rmi.server.hostname=192.168.233.129
+                                 -J-Djava.rmi.server.hostname=<remote_ip>
