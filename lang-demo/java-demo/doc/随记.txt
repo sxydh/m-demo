@@ -1,3 +1,7 @@
+常用命令
+    classpath
+        java [-classpath|-cp] <jar_name> <main_class_name>
+            指定类加载器的搜索入口
 环境
     JDK11
         sudo mkdir /opt/module/jdk
