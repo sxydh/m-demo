@@ -1,0 +1,10 @@
+环境
+    前置条件
+        openjdk 17.0.11 2024-04-16
+    启动服务
+        java -Dcom.sun.management.jmxremote.port=1991 \
+             -Dcom.sun.management.jmxremote.authenticate=true \
+             -Dcom.sun.management.jmxremote.ssl=false \
+             -Dcom.sun.management.jmxremote.access.file=./jmx.access \
+             -Dcom.sun.management.jmxremote.password.file=./jmx.password \
+             -jar <app_jar_name>
