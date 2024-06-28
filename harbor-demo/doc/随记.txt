@@ -57,6 +57,7 @@
         sudo ./install.sh
             安装
     启动服务
+        cd /opt/module/harbor/harbor
         sudo docker-compose up
             验证
                 http://192.168.233.129:20006
