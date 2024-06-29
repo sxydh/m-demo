@@ -20,7 +20,7 @@ namespace webview2_demo
             var webView2 = new WebView2();
             (webView2 as System.ComponentModel.ISupportInitialize).BeginInit();
             webView2.Dock = System.Windows.Forms.DockStyle.Fill;
-            webView2.Source = new System.Uri("https://www.baidu.com", System.UriKind.Absolute);
+            webView2.Source = new System.Uri($"http://localhost:{fsPort}/", System.UriKind.Absolute);
             this.Controls.Add(webView2);
             (webView2 as System.ComponentModel.ISupportInitialize).EndInit();
 
