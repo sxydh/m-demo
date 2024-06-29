@@ -11,6 +11,6 @@
                 列表
                     yarn config list
                 配置
-                    yarn config set proxy http://127.0.0.1:10809
+                    yarn config set http-proxy http://127.0.0.1:10809
                     yarn config set https-proxy http://127.0.0.1:10809
                         上述配置注意端口是 http 的端口，不是 socks5 的端口。
