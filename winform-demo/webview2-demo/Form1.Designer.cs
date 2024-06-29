@@ -15,12 +15,14 @@ namespace webview2_demo
             base.Dispose(disposing);
         }
 
-        private void InitializeComponent()
+        private async void InitializeComponent()
         {
             var webView2 = new WebView2();
             (webView2 as System.ComponentModel.ISupportInitialize).BeginInit();
             webView2.Dock = System.Windows.Forms.DockStyle.Fill;
             webView2.Source = new System.Uri($"http://localhost:{fsPort}/", System.UriKind.Absolute);
+            await webView2.EnsureCoreWebView2Async();
+            webView2.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
             this.Controls.Add(webView2);
             (webView2 as System.ComponentModel.ISupportInitialize).EndInit();
 
