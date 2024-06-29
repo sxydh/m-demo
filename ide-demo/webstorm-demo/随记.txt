@@ -2,6 +2,10 @@ File
     Settings
         Editor
             Code Style
+                HTML
+                    Wrap attributes
+                    New line before first attribute
+                    New line after last attribute
                 JavaScript
                     Punctuation
                         Use semicolon always
