@@ -1,6 +1,6 @@
 快捷键
     格式化
-        Ctrl + D 然后 Ctrl + K
+        Ctrl + K 然后 Ctrl + D
     格式化引入
         Ctrl + R + G
     复制行
