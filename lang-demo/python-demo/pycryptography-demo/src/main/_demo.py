@@ -25,14 +25,16 @@ def encrypt(password):
     cipher_suite = Fernet(key)
 
     text: str
-    with open('tmp/input.txt') as file:
-        text = file.read()
+    with open('tmp/input.txt', 'r+') as ifile:
+        text = ifile.read()
 
-    cipher_text = cipher_suite.encrypt(text.encode())
-    print('Encrypted: ', cipher_text)
+        cipher_text = cipher_suite.encrypt(text.encode())
+        print('Encrypted: ', cipher_text)
 
-    with open('tmp/output.txt', 'w') as file:
-        file.write(cipher_text.decode())
+        with open('tmp/output.txt', 'w') as ofile:
+            ofile.write(cipher_text.decode())
+
+        ifile.write('')
 
 
 def decrypt(password):
@@ -45,9 +47,6 @@ def decrypt(password):
 
     text = cipher_suite.decrypt(cipher_text).decode()
     print('Decrypted: ', text)
-
-    with open('tmp/input.txt', 'w') as file:
-        file.write(text)
 
 
 if __name__ == '__main__':
