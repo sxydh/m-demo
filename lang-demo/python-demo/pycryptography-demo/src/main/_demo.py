@@ -50,5 +50,5 @@ if __name__ == '__main__':
         text = cipher_suite.decrypt(cipher_text).decode()
         print('Decrypted: ', text)
 
-        with open('tmp/input.txt', 'x') as file:
+        with open('tmp/input.txt', 'w') as file:
             file.write(text)
