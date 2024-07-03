@@ -21,20 +21,34 @@ def get_key(pwd):
 
 
 if __name__ == '__main__':
-    password = input('Enter your password: ')
+    password = input('Enter your encrypt password: ')
 
-    key = get_key(password)
-    cipher_suite = Fernet(key)
+    if len(password) != 0:
+        key = get_key(password)
+        cipher_suite = Fernet(key)
 
-    text = 'Hello, World!'
+        text: str
+        with open('tmp/input.txt') as file:
+            text = file.read()
 
-    cipher_text = cipher_suite.encrypt(text.encode())
-    print('Encrypted: ', cipher_text)
+        cipher_text = cipher_suite.encrypt(text.encode())
+        print('Encrypted: ', cipher_text)
 
-    password = input('Enter your password: ')
+        with open('tmp/output.txt', 'x') as file:
+            file.write(cipher_text.decode())
 
-    key = get_key(password)
-    cipher_suite = Fernet(key)
+    password = input('Enter your decrypt password: ')
 
-    plain_text = cipher_suite.decrypt(cipher_text).decode()
-    print('Decrypted: ', plain_text)
+    if len(password) != 0:
+        key = get_key(password)
+        cipher_suite = Fernet(key)
+
+        cipher_text: str
+        with open('tmp/output.txt') as file:
+            cipher_text = file.read()
+
+        text = cipher_suite.decrypt(cipher_text).decode()
+        print('Decrypted: ', text)
+
+        with open('tmp/input.txt', 'x') as file:
+            file.write(text)
