@@ -6,6 +6,17 @@
             git branch <branch_name>
         切换
             git checkout <target_branch_name>
+    remote
+        添加
+            git remote add origin https://github.com/sxydh/sshtunnel.git
+                add ：表明要添加远程仓库。
+                origin ：远程仓库的默认名称。
+    push
+        推送
+            git push --set-upstream origin master
+                --set-upstream ：用于设置本地分支与远程分支的上游关系。
+                origin ：远程仓库的名称。
+                master ：远程仓库的分支。
     stage
         列表
             git diff --staged
