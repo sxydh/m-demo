@@ -20,35 +20,43 @@ def get_key(pwd):
     return urlsafe_b64encode(kdf.derive(pwd.encode()))
 
 
+def encrypt(password):
+    key = get_key(password)
+    cipher_suite = Fernet(key)
+
+    text: str
+    with open('tmp/input.txt') as file:
+        text = file.read()
+
+    cipher_text = cipher_suite.encrypt(text.encode())
+    print('Encrypted: ', cipher_text)
+
+    with open('tmp/output.txt', 'w') as file:
+        file.write(cipher_text.decode())
+
+
+def decrypt(password):
+    key = get_key(password)
+    cipher_suite = Fernet(key)
+
+    cipher_text: str
+    with open('tmp/output.txt') as file:
+        cipher_text = file.read()
+
+    text = cipher_suite.decrypt(cipher_text).decode()
+    print('Decrypted: ', text)
+
+    with open('tmp/input.txt', 'w') as file:
+        file.write(text)
+
+
 if __name__ == '__main__':
-    password = input('Enter your encrypt password: ')
+    epwd = input('Enter your encrypt password: ')
 
-    if len(password) != 0:
-        key = get_key(password)
-        cipher_suite = Fernet(key)
+    if len(epwd) != 0:
+        encrypt(epwd)
 
-        text: str
-        with open('tmp/input.txt') as file:
-            text = file.read()
+    dpwd = input('Enter your decrypt password: ')
 
-        cipher_text = cipher_suite.encrypt(text.encode())
-        print('Encrypted: ', cipher_text)
-
-        with open('tmp/output.txt', 'w') as file:
-            file.write(cipher_text.decode())
-
-    password = input('Enter your decrypt password: ')
-
-    if len(password) != 0:
-        key = get_key(password)
-        cipher_suite = Fernet(key)
-
-        cipher_text: str
-        with open('tmp/output.txt') as file:
-            cipher_text = file.read()
-
-        text = cipher_suite.decrypt(cipher_text).decode()
-        print('Decrypted: ', text)
-
-        with open('tmp/input.txt', 'w') as file:
-            file.write(text)
+    if len(dpwd) != 0:
+        decrypt(dpwd)
