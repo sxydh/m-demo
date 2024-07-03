@@ -34,7 +34,7 @@ if __name__ == '__main__':
         cipher_text = cipher_suite.encrypt(text.encode())
         print('Encrypted: ', cipher_text)
 
-        with open('tmp/output.txt', 'x') as file:
+        with open('tmp/output.txt', 'w') as file:
             file.write(cipher_text.decode())
 
     password = input('Enter your decrypt password: ')
