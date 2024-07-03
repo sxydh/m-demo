@@ -1,0 +1,9 @@
+常用配置
+    Vue3
+        vite.config.ts
+            __VUE_PROD_DEVTOOLS__: false
+                生产环境禁用开发工具，启用开发工具可能会导致内存泄漏。
+                    https://juejin.cn/post/7115999952458760205
+                    https://github.com/vuejs/core/tree/main/packages/vue#bundler-build-feature-flags
+                    https://stackoverflow.com/questions/74886731/memory-leak-in-vuejs-3-when-updating-component-state
+                    https://github.com/vuejs/core/issues/7408
