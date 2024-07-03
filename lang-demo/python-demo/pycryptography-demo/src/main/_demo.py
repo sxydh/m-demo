@@ -34,7 +34,7 @@ def encrypt(password):
         with open('tmp/output.txt', 'w') as ofile:
             ofile.write(cipher_text.decode())
 
-        ifile.write('')
+        ifile.truncate()
 
 
 def decrypt(password):
