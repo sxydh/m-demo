@@ -40,6 +40,11 @@
                         time,pid,level,tags ：设置 GC 日志条目中包含的额外信息。
                         filecount ：设置 GC 日志文件数量。
                         filesize ：设置 GC 日志文件大小限制。
+        jmap
+            https://docs.oracle.com/en/java/javase/17/docs/specs/man/jmap.html
+                dump
+                    jmap -dump:format=b,file=<filename> <pid>
+                        format ：设置 dump 文件格式。
 环境
     JDK11
         sudo mkdir /opt/module/jdk
