@@ -42,7 +42,7 @@
                         file ：设置 GC 日志目标文件。
                         uptimemillis,pids ：设置 GC 日志条目中包含的额外信息。
                         filecount ：设置 GC 日志文件数量。
-                        filesize ：设置 GC 日志文件大小限制。
+                        filesize ：设置 GC 日志文件 KB 大小限制。
 环境
     JDK11
         sudo mkdir /opt/module/jdk
