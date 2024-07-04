@@ -1,0 +1,7 @@
+File
+    Load
+        hprof
+            Objects
+            Aggregation
+                Instances
+            GC Root
