@@ -1,16 +1,32 @@
 常用命令
-    java
-        https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html
-            jar
-                java -D<env_var_name>=<value> \
-                     -D<env_var_name2>=<value2> \
-                     -jar <jar_name> \
-                     <main_args_value> \
-                     <main_args_value2>
-                    -D ： 附加系统参数，可以通过 System.getProperties() 获取。
-            classpath
-                java [-classpath|-cp] <jar_name> <main_class_name>
-                    指定类加载器的搜索入口
+    JDK >= 11
+        java
+            https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html
+                jar
+                    java -D<env_var_name>=<value> \
+                         -D<env_var_name2>=<value2> \
+                         -jar <jar_name> \
+                         <main_args_value> \
+                         <main_args_value2>
+                        -D ： 附加系统参数，可以通过 System.getProperties() 获取。
+                classpath
+                    java [-classpath|-cp] <jar_name> <main_class_name>
+                        指定类加载器的搜索入口
+                XX
+                    java -Xss512k -jar <app_name>.jar
+                        Xss ：线程栈大小。
+                    java -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -jar <app_name>.jar
+                        MetaspaceSize ：元空间初始化大小。
+                        MaxMetaspaceSize ：元空间最大大小。
+                    java -XX:NewSize=128m -XX:MaxNewSize=256m -jar <app_name>.jar
+                        NewSize ：年轻代初始化大小。
+                        MaxNewSize ：年轻代最大大小。
+                    java -XX:OldSize=512m -XX:MaxOldSize=512m -jar <app_name>.jar
+                        OldSize ：老年代初始化大小。
+                        MaxOldSize ：老年代最大大小。
+                Xlog
+                    java -Xlog:help
+                        help ：获取 JVM 日志配置帮助。
 环境
     JDK11
         sudo mkdir /opt/module/jdk
