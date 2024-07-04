@@ -4,7 +4,7 @@
 
     <groupId>cn.net.bhe</groupId>
     <artifactId>javafxqs-demo</artifactId>
-    <version>${revision</version>
+    <version>${revision}</version>
     <packaging>jar</packaging>
 
     <name>javafxqs-demo</name>
