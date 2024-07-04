@@ -21,9 +21,6 @@
                     java -XX:NewSize=128m -XX:MaxNewSize=256m -jar <jar_name>
                         NewSize ：年轻代初始化大小。
                         MaxNewSize ：年轻代最大大小。
-                    java -XX:OldSize=512m -XX:MaxOldSize=512m -jar <jar_name>
-                        OldSize ：老年代初始化大小。
-                        MaxOldSize ：老年代最大大小。
                     java -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="heapdumps/" -jar <jar_name>
                         HeapDumpOnOutOfMemoryError ：设置 OOM 时保存 dump 文件。
                         HeapDumpPath ：设置 dump 文件保存位置。
