@@ -37,6 +37,12 @@
                 Xlog
                     java -Xlog:help
                         help ：获取 JVM 日志配置帮助。
+                    java -Xlog:gc=trace:file=gctrace.txt:uptimemillis,pids:filecount=5,filesize=1024 -jar <jar_name>
+                        trace ：设置 GC 日志级别。
+                        file ：设置 GC 日志目标文件。
+                        uptimemillis,pids ：设置 GC 日志条目中包含的额外信息。
+                        filecount ：设置 GC 日志文件数量。
+                        filesize ：设置 GC 日志文件大小限制。
 环境
     JDK11
         sudo mkdir /opt/module/jdk
