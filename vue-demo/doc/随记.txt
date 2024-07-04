@@ -1,3 +1,8 @@
+常用组件
+    Vuetify
+        v-text-field
+            rules
+                如果表单数据高频更新，绑定 rules 可能会造成内存泄漏。
 常用配置
     Vue3
         vite.config.ts
