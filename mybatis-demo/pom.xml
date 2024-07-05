@@ -8,9 +8,9 @@
     <packaging>pom</packaging>
 
     <name>mybatis-demo</name>
-    <url>http://maven.apache.org</url>
     <modules>
         <module>mybatisqs-demo</module>
+        <module>mybatisplugin-demo</module>
     </modules>
 
     <properties>
