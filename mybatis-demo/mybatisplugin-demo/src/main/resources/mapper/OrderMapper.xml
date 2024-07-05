@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.net.bhe.mybatisplugindemo.mapper.OrderMapper">
 
-    <select id="selectOrderList" resultType="cn.net.bhe.mybatisqsdemo.entity.Order">
+    <select id="selectOrderList" resultType="cn.net.bhe.mybatisplugindemo.entity.Order">
         select order_id         as "orderId",
                order_number     as "orderNumber",
                user_id          as "userId",
