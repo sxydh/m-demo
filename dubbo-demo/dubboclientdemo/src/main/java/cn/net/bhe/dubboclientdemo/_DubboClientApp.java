@@ -8,7 +8,7 @@ import org.apache.dubbo.config.bootstrap.DubboBootstrap;
 import org.apache.dubbo.config.bootstrap.builders.ReferenceBuilder;
 
 @Log4j2
-public class _Main {
+public class _DubboClientApp {
 
     public static void main(String[] args) {
         ReferenceConfig<HelloService> reference = ReferenceBuilder.<HelloService>newBuilder()
