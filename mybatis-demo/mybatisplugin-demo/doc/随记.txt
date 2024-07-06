@@ -3,17 +3,21 @@
 源码
     org.apache.ibatis.builder.xml.XMLConfigBuilder#pluginsElement
         创建 Plugin 实例
+
     org.apache.ibatis.session.Configuration#newExecutor
         创建 Executor 的代理
             org.apache.ibatis.plugin.InterceptorChain#pluginAll
+
     org.apache.ibatis.session.Configuration#newParameterHandler
         创建 ParameterHandler 的代理
             org.apache.ibatis.plugin.InterceptorChain#pluginAll
-    org.apache.ibatis.session.Configuration#newResultSetHandler
-        创建 ResultSetHandler 的代理
-            org.apache.ibatis.plugin.InterceptorChain#pluginAll
+
     org.apache.ibatis.session.Configuration#newStatementHandler
         创建 StatementHandler 的代理
+            org.apache.ibatis.plugin.InterceptorChain#pluginAll
+            
+    org.apache.ibatis.session.Configuration#newResultSetHandler
+        创建 ResultSetHandler 的代理
             org.apache.ibatis.plugin.InterceptorChain#pluginAll
 
 环境
