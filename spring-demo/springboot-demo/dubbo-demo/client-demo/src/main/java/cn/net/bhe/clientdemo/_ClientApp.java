@@ -31,7 +31,7 @@ public class _ClientApp {
                     throw new RuntimeException(e);
                 }
             }
-        });
+        }).start();
     }
 
 }
