@@ -25,13 +25,13 @@ public class _ClientApp {
     private void onApplicationReady() {
         new Thread(() -> {
             while (true) {
-                String ret = helloService.hello();
-                log.info(ret);
                 try {
+                    String ret = helloService.hello();
+                    log.info(ret);
                     //noinspection BusyWait
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    log.error(e);
                 }
             }
         }).start();
