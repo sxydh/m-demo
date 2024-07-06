@@ -23,7 +23,8 @@ public class _ClientApp {
     private void onApplicationReady() {
         new Thread(() -> {
             while (true) {
-                helloService.hello();
+                String ret = helloService.hello();
+                System.out.println(ret);
                 try {
                     //noinspection BusyWait
                     Thread.sleep(1000);
