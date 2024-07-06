@@ -19,9 +19,9 @@ import org.apache.ibatis.session.RowBounds;
                 /* 拦截的方法入参 */
                 args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class})
 })
-public class PluginDemo implements Interceptor {
+public class QueryPlugin implements Interceptor {
 
-    public PluginDemo() {
+    public QueryPlugin() {
         System.out.println();
     }
 
