@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: provider-demo
+
+server:
+  port: 20010
+
+dubbo:
+  application:
+    name: ${spring.application.name}
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    address: zookeeper://192.168.233.129:2181
