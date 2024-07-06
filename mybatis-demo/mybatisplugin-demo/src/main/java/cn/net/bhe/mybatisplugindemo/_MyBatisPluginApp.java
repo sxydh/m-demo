@@ -10,7 +10,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import java.io.InputStream;
 import java.util.List;
 
-public class _MybatisPluginApp {
+public class _MyBatisPluginApp {
 
     public static void main(String[] args) throws Exception {
         try (InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml")) {
