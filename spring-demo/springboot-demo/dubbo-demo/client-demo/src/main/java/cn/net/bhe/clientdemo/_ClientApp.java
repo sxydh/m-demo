@@ -1,6 +1,6 @@
 package cn.net.bhe.clientdemo;
 
-import cn.net.bhe.clientdemo.api.HelloService;
+import dubbodemo.api.HelloService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;

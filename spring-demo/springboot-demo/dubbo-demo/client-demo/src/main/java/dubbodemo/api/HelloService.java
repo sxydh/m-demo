@@ -1,4 +1,4 @@
-package cn.net.bhe.clientdemo.api;
+package dubbodemo.api;
 
 public interface HelloService {
 
