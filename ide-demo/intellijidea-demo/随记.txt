@@ -5,3 +5,5 @@ File
                 Java
                     Resource management
                         AutoCloseable used without 'try'-with-resources
+        Plugins
+            Maven Helper
