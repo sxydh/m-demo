@@ -13,3 +13,5 @@ dubbo:
     port: -1
   registry:
     address: zookeeper://192.168.233.129:2181
+  provider:
+    filter: anyFlag
