@@ -26,6 +26,7 @@ public class _DubboClientApp {
             try {
                 message = service.hello();
                 log.info(message);
+                //noinspection BusyWait
                 Thread.sleep(1000);
             } catch (Throwable t) {
                 log.error(t.getLocalizedMessage(), t);
