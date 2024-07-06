@@ -3,6 +3,7 @@
 源码
     org.apache.ibatis.builder.xml.XMLConfigBuilder#pluginsElement
         创建 Plugin 实例
+            如果需要重写语句，可以在 Executor 插件里实现。
 
     org.apache.ibatis.session.Configuration#newExecutor
         创建 Executor 的代理
@@ -13,9 +14,10 @@
             org.apache.ibatis.plugin.InterceptorChain#pluginAll
 
     org.apache.ibatis.session.Configuration#newStatementHandler
+        语句在 StatementHandler 中触发执行
         创建 StatementHandler 的代理
             org.apache.ibatis.plugin.InterceptorChain#pluginAll
-            
+
     org.apache.ibatis.session.Configuration#newResultSetHandler
         创建 ResultSetHandler 的代理
             org.apache.ibatis.plugin.InterceptorChain#pluginAll
