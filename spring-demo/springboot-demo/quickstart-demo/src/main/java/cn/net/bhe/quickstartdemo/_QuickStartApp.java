@@ -10,7 +10,7 @@ public class _QuickStartApp {
 
     public static void main(String[] args) {
         SpringApplication.run(_QuickStartApp.class);
-        log.info("_QuickStartApp");
+        log.info(_QuickStartApp.class);
     }
 
 }
