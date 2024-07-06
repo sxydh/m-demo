@@ -1,3 +1,21 @@
+概述
+    MyBatis 的 Plugin 基于 JDK 的动态代理实现
+源码
+    org.apache.ibatis.builder.xml.XMLConfigBuilder#pluginsElement
+        创建 Plugin 实例
+    org.apache.ibatis.session.Configuration#newExecutor
+        创建 Executor 的代理
+            org.apache.ibatis.plugin.InterceptorChain#pluginAll
+    org.apache.ibatis.session.Configuration#newParameterHandler
+        创建 ParameterHandler 的代理
+            org.apache.ibatis.plugin.InterceptorChain#pluginAll
+    org.apache.ibatis.session.Configuration#newResultSetHandler
+        创建 ResultSetHandler 的代理
+            org.apache.ibatis.plugin.InterceptorChain#pluginAll
+    org.apache.ibatis.session.Configuration#newStatementHandler
+        创建 StatementHandler 的代理
+            org.apache.ibatis.plugin.InterceptorChain#pluginAll
+
 环境
     前置条件
         Ubuntu 20.04.6 LTS
