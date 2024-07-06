@@ -30,7 +30,7 @@ public class _ClientApp {
                     log.info(ret);
                     //noinspection BusyWait
                     Thread.sleep(1000);
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     log.error(e);
                 }
             }
