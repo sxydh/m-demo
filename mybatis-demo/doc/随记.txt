@@ -1,0 +1,25 @@
+源码
+    概述
+        SqlSessionFactoryBuilder.build(...)
+           XMLConfigBuilder.parseConfiguration(...)
+                XMLMapperBuilder.parse()
+        SqlSessionFactory.openSession(...)
+            Configuration.newExecutor(...)
+                执行器选择
+        SqlSession.getMapper(...)
+            Configuration.getMappedStatement(...)
+        MapperMethod.execute(...)
+            DefaultSqlSession.selectList(...)
+                CachingExecutor.query(...)
+                    tcm.getObject(cache, key)
+                        先在二级缓存查询，二级缓存数据结构：
+                            org.apache.ibatis.cache.Cache
+                                由 org.apache.ibatis.mapping.MappedStatement 持有
+                    BaseExecutor.query(...)
+                        localCache.getObject(key)
+                            再在一级缓存查询，数据结构：
+                                org.apache.ibatis.cache.impl.PerpetualCache
+                                    由 org.apache.ibatis.executor.BaseExecutor 持有
+                        SimpleExecutor.doQuery(...)
+                            configuration.newStatementHandler(...)
+                            prepareStatement(...)
