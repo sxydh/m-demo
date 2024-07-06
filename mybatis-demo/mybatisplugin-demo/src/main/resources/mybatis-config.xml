@@ -4,7 +4,10 @@
         "https://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <plugins>
-        <plugin interceptor="cn.net.bhe.mybatisplugindemo.plugin.QueryPlugin"/>
+        <plugin interceptor="cn.net.bhe.mybatisplugindemo.plugin.ExecutorPlugin"/>
+        <plugin interceptor="cn.net.bhe.mybatisplugindemo.plugin.ParameterHandlerPlugin"/>
+        <plugin interceptor="cn.net.bhe.mybatisplugindemo.plugin.ResultSetHandlerPlugin"/>
+        <plugin interceptor="cn.net.bhe.mybatisplugindemo.plugin.StatementHandlerPlugin"/>
     </plugins>
 
     <environments default="development">

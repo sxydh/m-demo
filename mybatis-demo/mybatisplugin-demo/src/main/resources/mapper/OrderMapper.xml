@@ -32,7 +32,7 @@
                rattr5           as "rattr5",
                rattr6           as "rattr6",
                rattr7           as "rattr7"
-        from t_order limit 10
+        from t_order limit #{limit}
     </select>
 
 </mapper>

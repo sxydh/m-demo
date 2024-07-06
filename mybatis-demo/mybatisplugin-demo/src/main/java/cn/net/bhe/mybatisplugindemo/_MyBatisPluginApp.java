@@ -17,7 +17,7 @@ public class _MyBatisPluginApp {
             SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
             try (SqlSession sqlSession = sqlSessionFactory.openSession()) {
                 OrderMapper orderMapper = sqlSession.getMapper(OrderMapper.class);
-                List<Order> orderList = orderMapper.selectOrderList();
+                List<Order> orderList = orderMapper.selectOrderList(10);
                 System.out.println(orderList.size());
             }
         }
