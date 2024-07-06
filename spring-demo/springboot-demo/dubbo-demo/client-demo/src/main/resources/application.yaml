@@ -8,6 +8,7 @@ server:
 dubbo:
   application:
     name: ${spring.application.name}
+    qos-port: 22223
   protocol:
     name: dubbo
     port: -1
