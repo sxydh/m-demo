@@ -25,13 +25,13 @@ def encrypt(password):
     cipher_suite = Fernet(key)
 
     text: str
-    with open('tmp/decrypt.txt', 'r+') as dfile:
+    with open('tmp/decrypt.txt', mode='r+', encoding='utf-8') as dfile:
         text = dfile.read()
 
         cipher_text = cipher_suite.encrypt(text.encode())
         print('Encrypted: ', cipher_text)
 
-        with open('tmp/encrypt.txt', 'w') as efile:
+        with open('tmp/encrypt.txt', mode='w', encoding='utf-8') as efile:
             efile.write(cipher_text.decode())
 
         dfile.truncate(0)
