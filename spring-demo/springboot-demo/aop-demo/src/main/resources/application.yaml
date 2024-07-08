@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: aop-demo
+
+server:
+  port: 20010

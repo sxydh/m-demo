@@ -10,13 +10,13 @@
     <packaging>pom</packaging>
 
     <name>springboot-demo</name>
-    <url>http://maven.apache.org</url>
     <modules>
         <module>quickstart-demo</module>
         <module>prometheus-demo</module>
         <module>logstash-demo</module>
         <module>skywalking-demo</module>
         <module>pinpoint-demo</module>
+        <module>aop-demo</module>
     </modules>
 
     <properties>
