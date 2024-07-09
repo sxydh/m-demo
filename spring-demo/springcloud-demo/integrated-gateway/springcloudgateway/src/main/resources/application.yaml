@@ -14,3 +14,7 @@ spring:
           uri: lb://servicea
           predicates:
             - Path=/servicea/**
+        - id: serviceb
+          uri: lb://serviceb
+          predicates:
+            - Path=/serviceb/**
