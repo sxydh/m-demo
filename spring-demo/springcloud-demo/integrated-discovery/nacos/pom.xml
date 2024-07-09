@@ -10,6 +10,7 @@
     <name>nacos</name>
     <modules>
         <module>service-a</module>
+        <module>service-b</module>
     </modules>
 
     <properties>
