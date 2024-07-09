@@ -10,7 +10,7 @@ spring:
         group: integrated-gateway
     gateway:
       routes:
-        - id: servicename
-          uri: lb://servicename
+        - id: servicea
+          uri: lb://servicea
           predicates:
-            - Path=/servicename/**
+            - Path=/servicea/**
