@@ -8,7 +8,6 @@
     <packaging>pom</packaging>
 
     <name>integrated-gateway</name>
-    <url>http://maven.apache.org</url>
     <modules>
         <module>springcloudgateway</module>
     </modules>
@@ -25,10 +24,7 @@
         <lombok.version>1.18.26</lombok.version>
         <log4j-core.version>2.22.0</log4j-core.version>
         <log4j-api.version>2.22.0</log4j-api.version>
-
-        <spring-boot-dependencies.version>3.2.0</spring-boot-dependencies.version>
-        <spring-cloud-dependencies.version>2023.0.0</spring-cloud-dependencies.version>
-        <spring-cloud-alibaba-dependencies.version>2023.0.0.0-RC1</spring-cloud-alibaba-dependencies.version>
+        <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -68,33 +64,6 @@
                 <artifactId>log4j-api</artifactId>
                 <version>${log4j-api.version}</version>
             </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot-dependencies.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud-dependencies.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- https://central.sonatype.com/artifact/com.alibaba.cloud/spring-cloud-alibaba-dependencies -->
-            <dependency>
-                <groupId>com.alibaba.cloud</groupId>
-                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>${spring-cloud-alibaba-dependencies.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -103,7 +72,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.12.1</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
