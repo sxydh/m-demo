@@ -14,7 +14,11 @@ spring:
           uri: lb://service-a
           predicates:
             - Path=/servicea/**
+          filters:
+            - StripPrefix=1
         - id: serviceb
           uri: lb://service-b
           predicates:
             - Path=/serviceb/**
+          filters:
+            - StripPrefix=1
