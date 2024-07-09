@@ -10,7 +10,7 @@ public class ControllerDemo {
 
     @GetMapping
     public String get() {
-        return "Hello World!";
+        return "Service A";
     }
 
 }
