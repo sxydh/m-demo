@@ -1,5 +1,5 @@
 server:
-  port: 20010
+  port: 20110
 spring:
   application:
     name: service-a
