@@ -7,14 +7,14 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-        group: integrated-gateway
+        group: springcloud-demo
     gateway:
       routes:
         - id: servicea
-          uri: lb://servicea
+          uri: lb://service-a
           predicates:
             - Path=/servicea/**
         - id: serviceb
-          uri: lb://serviceb
+          uri: lb://service-b
           predicates:
             - Path=/serviceb/**
