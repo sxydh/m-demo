@@ -1,0 +1,10 @@
+server:
+  port: 20120
+spring:
+  application:
+    name: service-b
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        group: springcloud-demo
