@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ServiceARpc {
 
     @GetMapping
-    String get(@RequestParam String from);
+    String get(@RequestParam("from") String from);
 
 }
