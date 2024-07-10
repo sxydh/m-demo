@@ -14,7 +14,6 @@ public class _FluxApp {
         /* 序列生产者 */
         Flux<String> flux = Flux.generate(synchronousSink -> {
             String value = CpUtils.ranChnCp();
-            log.info("generate: {}", value);
             synchronousSink.next(value);
             sleep(10);
         });
