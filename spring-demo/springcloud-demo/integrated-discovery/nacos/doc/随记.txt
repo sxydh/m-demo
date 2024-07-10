@@ -1,0 +1,20 @@
+概述
+    通过应用启动事件，触发服务注册。
+    使用 Nacos 客户端 NamingService 注册服务信息。
+    使用 Nacos 客户端 NamingService 获取服务列表。
+源码
+    服务注册
+        META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
+            com.alibaba.cloud.nacos.registry.NacosServiceRegistryAutoConfiguration
+                new NacosAutoServiceRegistration(...)
+                    AbstractAutoServiceRegistration.register()
+                        AbstractAutoServiceRegistration 实现了 ApplicationListener ，应用启动后触发服务注册：
+                            AbstractAutoServiceRegistration.onApplicationEvent(...)
+                                NacosServiceRegistry.register(...)
+                                    NamingService.registerInstance(serviceId, ...)
+    服务发现
+        META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
+            com.alibaba.cloud.nacos.discovery.NacosDiscoveryAutoConfiguration
+                new NacosServiceDiscovery(...)
+                    NacosServiceDiscovery.getInstances(serviceId)
+                        NamingService.selectInstances(serviceId, ...)
