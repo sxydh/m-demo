@@ -1,0 +1,25 @@
+概述
+    应用层协议 HTTP
+    通过 @Import(FeignClientsRegistrar.class) 初始化 Feign 客户端
+    Feign 客户端根据负载均衡实现找到目标服务实例，调用后返回结果。
+源码
+    创建客户端
+        FeignClientsRegistrar.registerFeignClient(...)
+            FeignClientFactoryBean.getTarget()
+                FeignClientFactoryBean.loadBalance(...)
+                    得到 feign.Client 客户端
+                    feign.Client 具体由子类实现
+                        feign.Client 默认实现是 FeignBlockingLoadBalancerClient
+                            FeignBlockingLoadBalancerClient 持有负载均衡客户端 LoadBalancerClient
+                            LoadBalancerClient 具体由子类实现
+                                LoadBalancerClient 默认实现是 BlockingLoadBalancerClient
+                                    BlockingLoadBalancerClient 持有负载均衡工厂 ReactiveLoadBalancer.Factory
+                                        ReactiveLoadBalancer 具体由子类实现
+                                            ReactiveLoadBalancer 默认实现是 RoundRobinLoadBalancer
+    远程调用
+        FeignBlockingLoadBalancerClient.execute(...)
+            BlockingLoadBalancerClient.choose(serviceId, ...)
+                根据负载均衡实现得到目标服务实例 ServiceInstance ，然后重建请求 URI ：
+                    loadBalancerClient.reconstructURI(...)
+                        feignClient.execute(feignRequest, ...)
+                    
