@@ -15,7 +15,7 @@ public class ControllerDemo {
     private ServiceARpc serviceARpc;
 
     @GetMapping
-    public String get(@RequestParam("from") String from) {
+    public String get(@RequestParam(value = "from", required = false) String from) {
         String ret = "Service B";
         if (!"service-a".equals(from)) {
             ret += " " + serviceARpc.get("service-b");

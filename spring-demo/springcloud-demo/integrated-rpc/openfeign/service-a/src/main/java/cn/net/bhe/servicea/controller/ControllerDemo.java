@@ -15,7 +15,7 @@ public class ControllerDemo {
     private ServiceBRpc serviceBRpc;
 
     @GetMapping
-    public String get(@RequestParam("from") String from) {
+    public String get(@RequestParam(value = "from", required = false) String from) {
         String ret = "Service A";
         if (!"service-b".equals(from)) {
             ret += " " + serviceBRpc.get("service-a");

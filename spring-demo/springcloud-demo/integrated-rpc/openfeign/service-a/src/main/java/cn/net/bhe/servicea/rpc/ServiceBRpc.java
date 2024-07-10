@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ServiceBRpc {
 
     @GetMapping
-    String get(@RequestParam("from") String from);
+    String get(@RequestParam(value = "from", required = false) String from);
 
 }
