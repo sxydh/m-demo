@@ -1,16 +1,27 @@
 概述
     先根据路由规则找到目标服务名
     再根据负载均衡实现将请求转发到目标服务实例
+        通信框架 Netty
 源码
     路由查找
         RoutePredicateHandlerMapping.lookupRoute(...)
             Route.getPredicate().apply(exchange)
+                根据路由规则找到目标服务名，然后在调用目标服务前，先执行 routes 配置的过滤器：
+                    FilteringWebHandler.handle(...)
+                        List<GatewayFilter> gatewayFilters = route.getFilters();
     负载均衡
         https://juejin.cn/post/6992783033388498974
             ReactiveLoadBalancerClientFilter.filter(...)
                 LoadBalancerClientFactory.getInstances(serviceId, ...)
                     ReactiveLoadBalancerClientFilter.choose(...)
-                        LoadBalancerClientFactory.getInstance(serviceId, ...)
-                            默认是 RoundRobinLoadBalancer 轮询实现
+                        根据负载均衡实现得到目标服务实例 ServiceInstance ：
+                            LoadBalancerClientFactory.getInstance(serviceId, ...)
+                                默认是 RoundRobinLoadBalancer 轮询实现
+                        然后重建请求 URI ：
+                            URI requestUrl = reconstructURI(serviceInstance, uri);
+                        最后 Netty 调用目标服务：
+                            NettyRoutingFilter.filter(...)
                 
-                
+    网关限流
+        https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/gatewayfilter-factories/requestratelimiter-factory.html
+            通过 routes 配置的过滤器实现
