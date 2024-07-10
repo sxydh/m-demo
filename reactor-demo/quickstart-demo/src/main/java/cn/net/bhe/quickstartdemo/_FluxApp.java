@@ -15,7 +15,8 @@ public class _FluxApp {
         Flux<String> flux = Flux.generate(synchronousSink -> {
             String value = CpUtils.ranChnCp();
             synchronousSink.next(value);
-            sleep(10);
+            log.info("generate: {}", value);
+            sleep(1000);
         });
 
         /* 序列操作符 */
@@ -24,7 +25,7 @@ public class _FluxApp {
                 Flux.just(value).subscribeOn(Schedulers.parallel())
                         // 操作符实现
                         .map(pvalue -> {
-                            sleep(15000);
+                            sleep(2000);
                             Map<String, Object> map = Map.of(pvalue, pvalue.length());
                             log.info("map: {}", map);
                             return map.toString();
