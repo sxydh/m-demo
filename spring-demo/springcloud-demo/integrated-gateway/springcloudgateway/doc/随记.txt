@@ -25,3 +25,5 @@
     网关限流
         https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/gatewayfilter-factories/requestratelimiter-factory.html
             通过 routes 配置的过滤器实现
+                过滤器的 name 默认为类名去掉 GatewayFilterFactory 后缀：
+                    NameUtils.normalizeFilterFactoryName(...)
