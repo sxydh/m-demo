@@ -1,0 +1,16 @@
+概述
+    先根据路由规则找到目标服务名
+    再根据负载均衡实现将请求转发到目标服务实例
+源码概述
+    路由查找
+        RoutePredicateHandlerMapping.lookupRoute(...)
+            Route.getPredicate().apply(exchange)
+    负载均衡
+        https://juejin.cn/post/6992783033388498974
+            ReactiveLoadBalancerClientFilter.filter(...)
+                LoadBalancerClientFactory.getInstances(serviceId, ...)
+                    ReactiveLoadBalancerClientFilter.choose(...)
+                        LoadBalancerClientFactory.getInstance(serviceId, ...)
+                            默认是 RoundRobinLoadBalancer 轮询实现
+                
+                
