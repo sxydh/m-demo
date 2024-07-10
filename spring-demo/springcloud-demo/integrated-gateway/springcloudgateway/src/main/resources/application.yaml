@@ -16,6 +16,7 @@ spring:
             - Path=/servicea/**
           filters:
             - StripPrefix=1
+            - name: RequestRateLimiter
         - id: serviceb
           uri: lb://service-b
           predicates:
