@@ -4,6 +4,7 @@ import cn.net.bhe.serviceb.rpc.ServiceARpc;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -14,8 +15,12 @@ public class ControllerDemo {
     private ServiceARpc serviceARpc;
 
     @GetMapping
-    public String get() {
-        return "Service B " + serviceARpc.get();
+    public String get(@RequestParam String from) {
+        String ret = "Service B";
+        if (!"service-a".equals(from)) {
+            ret += " " + serviceARpc.get("service-b");
+        }
+        return ret;
     }
 
 }
