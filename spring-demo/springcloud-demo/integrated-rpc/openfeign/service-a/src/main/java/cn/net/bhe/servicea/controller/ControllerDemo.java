@@ -1,22 +1,21 @@
 package cn.net.bhe.servicea.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import cn.net.bhe.servicea.rpc.ServiceBRpc;
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 @RequestMapping("/")
 public class ControllerDemo {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    @Resource
+    private ServiceBRpc serviceBRpc;
 
     @GetMapping
     public String get() {
-        return "Service A " + restTemplate.getForObject("http://service-b/", String.class);
+        return "Service A " + serviceBRpc.get();
     }
 
 }
