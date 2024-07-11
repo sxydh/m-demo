@@ -21,6 +21,7 @@ public class _ProviderApp {
                 .service(ServiceBuilder.newBuilder()
                         .interfaceClass(HelloService.class)
                         .ref(new HelloServiceImpl())
+                        .filter("anyFlag")
                         .build())
                 .start()
                 .await();
