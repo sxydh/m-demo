@@ -1,0 +1,23 @@
+概述
+    https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/quick-start/api/
+    https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/reference-manual/architecture/code-architecture/
+源码
+    服务注册
+        DubboBootstrap.start()
+            DefaultModuleDeployer.registerServices()
+                ServiceConfig.register(...)
+                    RegistryProtocol.register(...)
+                        NacosRegistry.doRegister(...)
+                            namingService.registerInstance(serviceName, ...)
+    服务调用
+        HelloService.hello()
+            InvokerInvocationHandler.invoke(...)
+                执行过滤器链：
+                    ClusterFilterInvoker.invoke(...)
+                        根据负载均衡实现得到目标服务实例：
+                            AbstractClusterInvoker.select(...)
+                                LoadBalance.select(...)
+                                    默认是 RandomLoadBalance 随机实现
+                        然后 Netty 调用目标服务：
+                            AbstractClient.send(...)
+                                NioSocketChannel.writeAndFlush(...)
