@@ -52,10 +52,10 @@
             <artifactId>dubbo</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo-registry-nacos -->
+        <!-- https://mvnrepository.com/artifact/com.alibaba.nacos/nacos-client -->
         <dependency>
-            <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo-registry-nacos</artifactId>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
         </dependency>
     </dependencies>
 

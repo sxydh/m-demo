@@ -28,7 +28,7 @@
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
 
         <dubbo.version>3.3.0-beta.1</dubbo.version>
-        <dubbo-registry-nacos.version>${dubbo.version}</dubbo-registry-nacos.version>
+        <nacos-client.version>2.2.4</nacos-client.version>
     </properties>
 
     <dependencyManagement>
@@ -75,11 +75,11 @@
                 <version>${dubbo.version}</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo-registry-nacos -->
+            <!-- https://mvnrepository.com/artifact/com.alibaba.nacos/nacos-client -->
             <dependency>
-                <groupId>org.apache.dubbo</groupId>
-                <artifactId>dubbo-registry-nacos</artifactId>
-                <version>${dubbo-registry-nacos.version}</version>
+                <groupId>com.alibaba.nacos</groupId>
+                <artifactId>nacos-client</artifactId>
+                <version>${nacos-client.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
