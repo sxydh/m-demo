@@ -19,7 +19,7 @@ public class _ConsumerApp {
         DubboBootstrap.getInstance()
                 .application(_ConsumerApp.class.getName())
                 .registry(RegistryBuilder.newBuilder()
-                        .address("nacos://localhost:8848")
+                        .address("nacos://localhost:8848?qos.port=22223")
                         .build())
                 .reference(reference)
                 .start();
