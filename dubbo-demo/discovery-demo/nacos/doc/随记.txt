@@ -9,15 +9,34 @@
                     RegistryProtocol.register(...)
                         NacosRegistry.doRegister(...)
                             namingService.registerInstance(serviceName, ...)
+    服务导出
+        DubboBootstrap.start()
+            DefaultModuleDeployer.exportServices()
+                Transporters.bind(...)
+                    服务端口监听：
+                        NettyServer.doOpen()
+                            bossGroup = createBossGroup();
+                            workerGroup = createWorkerGroup();
     服务调用
-        HelloService.hello()
-            InvokerInvocationHandler.invoke(...)
-                执行过滤器链：
-                    ClusterFilterInvoker.invoke(...)
-                        根据负载均衡实现得到目标服务实例：
-                            AbstractClusterInvoker.select(...)
-                                LoadBalance.select(...)
-                                    默认是 RandomLoadBalance 随机实现
-                        然后 Netty 调用目标服务：
-                            AbstractClient.send(...)
-                                NioSocketChannel.writeAndFlush(...)
+        Consumer
+            HelloService.hello()
+                InvokerInvocationHandler.invoke(...)
+                    过滤器链执行：
+                        ClusterFilterInvoker.invoke(...)
+                            根据负载均衡实现得到目标服务实例：
+                                AbstractClusterInvoker.select(...)
+                                    LoadBalance.select(...)
+                                        默认是 RandomLoadBalance 随机实现
+                            然后 Netty 调用目标服务：
+                                AbstractClient.send(...)
+                                    NioSocketChannel.writeAndFlush(...)
+        Provider
+            NettyServerHandler.channelRead(...)
+                AllChannelHandler.received(...)
+                    线程池任务执行：
+                        executor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
+                            过滤器链执行：
+                                FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
+                                    最终接口调用：
+                                        Wrapper.invokeMethod(...)
+                                            HelloServiceImpl.hello()
