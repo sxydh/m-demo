@@ -13,7 +13,7 @@ public class _ConsumerApp {
     public static void main(String[] args) {
         ReferenceConfig<HelloService> reference = ReferenceBuilder.<HelloService>newBuilder()
                 .interfaceClass(HelloService.class)
-                .url("tri://localhost:50052")
+                .url("tri://localhost:50052?qos.port=22223")
                 .build();
 
         DubboBootstrap.getInstance()
