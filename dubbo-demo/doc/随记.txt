@@ -8,7 +8,7 @@
                 ServiceConfig.register(...)
                     RegistryProtocol.register(...)
                         NacosRegistry.doRegister(...)
-                            namingService.registerInstance(serviceName, ...)
+                            NacosNamingServiceWrapper.registerInstance(serviceName, ...)
     服务暴露
         DubboBootstrap.start()
             DefaultModuleDeployer.exportServices()
@@ -17,6 +17,15 @@
                         NettyServer.doOpen()
                             bossGroup = createBossGroup();
                             workerGroup = createWorkerGroup();
+    服务发现
+        DubboBootstrap.start()
+            NacosFactory.createNamingService(...)
+                服务事件订阅：
+                    NotifyCenter.registerSubscriber(...)
+                        InstancesChangeNotifier.onEvent(...)
+                            AbstractDirectory.refreshRouter(...)
+                                AbstractDirectory.refreshInvokerInternal()
+                                    更新服务列表缓存
     服务调用
         Consumer
             HelloService.hello()
