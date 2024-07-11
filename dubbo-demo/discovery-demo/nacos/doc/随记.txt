@@ -9,7 +9,7 @@
                     RegistryProtocol.register(...)
                         NacosRegistry.doRegister(...)
                             namingService.registerInstance(serviceName, ...)
-    服务导出
+    服务暴露
         DubboBootstrap.start()
             DefaultModuleDeployer.exportServices()
                 Transporters.bind(...)
