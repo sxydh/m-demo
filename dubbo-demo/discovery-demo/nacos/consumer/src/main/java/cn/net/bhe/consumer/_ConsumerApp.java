@@ -12,7 +12,7 @@ import org.apache.dubbo.config.bootstrap.builders.RegistryBuilder;
 @Slf4j
 public class _ConsumerApp {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         ReferenceConfig<HelloService> reference = ReferenceBuilder.<HelloService>newBuilder()
                 .interfaceClass(HelloService.class)
                 .build();
@@ -35,10 +35,11 @@ public class _ConsumerApp {
             try {
                 message = service.hello();
                 log.info(message);
-                // noinspection BusyWait
-                Thread.sleep(1000);
             } catch (Throwable t) {
                 log.error(t.getLocalizedMessage(), t);
+            } finally {
+                // noinspection BusyWait
+                Thread.sleep(1000);
             }
         }
     }
