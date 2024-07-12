@@ -23,6 +23,7 @@ public class _ConsumerApp {
                         .address("nacos://localhost:8848?qos.port=22223")
                         .build())
                 .consumer(new ConsumerBuilder()
+                        // 针对所有 reference 的过滤器
                         .filter("anyFlag")
                         .build())
                 .reference(reference)
