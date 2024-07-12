@@ -3,6 +3,7 @@ package cn.net.bhe.provider;
 import cn.net.bhe.api.HelloService;
 import org.apache.dubbo.config.bootstrap.DubboBootstrap;
 import org.apache.dubbo.config.bootstrap.builders.ProtocolBuilder;
+import org.apache.dubbo.config.bootstrap.builders.ProviderBuilder;
 import org.apache.dubbo.config.bootstrap.builders.RegistryBuilder;
 import org.apache.dubbo.config.bootstrap.builders.ServiceBuilder;
 
@@ -18,10 +19,13 @@ public class _ProviderApp {
                         .name("dubbo")
                         .port(-1)
                         .build())
+                .provider(new ProviderBuilder()
+                        // 针对所有 service 过滤器
+                        .filter("anyFlag")
+                        .build())
                 .service(ServiceBuilder.newBuilder()
                         .interfaceClass(HelloService.class)
                         .ref(new HelloServiceImpl())
-                        .filter("anyFlag")
                         .build())
                 .start()
                 .await();
