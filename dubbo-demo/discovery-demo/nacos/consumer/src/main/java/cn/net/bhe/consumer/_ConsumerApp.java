@@ -5,6 +5,7 @@ import cn.net.bhe.mutil.StrUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.bootstrap.DubboBootstrap;
+import org.apache.dubbo.config.bootstrap.builders.ConsumerBuilder;
 import org.apache.dubbo.config.bootstrap.builders.ReferenceBuilder;
 import org.apache.dubbo.config.bootstrap.builders.RegistryBuilder;
 
@@ -20,6 +21,9 @@ public class _ConsumerApp {
                 .application(_ConsumerApp.class.getName())
                 .registry(RegistryBuilder.newBuilder()
                         .address("nacos://localhost:8848?qos.port=22223")
+                        .build())
+                .consumer(new ConsumerBuilder()
+                        .filter("anyFlag")
                         .build())
                 .reference(reference)
                 .start();
