@@ -8,7 +8,7 @@ public class DemoFilter implements Filter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        log.info("{}: invoke", DemoFilter.class.getSimpleName());
+        log.info("Consumer's {}: invoke", DemoFilter.class.getSimpleName());
         return invoker.invoke(invocation);
     }
 

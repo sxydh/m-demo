@@ -9,7 +9,7 @@ public class DemoFilter implements Filter {
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         Result result = invoker.invoke(invocation);
         if (invocation.getTargetServiceUniqueName().contains(HelloService.class.getSimpleName())) {
-            result.setValue(result.getValue() + " provider's customized " + DemoFilter.class.getSimpleName());
+            result.setValue(result.getValue() + " Provider's customized " + DemoFilter.class.getSimpleName());
         }
         return result;
     }
