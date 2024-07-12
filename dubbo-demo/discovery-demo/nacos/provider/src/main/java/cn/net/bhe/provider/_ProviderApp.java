@@ -21,7 +21,9 @@ public class _ProviderApp {
                         .build())
                 .provider(new ProviderBuilder()
                         // 针对所有 service 的过滤器
-                        .filter("anyFlag")
+                        // 使用内置过滤器关键字 default 排序
+                        // 此时自定义过滤器最靠近真实接口
+                        .filter("default,anyFlag")
                         .build())
                 .service(ServiceBuilder.newBuilder()
                         .interfaceClass(HelloService.class)
