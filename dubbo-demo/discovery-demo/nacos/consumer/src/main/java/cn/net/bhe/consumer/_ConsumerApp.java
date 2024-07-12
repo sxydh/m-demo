@@ -25,7 +25,7 @@ public class _ConsumerApp {
                 .consumer(new ConsumerBuilder()
                         // 针对所有 reference 的过滤器
                         // 使用内置过滤器关键字 default 排序
-                        // 此时自定义过滤器最靠近真实接口
+                        // 此时自定义过滤器排在最后
                         .filter("default,anyFlag")
                         .build())
                 .reference(reference)
