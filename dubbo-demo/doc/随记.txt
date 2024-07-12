@@ -1,51 +1,60 @@
 概述
     https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/quick-start/api/
     https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/reference-manual/architecture/code-architecture/
-源码
-    服务注册
-        DubboBootstrap.start()
-            DefaultModuleDeployer.registerServices()
-                ServiceConfig.register(...)
-                    RegistryProtocol.register(...)
-                        NacosRegistry.doRegister(...)
-                            NacosNamingServiceWrapper.registerInstance(serviceName, ...)
-    服务暴露
-        DubboBootstrap.start()
-            DefaultModuleDeployer.exportServices()
-                Transporters.bind(...)
-                    服务端口监听：
-                        NettyServer.doOpen()
-                            bossGroup = createBossGroup();
-                            workerGroup = createWorkerGroup();
-    服务发现
-        DubboBootstrap.start()
-            NacosFactory.createNamingService(...)
-                服务事件订阅：
-                    NotifyCenter.registerSubscriber(...)
-                        InstancesChangeNotifier.onEvent(...)
-                            AbstractDirectory.refreshRouter(...)
-                                AbstractDirectory.refreshInvokerInternal()
-                                    更新服务列表缓存
-    服务调用
-        Consumer
-            HelloService.hello()
-                InvokerInvocationHandler.invoke(...)
-                    过滤器链执行：
-                        ClusterFilterInvoker.invoke(...)
-                            根据负载均衡实现得到目标服务实例：
-                                AbstractClusterInvoker.select(...)
-                                    LoadBalance.select(...)
-                                        默认是 RandomLoadBalance 随机实现
-                            然后 Netty 调用目标服务：
-                                AbstractClient.send(...)
-                                    NioSocketChannel.writeAndFlush(...)
-        Provider
-            NettyServerHandler.channelRead(...)
-                AllChannelHandler.received(...)
-                    线程池任务执行：
-                        executor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
-                            过滤器链执行：
-                                FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
-                                    最终接口调用：
-                                        Wrapper.invokeMethod(...)
-                                            HelloServiceImpl.hello()
+服务注册
+    DubboBootstrap.start()
+        DefaultModuleDeployer.registerServices()
+            ServiceConfig.register(...)
+                RegistryProtocol.register(...)
+                    NacosRegistry.doRegister(...)
+                        NacosNamingServiceWrapper.registerInstance(serviceName, ...)
+服务暴露
+    DubboBootstrap.start()
+        DefaultModuleDeployer.exportServices()
+            Transporters.bind(...)
+                服务端口监听：
+                    NettyServer.doOpen()
+                        bossGroup = createBossGroup();
+                        workerGroup = createWorkerGroup();
+服务发现
+    DubboBootstrap.start()
+        NacosFactory.createNamingService(...)
+            服务事件订阅：
+                NotifyCenter.registerSubscriber(...)
+                    InstancesChangeNotifier.onEvent(...)
+                        AbstractDirectory.refreshRouter(...)
+                            AbstractDirectory.refreshInvokerInternal()
+                                更新服务列表缓存
+服务调用
+    Consumer
+        HelloService.hello()
+            InvokerInvocationHandler.invoke(...)
+                过滤器链执行：
+                    ClusterFilterInvoker.invoke(...)
+                        根据负载均衡实现得到目标服务实例：
+                            AbstractClusterInvoker.select(...)
+                                LoadBalance.select(...)
+                                    默认是 RandomLoadBalance 随机实现
+                        然后 Netty 调用目标服务：
+                            AbstractClient.send(...)
+                                NioSocketChannel.writeAndFlush(...)
+    Provider
+        NettyServerHandler.channelRead(...)
+            AllChannelHandler.received(...)
+                线程池任务执行：
+                    executor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
+                        过滤器链执行：
+                            FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
+                                最终接口调用：
+                                    Wrapper.invokeMethod(...)
+                                        HelloServiceImpl.hello()
+扩展实现
+    https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/reference-manual/spi/overview/
+        过滤器
+            概述
+                通过 SPI 实现
+            构建
+                DefaultFilterChainBuilder.buildInvokerChain(...)
+            排序
+                通过 default,filter1,filter2 指定顺序
+                    default 表示内置过滤器
