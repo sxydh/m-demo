@@ -8,8 +8,12 @@ public class DemoFilter implements Filter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        log.info("Consumer's {}: invoke", DemoFilter.class.getSimpleName());
-        return invoker.invoke(invocation);
+        try {
+            log.info("Consumer's {}: invoke", DemoFilter.class.getSimpleName());
+            return invoker.invoke(invocation);
+        } catch (Exception e) {
+            return new AppResponse("Exception: " + e.getLocalizedMessage());
+        }
     }
 
 }
