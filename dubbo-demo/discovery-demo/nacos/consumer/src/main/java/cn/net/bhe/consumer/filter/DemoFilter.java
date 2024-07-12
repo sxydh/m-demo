@@ -9,13 +9,13 @@ import java.util.UUID;
 public class DemoFilter implements Filter {
 
     public DemoFilter() {
-        log.info("{}: new", DemoFilter.class.getSimpleName());
+        log.info("{}: new", DemoFilter.class.getName());
     }
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         log.info("{}: invoke", DemoFilter.class.getName());
-        RpcContext.getClientAttachment().setAttachment("token", UUID.randomUUID().toString());
+        invocation.setAttachment("token", UUID.randomUUID().toString());
         return invoker.invoke(invocation);
     }
 
