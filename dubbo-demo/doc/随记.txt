@@ -55,6 +55,8 @@
                 通过 SPI 实现
             构建
                 DefaultFilterChainBuilder.buildInvokerChain(...)
+            传参
+                通过 com.alibaba.dubbo.rpc.RpcInvocation.attachments 实现
             排序
                 通过 default,filter1,filter2 指定顺序
                     default 表示内置过滤器
