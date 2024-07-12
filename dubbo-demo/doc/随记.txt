@@ -26,28 +26,48 @@
                             AbstractDirectory.refreshInvokerInternal()
                                 更新服务列表缓存
 服务调用
-    Consumer
-        HelloService.hello()
-            InvokerInvocationHandler.invoke(...)
-                过滤器链执行：
-                    ClusterFilterInvoker.invoke(...)
-                        根据负载均衡实现得到目标服务实例：
-                            AbstractClusterInvoker.select(...)
-                                LoadBalance.select(...)
-                                    默认是 RandomLoadBalance 随机实现
-                        然后 Netty 调用目标服务：
-                            AbstractClient.send(...)
-                                NioSocketChannel.writeAndFlush(...)
-    Provider
-        NettyServerHandler.channelRead(...)
-            AllChannelHandler.received(...)
-                线程池任务执行：
-                    executor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
-                        过滤器链执行：
-                            FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
-                                最终接口调用：
-                                    Wrapper.invokeMethod(...)
-                                        HelloServiceImpl.hello()
+    调用实现
+        Consumer
+            HelloService.hello()
+                InvokerInvocationHandler.invoke(...)
+                    过滤器链执行：
+                        ClusterFilterInvoker.invoke(...)
+                            根据负载均衡实现得到目标服务实例：
+                                AbstractClusterInvoker.select(...)
+                                    LoadBalance.select(...)
+                                        默认是 RandomLoadBalance 随机实现
+                            然后 Netty 调用目标服务：
+                                AbstractClient.send(...)
+                                    NioSocketChannel.writeAndFlush(...)
+        Provider
+            NettyServerHandler.channelRead(...)
+                AllChannelHandler.received(...)
+                    线程池任务执行：
+                        executor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
+                            过滤器链执行：
+                                FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
+                                    最终接口调用：
+                                        Wrapper.invokeMethod(...)
+                                            HelloServiceImpl.hello()
+    调用容错
+        概述
+            https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/advanced-features-and-usage/service/fault-tolerent-strategy/
+        策略
+            failover
+                默认实现
+                失败则切换并重试：
+                    FailoverClusterInvoker.doInvoke(...)
+            failfast
+                失败则报错：
+                    FailfastClusterInvoker.doInvoke(...)
+            failsafe
+                失败则忽略：
+                    FailsafeClusterInvoker.doInvoke(...)
+    调用降级
+        概述
+            https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/advanced-features-and-usage/service/service-downgrade/
+        方案
+            Sentinel
 扩展实现
     https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/reference-manual/spi/overview/
         过滤器
