@@ -20,7 +20,7 @@ public class _ProviderApp {
                         .port(-1)
                         .build())
                 .provider(new ProviderBuilder()
-                        // 针对所有 service 过滤器
+                        // 针对所有 service 的过滤器
                         .filter("anyFlag")
                         .build())
                 .service(ServiceBuilder.newBuilder()
