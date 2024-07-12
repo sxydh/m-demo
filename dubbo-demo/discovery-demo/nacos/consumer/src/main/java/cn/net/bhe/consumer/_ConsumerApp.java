@@ -39,7 +39,7 @@ public class _ConsumerApp {
                 log.error(t.getLocalizedMessage(), t);
             } finally {
                 // noinspection BusyWait
-                Thread.sleep(1000);
+                Thread.sleep(3000);
             }
         }
     }
