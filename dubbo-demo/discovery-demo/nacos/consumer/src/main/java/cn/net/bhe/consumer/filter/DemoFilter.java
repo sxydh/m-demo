@@ -3,17 +3,20 @@ package cn.net.bhe.consumer.filter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.rpc.*;
 
+import java.util.UUID;
+
 @Slf4j
 public class DemoFilter implements Filter {
 
+    public DemoFilter() {
+        log.info("{}: new", DemoFilter.class.getSimpleName());
+    }
+
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        try {
-            log.info("Consumer's {}: invoke", DemoFilter.class.getSimpleName());
-            return invoker.invoke(invocation);
-        } catch (Exception e) {
-            return new AppResponse("Exception: " + e.getLocalizedMessage());
-        }
+        log.info("{}: invoke", DemoFilter.class.getName());
+        RpcContext.getClientAttachment().setAttachment("token", UUID.randomUUID().toString());
+        return invoker.invoke(invocation);
     }
 
 }
