@@ -30,17 +30,21 @@
         Consumer
             HelloService.hello()
                 InvokerInvocationHandler.invoke(...)
-                    过滤器链执行：
-                        FilterChainBuilder.CallbackRegistrationInvoker.invoke(...)
-                            根据负载均衡实现得到目标服务实例：
-                                AbstractClusterInvoker.select(...)
-                                    LoadBalance.select(...)
-                                        默认是 RandomLoadBalance 随机实现
-                            过滤器链执行：
-                                FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
-                                    通过 Netty 调用目标服务：
-                                        AbstractClient.send(...)
-                                            NioSocketChannel.writeAndFlush(...)
+                    过滤器链执行（第一部分）：
+                        FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
+                            根据容错实现尝试调用目标服务实例集群：
+                                AbstractClusterInvoker.doInvoke(...)
+                                    默认是 failover 失败则切换并重试实现：
+                                        FailoverClusterInvoker.doInvoke(...)
+                                            根据负载均衡实现得到目标服务实例：
+                                                AbstractClusterInvoker.select(...)
+                                                    LoadBalance.select(...)
+                                                        默认是 RandomLoadBalance 随机实现
+                                            过滤器链执行（第二部分）：
+                                                FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
+                                                    通过 Netty 调用目标服务：
+                                                        AbstractClient.send(...)
+                                                            NioSocketChannel.writeAndFlush(...)
         Provider
             NettyServerHandler.channelRead(...)
                 AllChannelHandler.received(...)
