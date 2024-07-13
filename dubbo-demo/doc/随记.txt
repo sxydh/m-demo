@@ -8,10 +8,13 @@
                 RegistryProtocol.register(...)
                     NacosRegistry.doRegister(...)
                         NacosNamingServiceWrapper.registerInstance(serviceName, ...)
+                            服务 serviceName 格式：
+                                providers:cn.net.bhe.api.HelloService::
 服务暴露
     DubboBootstrap.start()
         DefaultModuleDeployer.exportServices()
             Transporters.bind(...)
+                服务端口默认是 20880
                 服务端口监听：
                     NettyServer.doOpen()
                         bossGroup = createBossGroup();
@@ -24,6 +27,8 @@
                     NacosRegistry.doSubscribe(url, ...)
                         NacosNamingService.subscribe(serviceName, ...)
                             InstancesChangeNotifier.registerListener(groupName, serviceName, ...)
+                                服务 serviceName 格式：
+                                    providers:cn.net.bhe.api.HelloService::
                                 服务事件响应：
                                     InstancesChangeNotifier.onEvent(...)
                                         AbstractDirectory.refreshRouter(...)
@@ -49,6 +54,8 @@
                                                     通过 Netty 调用目标服务：
                                                         AbstractClient.send(...)
                                                             NioSocketChannel.writeAndFlush(...)
+                                                                过滤器链执行（第三部分）：
+                                                                    AsyncRpcResult.whenCompleteWithContext(...)
         Provider
             NettyServerHandler.channelRead(...)
                 AllChannelHandler.received(...)
