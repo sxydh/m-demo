@@ -18,13 +18,17 @@
                         workerGroup = createWorkerGroup();
 服务发现
     DubboBootstrap.start()
-        NacosFactory.createNamingService(...)
-            服务事件订阅：
-                NotifyCenter.registerSubscriber(...)
-                    InstancesChangeNotifier.onEvent(...)
-                        AbstractDirectory.refreshRouter(...)
-                            AbstractDirectory.refreshInvokerInternal()
-                                更新服务列表缓存
+        服务事件订阅：
+            RegistryService.subscribe(...)
+                FailbackRegistry.subscribe(...)
+                    NacosRegistry.doSubscribe(url, ...)
+                        NacosNamingService.subscribe(serviceName, ...)
+                            InstancesChangeNotifier.registerListener(groupName, serviceName, ...)
+                                服务事件响应：
+                                    InstancesChangeNotifier.onEvent(...)
+                                        AbstractDirectory.refreshRouter(...)
+                                            AbstractDirectory.refreshInvokerInternal()
+                                                更新服务列表缓存
 服务调用
     调用实现
         Consumer
@@ -95,3 +99,4 @@
         Invocation 是会话域
     Protocol
         Protocol 是服务域
+    Directory
