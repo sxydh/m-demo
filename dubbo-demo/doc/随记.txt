@@ -109,7 +109,7 @@
         Protocol 是服务域，是 Invoker 暴露和引用的入口。
 整体设计
     概述
-        Dubbo 架构可分为十层
+        可分为十层
         层与层之间单向依赖
         除了 Service 和 Config 层为 API 实现，其它各层均为 SPI 实现。
     分层
