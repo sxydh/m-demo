@@ -1,109 +1,136 @@
 概述
     https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/quick-start/api/
     https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/reference-manual/architecture/code-architecture/
-服务注册
-    DubboBootstrap.start()
-        DefaultModuleDeployer.registerServices()
-            ServiceConfig.register(...)
-                RegistryProtocol.register(...)
-                    NacosRegistry.doRegister(...)
-                        NacosNamingServiceWrapper.registerInstance(serviceName, ...)
-                            服务 serviceName 格式：
-                                providers:cn.net.bhe.api.HelloService::
-服务暴露
-    DubboBootstrap.start()
-        DefaultModuleDeployer.exportServices()
-            Transporters.bind(...)
-                服务端口默认是 20880
-                服务端口监听：
-                    NettyServer.doOpen()
-                        bossGroup = createBossGroup();
-                        workerGroup = createWorkerGroup();
-服务发现
-    DubboBootstrap.start()
-        服务事件订阅：
-            RegistryService.subscribe(...)
-                FailbackRegistry.subscribe(...)
-                    NacosRegistry.doSubscribe(url, ...)
-                        NacosNamingService.subscribe(serviceName, ...)
-                            InstancesChangeNotifier.registerListener(groupName, serviceName, ...)
+快速开始
+    服务注册
+        DubboBootstrap.start()
+            DefaultModuleDeployer.registerServices()
+                ServiceConfig.register(...)
+                    RegistryProtocol.register(...)
+                        NacosRegistry.doRegister(...)
+                            NacosNamingServiceWrapper.registerInstance(serviceName, ...)
                                 服务 serviceName 格式：
                                     providers:cn.net.bhe.api.HelloService::
-                                服务事件响应：
-                                    InstancesChangeNotifier.onEvent(...)
-                                        AbstractDirectory.refreshRouter(...)
-                                            AbstractDirectory.refreshInvokerInternal()
-                                                更新服务列表缓存
-服务调用
-    调用实现
-        Consumer
-            HelloService.hello()
-                InvokerInvocationHandler.invoke(...)
-                    过滤器链执行（第一部分）：
-                        FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
-                            根据容错实现尝试调用目标服务实例集群：
-                                AbstractClusterInvoker.doInvoke(...)
-                                    默认是 failover 失败则切换并重试实现：
-                                        FailoverClusterInvoker.doInvoke(...)
-                                            根据负载均衡实现得到目标服务实例：
-                                                AbstractClusterInvoker.select(...)
-                                                    LoadBalance.select(...)
-                                                        默认是 RandomLoadBalance 随机实现
-                                            过滤器链执行（第二部分）：
-                                                FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
-                                                    通过 Netty 调用目标服务：
-                                                        AbstractClient.send(...)
-                                                            NioSocketChannel.writeAndFlush(...)
-                                                                过滤器链执行（第三部分）：
-                                                                    AsyncRpcResult.whenCompleteWithContext(...)
-        Provider
-            NettyServerHandler.channelRead(...)
-                AllChannelHandler.received(...)
-                    线程池任务执行：
-                        executor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
-                            过滤器链执行：
-                                FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
-                                    最终接口调用：
-                                        Wrapper.invokeMethod(...)
-                                            HelloServiceImpl.hello()
-    调用容错
-        概述
-            https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/advanced-features-and-usage/service/fault-tolerent-strategy/
-        策略
-            failover
-                默认实现
-                失败则切换并重试：
-                    FailoverClusterInvoker.doInvoke(...)
-            failfast
-                失败则报错：
-                    FailfastClusterInvoker.doInvoke(...)
-            failsafe
-                失败则忽略：
-                    FailsafeClusterInvoker.doInvoke(...)
-    调用降级
-        概述
-            https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/advanced-features-and-usage/service/service-downgrade/
-        方案
-            Sentinel
-扩展实现
-    https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/reference-manual/spi/overview/
-        过滤器
+    服务暴露
+        DubboBootstrap.start()
+            DefaultModuleDeployer.exportServices()
+                Transporters.bind(...)
+                    服务端口默认是 20880
+                    服务端口监听：
+                        NettyServer.doOpen()
+                            bossGroup = createBossGroup();
+                            workerGroup = createWorkerGroup();
+    服务发现
+        DubboBootstrap.start()
+            服务事件订阅：
+                RegistryService.subscribe(...)
+                    FailbackRegistry.subscribe(...)
+                        NacosRegistry.doSubscribe(url, ...)
+                            NacosNamingService.subscribe(serviceName, ...)
+                                InstancesChangeNotifier.registerListener(groupName, serviceName, ...)
+                                    服务 serviceName 格式：
+                                        providers:cn.net.bhe.api.HelloService::
+                                    服务事件响应：
+                                        InstancesChangeNotifier.onEvent(...)
+                                            AbstractDirectory.refreshRouter(...)
+                                                AbstractDirectory.refreshInvokerInternal()
+                                                    更新服务列表缓存
+    服务调用
+        调用实现
+            Consumer
+                HelloService.hello()
+                    InvokerInvocationHandler.invoke(...)
+                        过滤器链执行（第一部分）：
+                            FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
+                                根据容错实现尝试调用目标服务实例集群：
+                                    AbstractClusterInvoker.doInvoke(...)
+                                        默认是 failover 失败则切换并重试实现：
+                                            FailoverClusterInvoker.doInvoke(...)
+                                                根据负载均衡实现得到目标服务实例：
+                                                    AbstractClusterInvoker.select(...)
+                                                        LoadBalance.select(...)
+                                                            默认是 RandomLoadBalance 随机实现
+                                                过滤器链执行（第二部分）：
+                                                    FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
+                                                        通过 Netty 调用目标服务：
+                                                            AbstractClient.send(...)
+                                                                NioSocketChannel.writeAndFlush(...)
+                                                                    过滤器链执行（第三部分）：
+                                                                        AsyncRpcResult.whenCompleteWithContext(...)
+            Provider
+                NettyServerHandler.channelRead(...)
+                    AllChannelHandler.received(...)
+                        线程池任务执行：
+                            executor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
+                                过滤器链执行：
+                                    FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
+                                        最终接口调用：
+                                            Wrapper.invokeMethod(...)
+                                                HelloServiceImpl.hello()
+        调用容错
             概述
-                通过 SPI 实现
-            构建
-                DefaultFilterChainBuilder.buildInvokerChain(...)
-            传参
-                通过 com.alibaba.dubbo.rpc.RpcInvocation.attachments 实现
-            排序
-                通过 default,filter1,filter2 指定顺序
-                    default 表示内置过滤器
-核心概念
+                https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/advanced-features-and-usage/service/fault-tolerent-strategy/
+            策略
+                failover
+                    默认实现
+                    失败则切换并重试：
+                        FailoverClusterInvoker.doInvoke(...)
+                failfast
+                    失败则报错：
+                        FailfastClusterInvoker.doInvoke(...)
+                failsafe
+                    失败则忽略：
+                        FailsafeClusterInvoker.doInvoke(...)
+        调用降级
+            概述
+                https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/advanced-features-and-usage/service/service-downgrade/
+            方案
+                Sentinel
+    扩展实现
+        https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/reference-manual/spi/overview/
+            过滤器
+                概述
+                    通过 SPI 实现
+                构建
+                    DefaultFilterChainBuilder.buildInvokerChain(...)
+                传参
+                    通过 com.alibaba.dubbo.rpc.RpcInvocation.attachments 实现
+                排序
+                    通过 default,filter1,filter2 指定顺序
+                        default 表示内置过滤器
+核心组件
     URL
-        URL 作为配置信息的统一格式
+        URL 是配置信息的封装格式
     Invoker
-        Invoker 是实体域
+        Invoker 是实体域，代表一个可执行体，有可能是一个集群实现，也可能是一个本地实现，也可能是一个远程实现。
     Invocation
-        Invocation 是会话域
+        Invocation 是会话域，持有调用过程中的信息，比如方法名、参数等。
     Protocol
-        Protocol 是服务域
-    Directory
+        Protocol 是服务域，是 Invoker 暴露和引用的入口。
+整体设计
+    概述
+        Dubbo 架构可分为十层
+        层与层之间单向依赖
+        除了 Service 和 Config 层为 API 实现，其它各层均为 SPI 实现。
+    分层
+        Service
+            定义 RPC 服务接口
+        Config
+            定义各层需要的配置信息，以 ServiceConfig 和 ReferenceConfig 为中心。
+        Proxy
+            创建代理
+        Registry
+            注册服务
+            发现服务
+        cluster
+            均衡负载
+        Monitor
+            监控 RPC 性能
+        Protocol
+            封装 RPC 调用
+        Exchange
+            封装请求和响应
+        Transport
+            封装网络传输
+        Serialize
+            封装序列化
