@@ -102,7 +102,7 @@
                         org.apache.dubbo.common.serialize.Serialization
                         org.apache.dubbo.remoting.Codec2
                         org.apache.dubbo.common.status.StatusChecker
-                    类加载
+                    类加载：
                         ConfigValidationUtils.checkMultiExtension(..., types, ...)
                 扩展案例
                     过滤器
