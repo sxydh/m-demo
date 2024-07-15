@@ -87,17 +87,34 @@
             方案
                 Sentinel
     扩展实现
-        https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/reference-manual/spi/overview/
-            过滤器
+        SPI
+            https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/reference-manual/spi/overview/
                 概述
-                    通过 SPI 实现
-                构建
-                    DefaultFilterChainBuilder.buildInvokerChain(...)
-                传参
-                    通过 com.alibaba.dubbo.rpc.RpcInvocation.attachments 实现
-                排序
-                    通过 default,filter1,filter2 指定顺序
-                        default 表示内置过滤器
+                    Dubbo 在约定文件夹位置读取约定的配置文件，并加载文件中定义的类。
+                    约定文件夹：
+                        META-INF/dubbo
+                    约定配置文件：
+                        org.apache.dubbo.rpc.ExporterListener
+                        org.apache.dubbo.rpc.Filter
+                        org.apache.dubbo.rpc.cluster.filter.ClusterFilter
+                        org.apache.dubbo.remoting.Transporter
+                        org.apache.dubbo.remoting.telnet.TelnetHandler
+                        org.apache.dubbo.common.serialize.Serialization
+                        org.apache.dubbo.remoting.Codec2
+                        org.apache.dubbo.common.status.StatusChecker
+                    类加载
+                        ConfigValidationUtils.checkMultiExtension(..., types, ...)
+                扩展案例
+                    过滤器
+                        概述
+                            通过 SPI 实现
+                        构建
+                            DefaultFilterChainBuilder.buildInvokerChain(...)
+                        传参
+                            通过 com.alibaba.dubbo.rpc.RpcInvocation.attachments 实现
+                        排序
+                            通过 default,filter1,filter2 指定顺序
+                                default 表示内置过滤器
 核心组件
     URL
         URL 是配置信息的封装格式
