@@ -155,8 +155,26 @@
             封装序列化
 常见问题
     超时时间
+        默认 1 秒
+        过滤器实现：
+            ProfilerServerFilter.onResponse(...)
+                ProfilerServerFilter.dumpIfNeed(...)
     重试次数
+        默认失败（包括不可用、超时等）后额外重试 2 次
+        容错策略 failover 实现：
+            FailoverClusterInvoker.doInvoke(...)
     限流降级
+        第三方组件实现：
+            Sentinel
     传输协议
-    优雅停机
+        默认 TCP 协议
+        基于 Netty 实现的长连接
     设计模式
+        创建型模式
+            工厂模式
+        行为型模式
+            观察者模式
+            策略模式
+        结构型模式
+            代理模式
+            装饰器模式
