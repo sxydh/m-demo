@@ -141,7 +141,7 @@
         Registry
             注册服务
             发现服务
-        cluster
+        Cluster
             均衡负载
         Monitor
             监控 RPC 性能
@@ -172,9 +172,15 @@
     设计模式
         创建型模式
             工厂模式
+                ProxyFactory
+                RegistryFactory
         行为型模式
             观察者模式
+                EventListener
             策略模式
+                SPI
         结构型模式
             代理模式
+                Proxy
             装饰器模式
+                ProtocolFilterWrapper
