@@ -40,7 +40,7 @@
             Consumer
                 HelloService.hello()
                     InvokerInvocationHandler.invoke(...)
-                        过滤器链执行（第一部分）：
+                        过滤器链执行（集群相关）：
                             FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
                                 根据容错实现尝试调用目标服务实例集群：
                                     AbstractClusterInvoker.doInvoke(...)
@@ -50,23 +50,25 @@
                                                     AbstractClusterInvoker.select(...)
                                                         LoadBalance.select(...)
                                                             默认是 RandomLoadBalance 随机实现
-                                                过滤器链执行（第二部分）：
+                                                过滤器链执行（实例相关）：
                                                     FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
                                                         通过 Netty 调用目标服务：
                                                             AbstractClient.send(...)
                                                                 NioSocketChannel.writeAndFlush(...)
-                                                                    过滤器链执行（第三部分）：
+                                                                    过滤器链执行（响应回调）：
                                                                         AsyncRpcResult.whenCompleteWithContext(...)
             Provider
                 NettyServerHandler.channelRead(...)
                     AllChannelHandler.received(...)
                         线程池任务执行：
                             executor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
-                                过滤器链执行：
+                                过滤器链执行（前置拦截）：
                                     FilterChainBuilder.CopyOfFilterChainNode.invoke(...)
                                         最终接口调用：
                                             Wrapper.invokeMethod(...)
                                                 HelloServiceImpl.hello()
+                                                    过滤器链执行（响应回调）：
+                                                        AsyncRpcResult.whenCompleteWithContext(...)
         调用容错
             概述
                 https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/advanced-features-and-usage/service/fault-tolerent-strategy/
@@ -151,3 +153,10 @@
             封装网络传输
         Serialize
             封装序列化
+常见问题
+    超时时间
+    重试次数
+    限流降级
+    传输协议
+    优雅停机
+    设计模式
