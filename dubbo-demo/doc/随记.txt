@@ -156,11 +156,11 @@
 常见问题
     超时时间
         默认 1 秒
-        过滤器实现：
+        过滤器实现（服务端）：
             ProfilerServerFilter.onResponse(...)
                 ProfilerServerFilter.dumpIfNeed(...)
     重试次数
-        默认失败（包括不可用、超时等）后额外重试 2 次
+        默认失败后（包括不可用、超时等）额外重试 2 次
         容错策略 failover 实现：
             FailoverClusterInvoker.doInvoke(...)
     限流降级
