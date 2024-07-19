@@ -152,7 +152,7 @@
         概述
             PVC （ Persistent Volume Claim ）是存储资源对象，是用户对存储的声明式请求。
         创建
-            kubectl create -f nfs-pvc.yaml
+            kubectl create -f nfs-pvc.yaml -n <namespace_name>
                 -f ：指定配置文件。
         列表
             kubectl get pvc -o wide -n <namespace_name>
