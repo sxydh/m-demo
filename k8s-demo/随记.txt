@@ -147,7 +147,7 @@
         列表
             kubectl get storageclass -o wide
         删除
-            kubectl delete storageclass
+            kubectl delete storageclass <sc_name>
     PV
         概述
             PV （ Persistent Volume ）是集权存储资源，不特定于某个命名空间。
