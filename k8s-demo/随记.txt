@@ -141,6 +141,9 @@
     PV
         概述
             PV （ Persistent Volume ）是集群存储资源，不特定于某个命名空间。
+            PV 的路径建议执行如下操作：
+                sudo chown -R nobody:nogroup <path>
+                sudo chmod -R 777 <path>
             PV 支持多种存储实现：
                 HostPath
                     HostPath 是将当前节点路径进行映射和共享，注意如果 Pod 被调度了其它节点，则结果是无法使用该 PV 的。
