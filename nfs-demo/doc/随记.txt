@@ -1,27 +1,45 @@
 环境
-    前置条件
-        Ubuntu 20.04.6 LTS
-            192.168.233.129
-    安装服务
-        sudo apt update
-        sudo apt install nfs-kernel-server
-            验证
-                systemctl status nfs-kernel-server
-    共享存储
-        sudo mkdir -p /opt/module/nfs/data/shared
-        sudo chown nobody:nogroup /opt/module/nfs/data/shared
-        sudo chmod -R 777 /opt/module/nfs/data/shared
-        sudo vim /etc/exports
-            追加
-                /opt/module/nfs/data/shared *(rw,sync,no_subtree_check)
-                    * ：允许所有客户端访问。
-                    rw ：允许读写。
-                    sync ：文件同时写入内存和硬盘。
-                    no_subtree_check ：禁用子树检查。
-        sudo exportfs -arv
-            -a ：导出所有已配置的共享定义。
-            -r ：移除旧条目，确保没有旧的配置干扰到新的配置。
-            -v ：输出详细信息。
+    服务端
+        前置条件
+            Ubuntu 20.04.6 LTS
+                192.168.233.129
+        安装服务
+            sudo apt update
+            sudo apt install nfs-kernel-server
+                验证：
+                    systemctl status nfs-kernel-server
+        共享存储
+            sudo mkdir -p /opt/module/nfs/data/shared
+            sudo chown nobody:nogroup /opt/module/nfs/data/shared
+            sudo chmod -R 777 /opt/module/nfs/data/shared
+            sudo vim /etc/exports
+                追加
+                    /opt/module/nfs/data/shared *(rw,sync,no_subtree_check)
+                        * ：允许所有客户端访问。
+                        rw ：允许读写。
+                        sync ：文件同时写入内存和硬盘。
+                        no_subtree_check ：禁用子树检查。
+            sudo exportfs -arv
+                -a ：导出所有已配置的共享定义。
+                -r ：移除旧条目，确保没有旧的配置干扰到新的配置。
+                -v ：输出详细信息。
 
-            验证：
-                showmount -e 192.168.233.129
+                验证：
+                    showmount -e 192.168.233.129
+    客户端
+        前置条件
+            Ubuntu 20.04.6 LTS
+                192.168.233.130
+        安装服务
+            sudo apt update
+            sudo apt install nfs-common
+                验证：
+                    sudo showmount --exports 192.168.233.129
+        共享存储
+            sudo mount -t nfs -o nfsvers=4 192.168.233.129:/opt/module/nfs/data/shared /opt/module/nfs
+                -t nfs ：指定要挂载的文件系统类型为 NFS 。
+                -o ：后面紧跟挂载参数。
+                nfsvers=4 ：指定 NFS 协议版本。
+                192.168.233.129 ：指定 NFS 服务器地址。
+                /opt/module/nfs/data/shared ：指定 NFS 服务器的共享路径。
+                /opt/module/nfs ：指定本地挂载路径，需要预先创建。
