@@ -9,3 +9,4 @@ spec:
     - ReadWriteMany
   hostPath:
     path: /opt/module/pv
+    type: Directory
