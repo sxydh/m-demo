@@ -168,7 +168,9 @@
             kubectl get pvc -o wide -n <namespace_name>
         删除
             kubectl delete pvc <pvc_name> -n <namespace_name>
-    Pod     
+    Pod
+        创建
+            kubectl create -f nginx-pod.yaml -n <namespace_name>
         列表
             kubectl get pod -o wide -n <namespace_name>
                 进入 Pod
