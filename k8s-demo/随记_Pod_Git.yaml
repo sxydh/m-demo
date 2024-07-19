@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: git-pod
+spec:
+  containers:
+  - name: git-container
+    image: bitnami/git:latest
+    command: ["/bin/sh", "-c", "sleep infinity"]
+    volumeMounts:
+    - name: git-volume
+      mountPath: /opt/module/git
+  volumes:
+  - name: git-volume
+    hostPath:
+      path: /opt/module/pv
+      type: Directory
