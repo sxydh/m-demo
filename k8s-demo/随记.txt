@@ -164,7 +164,7 @@
         列表
             kubectl get pod -o wide -n <namespace_name>
                 进入 Pod
-                    kubectl exec -it -n <namespace> <pod_name> -- bash
+                    kubectl exec -it <pod_name> -n <namespace> -- bash
         详情
             kubectl describe pod <pod_name> -n <namespace_name>
         重启
