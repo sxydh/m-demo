@@ -141,6 +141,11 @@
     PV
         概述
             PV （ Persistent Volume ）是集群存储资源，不特定于某个命名空间。
+            PV 支持多种存储实现：
+                HostPath
+                    注意 HostPath 仅针对本机节点，如果 Pod 被调度了其它节点，是无法使用该 PV 的。
+                NFS
+                ...
         创建
             kubectl create -f pv.yaml
                 -f ：指定配置文件。
