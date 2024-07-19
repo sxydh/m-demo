@@ -143,7 +143,7 @@
             PV （ Persistent Volume ）是集群存储资源，不特定于某个命名空间。
             PV 支持多种存储实现：
                 HostPath
-                    注意 HostPath 仅针对本机节点，如果 Pod 被调度了其它节点，是无法使用该 PV 的。
+                    HostPath 是将当前节点路径进行映射和共享，注意如果 Pod 被调度了其它节点，则结果是无法使用该 PV 的。
                 NFS
                 ...
         创建
