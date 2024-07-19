@@ -1,40 +1,40 @@
 常用命令
     进程
         列表
-            ps aux
-                a ： 包括所有进程。
-                u ： 以用户友好的格式显示信息。
-                x ： 包括没有控制终端的进程。
+            ps aux 
+                a ：包括所有进程。
+                u ：以用户友好的格式显示信息。
+                x ：包括没有控制终端的进程。
     软件
         列表
-            apt list --installed
+            apt list --installed 
         搜索
-            apt search <package_key_name>
+            apt search <package_key_name> 
                 使用关键字搜索可安装的包
         卸载
-            apt remove <package_name>
+            apt remove <package_name> 
         清理
-            apt purge <package_name>
+            apt purge <package_name> 
 环境
-    Ubuntu 20.04.6 LTS
-        配置国内镜像
-            https://mirrors.tuna.tsinghua.edu.cn/ubuntu
-        配置静态 IP
-            sudo vim /etc/netplan/00-installer-config.yaml
+    Ubuntu 20.04.6 LTS 
+        国内镜像
+            https://mirrors.tuna.tsinghua.edu.cn/ubuntu 
+        静态地址
+            sudo vim /etc/netplan/00-installer-config.yaml 
                 更新或追加
 				    ens33:
-				        dhcp4: false
-				        dhcp6: false
+				        dhcp4: false 
+				        dhcp6: false 
 				        addresses:
-				    	    - 192.168.233.129/24 # 本机IP地址
-				        gateway4: 192.168.233.2 # VMware Workstation网关地址
+				    	    - 192.168.233.129/24 # 本机 IP 地址
+				        gateway4: 192.168.233.2 # VMware Workstation 网关地址
 				        nameservers:
                             addresses: [114.114.114.114, 8.8.8.8, 1.1.1.1]
-            sudo netplan apply
-        扩展逻辑卷（组成关系：物理介质 => 物理卷 PV => 卷组 VG => 逻辑卷 LV）
-            sudo pvdisplay
+            sudo netplan apply 
+        扩展逻辑卷（组成关系：物理介质 => 物理卷 PV => 卷组 VG => 逻辑卷 LV ）
+            sudo pvdisplay 
                 查看物理卷信息
-            sudo lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv
-                扩展逻辑卷 /dev/mapper/ubuntu--vg-ubuntu--lv
-            sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+            sudo lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv 
+                扩展逻辑卷 /dev/mapper/ubuntu--vg-ubuntu--lv 
+            sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv 
                 扩展文件系统
