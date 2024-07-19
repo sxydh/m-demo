@@ -12,6 +12,5 @@ spec:
       mountPath: /opt/module/git
   volumes:
   - name: git-volume
-    hostPath:
-      path: /opt/module/pv
-      type: Directory
+    persistentVolumeClaim:
+      claimName: pvc-demo
