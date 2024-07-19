@@ -138,6 +138,26 @@
     ConfigMap
         列表
             kubectl get configmap -o wide -n <namespace_name>
+    PV
+        概述
+            PV （ Persistent Volume ）是集权存储资源，不特定于某个命名空间。
+        创建
+            kubectl create -f nfs-pv.yaml
+                -f ：指定配置文件。
+        列表
+            kubectl get pv -o wide
+        删除
+            kubectl delete pv <pv_name>
+    PVC
+        概述
+            PVC （ Persistent Volume Claim ）是存储资源对象，是用户对存储的声明式请求。
+        创建
+            kubectl create -f nfs-pvc.yaml
+                -f ：指定配置文件。
+        列表
+            kubectl get pvc -o wide -n <namespace_name>
+        删除
+            kubectl delete pvc <pvc_name> -n <namespace_name>
     Pod     
         列表
             kubectl get pod -o wide -n <namespace_name>
