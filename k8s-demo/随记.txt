@@ -118,7 +118,15 @@
                 三层交换机
                     三层交换机可以认为是带有路由功能的二层交换机，即用于三层网络（网络层）的互通。
     存储
-        Ceph
+        分类
+            对象存储 OSS
+                协议支持 HTTP/HTTPS
+            文件存储 NAS
+                协议支持 NFS/SMB
+            块存储 EBS
+                协议支持 SCSI
+        实现
+            Ceph
     监控
         Prometheus
         Grafana
