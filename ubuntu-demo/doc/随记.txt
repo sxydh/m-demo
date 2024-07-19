@@ -15,6 +15,30 @@
             apt remove <package_name> 
         清理
             apt purge <package_name> 
+    网络
+        查看
+            lsof -i:8080
+                查看端口占用
+    存储
+        概述
+            组成关系：物理介质 => 物理卷 PV => 卷组 VG => 逻辑卷 LV 。
+        查看
+            df -h
+                查看磁盘空间使用情况
+            sudo pvdisplay
+                查看物理卷信息
+        修改
+            sudo lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv 
+                lvextend ：扩展逻辑卷。
+                -l ：指定逻辑卷大小，单位是百分比。
+                +100%FREE ：将逻辑卷扩展到物理卷剩余空间的百分百。
+                /dev/mapper/ubuntu--vg-ubuntu--lv ：逻辑卷路径。
+
+                注意，扩展逻辑卷之后，还需要 resize2fs 扩展文件系统大小。
+
+            sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+                resize2fs ：调整文件系统大小。
+                /dev/mapper/ubuntu--vg-ubuntu--lv ：逻辑卷路径。
 环境
     Ubuntu 20.04.6 LTS 
         国内镜像
@@ -31,10 +55,3 @@
 				        nameservers:
                             addresses: [114.114.114.114, 8.8.8.8, 1.1.1.1]
             sudo netplan apply 
-        扩展存储（组成关系：物理介质 => 物理卷 PV => 卷组 VG => 逻辑卷 LV ）
-            sudo pvdisplay 
-                查看物理卷信息
-            sudo lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv 
-                扩展 /dev/mapper/ubuntu--vg-ubuntu--lv 逻辑卷 
-            sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
-                扩展 /dev/mapper/ubuntu--vg-ubuntu--lv 文件系统
