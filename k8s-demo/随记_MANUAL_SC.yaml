@@ -1,0 +1,6 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: manual-sc
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: Immediate # 指定 PVC 绑定到 PV 的时机
