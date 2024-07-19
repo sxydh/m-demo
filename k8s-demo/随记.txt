@@ -141,7 +141,7 @@
     PV
         概述
             PV （ Persistent Volume ）是集群存储资源，不特定于某个命名空间。
-            PV 的路径建议执行如下操作：
+            PV 的路径需要提前创建，而且建议执行如下操作：
                 sudo chown -R nobody:nogroup <path>
                 sudo chmod -R 777 <path>
             PV 支持多种存储实现：
