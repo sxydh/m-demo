@@ -138,21 +138,11 @@
     ConfigMap
         列表
             kubectl get configmap -o wide -n <namespace_name>
-    StorageClass
-        概述
-            StorageClass 用于动态创建 PV
-        创建
-            kubectl apply -f manual-sc.yaml
-                -f ：指定配置文件。
-        列表
-            kubectl get storageclass -o wide
-        删除
-            kubectl delete storageclass <sc_name>
     PV
         概述
-            PV （ Persistent Volume ）是集权存储资源，不特定于某个命名空间。
+            PV （ Persistent Volume ）是集群存储资源，不特定于某个命名空间。
         创建
-            kubectl create -f nfs-pv.yaml
+            kubectl create -f pv.yaml
                 -f ：指定配置文件。
         列表
             kubectl get pv -o wide
@@ -160,9 +150,9 @@
             kubectl delete pv <pv_name>
     PVC
         概述
-            PVC （ Persistent Volume Claim ）是存储资源对象，是用户对存储的声明式请求。
+            PVC （ Persistent Volume Claim ）是存储资源对象，是用户对 PV 的声明式请求。
         创建
-            kubectl create -f nfs-pvc.yaml -n <namespace_name>
+            kubectl create -f pvc.yaml -n <namespace_name>
                 -f ：指定配置文件。
         列表
             kubectl get pvc -o wide -n <namespace_name>
