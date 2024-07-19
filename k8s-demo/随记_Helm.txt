@@ -31,7 +31,12 @@
 环境
     前置条件
         K8s v1.23.17 集群
-    安装服务
+            Kubernetes Master
+                hadoop01
+            Kubernetes Node
+                hadoop02
+                hadoop03
+    安装服务（ hadoop01 ）
         curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
         sudo apt-get install apt-transport-https --yes
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
