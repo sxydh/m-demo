@@ -144,6 +144,8 @@
         创建
             kubectl apply -f manual-sc.yaml
                 -f ：指定配置文件。
+        列表
+            kubectl get storageclass
     PV
         概述
             PV （ Persistent Volume ）是集权存储资源，不特定于某个命名空间。
