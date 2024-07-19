@@ -1,0 +1,24 @@
+环境
+    前置条件
+        Ubuntu 20.04.6 LTS
+            192.168.233.129
+    安装服务
+        sudo apt update
+        sudo apt install nfs-kernel-server
+            验证
+                systemctl status nfs-kernel-server
+    共享存储
+        sudo mkdir -p /opt/module/nfs/data/shared
+        sudo chown nobody:nogroup /opt/module/nfs/data/shared
+        sudo chmod -R 777 /opt/module/nfs/data/shared
+        sudo vim /etc/exports
+            追加
+                /opt/module/nfs/data/shared *(rw,sync,no_subtree_check)
+                    * ：允许所有客户端访问。
+                    rw ：允许读写。
+                    sync ：文件同时写入内存和硬盘。
+                    no_subtree_check ：禁用子树检查。
+        sudo exportfs -arv
+            -a ：导出所有已配置的共享定义。
+            -r ：移除旧条目，确保没有旧的配置干扰到新的配置。
+            -v ：输出详细信息。
