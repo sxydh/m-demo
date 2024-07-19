@@ -31,10 +31,10 @@
 				        nameservers:
                             addresses: [114.114.114.114, 8.8.8.8, 1.1.1.1]
             sudo netplan apply 
-        扩展逻辑卷（组成关系：物理介质 => 物理卷 PV => 卷组 VG => 逻辑卷 LV ）
+        扩展存储（组成关系：物理介质 => 物理卷 PV => 卷组 VG => 逻辑卷 LV ）
             sudo pvdisplay 
                 查看物理卷信息
             sudo lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv 
-                扩展逻辑卷 /dev/mapper/ubuntu--vg-ubuntu--lv 
-            sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv 
-                扩展文件系统
+                扩展 /dev/mapper/ubuntu--vg-ubuntu--lv 逻辑卷 
+            sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+                扩展 /dev/mapper/ubuntu--vg-ubuntu--lv 文件系统
