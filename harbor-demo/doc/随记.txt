@@ -98,3 +98,7 @@
                 harbor-instance ：安装实例名称。
                 goharbor ：本地仓库名称。
                 harbor ：安装 Chart 名称。
+
+                验证：
+                    kubectl get service -o wide -n harbor
+                        http://<node_ip>:<port>
