@@ -175,6 +175,7 @@
                     kubectl exec -it <pod_name> -n <namespace> -- bash
         详情
             kubectl describe pod <pod_name> -n <namespace_name>
+            kubectl logs <pod_name> -n <namespace_name>
         重启
             常规方式
                 kubectl get pod <pod_name> -n <namespace_name> -o yaml | kubectl replace --force -f -
