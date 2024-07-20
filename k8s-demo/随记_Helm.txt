@@ -43,6 +43,7 @@
         sudo apt-get install apt-transport-https --yes
             可能需要先执行以下命令：
                 sudo dpkg --configure -a
+                sudo apt --fix-broken install
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
         sudo apt-get update
         sudo apt-get install helm
