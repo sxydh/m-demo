@@ -92,6 +92,8 @@
                         enabled: false
                     persistence:
                       enabled: false
+                    # 必须改成 HTTP 否则登录提示密码错误
+                    externalURL: http://core.harbor.domain 
             kubectl create namespace harbor
             helm install harbor-instance goharbor/harbor -f values.yaml -n harbor
                 安装 Chart
