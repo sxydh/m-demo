@@ -2,11 +2,11 @@
     概述
         Linux 操作系统分为内核和用户空间，内核启动后，会挂载 root 文件系统为其提供用户空间支持。
         镜像（ Image ）就相当于是一个 root 文件系统，比如官方镜像 ubuntu:18.04 就包含了完整的一套 Ubuntu 18.04 最小系统的 root 文件系统。
-    获取
-        docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]
+    拉取
+        docker pull [options] [docker_registry_ip[:port]/]<repo_name>[:tag]
             docker pull ubuntu:18.04
     删除
-        docker image rm [选项] <镜像1> [<镜像2> ...]
+        docker image rm [options] <image_name1> [<image_name2> ...]
             docker image rm ubuntu:18.04
     列表
         docker image ls
