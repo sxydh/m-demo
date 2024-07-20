@@ -105,6 +105,5 @@
                 验证：
                     kubectl get service -o wide -n harbor
                         http://<node_ip>:<port>
-                            偶现用户名或者密码不正确，无解。
                             新建项目
                             推送镜像
