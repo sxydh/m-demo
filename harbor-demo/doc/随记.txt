@@ -102,3 +102,7 @@
                 验证：
                     kubectl get service -o wide -n harbor
                         http://<node_ip>:<port>
+                            新建项目
+                                一个项目可以有多个仓库
+                            新建仓库
+                            推送镜像
