@@ -107,7 +107,9 @@
                 1 Physical layer
             NAT
             Underlay
+                物理网络
             Overlay
+                虚拟网络
             LAN
                 LAN （ Local Area Network ，局域网）是指覆盖范围较小的网络
             VLAN
