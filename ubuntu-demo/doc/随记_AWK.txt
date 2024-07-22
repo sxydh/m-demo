@@ -1,0 +1,4 @@
+概述
+    AWK 提供编程语言的功能，例如运算、字符串处理等。
+语法
+    awk [options] 'pattern {action}' <input>
