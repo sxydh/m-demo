@@ -200,7 +200,8 @@ Spark Streaming
                 bin/spark-submit --class org.apache.spark.examples.SparkPi --master spark://hadoop01:7077,hadoop02:7077 examples/jars/spark-examples_2.12-3.0.0.jar 10
                     停止Master进程（hadoop01），再次测试。
     YARN模式
-        YARN模式下，Spark的资源由YARN调度。
+        概述
+            YARN模式下，Spark的资源由YARN调度。
         前置条件
             三台服务器（Ubuntu 20.04.6 LTS）
                 192.168.233.129 hadoop01
