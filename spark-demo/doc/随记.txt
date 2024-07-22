@@ -1,274 +1,274 @@
 概述
     Apache Spark 是一个开源的分布式计算系统，旨在处理大规模数据处理任务。
-    Spark 采用弹性分布式数据集（Resilient Distributed Dataset，RDD）作为其基本数据结构，这是一种可以在集群中并行操作的不可变分布式对象。
-        RDD 是 Resillient Distributed Dataset（弹性分布式数据集）的简称，是分布式内存的一个抽象概念。
-        RDD 只是一个逻辑概念，它可能并不对应磁盘或内存中的物理数据。RDD 由以下五部分组成：
-            一组分区（Partition，即组成整个数据集的块）
+    Spark 采用弹性分布式数据集（ Resilient Distributed Dataset ， RDD ）作为其基本数据结构，这是一种可以在集群中并行操作的不可变分布式对象。
+        RDD 是 Resillient Distributed Dataset （弹性分布式数据集）的简称，是分布式内存的一个抽象概念。
+        RDD 只是一个逻辑概念，它可能并不对应磁盘或内存中的物理数据。 RDD 由以下五部分组成：
+            一组分区（ Partition ，即组成整个数据集的块）
             每个分区的计算函数（用于计算数据集中所有行的函数）
             所依赖的 RDD 列表（即父 RDD 列表）
-            （可选）对于 key-value 类型的 RDD，包含一个Partitioner（默认是HashPartitioner）。
+            （可选）对于 key-value 类型的 RDD ，包含一个 Partitioner （默认是 HashPartitioner ）。
             （可选）每个分区数据驻留在集群中的位置，如果数据存放在 HDFS 上，那么它就是块所在的位置。
     Spark 相对于传统的 MapReduce 计算框架更为快速，主要原因是它将数据存储在内存中，减少了磁盘读写的开销。
 
     核心模块
-        Spark Core
-        Spark SQL
-        Spark MLib
-        Spark GraphX
-        Spark Streaming
-Spark Core
+        Spark Core 
+        Spark SQL 
+        Spark MLib 
+        Spark GraphX 
+        Spark Streaming 
+ Spark Core 
     概述
-        一个 Spark 应用程序由两部分组成（http://xueai8.com/course/60/article）
-            数据处理（API）
-                应用程序数据处理逻辑（Task）是用 Java 或 Scala 或 Python 或 R 这几种语言编写的数据处理逻辑代码
-            驱动程序（Driver）
+        一个 Spark 应用程序由两部分组成（ http://xueai8.com/course/60/article ）
+            数据处理（ API ）
+                应用程序数据处理逻辑（ Task ）是用 Java 或 Scala 或 Python 或 R 这几种语言编写的数据处理逻辑代码
+            驱动程序（ Driver ）
                 Driver 是应用程序的主控制器，它负责组织和监控一个 Spark 应用程序的执行。它与集群管理器进行交互，以确定哪台机器来运行数据处理逻辑。
                 Driver 及其子组件负责如下职责：
                     向集群管理器请求内存和 CPU 资源
                     将应用程序逻辑分解为阶段和任务
                     请求集群管理器启动名为 Spark Executor 的进程（在运行 Task 的节点上）
-                    向 Executor 发送 Task，每个 Task 都在一个单独的 CPU Core 上执行
+                    向 Executor 发送 Task ，每个 Task 都在一个单独的 CPU Core 上执行
                     与每个 Spark Executor 协调以收集计算结果并将它们合并在一起
     概念
-        作业（Job）
-            一个 Spark 应用程序通常由多个作业（Job）组成，每个作业包含了一个或多个阶段。
+        作业（ Job ）
+            一个 Spark 应用程序通常由多个作业（ Job ）组成，每个作业包含了一个或多个阶段。
                 一个作业沿着 RDD 依赖路径，每遇到一个 Shuffle 就形成该作业的一个阶段。
-                一个作业通常由一个动作操作触发，例如 collect 或 saveAsTextFile。
-        阶段（Stage）
-            一个阶段是由一系列的转换操作组成的逻辑执行单元，这些转换操作形成一个有向无环图（DAG），表示了数据的流动和计算的依赖关系。
-            通常，一个阶段内的所有转换操作都可以在一个节点上执行，无需进行数据混洗（Shuffle）。
+                一个作业通常由一个动作操作触发，例如 collect 或 saveAsTextFile 。
+        阶段（ Stage ）
+            一个阶段是由一系列的转换操作组成的逻辑执行单元，这些转换操作形成一个有向无环图（ DAG ），表示了数据的流动和计算的依赖关系。
+            通常，一个阶段内的所有转换操作都可以在一个节点上执行，无需进行数据混洗（ Shuffle ）。
             阶段的划分是根据窄依赖和宽依赖进行的，具有窄依赖的转换操作可以在一个阶段内执行，而宽依赖通常会导致阶段的划分。
             应用程序被划分为多个阶段，每个阶段都包含一组并行计算的任务。
-        任务（Task）
+        任务（ Task ）
             一个任务是对数据集的一次并行计算，通常与一个分区相关联。在一个阶段内，每个分区都会生成一个任务。
             任务是 Spark 中最小的并行执行单元，可以在集群中的不同节点上并行执行。
             任务的执行是幂等的，即相同的任务可以重复执行，而不会影响最终结果。
-        数据混洗（Shuffle）
-            有些运算需要将各节点上的同一类数据汇集到某一节点进行计算，把这些分布在不同节点的数据按照一定的规则汇集到一起的过程称为 Shuffle。
-        血缘关系（Lineage）
+        数据混洗（ Shuffle ）
+            有些运算需要将各节点上的同一类数据汇集到某一节点进行计算，把这些分布在不同节点的数据按照一定的规则汇集到一起的过程称为 Shuffle 。
+        血缘关系（ Lineage ）
             血缘关系是指 RDD 之间的依赖关系链
-            当一个 RDD 通过一系列的转换操作（例如 map、filter、reduce 等）生成新的 RDD 时，这些 RDD 之间就存在血缘关系
-            血缘关系具有两种类型：窄依赖（Narrow Dependency）和宽依赖（Wide Dependency）。
+            当一个 RDD 通过一系列的转换操作（例如 map 、 filter 、 reduce 等）生成新的 RDD 时，这些 RDD 之间就存在血缘关系
+            血缘关系具有两种类型：窄依赖（ Narrow Dependency ）和宽依赖（ Wide Dependency ）。
                 窄依赖：是指一个父 RDD 的分区最多只能被一个子 RDD 的分区所引用。
                 宽依赖：是指一个父 RDD 的分区被多个子 RDD 的分区所引用。
-        持久化（Persistence）
+        持久化（ Persistence ）
             Spark 支持将 RDD 持久化到内存或磁盘上，以便在迭代算法或多次使用相同数据集时提高性能。
             持久化的主要目的是避免在每次需要使用 RDD 时都重新计算它，而是将计算结果保存在分布式存储中，以便下次使用时能够快速访问。
-        检查点（Checkpointing）
-            检查点是一种将 RDD 的中间结果物化（Materialize）到分布式文件系统（如 HDFS）上的机制，以防止由于任务失败或其他原因导致的计算失败。
-            检查点操作会触发一个任务的重新计算，将结果写入到指定的目录中，并将该目录路径替代原来的 RDD。
-        广播变量（Broadcast Variables）
+        检查点（ Checkpointing ）
+            检查点是一种将 RDD 的中间结果物化（ Materialize ）到分布式文件系统（如 HDFS ）上的机制，以防止由于任务失败或其他原因导致的计算失败。
+            检查点操作会触发一个任务的重新计算，将结果写入到指定的目录中，并将该目录路径替代原来的 RDD 。
+        广播变量（ Broadcast Variables ）
             广播变量用于将只读变量有效地分发给所有执行器，从而避免在每个任务中都复制一份相同的变量。
             广播变量通常用于将较大的只读数据结构有效地传播到所有工作节点上的任务
-        累加器（Accumulators）
+        累加器（ Accumulators ）
             累加器是一种支持在分布式任务中进行累加操作的变量
             通常用于在多个任务中聚合结果，例如计数器或总和。
 
 
-Spark SQL
+ Spark SQL 
     概述
         Spark SQL 是结构化的数据处理模块
     概念
-        DataFrame
+        DataFrame 
             DataFrame 是一种以 RDD 为基础的分布式数据集，类似于关系数据库的表。
-            DataFrame 提供了一种更高层次、更抽象的 API，使得用户可以用类似 SQL 的语法进行数据处理和分析，同时能够利用 Spark 的分布式计算能力。
+            DataFrame 提供了一种更高层次、更抽象的 API ，使得用户可以用类似 SQL 的语法进行数据处理和分析，同时能够利用 Spark 的分布式计算能力。
         DataSet 
             DataSet 是 DataFrame 的扩展，是 Spark SQL 最新的数据抽象。
-        UDF
-            UDF（User-Defined Function）是一种用户自定义的函数，允许用户使用编程语言（如 Scala、Java、Python）编写自定义函数，并将其应用于 Spark 数据处理操作。
+        UDF 
+            UDF （ User-Defined Function ）是一种用户自定义的函数，允许用户使用编程语言（如 Scala 、 Java 、 Python ）编写自定义函数，并将其应用于 Spark 数据处理操作。
             UDF 使得用户能够扩展 Spark SQL 的功能，以便进行更复杂的数据处理和转换。
 
-Spark Streaming
+ Spark Streaming 
     概述
         Spark Streaming 用于实现准实时数据流处理
-        Spark Streaming 使用微批处理模型，将连续的实时数据流划分为一系列小的、有限的批次。每个批次的数据被表示为一个弹性分布式数据集（Resilient Distributed Dataset，RDD），这是 Spark 引擎的基本数据结构。
+        Spark Streaming 使用微批处理模型，将连续的实时数据流划分为一系列小的、有限的批次。每个批次的数据被表示为一个弹性分布式数据集（ Resilient Distributed Dataset ， RDD ），这是 Spark 引擎的基本数据结构。
     概念
-        DStream
-            DStream（Discretized Stream）是 Spark Streaming 的核心抽象，表示连续的数据流。
-            DStream 是由一系列时间间隔内的 RDD 组成的，每个时间间隔的数据都会形成一个 RDD，而这一系列 RDD 就构成了 DStream。
+        DStream 
+            DStream （ Discretized Stream ）是 Spark Streaming 的核心抽象，表示连续的数据流。
+            DStream 是由一系列时间间隔内的 RDD 组成的，每个时间间隔的数据都会形成一个 RDD ，而这一系列 RDD 就构成了 DStream 。
 
 环境
-    独立部署（3.0.0）
-        独立部署模式由Spark自身提供计算资源，无需其它框架提供资源，这种模式降低了与其它框架的耦合性。
+    独立部署（ 3.0.0 ）
+        独立部署模式由 Spark 自身提供计算资源，无需其它框架提供资源，这种模式降低了与其它框架的耦合性。
         前置条件
-            三台服务器（Ubuntu 20.04.6 LTS）
-                192.168.233.129 hadoop01
-                192.168.233.130 hadoop02
-                192.168.233.131 hadoop03
-        准备文件（hadoop01）
+            三台服务器（ Ubuntu 20.04.6 LTS ）
+                192.168.233.129 hadoop01 
+                192.168.233.130 hadoop02 
+                192.168.233.131 hadoop03 
+        准备文件（ hadoop01 ）
             sudo mkdir /opt/module/spark 
-            sudo chown -R sxydh:sxydh /opt/module/spark
-            wget -P /opt/module/spark https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz
-            tar -zxvf /opt/module/spark/spark-3.0.0-bin-hadoop3.2.tgz -C /opt/module/spark
-        修改配置文件（hadoop01）
-            cp /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/slaves.template /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/slaves
-            vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/slaves
+            sudo chown -R sxydh:sxydh /opt/module/spark 
+            wget -P /opt/module/spark https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz 
+            tar -zxvf /opt/module/spark/spark-3.0.0-bin-hadoop3.2.tgz -C /opt/module/spark 
+        修改配置文件（ hadoop01 ）
+            cp /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/slaves.template /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/slaves 
+            vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/slaves 
                 更新
-                    hadoop01
-                    hadoop02
-                    hadoop03
-            cp /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh.template /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh
-            vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh
+                    hadoop01 
+                    hadoop02 
+                    hadoop03 
+            cp /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh.template /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh 
+            vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh 
                 追加
-                    export JAVA_HOME=/opt/module/jdk/jdk1.8.0_202
-                    export SPARK_MASTER_HOST=hadoop01
-                    export SPARK_MASTER_PORT=7077
-        分发文件到集群（hadoop02，hadoop03）
+                    export JAVA_HOME=/opt/module/jdk/jdk1.8.0_202 
+                    export SPARK_MASTER_HOST=hadoop01 
+                    export SPARK_MASTER_PORT=7077 
+        分发文件到集群（ hadoop02 ， hadoop03 ）
             略
-        启动集群（hadoop01）
-            cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/
-            sbin/start-all.sh
+        启动集群（ hadoop01 ）
+            cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/ 
+            sbin/start-all.sh 
                 验证
                     jps 
-                    http://hadoop01:8080
+                    http://hadoop01:8080 
         测试应用提交
-            cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/
-            bin/spark-submit --class org.apache.spark.examples.SparkPi --master spark://hadoop01:7077 examples/jars/spark-examples_2.12-3.0.0.jar 10
-                --class：执行程序主函数的类。
-                --master spark://hadoop01:7077：独立部署模式，连接到Spark集群。
-                spark-examples_2.12-3.0.0.jar：执行程序的Jar包。
-                10：主函数的入参。
-        配置历史服务 
-            集群监控http://hadoop01:4040默认看不到历史任务情况，需要配置历史服务。
+            cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/ 
+            bin/spark-submit --class org.apache.spark.examples.SparkPi --master spark://hadoop01:7077 examples/jars/spark-examples_2.12-3.0.0.jar 10 
+                --class ：执行程序主函数的类。
+                --master spark://hadoop01:7077 ：独立部署模式，连接到 Spark 集群。
+                spark-examples_2.12-3.0.0.jar ：执行程序的 Jar 包。
+                10 ：主函数的入参。
+        配置历史服务
+            集群监控 http://hadoop01:4040 默认看不到历史任务情况，需要配置历史服务。
             前置条件
-                Hadoop集群已经启动（hadoop01，hadoop02，hadoop03）。
-                HDFS上已经创建目录/directory。
-            修改配置文件（hadoop01）
+                Hadoop 集群已经启动（ hadoop01 ， hadoop02 ， hadoop03 ）。
+                HDFS 上已经创建目录 /directory 。
+            修改配置文件（ hadoop01 ）
                 cp /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-defaults.conf.template /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-defaults.conf 
-                vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-defaults.conf
+                vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-defaults.conf 
                     追加
-                        spark.eventLog.enabled             true
-                        spark.eventLog.dir                 hdfs://hadoop01:8020/directory
-                vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh
+                        spark.eventLog.enabled             true 
+                        spark.eventLog.dir                 hdfs://hadoop01:8020/directory 
+                vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh 
                     追加
-                        export SPARK_HISTORY_OPTS="
-                        -Dspark.history.ui.port=18080
-                        -Dspark.history.fs.logDirectory=hdfs://hadoop01:8020/directory
-                        -Dspark.history.retainedApplications=30"
-            分发配置文件到集群（hadoop02，hadoop03）
+                        export SPARK_HISTORY_OPTS=" 
+                        -Dspark.history.ui.port=18080 
+                        -Dspark.history.fs.logDirectory=hdfs://hadoop01:8020/directory 
+                        -Dspark.history.retainedApplications=30" 
+            分发配置文件到集群（ hadoop02 ， hadoop03 ）
                 略
-            启动历史服务（hadoop01）
-                cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/
-                sbin/stop-all.sh
-                sbin/start-all.sh
-                sbin/start-history-server.sh
+            启动历史服务（ hadoop01 ）
+                cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/ 
+                sbin/stop-all.sh 
+                sbin/start-all.sh 
+                sbin/start-history-server.sh 
                     验证
-                        jps
-                        http://hadoop01:18080/
+                        jps 
+                        http://hadoop01:18080/ 
             测试应用提交
                 略
         配置高可用
-            当前Master节点只有一个，存在单点故障问题。要达到高可用，需要配置多个备用的Master。
+            当前 Master 节点只有一个，存在单点故障问题。要达到高可用，需要配置多个备用的 Master 。
             前置条件
-                已经启动ZooKeeper集群（hadoop01，hadoop02，hadoop03）
+                已经启动 ZooKeeper 集群（ hadoop01 ， hadoop02 ， hadoop03 ）
                 高可用规划
-                    hadoop01
+                    hadoop01 
                         Master 
                         ZooKeeper 
-                        Worker
-                    hadoop02
+                        Worker 
+                    hadoop02 
                         Master 
                         ZooKeeper 
-                        Worker
-                    hadoop03
+                        Worker 
+                    hadoop03 
                         ZooKeeper 
-                        Worker
-            修改配置文件（hadoop01）
-                vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh
+                        Worker 
+            修改配置文件（ hadoop01 ）
+                vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh 
                     更新或追加
-                        # export SPARK_MASTER_HOST=hadoop01
-                        # export SPARK_MASTER_PORT=7077
-                        
-                        SPARK_MASTER_WEBUI_PORT=8989
-                        export SPARK_DAEMON_JAVA_OPTS="
-                        -Dspark.deploy.recoveryMode=ZOOKEEPER
-                        -Dspark.deploy.zookeeper.url=hadoop01,hadoop02,hadoop03
-                        -Dspark.deploy.zookeeper.dir=/spark"
-            分发配置文件到集群（hadoop02，hadoop03）
+                        # export SPARK_MASTER_HOST=hadoop01 
+                        # export SPARK_MASTER_PORT=7077 
+
+                        SPARK_MASTER_WEBUI_PORT=8989 
+                        export SPARK_DAEMON_JAVA_OPTS=" 
+                        -Dspark.deploy.recoveryMode=ZOOKEEPER 
+                        -Dspark.deploy.zookeeper.url=hadoop01,hadoop02,hadoop03 
+                        -Dspark.deploy.zookeeper.dir=/spark" 
+            分发配置文件到集群（ hadoop02 ， hadoop03 ）
                 略
-            重启集群（hadoop01）
-                cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/
-                sbin/stop-all.sh
-                sbin/start-all.sh
+            重启集群（ hadoop01 ）
+                cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/ 
+                sbin/stop-all.sh 
+                sbin/start-all.sh 
                     验证
-                        http://hadoop01:8989
-            启动备用Master（hadoop02）
-                cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/
-                sbin/start-master.sh
+                        http://hadoop01:8989 
+            启动备用 Master （ hadoop02 ）
+                cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/ 
+                sbin/start-master.sh 
             测试应用提交
-                cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/
-                bin/spark-submit --class org.apache.spark.examples.SparkPi --master spark://hadoop01:7077,hadoop02:7077 examples/jars/spark-examples_2.12-3.0.0.jar 10
-                    停止Master进程（hadoop01），再次测试。
-    YARN模式
+                cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/ 
+                bin/spark-submit --class org.apache.spark.examples.SparkPi --master spark://hadoop01:7077,hadoop02:7077 examples/jars/spark-examples_2.12-3.0.0.jar 10 
+                    停止 Master 进程（ hadoop01 ），再次测试。
+    YARN 模式
         概述
-            YARN模式下，Spark的资源由YARN调度。
+            YARN 模式下， Spark 的资源由 YARN 调度。
         前置条件
-            三台服务器（Ubuntu 20.04.6 LTS）
-                192.168.233.129 hadoop01
-                192.168.233.130 hadoop02
-                192.168.233.131 hadoop03
-            Hadoop集群已经启动（hadoop01，hadoop02，hadoop03。包含YARN服务）。
-        准备文件（hadoop01）
+            三台服务器（ Ubuntu 20.04.6 LTS ）
+                192.168.233.129 hadoop01 
+                192.168.233.130 hadoop02 
+                192.168.233.131 hadoop03 
+            Hadoop 集群已经启动（ hadoop01 ， hadoop02 ， hadoop03 。包含 YARN 服务）。
+        准备文件（ hadoop01 ）
             sudo mkdir /opt/module/spark 
-            sudo chown -R sxydh:sxydh /opt/module/spark
-            wget -P /opt/module/spark https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz
-            tar -zxvf /opt/module/spark/spark-3.0.0-bin-hadoop3.2.tgz -C /opt/module/spark
-        修改配置文件（hadoop01）
-            cp /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh.template /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh
-            vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh
+            sudo chown -R sxydh:sxydh /opt/module/spark 
+            wget -P /opt/module/spark https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz 
+            tar -zxvf /opt/module/spark/spark-3.0.0-bin-hadoop3.2.tgz -C /opt/module/spark 
+        修改配置文件（ hadoop01 ）
+            cp /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh.template /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh 
+            vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh 
                 追加
-                    export JAVA_HOME=/opt/module/jdk/jdk1.8.0_202
-                    YARN_CONF_DIR=/opt/module/hadoop/hadoop-3.1.3/etc/hadoop
-        分发文件到集群（hadoop02，hadoop03）（可选）
+                    export JAVA_HOME=/opt/module/jdk/jdk1.8.0_202 
+                    YARN_CONF_DIR=/opt/module/hadoop/hadoop-3.1.3/etc/hadoop 
+        分发文件到集群（ hadoop02 ， hadoop03 ）（可选）
             略
-        测试应用提交（hadoop01）
-            cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/
-            bin/spark-submit --class org.apache.spark.examples.SparkPi --master yarn --deploy-mode cluster examples/jars/spark-examples_2.12-3.0.0.jar 10
+        测试应用提交（ hadoop01 ）
+            cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/ 
+            bin/spark-submit --class org.apache.spark.examples.SparkPi --master yarn --deploy-mode cluster examples/jars/spark-examples_2.12-3.0.0.jar 10 
                 验证
-                    http://hadoop02:8088
+                    http://hadoop02:8088 
         配置历史服务
             前置条件
-                HDFS上已经创建目录/directory。
-            修改配置文件（hadoop01）
+                HDFS 上已经创建目录 /directory 。
+            修改配置文件（ hadoop01 ）
                 cp /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-defaults.conf.template /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-defaults.conf 
-                vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-defaults.conf
+                vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-defaults.conf 
                     追加
-                        spark.eventLog.enabled             true
-                        spark.eventLog.dir                 hdfs://hadoop01:8020/directory
-                        
-                        spark.yarn.historyServer.address=hadoop01:18080
-                        spark.history.port=18080
-                vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh
+                        spark.eventLog.enabled             true 
+                        spark.eventLog.dir                 hdfs://hadoop01:8020/directory 
+
+                        spark.yarn.historyServer.address=hadoop01:18080 
+                        spark.history.port=18080 
+                vim /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/spark-env.sh 
                     追加
-                        export SPARK_HISTORY_OPTS="
-                        -Dspark.history.ui.port=18080
-                        -Dspark.history.fs.logDirectory=hdfs://hadoop01:8020/directory
-                        -Dspark.history.retainedApplications=30"
-            分发文件到集群（hadoop02，hadoop03）（可选）
+                        export SPARK_HISTORY_OPTS=" 
+                        -Dspark.history.ui.port=18080 
+                        -Dspark.history.fs.logDirectory=hdfs://hadoop01:8020/directory 
+                        -Dspark.history.retainedApplications=30" 
+            分发文件到集群（ hadoop02 ， hadoop03 ）（可选）
                 略
-            启动历史服务（hadoop01）
-                cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/
-                sbin/start-history-server.sh
+            启动历史服务（ hadoop01 ）
+                cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2/ 
+                sbin/start-history-server.sh 
                     验证
-                        jps
-            测试应用提交（hadoop01）
-                bin/spark-submit --class org.apache.spark.examples.SparkPi --master yarn --deploy-mode client examples/jars/spark-examples_2.12-3.0.0.jar 10
+                        jps 
+            测试应用提交（ hadoop01 ）
+                bin/spark-submit --class org.apache.spark.examples.SparkPi --master yarn --deploy-mode client examples/jars/spark-examples_2.12-3.0.0.jar 10 
                     验证
-                        http://hadoop02:8088
-                            Applications
-                                History
+                        http://hadoop02:8088 
+                            Applications 
+                                History 
     Spark Hive 
-        前置条件 
-            Hive（3.1.2）集群
-                192.168.233.129（hadoop01）
-                192.168.233.130（hadoop02）
-                192.168.233.131（hadoop03）
-        准备文件（hadoop01，hadoop02，hadoop03）
-            cp /opt/module/hive/apache-hive-3.1.2-bin/conf/hive-site.xml /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/
-            cp /opt/module/tmp/mysql-connector-j-8.0.33.jar /opt/module/spark/spark-3.0.0-bin-hadoop3.2/jars/
-        启动（hadoop01/hadoop02/hadoop03）
-            cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2
-                bin/spark-shell
+        前置条件
+            Hive （ 3.1.2 ）集群
+                192.168.233.129 （ hadoop01 ）
+                192.168.233.130 （ hadoop02 ）
+                192.168.233.131 （ hadoop03 ）
+        准备文件（ hadoop01 ， hadoop02 ， hadoop03 ）
+            cp /opt/module/hive/apache-hive-3.1.2-bin/conf/hive-site.xml /opt/module/spark/spark-3.0.0-bin-hadoop3.2/conf/ 
+            cp /opt/module/tmp/mysql-connector-j-8.0.33.jar /opt/module/spark/spark-3.0.0-bin-hadoop3.2/jars/ 
+        启动（ hadoop01/hadoop02/hadoop03 ）
+            cd /opt/module/spark/spark-3.0.0-bin-hadoop3.2 
+                bin/spark-shell 
                     验证
                         spark.sql(" show databases ").show 
                         spark.sql(" show tables ").show 
