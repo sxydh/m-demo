@@ -206,7 +206,7 @@
             kubectl get serviceaccount -o wide -n <namespace_name>
     Role
         创建
-            kubectl create role <role_name> --namespace=<namespace_name> --verb=<[get,list,watch,create,update,delete]> --resource=pods
+            kubectl create role <role_name> --namespace=<namespace_name> --verb=<[get,list,watch,create,update,delete]> --resource=<[configmaps,pods,services,deployments]>
         列表
             kubectl get role -o wide -n <namespace_name>
     RoleBinding
