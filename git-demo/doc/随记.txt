@@ -11,6 +11,10 @@
             git remote add origin https://github.com/sxydh/sshtunnel.git
                 add ：表明要添加远程仓库。
                 origin ：远程仓库的默认名称。
+        删除
+            git remote remove origin
+                remove ：表明要删除远程仓库。
+                origin ：远程仓库的默认名称。
     push
         推送
             git push --set-upstream origin master
