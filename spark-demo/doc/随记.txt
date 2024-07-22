@@ -257,6 +257,52 @@
                         http://hadoop02:8088 
                             Applications 
                                 History 
+    K8s 模式
+        概述
+            K8s 模式下， Spark 的资源由 K8s 调度。
+            https://spark.apache.org/docs/3.2.1/running-on-kubernetes.html
+        前置条件
+            K8s v1.23.17 集群
+                Kubernetes Master
+                    hadoop01 192.168.233.129
+                Kubernetes Node
+                    hadoop02 192.168.233.130
+                    hadoop03 192.168.233.131
+            JDK 11.0.23
+                export JAVA_HOME=/opt/module/jdk/jdk-11.0.23/
+            代理
+                export http_proxy=http://192.168.18.185:10809
+                export https_proxy=http://192.168.18.185:10809
+            权限
+                sudo su
+        创建空间（ hadoop01 ）
+            kubectl create namespace spark
+        创建账号（ hadoop01 ）
+            kubectl create serviceaccount spark --namespace=spark
+        创建角色（ hadoop01 ）
+            kubectl create role spark --namespace=spark --verb=get,list,watch,create,update,delete --resource=configmaps,pods,services,deployments
+        授权账号（ hadoop01 ）
+            kubectl create rolebinding spark --role=spark --serviceaccount=spark:spark --namespace=spark
+        准备文件（ hadoop01 ）
+            mkdir -p /opt/module/spark
+            cd /opt/module/spark
+            wget https://archive.apache.org/dist/spark/spark-3.2.3/spark-3.2.3-bin-hadoop3.2.tgz
+            tar -zxvf spark-3.2.3-bin-hadoop3.2.tgz
+        构建镜像
+            cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
+            ./bin/docker-image-tool.sh -r 192.168.233.129:30002/library -t latest build
+            ./bin/docker-image-tool.sh -r 192.168.233.129:30002/library -t latest push
+        提交应用（ hadoop01 ）
+            cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
+            ./bin/spark-submit \
+                --master k8s://https://192.168.233.129:6443 \
+                --deploy-mode cluster \
+                --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
+                --name spark-pi \
+                --class org.apache.spark.examples.SparkPi \
+                --conf spark.executor.instances=5 \
+                --conf spark.kubernetes.container.image=192.168.233.129:30002/library/spark:latest \
+                local:///opt/spark/examples/jars/spark-examples_2.12-3.2.3.jar
     Spark Hive 
         前置条件
             Hive （ 3.1.2 ）集群
