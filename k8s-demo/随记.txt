@@ -199,6 +199,21 @@
             kubectl create namespace <namespace_name>
         列表
             kubectl get namespace -o wide
+    ServiceAccount
+        创建
+            kubectl create serviceaccount <serviceaccount_name> --namespace=<namespace_name>
+        列表
+            kubectl get serviceaccount -o wide -n <namespace_name>
+    Role
+        创建
+            kubectl create role <role_name> --namespace=<namespace_name> --verb=<[get,list,watch,create,update,delete]> --resource=pods
+        列表
+            kubectl get role -o wide -n <namespace_name>
+    RoleBinding
+        创建
+            kubectl create rolebinding <rolebinding_name> --role=<role_name> --serviceaccount=<namespace_name>:<serviceaccount_name> --namespace=<namespace_name>
+        列表
+            kubectl get rolebinding -o wide -n <namespace_name>
 
 开发环境（ https://bbs.huaweicloud.com/blogs/380596 ）
     前置条件
