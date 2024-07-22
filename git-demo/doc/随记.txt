@@ -17,6 +17,8 @@
                 --set-upstream ：用于设置本地分支与远程分支的上游关系。
                 origin ：远程仓库的名称。
                 master ：远程仓库的分支。
+            git push origin <local_branch>:<remote_branch>
+                origin ：远程仓库的名称。
     stage
         列表
             git diff --staged
