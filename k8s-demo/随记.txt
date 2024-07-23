@@ -183,6 +183,8 @@
                 kubectl get pod <pod_name> -n <namespace_name> -o yaml | kubectl replace --force -f -
         删除
             kubectl delete pod <pod_name> -n <namespace_name>
+            kubectl get pod -n <namespace_name> | grep <pattern> | awk '{print $1}' | xargs kubectl delete pod -n <namespace_name>
+                模糊删除
     Service 
         创建
             NodePort

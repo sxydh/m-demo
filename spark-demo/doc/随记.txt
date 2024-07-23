@@ -265,9 +265,12 @@
             K8s v1.23.17 集群
                 Kubernetes Master
                     hadoop01 192.168.233.129
+                        Docker 支持 HTTP 非安全协议
                 Kubernetes Node
                     hadoop02 192.168.233.130
+                        Docker 支持 HTTP 非安全协议
                     hadoop03 192.168.233.131
+                        Docker 支持 HTTP 非安全协议
             JDK 11.0.23
                 export JAVA_HOME=/opt/module/jdk/jdk-11.0.23/
             代理
@@ -288,7 +291,7 @@
             cd /opt/module/spark
             wget https://archive.apache.org/dist/spark/spark-3.2.3/spark-3.2.3-bin-hadoop3.2.tgz
             tar -zxvf spark-3.2.3-bin-hadoop3.2.tgz
-        构建镜像
+        构建镜像（ hadoop01 ）
             cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
             ./bin/docker-image-tool.sh -r 192.168.233.129:30002/library -t latest build
             ./bin/docker-image-tool.sh -r 192.168.233.129:30002/library -t latest push
@@ -297,12 +300,20 @@
             ./bin/spark-submit \
                 --master k8s://https://192.168.233.129:6443 \
                 --deploy-mode cluster \
+                --conf spark.kubernetes.namespace=spark \
                 --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
                 --name spark-pi \
                 --class org.apache.spark.examples.SparkPi \
                 --conf spark.executor.instances=5 \
                 --conf spark.kubernetes.container.image=192.168.233.129:30002/library/spark:latest \
                 local:///opt/spark/examples/jars/spark-examples_2.12-3.2.3.jar
+
+                验证
+                    kubectl get pod -n spark | grep spark-pi | awk '{print $1}' | xargs kubectl describe pod -n spark
+                    kubectl get pod -n spark | grep spark-pi | awk '{print $1}' | xargs kubectl logs -n spark
+                删除
+                    kubectl get pod -n spark | grep spark-pi | awk '{print $1}' | xargs kubectl delete pod -n spark
+
     Spark Hive 
         前置条件
             Hive （ 3.1.2 ）集群
