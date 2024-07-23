@@ -32,6 +32,9 @@
         检出
             git stash pop
     config
+        添加
+            git config --global user.name "sxydh"
+            git config --global user.email "sxydhgg@gmail.com"
         列表
             git config --list
         详情
