@@ -160,4 +160,4 @@
     上限：TypeName[T <: SuperName]。
     下限：TypeName[T >: SubName]。
 环境
-    Maven配合IDEA
+    Maven配合IDEA插件
