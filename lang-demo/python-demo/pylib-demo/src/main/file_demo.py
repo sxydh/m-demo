@@ -6,15 +6,16 @@ def mkdir_p(p):
 
 
 def touch(fp):
-    with open(fp, 'a+'):
+    with open(fp, 'a+', encoding='utf-8'):
         pass
 
 
 def cat(fp):
-    with open(fp, 'a+') as f:
+    with open(fp, 'a+', encoding='utf-8') as f:
+        f.seek(0)
         return f.read()
 
 
 def vim(fp, t):
-    with open(fp, 'a+') as f:
+    with open(fp, 'a+', encoding='utf-8') as f:
         f.write(t)
