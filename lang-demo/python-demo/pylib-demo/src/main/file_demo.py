@@ -11,7 +11,7 @@ def touch(fp):
 
 
 def cat(fp):
-    with open(fp, 'a+', encoding='utf-8') as f:
+    with open(fp, encoding='utf-8') as f:
         f.seek(0)
         return f.read()
 
