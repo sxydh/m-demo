@@ -1,0 +1,6 @@
+File
+    Settings
+        Editor
+            General
+                On Save
+                    Remove trailing spaces on: Modified lines
