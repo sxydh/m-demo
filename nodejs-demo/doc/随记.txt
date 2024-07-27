@@ -7,6 +7,12 @@
                 非扁平的 node_modules 目录
             安装
                 npm install -g pnpm
+            配置
+                列表
+                    pnpm config list
+                修改
+                    pnpm config set http-proxy http://127.0.0.1:10809
+                    pnpm config set https-proxy http://127.0.0.1:10809
         npm
             指定镜像源
                 npm install <package_name> --registry=https://registry.npm.taobao.org
