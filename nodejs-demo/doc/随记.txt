@@ -1,5 +1,12 @@
 环境
     包管理器
+        pnpm
+            概述
+                节省磁盘空间
+                提高安装速度
+                非扁平的 node_modules 目录
+            安装
+                npm install -g pnpm
         npm
             指定镜像源
                 npm install <package_name> --registry=https://registry.npm.taobao.org
