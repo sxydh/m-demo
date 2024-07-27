@@ -8,4 +8,3 @@ File
                     New line after last attribute
                 JavaScript
                     Punctuation
-                        Use semicolon always
