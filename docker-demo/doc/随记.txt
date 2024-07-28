@@ -17,6 +17,11 @@
     搜索
         docker search <keyword>
             在公共仓库搜索
+    构建
+        docker build -f <file_name> -t <tag_name> .
+            -f ：指定配置文件。
+            -t ：指定标签名称。
+            . ：指定构建上下文是当前目录。
     推送
         私有仓库
             docker login 192.168.233.129:30002 -u admin -p Harbor12345
