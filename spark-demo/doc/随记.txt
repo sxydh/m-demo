@@ -329,7 +329,7 @@
                 --conf spark.kubernetes.namespace=spark \
                 --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
                 --conf spark.kubernetes.authenticate.executor.serviceAccountName=spark \
-                --conf spark.kubernetes.container.image.pullPolicy=IfNotPresent \
+                --conf spark.kubernetes.container.image.pullPolicy=Always \
                 --conf spark.kubernetes.container.image=192.168.233.129:30002/library/sparkcore-demo:latest \
                 --class cn.net.bhe.sparkcoredemo.inputdemo.SeqDemo \
                 local:///opt/spark/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
