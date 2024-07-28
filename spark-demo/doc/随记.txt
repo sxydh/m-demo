@@ -335,10 +335,10 @@
                 local:///opt/spark/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
 
                 验证
-                    kubectl get pod -n spark | grep spark-pi | awk '{print $1}' | xargs kubectl describe pod -n spark
-                    kubectl get pod -n spark | grep spark-pi | awk '{print $1}' | xargs kubectl logs -n spark
+                    kubectl get pod -n spark | grep spark | awk '{print $1}' | xargs kubectl describe pod -n spark
+                    kubectl get pod -n spark | grep spark | awk '{print $1}' | xargs kubectl logs -n spark
                 删除
-                    kubectl get pod -n spark | grep spark-pi | awk '{print $1}' | xargs kubectl delete pod -n spark
+                    kubectl get pod -n spark | grep spark | awk '{print $1}' | xargs kubectl delete pod -n spark
 
     Spark Hive 
         前置条件
