@@ -292,27 +292,47 @@
             wget https://archive.apache.org/dist/spark/spark-3.2.3/spark-3.2.3-bin-hadoop3.2.tgz
             tar -zxvf spark-3.2.3-bin-hadoop3.2.tgz
         构建镜像（ hadoop01 ）
-            cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
-            ./bin/docker-image-tool.sh -r 192.168.233.129:30002/library -t latest build
-                建议修改 Dockerfile 文件，配置 http/https 代理，以加快 build 速度：
-                    sudo vim ./kubernetes/dockerfiles/spark/Dockerfile
-                        更新或追加
-                            RUN set -ex && \
-                                export http_proxy=http://192.168.134.185:10809 && \
-                                export https_proxy=http://192.168.134.185:10809 && \
-            ./bin/docker-image-tool.sh -r 192.168.233.129:30002/library -t latest push
+            样例方式构建
+                cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
+                ./bin/docker-image-tool.sh -r 192.168.233.129:30002/library -t latest build
+                    建议修改 Dockerfile 文件，配置 http/https 代理，以加快 build 速度：
+                        sudo vim ./kubernetes/dockerfiles/spark/Dockerfile
+                            更新或追加
+                                RUN set -ex && \
+                                    export http_proxy=http://192.168.134.185:10809 && \
+                                    export https_proxy=http://192.168.134.185:10809 && \
+                ./bin/docker-image-tool.sh -r 192.168.233.129:30002/library -t latest push
+            定制方式构建（ http://www.fblinux.com/?p=3065#%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91 ）
+                cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
+                mkdir -p /opt/module/tmp
+                vim /opt/module/tmp/Dockerfile
+                    追加
+                        FROM apache/spark:v3.2.3
+                        COPY /opt/module/tmp/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar /opt/spark/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
+                        WORKDIR /opt/spark/work-dir
+                        ENTRYPOINT ["/opt/entrypoint.sh"]
+                docker build -f /opt/module/tmp/Dockerfile -t sparkcore-demo:latest .
+                docker tag sparkcore-demo:latest 192.168.233.129:30002/library/sparkcore-demo:latest
+                docker push 192.168.233.129:30002/library/sparkcore-demo:latest
         提交应用（ hadoop01 ）
             cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
             ./bin/spark-submit \
+                --name sparkcore-demo \
                 --master k8s://https://192.168.233.129:6443 \
                 --deploy-mode cluster \
+                --conf spark.network.timeout=300 \
+                --conf spark.executor.instances=3 \
+                --conf spark.driver.cores=1 \
+                --conf spark.executor.cores=1 \
+                --conf spark.driver.memory=1024m \
+                --conf spark.executor.memory=1024m \
                 --conf spark.kubernetes.namespace=spark \
                 --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
-                --name spark-pi \
-                --class org.apache.spark.examples.SparkPi \
-                --conf spark.executor.instances=5 \
-                --conf spark.kubernetes.container.image=192.168.233.129:30002/library/spark:latest \
-                local:///opt/spark/examples/jars/spark-examples_2.12-3.2.3.jar
+                --conf spark.kubernetes.authenticate.executor.serviceAccountName=spark \
+                --conf spark.kubernetes.container.image.pullPolicy=IfNotPresent \
+                --conf spark.kubernetes.container.image=192.168.233.129:30002/library/sparkcore-demo:latest \
+                --class cn.net.bhe.sparkcoredemo.inputdemo.SeqDemo \
+                local:///opt/spark/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
 
                 验证
                     kubectl get pod -n spark | grep spark-pi | awk '{print $1}' | xargs kubectl describe pod -n spark
