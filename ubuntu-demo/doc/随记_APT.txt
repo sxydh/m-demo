@@ -1,0 +1,6 @@
+环境
+    配置代理
+        sudo vim /etc/apt/apt.conf
+            追加
+                Acquire::http::Proxy "http://192.168.134.185:10809";
+                Acquire::https::Proxy "http://192.168.134.185:10809";
