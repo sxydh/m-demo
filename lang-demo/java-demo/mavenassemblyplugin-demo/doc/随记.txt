@@ -1,0 +1,10 @@
+环境
+    运行程序
+        java -jar <jar_name>
+            如果已经在 pom 插件中显示配置 main 位置，则可以直接运行：
+                <mainClass>cn.net.bhe.mavenassemblyplugin._MavenAssemblyPluginApp</mainClass>
+
+        java -jar <jar_name> -Dmainclass=<main_path>
+        java -cp <jar_name> <main_path>
+            以上两种方式任选其一
+            如果没有在 pom 插件中显示配置 main 位置，则需要在参数中显示指定。
