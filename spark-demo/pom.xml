@@ -169,6 +169,9 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <archive>
+
+                    </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
