@@ -39,6 +39,13 @@
             sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
                 resize2fs ：调整文件系统大小。
                 /dev/mapper/ubuntu--vg-ubuntu--lv ：逻辑卷路径。
+    日志
+        查看
+            journalctl -u docker.service -n 20 -f
+                查看 docker.service 服务的最新 20 条日志
+                -u ：服务名称。
+                -n ：日志条数。
+                -f ：实时输出。
 环境
     Ubuntu 20.04.6 LTS 
         国内镜像
