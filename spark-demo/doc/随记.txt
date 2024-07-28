@@ -308,7 +308,7 @@
                 vim /opt/module/tmp/Dockerfile
                     追加
                         FROM apache/spark:v3.2.3
-                        COPY /opt/module/tmp/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar /opt/spark/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
+                        COPY sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar /opt/spark/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
                         WORKDIR /opt/spark/work-dir
                         ENTRYPOINT ["/opt/entrypoint.sh"]
                 docker build -f /opt/module/tmp/Dockerfile -t sparkcore-demo:latest .
