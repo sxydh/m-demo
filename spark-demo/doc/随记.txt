@@ -294,6 +294,12 @@
         构建镜像（ hadoop01 ）
             cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
             ./bin/docker-image-tool.sh -r 192.168.233.129:30002/library -t latest build
+                建议修改 Dockerfile 文件，配置 http/https 代理，以加快 build 速度：
+                    sudo vim ./kubernetes/dockerfiles/spark/Dockerfile
+                        更新或追加
+                            RUN set -ex && \
+                                export http_proxy=http://192.168.134.185:10809 && \
+                                export https_proxy=http://192.168.134.185:10809 && \
             ./bin/docker-image-tool.sh -r 192.168.233.129:30002/library -t latest push
         提交应用（ hadoop01 ）
             cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
