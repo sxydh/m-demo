@@ -2,18 +2,18 @@
     概述
         Linux 操作系统分为内核和用户空间，内核启动后，会挂载 root 文件系统为其提供用户空间支持。
         镜像（ Image ）就相当于是一个 root 文件系统，比如官方镜像 ubuntu:18.04 就包含了完整的一套 Ubuntu 18.04 最小系统的 root 文件系统。
-    拉取
-        docker pull [options] [docker_registry_ip[:port]/]<repo_name>[:tag]
-            docker pull ubuntu:18.04
-    详情
-        docker inspect <image_name>
-    删除
-        docker image rm [options] <image_name1> [<image_name2> ...]
-            docker image rm ubuntu:18.04
     列表
         docker image ls
             系统资源的磁盘使用情况
                 docker system df
+    详情
+        docker inspect <image_name>
+    拉取
+        docker pull [options] [docker_registry_ip[:port]/]<repo_name>[:tag]
+            docker pull ubuntu:18.04
+    删除
+        docker image rm [options] <image_name1> [<image_name2> ...]
+            docker image rm ubuntu:18.04
     搜索
         docker search <keyword>
             在公共仓库搜索
@@ -26,7 +26,7 @@
         私有仓库
             docker login 192.168.233.129:30002 -u admin -p Harbor12345
                 登录私有仓库
-                    修改配置文件以支持 HTTP 非安全协议：
+                    需要修改配置文件以支持 HTTP 非安全协议：
                         sudo vim /etc/docker/daemon.json
                             追加
                                 { 
