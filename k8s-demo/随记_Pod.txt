@@ -1,0 +1,21 @@
+环境
+    创建 Pod
+        Git
+            vim pod_git_demo.yaml
+                追加
+                    apiVersion: v1
+                    kind: Pod
+                    metadata:
+                      name: pod-git-demo
+                    spec:
+                      containers:
+                      - name: container-git-demo
+                        image: bitnami/git:latest
+                        command: ["/bin/sh", "-c", "sleep infinity"]
+                        volumeMounts:
+                        - name: git-volume
+                          mountPath: /opt/module/git
+                      volumes:
+                      - name: git-volume
+                        persistentVolumeClaim:
+                          claimName: pvc-demo
