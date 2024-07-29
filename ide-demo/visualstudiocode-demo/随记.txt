@@ -1,0 +1,7 @@
+File
+    Preferences
+        Settings
+            User
+                Text Editor
+                    Detect Indentation
+                        取消勾选，否则在打开文件时，缩进会被调整。
