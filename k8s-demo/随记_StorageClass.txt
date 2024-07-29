@@ -60,6 +60,7 @@
                 kubectl create -f pvc_tomcat_demo.yaml -n default
                 kubectl get pvc -o wide -n default
                 kubectl describe pvc pvc-tomcat-demo -n default
+                kubectl delete pvc pvc-tomcat-demo -n default
             创建 Pod
                 vim pod_tomcat_demo.yaml
                     追加
@@ -83,3 +84,4 @@
                 kubectl create -f pod_tomcat_demo.yaml -n default
                 kubectl get pod -o wide -n default
                 kubectl describe pod pod-tomcat-demo -n default
+                kubectl delete pod pod-tomcat-demo -n default
