@@ -1,0 +1,16 @@
+概述
+    PVC （ Persistent Volume Claim ）是用户对 PV 的声明式请求
+环境
+    创建 PVC
+        vim pvc_demo.yaml
+            apiVersion: v1
+            kind: PersistentVolumeClaim
+            metadata:
+              name: pvc-demo
+            spec:
+              accessModes:
+                - ReadWriteMany
+              resources:
+                requests:
+                  storage: 20Gi
+        kubectl create -f pvc_demo.yaml -n default
