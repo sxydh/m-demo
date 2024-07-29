@@ -141,13 +141,6 @@
         列表
             kubectl get configmap -o wide -n <namespace_name>
     PV
-        概述
-            PV （ Persistent Volume ）是集群存储资源
-            PV 支持多种存储实现：
-                HostPath
-                    HostPath 是将当前节点路径进行映射和共享，所以 Pod 如果被调度了其它节点，则在容器内对文件的修改，会反应到相应节点的路径上。
-                NFS
-                ...
         创建
             kubectl create -f pv.yaml
                 -f ：指定配置文件。

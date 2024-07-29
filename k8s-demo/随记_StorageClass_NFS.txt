@@ -19,14 +19,15 @@
             --set nfs.path=/opt/module/nfs/data/shared
     创建 StorageClass
         vim sc_nfs_demo.yaml
-            # https://kubernetes.io/docs/concepts/storage/storage-classes/#nfs
-            apiVersion: storage.k8s.io/v1
-            kind: StorageClass
-            metadata:
-              name: sc-nfs-demo
-            provisioner: nfs-subdir-external-provisioner
-            parameters:
-              server: 192.168.233.129
-              path: /opt/module/nfs/data/shared
-              readOnly: "false"
+            追加
+                # https://kubernetes.io/docs/concepts/storage/storage-classes/#nfs
+                apiVersion: storage.k8s.io/v1
+                kind: StorageClass
+                metadata:
+                  name: sc-nfs-demo
+                provisioner: nfs-subdir-external-provisioner
+                parameters:
+                  server: 192.168.233.129
+                  path: /opt/module/nfs/data/shared
+                  readOnly: "false"
         kubectl create -f sc_nfs_demo.yaml -n default

@@ -3,14 +3,15 @@
 环境
     创建 PVC
         vim pvc_demo.yaml
-            apiVersion: v1
-            kind: PersistentVolumeClaim
-            metadata:
-              name: pvc-demo
-            spec:
-              accessModes:
-                - ReadWriteMany
-              resources:
-                requests:
-                  storage: 20Gi
+            追加
+                apiVersion: v1
+                kind: PersistentVolumeClaim
+                metadata:
+                  name: pvc-demo
+                spec:
+                  accessModes:
+                    - ReadWriteMany
+                  resources:
+                    requests:
+                      storage: 20Gi
         kubectl create -f pvc_demo.yaml -n default
