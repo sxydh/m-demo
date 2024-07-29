@@ -155,6 +155,16 @@
             kubectl get pv -o wide
         删除
             kubectl delete pv <pv_name>
+    PVC
+        概述
+            PVC （ Persistent Volume Claim ）是存储资源对象，是用户对 PV 的声明式请求。
+        创建
+            kubectl create -f pvc.yaml -n <namespace_name>
+                -f ：指定配置文件。
+        列表
+            kubectl get pvc -o wide -n <namespace_name>
+        删除
+            kubectl delete pvc <pvc_name> -n <namespace_name>
     StorageClass
         概述
             https://blog.csdn.net/weixin_41947378/article/details/111509849
@@ -171,16 +181,6 @@
             kubectl get sc -o wide -n <namespace_name>
         删除
             kubectl delete sc <sc_name> -n <namespace_name>
-    PVC
-        概述
-            PVC （ Persistent Volume Claim ）是存储资源对象，是用户对 PV 的声明式请求。
-        创建
-            kubectl create -f pvc.yaml -n <namespace_name>
-                -f ：指定配置文件。
-        列表
-            kubectl get pvc -o wide -n <namespace_name>
-        删除
-            kubectl delete pvc <pvc_name> -n <namespace_name>
     Pod
         创建
             kubectl create -f nginx-pod.yaml -n <namespace_name>
