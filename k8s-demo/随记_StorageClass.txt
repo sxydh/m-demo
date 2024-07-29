@@ -7,7 +7,7 @@
         PortworxVolume
         ...
 环境
-    NFS
+    NFS 制备器
         前置条件
             K8s 集群
                 Master
