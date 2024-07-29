@@ -85,4 +85,5 @@
                 kubectl create -f pod_tomcat_demo.yaml -n default
                 kubectl get pod -o wide -n default
                 kubectl describe pod pod-tomcat-demo -n default
+                kubectl exec -it pod-tomcat-demo -n default -- bash
                 kubectl delete pod pod-tomcat-demo -n default
