@@ -29,3 +29,4 @@
               server: 192.168.233.129
               path: /opt/module/nfs/data/shared
               readOnly: "false"
+        kubectl create -f sc_nfs_demo.yaml -n default
