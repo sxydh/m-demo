@@ -142,7 +142,7 @@
             kubectl get configmap -o wide -n <namespace_name>
     PV
         概述
-            PV （ Persistent Volume ）是集群存储资源，不特定于某个命名空间。
+            PV （ Persistent Volume ）是集群存储资源
             PV 支持多种存储实现：
                 HostPath
                     HostPath 是将当前节点路径进行映射和共享，所以 Pod 如果被调度了其它节点，则在容器内对文件的修改，会反应到相应节点的路径上。
@@ -157,7 +157,7 @@
             kubectl delete pv <pv_name>
     PVC
         概述
-            PVC （ Persistent Volume Claim ）是用户对 PV 的声明式请求。
+            PVC （ Persistent Volume Claim ）是用户对 PV 的声明式请求
         创建
             kubectl create -f pvc.yaml -n <namespace_name>
                 -f ：指定配置文件。
