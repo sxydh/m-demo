@@ -157,7 +157,7 @@
             kubectl delete pv <pv_name>
     PVC
         概述
-            PVC （ Persistent Volume Claim ）是存储资源对象，是用户对 PV 的声明式请求。
+            PVC （ Persistent Volume Claim ）是用户对 PV 的声明式请求。
         创建
             kubectl create -f pvc.yaml -n <namespace_name>
                 -f ：指定配置文件。
