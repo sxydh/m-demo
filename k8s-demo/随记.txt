@@ -157,14 +157,6 @@
         删除
             kubectl delete pvc <pvc_name> -n <namespace_name>
     StorageClass
-        概述
-            https://blog.csdn.net/weixin_41947378/article/details/111509849
-            StorageClass 可以帮助用户自动创建 PV ，以满足 PVC 的请求。
-            StorageClass 包含存储制备器 Provisioner ，用来决定使用哪个卷插件制备 PV 。
-            K8s 内置了多种存储制备器：
-                AzureFile
-                PortworxVolume
-                ...
         创建
             kubectl create -f sc.yaml -n <namespace_name>
                 -f ：指定配置文件。
