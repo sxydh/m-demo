@@ -33,10 +33,10 @@
     前置条件
         K8s v1.23.17
             Kubernetes Master
-                hadoop01
+                hadoop01 192.168.233.129
             Kubernetes Node
-                hadoop02
-                hadoop03
+                hadoop02 192.168.233.130
+                hadoop03 192.168.233.131
     安装服务（ hadoop01 ）
         curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
             建议开启代理
