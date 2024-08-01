@@ -40,7 +40,7 @@
                       path: /opt/module/nfs/data/shared
                       readOnly: "false"
             kubectl create -f sc_nfs_demo.yaml
-            kubectl get sc -o wide -n default
+            kubectl get sc -o wide
             kubectl describe sc sc-nfs-demo
             kubectl delete sc sc-nfs-demo
         验证 StorageClass
