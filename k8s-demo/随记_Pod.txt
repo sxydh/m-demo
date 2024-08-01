@@ -1,5 +1,26 @@
 环境
     创建 Pod
+        基于 Tomcat
+            vim pod_tomcat_demo.yaml
+                追加
+                    apiVersion: v1
+                    kind: Pod
+                    metadata:
+                      name: pod-tomcat-demo
+                    spec:
+                      containers:
+                      - name: container-tomcat-demo
+                        image: tomcat
+                        ports:
+                        - containerPort: 8080
+                        volumeMounts:
+                        - mountPath: "/usr/local/tomcat/webapps"
+                          name: tomcat-volume
+                      volumes:
+                      - name: tomcat-volume
+                        nfs:
+                          server: 192.168.233.129
+                          path: /opt/module/nfs/data/shared
         基于 Git
             vim pod_git_demo.yaml
                 追加
