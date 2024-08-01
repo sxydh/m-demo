@@ -382,7 +382,7 @@
                     --conf spark.kubernetes.executor.volumes.nfs.jars-volume.options.server=192.168.233.129 \
                     --conf spark.kubernetes.executor.volumes.nfs.jars-volume.options.path=/opt/module/nfs/data/shared \
                     --class cn.net.bhe.sparkcoredemo.inputdemo.SeqDemo \
-                    local:///opt/spark/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
+                    local:///opt/spark/jars/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
                     验证
                         kubectl get pod -n spark | grep spark | awk '{print $1}' | xargs kubectl describe pod -n spark
                         kubectl get pod -n spark | grep spark | awk '{print $1}' | xargs kubectl logs -n spark
