@@ -99,10 +99,10 @@
                       enabled: false
             kubectl create namespace harbor
             helm install harbor-instance goharbor/harbor -f values.yaml -n harbor
-                安装 Chart
+                安装 Harbor Chart
                 harbor-instance ：安装实例名称。
                 goharbor ：本地仓库名称。
-                harbor ：安装 Chart 名称。
+                harbor ：安装 Harbor Chart 名称。
 
                 验证：
                     kubectl get service -o wide -n harbor
