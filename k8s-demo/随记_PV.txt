@@ -23,6 +23,11 @@
                     type: Directory
         kubectl create -f pv_hostpath_demo.yaml -n default
     创建 NFS 的 PV
+        前置条件
+            NFS 服务端（ hadoop01 ）
+                参考 m-demo/nfs-demo/doc/随记.txt
+            NFS 客户端（ hadoop01, hadoop02, hadoop03 ）
+                参考 m-demo/nfs-demo/doc/随记.txt
         vim pv_nfs_demo.yaml
             追加
                 apiVersion: v1
