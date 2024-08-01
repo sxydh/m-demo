@@ -65,13 +65,13 @@
     容器安装（ https://www.cnblogs.com/cerberus43/p/15881258.html ）
         前置条件
             K8s v1.23.9
-                192.168.233.129
-                192.168.233.130
-                192.168.233.131
+                hadoop01 192.168.233.129
+                hadoop02 192.168.233.130
+                hadoop03 192.168.233.131
             Helm v3.15.3
-                192.168.233.129
+                hadoop01 192.168.233.129
             sudo su
-        安装服务
+        安装服务（ hadoop01 ）
             mkdir -p /opt/module/harbor
             cd /opt/module/harbor
             helm repo add goharbor https://helm.goharbor.io
