@@ -1,6 +1,6 @@
 环境
     创建 Pod
-        Git
+        基于 Git
             vim pod_git_demo.yaml
                 追加
                     apiVersion: v1
