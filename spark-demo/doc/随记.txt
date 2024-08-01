@@ -329,6 +329,7 @@
                     docker build -f /opt/module/tmp/Dockerfile -t sparkcore-demo:latest .
                     docker tag sparkcore-demo:latest 192.168.233.129:30002/library/sparkcore-demo:latest
                     docker push 192.168.233.129:30002/library/sparkcore-demo:latest
+                        需要显示登录 Harbor
         提交应用（ hadoop01 ）
             镜像包含文件方式
                 cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
