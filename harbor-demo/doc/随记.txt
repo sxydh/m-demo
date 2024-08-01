@@ -106,6 +106,8 @@
 
                 验证：
                     kubectl get service -o wide -n harbor
-                        http://<node_ip>:<port>
-                            新建项目
-                            推送镜像
+                        http://192.168.233.129:30002
+                            admin
+                            Harbor12345
+                                新建项目
+                                推送镜像
