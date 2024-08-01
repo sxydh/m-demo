@@ -21,6 +21,10 @@
                         nfs:
                           server: 192.168.233.129
                           path: /opt/module/nfs/data/shared
+            kubectl create -f pod_tomcat_demo.yaml -n default
+            kubectl describe pod pod-tomcat-demo -n default
+            kubectl logs pod-tomcat-demo -n default
+            kubectl delete pod pod-tomcat-demo -n default
         基于 Git
             vim pod_git_demo.yaml
                 追加
