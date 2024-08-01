@@ -2,3 +2,7 @@
     AWK 提供编程语言的功能，例如运算、字符串处理等。
 语法
     awk [options] 'pattern {action}' <input>
+样例
+    ls -l | awk 'NR==1 {print $1}'
+        NR==1 ：只取输入的第一行进行处理。
+        $1 ：将输入按空格进行分割，取第一项值。
