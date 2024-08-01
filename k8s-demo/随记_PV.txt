@@ -21,7 +21,9 @@
                   hostPath:
                     path: /opt/module/pv
                     type: Directory
-        kubectl create -f pv_hostpath_demo.yaml -n default
+        kubectl create -f pv_hostpath_demo.yaml
+        kubectl get pv -o wide
+        kubectl describe pv pv-hostpath-demo
     创建 NFS 的 PV
         前置条件
             NFS 服务端（ hadoop01 ）
@@ -42,4 +44,6 @@
                   nfs:
                     server: 192.168.233.129
                     path: /opt/module/nfs/data/shared
-        kubectl create -f pv_nfs_demo.yaml -n default
+        kubectl create -f pv_nfs_demo.yaml
+        kubectl get pv -o wide
+        kubectl describe pv pv-nfs-demo
