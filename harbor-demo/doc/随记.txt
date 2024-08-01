@@ -65,9 +65,11 @@
     容器安装（ https://www.cnblogs.com/cerberus43/p/15881258.html ）
         前置条件
             K8s v1.23.9
-                hadoop01 192.168.233.129
-                hadoop02 192.168.233.130
-                hadoop03 192.168.233.131
+                Master
+                    hadoop01 192.168.233.129
+                Node
+                    hadoop02 192.168.233.130
+                    hadoop03 192.168.233.131
             Helm v3.15.3
                 hadoop01 192.168.233.129
             sudo su
