@@ -316,7 +316,7 @@
                     docker build -f /opt/module/tmp/Dockerfile -t sparkcore-demo:latest .
                     docker tag sparkcore-demo:latest 192.168.233.129:30002/library/sparkcore-demo:latest
                     docker push 192.168.233.129:30002/library/sparkcore-demo:latest
-                挂载外部文件方式
+                挂载外部文件方式（ https://spark.apache.org/docs/3.2.1/running-on-kubernetes.html#using-kubernetes-volumes ）
                     cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
                     mkdir -p /opt/module/tmp
                     vim /opt/module/tmp/Dockerfile
@@ -353,7 +353,7 @@
                         kubectl get pod -n spark | grep spark | awk '{print $1}' | xargs kubectl logs -n spark
                     删除
                         kubectl get pod -n spark | grep spark | awk '{print $1}' | xargs kubectl delete pod -n spark
-            挂载外部文件方式
+            挂载外部文件方式（ https://spark.apache.org/docs/3.2.1/running-on-kubernetes.html#using-kubernetes-volumes ）
                 cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
                 ./bin/spark-submit \
                     --name sparkcore-demo \
