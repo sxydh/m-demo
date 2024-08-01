@@ -15,3 +15,4 @@
                     requests:
                       storage: 20Gi
         kubectl create -f pvc_demo.yaml -n default
+        kubectl get pvc -o wide -n default
