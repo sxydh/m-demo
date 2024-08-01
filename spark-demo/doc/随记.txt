@@ -399,7 +399,7 @@
                     --class cn.net.bhe.sparkcoredemo.inputdemo.SeqDemo \
                     local:///opt/spark/anyname_but_jars/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
 
-                        注意：不要 mount.path 不要设置为 /opt/spark/jars ，否则会覆盖镜像环境的 jar 包。
+                        注意：不要 mount.path 不要设置为 /opt/spark/jars ，否则会覆盖镜像环境的依赖包。
 
                     验证
                         kubectl get pod -n spark | grep spark | awk '{print $1}' | xargs kubectl describe pod -n spark
