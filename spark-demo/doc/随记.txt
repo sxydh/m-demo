@@ -307,29 +307,47 @@
                 ./bin/docker-image-tool.sh -r 192.168.233.129:30002/library -t latest push
             定制方式构建（ http://www.fblinux.com/?p=3065#%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91 ）
                 镜像包含文件方式
-                    cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
                     mkdir -p /opt/module/tmp
-                    vim /opt/module/tmp/Dockerfile
+                    cd /opt/module/tmp
+                    vim Dockerfile
                         追加
                             FROM apache/spark:v3.2.3
-                            COPY /opt/module/tmp/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar /opt/spark/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
+                            COPY sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar /opt/spark/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
                             WORKDIR /opt/spark/work-dir
                             ENTRYPOINT ["/opt/entrypoint.sh"]
-                    docker build -f /opt/module/tmp/Dockerfile -t sparkcore-demo:latest /opt/module/tmp
+                    docker build -f Dockerfile -t sparkcore-demo:latest .
                     docker tag sparkcore-demo:latest 192.168.233.129:30002/library/sparkcore-demo:latest
                     docker push 192.168.233.129:30002/library/sparkcore-demo:latest
                 挂载外部文件方式（ https://spark.apache.org/docs/3.2.1/running-on-kubernetes.html#using-kubernetes-volumes ）
-                    cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
                     mkdir -p /opt/module/tmp
-                    vim /opt/module/tmp/Dockerfile
+                    cd /opt/module/tmp
+                    vim Dockerfile
                         追加
                             FROM apache/spark:v3.2.3
                             WORKDIR /opt/spark/work-dir
                             ENTRYPOINT ["/opt/entrypoint.sh"]
-                    docker build -f /opt/module/tmp/Dockerfile -t sparkcore-demo:latest /opt/module/tmp
+                    docker build -f Dockerfile -t sparkcore-demo:latest .
                     docker tag sparkcore-demo:latest 192.168.233.129:30002/library/sparkcore-demo:latest
                     docker push 192.168.233.129:30002/library/sparkcore-demo:latest
                         需要显示登录 Harbor
+
+                    vim pvc_sparkcore_demo.yaml
+                        追加
+                            apiVersion: v1
+                            kind: PersistentVolumeClaim
+                            metadata:
+                              name: pvc-sparkcore-demo
+                            spec:
+                              accessModes:
+                                - ReadOnlyMany
+                              resources:
+                                requests:
+                                  storage: 1Gi
+                              storageClassName: sc-nfs-demo
+                    kubectl create -f pvc_sparkcore_demo.yaml -n spark
+                    kubectl get pvc -o wide -n spark
+                    kubectl describe pvc pvc-sparkcore-demo -n spark
+                    kubectl delete pvc pvc-sparkcore-demo -n spark
         提交应用（ hadoop01 ）
             镜像包含文件方式
                 cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
@@ -360,6 +378,7 @@
                 cd /opt/module/spark/spark-3.2.3-bin-hadoop3.2/
                 ./bin/spark-submit \
                     --name sparkcore-demo \
+                    --verbose \
                     --master k8s://https://192.168.233.129:6443 \
                     --deploy-mode cluster \
                     --conf spark.network.timeout=300 \
@@ -372,17 +391,13 @@
                     --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
                     --conf spark.kubernetes.authenticate.executor.serviceAccountName=spark \
                     --conf spark.kubernetes.container.image.pullPolicy=Always \
-                    --conf spark.kubernetes.container.image=192.168.233.129:30002/library/sparkcore-demo:latest \
-                    --conf spark.kubernetes.driver.volumes.nfs.jars-volume.mount.path=/opt/spark/jars \
-                    --conf spark.kubernetes.driver.volumes.nfs.jars-volume.mount.readOnly=true \
-                    --conf spark.kubernetes.driver.volumes.nfs.jars-volume.options.server=192.168.233.129 \
-                    --conf spark.kubernetes.driver.volumes.nfs.jars-volume.options.path=/opt/module/nfs/data/shared \
-                    --conf spark.kubernetes.executor.volumes.nfs.jars-volume.mount.path=/opt/spark/jars \
-                    --conf spark.kubernetes.executor.volumes.nfs.jars-volume.mount.readOnly=true \
-                    --conf spark.kubernetes.executor.volumes.nfs.jars-volume.options.server=192.168.233.129 \
-                    --conf spark.kubernetes.executor.volumes.nfs.jars-volume.options.path=/opt/module/nfs/data/shared \
+                    --conf spark.kubernetes.container.image=apache/spark:v3.2.3 \
+                    --conf spark.kubernetes.driver.volumes.persistentVolumeClaim.jars-pvc.mount.path=/opt/spark/appJars \
+                    --conf spark.kubernetes.driver.volumes.persistentVolumeClaim.jars-pvc.options.claimName=pvc-sparkcore-demo \
+                    --conf spark.kubernetes.executor.volumes.persistentVolumeClaim.jars-pvc.mount.path=/opt/spark/appJars \
+                    --conf spark.kubernetes.executor.volumes.persistentVolumeClaim.jars-pvc.options.claimName=pvc-sparkcore-demo \
                     --class cn.net.bhe.sparkcoredemo.inputdemo.SeqDemo \
-                    local:///opt/spark/jars/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
+                    local:///opt/spark/appJars/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
                     验证
                         kubectl get pod -n spark | grep spark | awk '{print $1}' | xargs kubectl describe pod -n spark
                         kubectl get pod -n spark | grep spark | awk '{print $1}' | xargs kubectl logs -n spark
