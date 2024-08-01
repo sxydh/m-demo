@@ -24,6 +24,7 @@
             kubectl create -f pod_tomcat_demo.yaml -n default
             kubectl describe pod pod-tomcat-demo -n default
             kubectl logs pod-tomcat-demo -n default
+            kubectl exec -it pod-tomcat-demo -n default -- bash
             kubectl delete pod pod-tomcat-demo -n default
         基于 Git
             vim pod_git_demo.yaml
