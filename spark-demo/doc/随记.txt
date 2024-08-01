@@ -262,7 +262,7 @@
             K8s 模式下， Spark 的资源由 K8s 调度。
             https://spark.apache.org/docs/3.2.1/running-on-kubernetes.html
         前置条件
-            K8s v1.23.17 集群
+            K8s v1.23.17
                 Kubernetes Master
                     hadoop01 192.168.233.129
                         Docker 支持 HTTP 非安全协议
@@ -271,6 +271,8 @@
                         Docker 支持 HTTP 非安全协议
                     hadoop03 192.168.233.131
                         Docker 支持 HTTP 非安全协议
+            Harbor
+                hadoop01 192.168.233.129
             JDK 11.0.23
                 export JAVA_HOME=/opt/module/jdk/jdk-11.0.23/
                 export PATH=$PATH:$JAVA_HOME/bin
