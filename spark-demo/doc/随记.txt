@@ -312,10 +312,10 @@
                     vim /opt/module/tmp/Dockerfile
                         追加
                             FROM apache/spark:v3.2.3
-                            COPY sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar /opt/spark/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
+                            COPY /opt/module/tmp/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar /opt/spark/sparkcore-demo-1.0-SNAPSHOT-jar-with-dependencies.jar
                             WORKDIR /opt/spark/work-dir
                             ENTRYPOINT ["/opt/entrypoint.sh"]
-                    docker build -f /opt/module/tmp/Dockerfile -t sparkcore-demo:latest .
+                    docker build -f /opt/module/tmp/Dockerfile -t sparkcore-demo:latest /opt/module/tmp
                     docker tag sparkcore-demo:latest 192.168.233.129:30002/library/sparkcore-demo:latest
                     docker push 192.168.233.129:30002/library/sparkcore-demo:latest
                 挂载外部文件方式（ https://spark.apache.org/docs/3.2.1/running-on-kubernetes.html#using-kubernetes-volumes ）
@@ -326,7 +326,7 @@
                             FROM apache/spark:v3.2.3
                             WORKDIR /opt/spark/work-dir
                             ENTRYPOINT ["/opt/entrypoint.sh"]
-                    docker build -f /opt/module/tmp/Dockerfile -t sparkcore-demo:latest .
+                    docker build -f /opt/module/tmp/Dockerfile -t sparkcore-demo:latest /opt/module/tmp
                     docker tag sparkcore-demo:latest 192.168.233.129:30002/library/sparkcore-demo:latest
                     docker push 192.168.233.129:30002/library/sparkcore-demo:latest
                         需要显示登录 Harbor
