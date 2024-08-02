@@ -14,16 +14,45 @@
                 hadoop03 192.168.233.131
         Helm
             hadoop01 192.168.233.129
+        权限
+            sudo su
     安装 Ingress Controller （ https://kubernetes.github.io/ingress-nginx/deploy/#quick-start ）
+        mkdir -p /opt/module/tmp
+        cd /opt/module/tmp
         kubectl create namespace ingress-nginx
         helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-        helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx
+        helm pull ingress-nginx/ingress-nginx
+        tar -zxvf ingress-nginx-4.11.1.tgz
+        cd ingress-nginx
+        helm install ingress-nginx ingress-nginx/ingress-nginx -f values.yaml -n ingress-nginx
 
         kubectl get pod -o wide -n ingress-nginx
+        POD_NAME=$(kubectl get pod -n ingress-nginx | grep ingress-nginx | awk 'NR==1 {print $1}') && kubectl exec -it "$POD_NAME" -n ingress-nginx -- bash
         kubectl get pod -n ingress-nginx | grep ingress-nginx | awk '{print $1}' | xargs kubectl describe pod -n ingress-nginx
         kubectl get pod -n ingress-nginx | grep ingress-nginx | awk '{print $1}' | xargs kubectl logs -n ingress-nginx
 
         kubectl get service -o wide -n ingress-nginx
+    创建 Pod
+        mkdir -p /opt/module/tmp
+        cd /opt/module/tmp
+        vim pod_tomcat_demo.yaml
+            追加
+                apiVersion: v1
+                kind: Pod
+                metadata:
+                  name: pod-tomcat-demo
+                spec:
+                  containers:
+                  - name: container-tomcat-demo
+                    image: tomcat
+                    ports:
+                    - containerPort: 8080
+        kubectl create -f pod_tomcat_demo.yaml -n ingress-nginx
+        kubectl get pod -o wide -n ingress-nginx
+        kubectl describe pod pod-tomcat-demo -n ingress-nginx
+        kubectl logs pod-tomcat-demo -n ingress-nginx
+        kubectl exec -it pod-tomcat-demo -n ingress-nginx -- bash
+        kubectl delete pod pod-tomcat-demo -n ingress-nginx
     创建 Service
         mkdir -p /opt/module/tmp
         cd /opt/module/tmp
@@ -41,9 +70,10 @@
                       port: 80
                       targetPort: 8080
                   type: ClusterIP
-        kubectl create -f service_tomcat_demo.yaml -n default
-        kubectl get service -o wide -n default
-        kubectl describe service service-tomcat-demo -n default
+        kubectl create -f service_tomcat_demo.yaml -n ingress-nginx
+        kubectl get service -o wide -n ingress-nginx
+        kubectl describe service service-tomcat-demo -n ingress-nginx
+        kubectl delete service service-tomcat-demo -n ingress-nginx
     创建 Ingress
         mkdir -p /opt/module/tmp
         cd /opt/module/tmp
@@ -64,7 +94,9 @@
                             name: service-tomcat-demo
                             port:
                               number: 8080
-        kubectl create -f ingress_demo.yaml -n default
-        kubectl get ingress -o wide -n default
-        kubectl describe ingress ingress-demo -n default
-        kubectl logs ingress-demo -n default
+        kubectl create -f ingress_demo.yaml -n ingress-nginx
+        kubectl get ingress -o wide -n ingress-nginx
+        kubectl describe ingress ingress-demo -n ingress-nginx
+        kubectl edit ingress ingress-demo -n ingress-nginx
+
+        kubectl get service -o wide -n ingress-nginx
