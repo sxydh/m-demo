@@ -1,0 +1,51 @@
+概述
+    Ingress 用于将外部流量根据规则路由到合适的 Service
+    Ingress 组件包含 Ingress 、 Reverse Proxy 、 Ingress Controller 。
+        Ingress 是路由规则对象
+        Reverse Proxy 负责流量路由，支持多种实现，例如 Nginx 等。
+        Ingress Controller 负责感知路由规则的变化，并动态应用到 Reverse Proxy 。
+环境
+    前置条件
+        K8s v1.23.17
+            Kubernetes Master
+                hadoop01 192.168.233.129
+            Kubernetes Node
+                hadoop02 192.168.233.130
+                hadoop03 192.168.233.131
+        Helm
+            hadoop01 192.168.233.129
+    安装 Ingress Controller （ https://kubernetes.github.io/ingress-nginx/deploy/#quick-start ）
+        kubectl create namespace ingress-nginx
+        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+        helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx
+
+        kubectl get pod -o wide -n ingress-nginx
+        kubectl get pod -n ingress-nginx | grep ingress-nginx | awk '{print $1}' | xargs kubectl describe pod -n ingress-nginx
+        kubectl get pod -n ingress-nginx | grep ingress-nginx | awk '{print $1}' | xargs kubectl logs -n ingress-nginx
+    创建 Service
+        kubectl expose pod pod-tomcat-demo
+            注意 pod-tomcat-demo 必须
+    创建 Ingress
+        mkdir -p /opt/module/tmp
+        cd /opt/module/tmp
+        vim ingress_demo.yaml
+            追加
+                apiVersion: networking.k8s.io/v1
+                kind: Ingress
+                metadata:
+                  name: ingress-demo
+                spec:
+                  rules:
+                  - http:
+                      paths:
+                      - path: /tomcat-demo
+                        pathType: Prefix
+                        backend:
+                          service:
+                            name: service-tomcat-demo
+                            port:
+                              number: 8080
+        kubectl create -f ingress_demo.yaml -n default
+        kubectl get ingress -o wide -n default
+        kubectl describe ingress ingress-demo -n default
+        kubectl logs ingress-demo -n default
