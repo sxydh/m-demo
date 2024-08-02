@@ -21,6 +21,9 @@
                     hub ：表示在公共仓库内查找，公共仓库地址： https://artifacthub.io/ 。
                 helm search repo wordpress
                     repo ：表示在本地仓库内查找。
+        下载
+            helm pull <local_repo_name>/<chart_name>
+                将 Chart 文件下载到本地
         安装
             helm install <release_name> <local_repo_name>/<chart_name> -n <namespace_name>
     Release
