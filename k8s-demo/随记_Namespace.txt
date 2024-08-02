@@ -1,0 +1,5 @@
+命令
+    创建
+        kubectl create namespace <namespace_name>
+    列表
+        kubectl get namespace -o wide

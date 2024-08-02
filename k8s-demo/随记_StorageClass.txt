@@ -6,6 +6,14 @@
         AzureFile
         PortworxVolume
         ...
+命令
+    创建
+        kubectl create -f sc.yaml -n <namespace_name>
+            -f ：指定配置文件。
+    列表
+        kubectl get sc -o wide -n <namespace_name>
+    删除
+        kubectl delete sc <sc_name> -n <namespace_name>
 环境
     NFS 制备器
         前置条件

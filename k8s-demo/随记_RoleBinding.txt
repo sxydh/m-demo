@@ -1,0 +1,5 @@
+命令
+    创建
+        kubectl create rolebinding <rolebinding_name> --role=<role_name> --serviceaccount=<namespace_name>:<serviceaccount_name> --namespace=<namespace_name>
+    列表
+        kubectl get rolebinding -o wide -n <namespace_name>

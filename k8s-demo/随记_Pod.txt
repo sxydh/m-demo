@@ -1,3 +1,20 @@
+命令
+    创建
+        kubectl create -f nginx-pod.yaml -n <namespace_name>
+    列表
+        kubectl get pod -o wide -n <namespace_name>
+            进入 Pod
+                kubectl exec -it <pod_name> -n <namespace> -- bash
+    详情
+        kubectl describe pod <pod_name> -n <namespace_name>
+        kubectl logs <pod_name> -n <namespace_name>
+    重启
+        常规方式
+            kubectl get pod <pod_name> -n <namespace_name> -o yaml | kubectl replace --force -f -
+    删除
+        kubectl delete pod <pod_name> -n <namespace_name>
+        kubectl get pod -n <namespace_name> | grep <pattern> | awk '{print $1}' | xargs kubectl delete pod -n <namespace_name>
+            模糊删除
 环境
     创建 Pod
         基于 Tomcat

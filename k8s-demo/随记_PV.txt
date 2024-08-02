@@ -5,6 +5,14 @@
             HostPath 是将当前节点路径进行映射和共享，所以 Pod 如果被调度了其它节点，则在容器内对文件的修改，会反应到相应节点的路径上。
         NFS
         ...
+命令
+    创建
+        kubectl create -f pv.yaml
+            -f ：指定配置文件。
+    列表
+        kubectl get pv -o wide
+    删除
+        kubectl delete pv <pv_name>
 环境
     创建 HostPath 的 PV
         vim pv_hostpath_demo.yaml

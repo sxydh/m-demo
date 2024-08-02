@@ -1,0 +1,23 @@
+命令
+    列表
+        kubectl get configmap -o wide -n <namespace_name>
+环境
+    创建 ConfigMap
+        mkdir -p /opt/module/tmp
+        cd /opt/module/tmp
+        vim configmap_demo.yaml
+            追加
+                apiVersion: v1
+                kind: ConfigMap
+                metadata:
+                  name: my-configmap
+                  namespace: default
+                data:
+                  key1: value1
+                  key2: value2
+                  config.json: |
+                    {
+                      "setting1": "value1",
+                      "setting2": "value2"
+                    }
+        kubectl apply -f configmap_demo.yaml

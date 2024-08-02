@@ -1,0 +1,8 @@
+命令
+    创建
+        NodePort
+            kubectl expose <resource_type> <resource_name> --port=<service_port> --target-port=<pod_port> --type=NodePort
+    编辑
+        kubectl edit service <service_name> -n <namespace_name>
+    列表
+        kubectl get service -o wide -n <namespace_name>
