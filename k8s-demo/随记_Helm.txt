@@ -15,7 +15,7 @@
             helm repo add <local_repo_name> <remote_repo_url>
                 helm repo add brigade https://brigadecore.github.io/charts
     Chart
-        查询
+        搜索
             helm search <repo_type> <chart_name>
                 helm search hub wordpress
                     hub ：表示在公共仓库内查找，公共仓库地址： https://artifacthub.io/ 。
@@ -29,7 +29,7 @@
     Release
         列表
             helm list -n <namespace_name>
-            helm list --all-namespaces
+            helm list [--all-namespaces|-A]
         删除
             helm uninstall <release_name> -n <namespace_name>
 环境

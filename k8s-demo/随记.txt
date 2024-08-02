@@ -83,10 +83,10 @@
         Ingress
             Ingress 可以实现流量路由、负载均衡的功能，将到达 Ingress 的流量转发到合适的 Service 。
             Ingress 的功能类似于 Nginx ，先收到外部客户端的请求（一般带有域名），然后根据用户定义的规则，转发到正确的 Service 。
-            Ingress 组件包含 Nginx 、 Ingress Controller 、 Ingress 。
-                Ingress 是流量路由规则对象
-                Nginx 负责流量路由
-                Ingress Controller 负责感知路由规则的变化，并动态应用到 Nginx 。
+            Ingress 组件包含 Ingress 、 Reverse Proxy 、 Ingress Controller 。
+                Ingress 是路由规则对象
+                Reverse Proxy 负责流量路由，支持多种实现，例如 Nginx 等。
+                Ingress Controller 负责感知路由规则的变化，并动态应用到 Reverse Proxy 。
             
         Flannel
         Calico
