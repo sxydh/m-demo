@@ -64,238 +64,259 @@ Hadoop 概论
                 Reduce 阶段对 Map 结果进行汇总
         Common （辅助工具）
 环境
-    前置条件
-        三台服务器（ Ubuntu 20.04.6 ）
-            192.168.233.129
-            192.168.233.130
-            192.168.233.131
-        sudo vim /etc/hostname
-            修改为相应主机名，重启生效。
-                不要同步修改 /etc/hosts ，否则 NameNode 的 9870 客户端连不上，原因目前尚不清楚。
-        sudo vim /etc/hosts
-            追加
-                192.168.233.129 hadoop01
-                192.168.233.130 hadoop02
-                192.168.233.131 hadoop03
-        所有机器之间均已开启 SSH 免密（包括机器自身，建议包括 root 用户）
-        所有机器均已安装 JDK8
-        所有机器均已配置 JAVA_HOME
-    Hadoop （ 3.1.3 ）
-        Hadoop 安装（ hadoop01 ）
-            sudo mkdir /opt/module/hadoop
-            sudo chown -R sxydh:sxydh /opt/module/hadoop
-            wget -P /opt/module/hadoop https://archive.apache.org/dist/hadoop/common/hadoop-3.1.3/hadoop-3.1.3.tar.gz
-            tar -zxvf /opt/module/hadoop/hadoop-3.1.3.tar.gz -C /opt/module/hadoop/
-            sudo vim /etc/profile.d/my_env.sh
+    独立部署
+        前置条件
+            三台服务器（ Ubuntu 20.04.6 ）
+                192.168.233.129
+                192.168.233.130
+                192.168.233.131
+            sudo vim /etc/hostname
+                修改为相应主机名，重启生效。
+                    不要同步修改 /etc/hosts ，否则 NameNode 的 9870 客户端连不上，原因目前尚不清楚。
+            sudo vim /etc/hosts
                 追加
-                    export HADOOP_HOME=/opt/module/hadoop/hadoop-3.1.3
-                    export PATH=$PATH:$HADOOP_HOME/bin
-                    export PATH=$PATH:$HADOOP_HOME/sbin
-            source /etc/profile
-            echo $HADOOP_HOME
-        Hadoop 安装分发到集群（ hadoop02 ， hadoop03 ）
-            scp （文件安全拷贝）
-                scp -r <source path> <user name>@<host>:<target path>
-                    -r ：递归。
-                    scp -r /opt/module/hadoop/hadoop-3.1.3 sxydh@hadoop02:/opt/module/hadoop
-                    scp -r /opt/module/hadoop/hadoop-3.1.3 sxydh@hadoop03:/opt/module/hadoop
-            rsync （ rsync 比 scp 速度快， rsync 只对差异文件做更新， scp 是把所有文件都复制过去）
-                rsync -av <source path> <user name>@<host>:<target path>
-                    -a ：归档拷贝。
-                    -v ：显示复制过程。
-            xsync （分发脚本，详见 ./xsync.sh ）
-        Hadoop 运行
-            集群模式
-                集群部署规划
-                    NameNode 和 SecondaryNameNode 不要安装在同一台服务器
-                    ResourceManager 也很消耗内存，不要和 NameNode 、 SecondaryNameNode 配置在同一台机器上。
+                    192.168.233.129 hadoop01
+                    192.168.233.130 hadoop02
+                    192.168.233.131 hadoop03
+            所有机器之间均已开启 SSH 免密（包括机器自身，建议包括 root 用户）
+            所有机器均已安装 JDK8
+            所有机器均已配置 JAVA_HOME
+        Hadoop （ 3.1.3 ）
+            Hadoop 安装（ hadoop01 ）
+                sudo mkdir /opt/module/hadoop
+                sudo chown -R sxydh:sxydh /opt/module/hadoop
+                wget -P /opt/module/hadoop https://archive.apache.org/dist/hadoop/common/hadoop-3.1.3/hadoop-3.1.3.tar.gz
+                tar -zxvf /opt/module/hadoop/hadoop-3.1.3.tar.gz -C /opt/module/hadoop/
+                sudo vim /etc/profile.d/my_env.sh
+                    追加
+                        export HADOOP_HOME=/opt/module/hadoop/hadoop-3.1.3
+                        export PATH=$PATH:$HADOOP_HOME/bin
+                        export PATH=$PATH:$HADOOP_HOME/sbin
+                source /etc/profile
+                echo $HADOOP_HOME
+            Hadoop 安装分发到集群（ hadoop02 ， hadoop03 ）
+                scp （文件安全拷贝）
+                    scp -r <source path> <user name>@<host>:<target path>
+                        -r ：递归。
+                        scp -r /opt/module/hadoop/hadoop-3.1.3 sxydh@hadoop02:/opt/module/hadoop
+                        scp -r /opt/module/hadoop/hadoop-3.1.3 sxydh@hadoop03:/opt/module/hadoop
+                rsync （ rsync 比 scp 速度快， rsync 只对差异文件做更新， scp 是把所有文件都复制过去）
+                    rsync -av <source path> <user name>@<host>:<target path>
+                        -a ：归档拷贝。
+                        -v ：显示复制过程。
+                xsync （分发脚本，详见 ./xsync.sh ）
+            Hadoop 运行
+                集群模式
+                    集群部署规划
+                        NameNode 和 SecondaryNameNode 不要安装在同一台服务器
+                        ResourceManager 也很消耗内存，不要和 NameNode 、 SecondaryNameNode 配置在同一台机器上。
 
-                    具体规划
-                        hadoop01
-                            HDFS
-                                NameNode
-                                DataNode
-                            YARN
-                                NodeManager
-                        hadoop02
-                            HDFS
-                                DataNode
-                            YARN
-                                ResourceManager
-                                NodeManager
-                        hadoop03
-                            HDFS
-                                SecondaryNameNode
-                                DataNode
-                            YARN
-                                NodeManager
-                Hadoop 配置文件
-                    默认配置文件
-                        hadoop-common-3.1.3.jar/core-default.xml
-                        hadoop-hdfs-3.1.3.jar/hdfs-default.xml
-                        hadoop-yarn-common-3.1.3.jar/yarn-default.xml
-                        hadoop-mapreduce-client-core-3.1.3.jar/mapred-default.xml
-                    自定义配置文件
-                        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/core-site.xml （ hadoop01 ）
-                            追加
-                                <!-- 指定 NameNode 地址 -->
-                                <property>
-                                    <name>fs.defaultFS</name>
-                                    <value>hdfs://hadoop01:8020</value>
-                                </property>
-                                <!-- 指定 Hadoop 的数据存储目录 -->
-                                <property>
-                                    <name>hadoop.tmp.dir</name>
-                                    <value>/opt/module/hadoop/hadoop-3.1.3/data</value>
-                                </property>
-                                <!-- 配置 HDFS 网页登录使用的静态用户为 sxydh -->
-                                <property>
-                                    <name>hadoop.http.staticuser.user</name>
-                                    <value>sxydh</value>
-                                </property>
-                        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml （ hadoop01 ）
-                            追加
-                                <!-- NN Web 端访问地址 -->
-                                <property>
-                                    <name>dfs.namenode.http-address</name>
-                                    <value>hadoop01:9870</value>
-                                </property>
-                                <!-- 2NN Web 端访问地址 -->
-                                <property>
-                                    <name>dfs.namenode.secondary.http-address</name>
-                                    <value>hadoop03:9868</value>
-                                </property>
-                        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/yarn-site.xml （ hadoop01 ）
-                            追加
-                                <!-- 指定 MR 走 shuffle -->
-                                <property>
-                                    <name>yarn.nodemanager.aux-services</name>
-                                    <value>mapreduce_shuffle</value>
-                                </property>
-                                <!-- 指定 ResourceManager 的地址 -->
-                                <property>
-                                    <name>yarn.resourcemanager.hostname</name>
-                                    <value>hadoop02</value>
-                                </property>
-                                <!-- 环境变量继承 -->
-                                <property>
-                                    <name>yarn.nodemanager.env-whitelist</name>
-                                    <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
-                                </property>
-                                <!-- 虚拟内存检查，默认代开，修改为关闭。 -->
-                                <property>
-                                    <name>yarn.nodemanager.vmem-check-enabled</name>
-                                    <value>false</value>
-                                </property>
+                        具体规划
+                            hadoop01
+                                HDFS
+                                    NameNode
+                                    DataNode
+                                YARN
+                                    NodeManager
+                            hadoop02
+                                HDFS
+                                    DataNode
+                                YARN
+                                    ResourceManager
+                                    NodeManager
+                            hadoop03
+                                HDFS
+                                    SecondaryNameNode
+                                    DataNode
+                                YARN
+                                    NodeManager
+                    Hadoop 配置文件
+                        默认配置文件
+                            hadoop-common-3.1.3.jar/core-default.xml
+                            hadoop-hdfs-3.1.3.jar/hdfs-default.xml
+                            hadoop-yarn-common-3.1.3.jar/yarn-default.xml
+                            hadoop-mapreduce-client-core-3.1.3.jar/mapred-default.xml
+                        自定义配置文件
+                            vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/core-site.xml （ hadoop01 ）
+                                追加
+                                    <!-- 指定 NameNode 地址 -->
+                                    <property>
+                                        <name>fs.defaultFS</name>
+                                        <value>hdfs://hadoop01:8020</value>
+                                    </property>
+                                    <!-- 指定 Hadoop 的数据存储目录 -->
+                                    <property>
+                                        <name>hadoop.tmp.dir</name>
+                                        <value>/opt/module/hadoop/hadoop-3.1.3/data</value>
+                                    </property>
+                                    <!-- 配置 HDFS 网页登录使用的静态用户为 sxydh -->
+                                    <property>
+                                        <name>hadoop.http.staticuser.user</name>
+                                        <value>sxydh</value>
+                                    </property>
+                            vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hdfs-site.xml （ hadoop01 ）
+                                追加
+                                    <!-- NN Web 端访问地址 -->
+                                    <property>
+                                        <name>dfs.namenode.http-address</name>
+                                        <value>hadoop01:9870</value>
+                                    </property>
+                                    <!-- 2NN Web 端访问地址 -->
+                                    <property>
+                                        <name>dfs.namenode.secondary.http-address</name>
+                                        <value>hadoop03:9868</value>
+                                    </property>
+                            vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/yarn-site.xml （ hadoop01 ）
+                                追加
+                                    <!-- 指定 MR 走 shuffle -->
+                                    <property>
+                                        <name>yarn.nodemanager.aux-services</name>
+                                        <value>mapreduce_shuffle</value>
+                                    </property>
+                                    <!-- 指定 ResourceManager 的地址 -->
+                                    <property>
+                                        <name>yarn.resourcemanager.hostname</name>
+                                        <value>hadoop02</value>
+                                    </property>
+                                    <!-- 环境变量继承 -->
+                                    <property>
+                                        <name>yarn.nodemanager.env-whitelist</name>
+                                        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
+                                    </property>
+                                    <!-- 虚拟内存检查，默认代开，修改为关闭。 -->
+                                    <property>
+                                        <name>yarn.nodemanager.vmem-check-enabled</name>
+                                        <value>false</value>
+                                    </property>
+                            vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/mapred-site.xml （ hadoop01 ）
+                                追加
+                                    <!-- 指定 MapReduce 程序运行在 YARN 上 -->
+                                    <property>
+                                        <name>mapreduce.framework.name</name>
+                                        <value>yarn</value>
+                                    </property>
+                            vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/workers （ hadoop01 ）
+                                追加
+                                    hadoop01
+                                    hadoop02
+                                    hadoop03
+                            vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hadoop-env.sh （ hadoop01 ）
+                                修改为
+                                    export JAVA_HOME=/opt/module/jdk/jdk1.8.0_202
+                    Hadoop 配置分发到集群（ hadoop02 ， hadoop03 ）
+                        略
+                    启动集群
+                        格式化 NameNode （ hadoop01 ，仅在第一次启动时）
+                            hdfs namenode -format
+                                注意：格式化 NameNode ，会产生新的集群 ID ，可能导致 NameNode 和 DataNode 的集群 ID 不一致，集群找不到已往数据。
+                                如果集群在运行过程中报错，需要重新格式化 NameNode 的话，一定要先停止 NameNode 和 DataNode 进程，并且要删除所有机器的 data 和 logs 目录，然后再进行格式化。
+                        启动 HDFS （ hadoop01 ）
+                            cd /opt/module/hadoop/hadoop-3.1.3 && sbin/start-dfs.sh
+                                验证
+                                    http://hadoop01:9870
+                                        注意客户端主机需要提前配置 hosts 文件
+                                停止
+                                    cd /opt/module/hadoop/hadoop-3.1.3 && sbin/stop-dfs.sh
+                        启动 YARN （ hadoop02 ，该节点是 YARN 的 ResourceManager 节点）
+                            cd /opt/module/hadoop/hadoop-3.1.3 && sbin/start-yarn.sh
+                                验证
+                                    http://hadoop02:8088
+                                        注意客户端主机需要提前配置 hosts 文件
+                                停止
+                                    cd /opt/module/hadoop/hadoop-3.1.3 && sbin/stop-yarn.sh
+                    测试上传文件到集群
+                        hadoop fs -mkdir /wcinput
+                        hadoop fs -put /opt/module/tmp/word.txt /wcinput
+                    测试执行 wordcount 程序
+                        hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar wordcount /wcinput /wcoutput
+                            /wcinput ：输入数据路径。
+                            /wcoutput ：输出路径，测试前先删除。
+                    配置历史服务器
                         vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/mapred-site.xml （ hadoop01 ）
                             追加
-                                <!-- 指定 MapReduce 程序运行在 YARN 上 -->
+                                <!-- 历史服务器端地址 -->
                                 <property>
-                                    <name>mapreduce.framework.name</name>
-                                    <value>yarn</value>
+                                    <name>mapreduce.jobhistory.address</name>
+                                    <value>hadoop01:10020</value>
                                 </property>
-                        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/workers （ hadoop01 ）
-                            追加
-                                hadoop01
-                                hadoop02
-                                hadoop03
-                        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/hadoop-env.sh （ hadoop01 ）
-                            修改为
-                                export JAVA_HOME=/opt/module/jdk/jdk1.8.0_202
-                Hadoop 配置分发到集群（ hadoop02 ， hadoop03 ）
-                    略
-                启动集群
-                    格式化 NameNode （ hadoop01 ，仅在第一次启动时）
-                        hdfs namenode -format
-                            注意：格式化 NameNode ，会产生新的集群 ID ，可能导致 NameNode 和 DataNode 的集群 ID 不一致，集群找不到已往数据。
-                            如果集群在运行过程中报错，需要重新格式化 NameNode 的话，一定要先停止 NameNode 和 DataNode 进程，并且要删除所有机器的 data 和 logs 目录，然后再进行格式化。
-                    启动 HDFS （ hadoop01 ）
-                        cd /opt/module/hadoop/hadoop-3.1.3 && sbin/start-dfs.sh
-                            验证
-                                http://hadoop01:9870
-                                    注意客户端主机需要提前配置 hosts 文件
-                            停止
-                                cd /opt/module/hadoop/hadoop-3.1.3 && sbin/stop-dfs.sh
-                    启动 YARN （ hadoop02 ，该节点是 YARN 的 ResourceManager 节点）
-                        cd /opt/module/hadoop/hadoop-3.1.3 && sbin/start-yarn.sh
-                            验证
-                                http://hadoop02:8088
-                                    注意客户端主机需要提前配置 hosts 文件
-                            停止
-                                cd /opt/module/hadoop/hadoop-3.1.3 && sbin/stop-yarn.sh
-                测试上传文件到集群
-                    hadoop fs -mkdir /wcinput
-                    hadoop fs -put /opt/module/tmp/word.txt /wcinput
-                测试执行 wordcount 程序
-                    hadoop jar /opt/module/hadoop/hadoop-3.1.3/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar wordcount /wcinput /wcoutput
-                        /wcinput ：输入数据路径。
-                        /wcoutput ：输出路径，测试前先删除。
-                配置历史服务器
-                    vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/mapred-site.xml （ hadoop01 ）
-                        追加
-                            <!-- 历史服务器端地址 -->
-                            <property>
-                                <name>mapreduce.jobhistory.address</name>
-                                <value>hadoop01:10020</value>
-                            </property>
-                            <!-- 历史服务器 Web 端地址 -->
-                            <property>
-                                <name>mapreduce.jobhistory.webapp.address</name>
-                                <value>hadoop01:19888</value>
-                            </property>
-                    配置文件分发到集群（ hadoop02 ， hadoop03 ）
-                        略
-                    在 hadoop01 启动历史服务器
-                        mapred --daemon start historyserver
-                        jps
-                配置日志的聚集
-                    日志聚集功能好处：可以方便的查看到程序运行详情，方便开发调试。
-                    注意：开启日志聚集功能，需要重新启动 NodeManager 、 ResourceManager 和 HistoryServer 。
-                    vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/yarn-site.xml （ hadoop01 ）
-                        追加
-                            <!-- 开启日志聚集功能 -->
-                            <property>
-                                <name>yarn.log-aggregation-enable</name>
-                                <value>true</value>
-                            </property>
-                            <!-- 设置日志聚集服务器地址 -->
-                            <property>
-                                <name>yarn.log.server.url</name>
-                                <value>http://hadoop01:19888</value>
-                            </property>
-                            <!-- 设置日志保留时间为 7 天 -->
-                            <property>
-                                <name>yarn.log-aggregation.retain-seconds</name>
-                                <value>604800</value>
-                            </property>
-                    配置文件分发到集群（ hadoop02 ， hadoop03 ）
-                        略
-                    重启 YARN 和 HistoryServer
-                        hadoop01
-                            mapred --daemon stop historyserver
+                                <!-- 历史服务器 Web 端地址 -->
+                                <property>
+                                    <name>mapreduce.jobhistory.webapp.address</name>
+                                    <value>hadoop01:19888</value>
+                                </property>
+                        配置文件分发到集群（ hadoop02 ， hadoop03 ）
+                            略
+                        在 hadoop01 启动历史服务器
                             mapred --daemon start historyserver
-                        hadoop02
-                            cd /opt/module/hadoop/hadoop-3.1.3 && sbin/stop-yarn.sh
-                            cd /opt/module/hadoop/hadoop-3.1.3 && sbin/start-yarn.sh
-                    测试执行 wordcount 程序，查看运行日志。
-                各个服务组件启动和停止
-                    HDFS 组件
-                        hdfs --daemon {start|stop} {namenode|datanode|secondarynamenode}
-                    YARN 组件
-                        yarn --daemon {start|stop} {resourcemanager|nodemanager}
-                集群启动和停止脚本
-                    详见： ./Hadoop 集群启停 .sh ， ./jps 机群 .sh 。
-                其它总结
-                    常用端口号
-                        Hadoop3.x
-                            HDFS NameNode 内部通信端口： 8020/9000/9820 。
-                            HDFS NameNode 对用户的查询端口： 9870 。
-                            历史服务器： 19888 。
-                        Hadoop2.x
-                            HDFS NameNode 内同通信端口： 8020/9000 。
-                            HDFS NameNode 对用户的查询端口： 50070 。
-                            YARN 查看任务运行情况的端口： 8088 。
-                            历史服务器： 19888 。
-                    常用配置文件
-                        3.x ： core-site.xml ， hdfs-site.xml ， yarn-site.xml ， mapred-site.xml ， workers 。
-                        2.x ： core-site.xml ， hdfs-site.xml ， yarn-site.xml ， mapred-site.xml ， slaves 。
+                            jps
+                    配置日志的聚集
+                        日志聚集功能好处：可以方便的查看到程序运行详情，方便开发调试。
+                        注意：开启日志聚集功能，需要重新启动 NodeManager 、 ResourceManager 和 HistoryServer 。
+                        vim /opt/module/hadoop/hadoop-3.1.3/etc/hadoop/yarn-site.xml （ hadoop01 ）
+                            追加
+                                <!-- 开启日志聚集功能 -->
+                                <property>
+                                    <name>yarn.log-aggregation-enable</name>
+                                    <value>true</value>
+                                </property>
+                                <!-- 设置日志聚集服务器地址 -->
+                                <property>
+                                    <name>yarn.log.server.url</name>
+                                    <value>http://hadoop01:19888</value>
+                                </property>
+                                <!-- 设置日志保留时间为 7 天 -->
+                                <property>
+                                    <name>yarn.log-aggregation.retain-seconds</name>
+                                    <value>604800</value>
+                                </property>
+                        配置文件分发到集群（ hadoop02 ， hadoop03 ）
+                            略
+                        重启 YARN 和 HistoryServer
+                            hadoop01
+                                mapred --daemon stop historyserver
+                                mapred --daemon start historyserver
+                            hadoop02
+                                cd /opt/module/hadoop/hadoop-3.1.3 && sbin/stop-yarn.sh
+                                cd /opt/module/hadoop/hadoop-3.1.3 && sbin/start-yarn.sh
+                        测试执行 wordcount 程序，查看运行日志。
+                    各个服务组件启动和停止
+                        HDFS 组件
+                            hdfs --daemon {start|stop} {namenode|datanode|secondarynamenode}
+                        YARN 组件
+                            yarn --daemon {start|stop} {resourcemanager|nodemanager}
+                    集群启动和停止脚本
+                        详见： ./Hadoop 集群启停 .sh ， ./jps 机群 .sh 。
+                    其它总结
+                        常用端口号
+                            Hadoop3.x
+                                HDFS NameNode 内部通信端口： 8020/9000/9820 。
+                                HDFS NameNode 对用户的查询端口： 9870 。
+                                历史服务器： 19888 。
+                            Hadoop2.x
+                                HDFS NameNode 内同通信端口： 8020/9000 。
+                                HDFS NameNode 对用户的查询端口： 50070 。
+                                YARN 查看任务运行情况的端口： 8088 。
+                                历史服务器： 19888 。
+                        常用配置文件
+                            3.x ： core-site.xml ， hdfs-site.xml ， yarn-site.xml ， mapred-site.xml ， workers 。
+                            2.x ： core-site.xml ， hdfs-site.xml ， yarn-site.xml ， mapred-site.xml ， slaves 。
+    Helm 部署
+        前置条件
+            K8s v1.23.17
+                Kubernetes Master
+                    hadoop01 192.168.233.129
+                Kubernetes Node
+                    hadoop02 192.168.233.130
+                    hadoop03 192.168.233.131
+            Helm
+                hadoop01 192.168.233.129
+        安装服务（ hadoop01 ）
+            helm repo add pfisterer-hadoop https://pfisterer.github.io/apache-hadoop-helm/
+            helm install hadoop pfisterer-hadoop/hadoop
+            kubectl edit service hadoop-hadoop-yarn-ui
+                更新
+                    spec:
+                      type: NodePort
+        验证服务
+            kubectl get service -o wide
+            http://192.168.233.129:<port>
