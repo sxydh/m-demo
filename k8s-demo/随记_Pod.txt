@@ -8,6 +8,8 @@
     详情
         kubectl describe pod <pod_name> -n <namespace_name>
         kubectl logs <pod_name> -n <namespace_name>
+    导出
+        kubectl port-forward pod/<pod_name> <node_port>:<pod_port> --address=<node_ip>
     编辑
         kubectl edit pod <pod_name> -n <namespace_name>
     重启
