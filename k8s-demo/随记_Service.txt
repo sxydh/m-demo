@@ -1,3 +1,5 @@
+概述
+    多种类型： ClusterIP 、 NodePort 等。
 命令
     创建
         kubectl create -f <yaml_file> -n <namespace_name>
