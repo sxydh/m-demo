@@ -1,8 +1,28 @@
 命令
     创建
-        NodePort
-            kubectl expose <resource_type> <resource_name> --port=<service_port> --target-port=<pod_port> --type=NodePort
+        kubectl create -f <yaml_file> -n <namespace_name>
     编辑
         kubectl edit service <service_name> -n <namespace_name>
     列表
         kubectl get service -o wide -n <namespace_name>
+环境
+    创建 Service
+        mkdir -p /opt/module/tmp
+        cd /opt/module/tmp
+        vim service_demo.yaml
+            追加
+                apiVersion: v1
+                kind: Service
+                metadata:
+                  name: service-demo
+                spec:
+                  selector:
+                    app: pod-tomcat-demo
+                  ports:
+                    - protocol: TCP
+                      port: 80
+                      targetPort: 8080
+                  type: ClusterIP
+        kubectl create -f service_demo.yaml -n default
+        kubectl get service -o wide -n default
+        kubectl describe service service-demo -n default
