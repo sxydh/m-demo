@@ -1,5 +1,35 @@
+概述
+    Deployment 用于管理 Pod 的生命周期，而且支持 Pod 的扩展、更新、回滚等。
 命令
     列表
         kubectl get deployment -o wide -n <namespace_name>
     扩缩
         kubectl scale deployment/<deployment_name> --replicas=<target_number>
+环境
+    创建 Deployment
+        mkdir -p /opt/module/tmp
+        cd /opt/module/tmp
+        vim deployment_tomcat_demo.yaml
+            追加
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: deployment-tomcat-demo
+                  labels:
+                    app: deployment-tomcat-demo
+                spec:
+                  replicas: 1
+                  selector:
+                    matchLabels:
+                      app: pod-tomcat-demo
+                  template:
+                    metadata:
+                      labels:
+                        app: pod-tomcat-demo
+                    spec:
+                      containers:
+                      - name: container-tomcat-demo
+                        image: tomcat
+                        ports:
+                        - containerPort: 8080
+        kubectl create -f deployment_tomcat_demo.yaml -n default
