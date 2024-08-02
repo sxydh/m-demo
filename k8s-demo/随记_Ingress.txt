@@ -50,6 +50,7 @@
         kubectl create -f pod_tomcat_demo.yaml -n ingress-nginx
         kubectl get pod -o wide -n ingress-nginx
         kubectl describe pod pod-tomcat-demo -n ingress-nginx
+        kubectl edit pod pod-tomcat-demo -n ingress-nginx
         kubectl logs pod-tomcat-demo -n ingress-nginx
         kubectl exec -it pod-tomcat-demo -n ingress-nginx -- bash
         kubectl delete pod pod-tomcat-demo -n ingress-nginx
@@ -73,6 +74,7 @@
         kubectl create -f service_tomcat_demo.yaml -n ingress-nginx
         kubectl get service -o wide -n ingress-nginx
         kubectl describe service service-tomcat-demo -n ingress-nginx
+        kubectl edit service service-tomcat-demo -n ingress-nginx
         kubectl delete service service-tomcat-demo -n ingress-nginx
     创建 Ingress
         mkdir -p /opt/module/tmp
