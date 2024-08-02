@@ -9,8 +9,8 @@ def is_w(c):
     return not c or re.match(r'[0-9a-zA-Z]|[`~!@#$%^&*()\-_=+\[{\]}\\|;:\'",<.>/?]', c)
 
 
-def is_n(c):
-    return c != '\r' and c != '\n' and c != '\r\n'
+def is_l(c):
+    return c == '\r' or c == '\n' or c == '\r\n'
 
 
 if __name__ == '__main__':
@@ -25,8 +25,8 @@ if __name__ == '__main__':
         b1 = not is_w(fc) and is_w(prev)
         b2 = is_w(fc) and not is_w(prev)
         b3 = b1 or b2
-        b4 = prev and prev != ' ' and not is_n(prev)
-        b5 = fc != ' ' and not is_n(fc)
+        b4 = prev and prev != ' ' and not is_l(prev)
+        b5 = fc != ' ' and not is_l(fc)
         b = b3 and b4 and b5
         if b:
             res = res + ' ' + fc
