@@ -185,6 +185,8 @@
         创建
             NodePort
                 kubectl expose <resource_type> <resource_name> --port=<service_port> --target-port=<pod_port> --type=NodePort
+        编辑
+            kubectl edit service <service_name> -n <namespace_name>
         列表
             kubectl get service -o wide -n <namespace_name>
     Deployment 
@@ -306,7 +308,7 @@
     安装 K8s Dashboard （ hadoop01 ， 2.5.1 ， https://skyao.io/learning-kubernetes/docs/installation/kubeadm/dashboard ）
         kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.1/aio/deploy/recommended.yaml
             安装完成后，是以 ClusterIP 的形式对外曝露服务，只能在集群内部访问，需要将 ClusterIP 更新为 NodePort ：
-                kubectl -n kubernetes-dashboard edit service kubernetes-dashboard
+                kubectl edit service kubernetes-dashboard -n kubernetes-dashboard
                     更新
                         spec:
                             ...
