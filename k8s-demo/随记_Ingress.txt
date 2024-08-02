@@ -25,6 +25,7 @@
         tar -zxvf ingress-nginx-4.11.1.tgz
         cd ingress-nginx
         helm install ingress-nginx ingress-nginx/ingress-nginx -f values.yaml -n ingress-nginx
+            helm uninstall ingress-nginx -n ingress-nginx
 
         kubectl get pod -o wide -n ingress-nginx
         POD_NAME=$(kubectl get pod -n ingress-nginx | grep ingress-nginx | awk 'NR==1 {print $1}') && kubectl exec -it "$POD_NAME" -n ingress-nginx -- bash
