@@ -22,9 +22,28 @@
         kubectl get pod -o wide -n ingress-nginx
         kubectl get pod -n ingress-nginx | grep ingress-nginx | awk '{print $1}' | xargs kubectl describe pod -n ingress-nginx
         kubectl get pod -n ingress-nginx | grep ingress-nginx | awk '{print $1}' | xargs kubectl logs -n ingress-nginx
+
+        kubectl get service -o wide -n ingress-nginx
     创建 Service
-        kubectl expose pod pod-tomcat-demo
-            注意 pod-tomcat-demo 必须
+        mkdir -p /opt/module/tmp
+        cd /opt/module/tmp
+        vim service_tomcat_demo.yaml
+            追加
+                apiVersion: v1
+                kind: Service
+                metadata:
+                  name: service-tomcat-demo
+                spec:
+                  selector:
+                    app: pod-tomcat-demo
+                  ports:
+                    - protocol: TCP
+                      port: 80
+                      targetPort: 8080
+                  type: ClusterIP
+        kubectl create -f service_tomcat_demo.yaml -n default
+        kubectl get service -o wide -n default
+        kubectl describe service service-tomcat-demo -n default
     创建 Ingress
         mkdir -p /opt/module/tmp
         cd /opt/module/tmp
