@@ -278,15 +278,17 @@
                     hadoop03
                     
                 配置驱动程序（ hadoop01, hadoop02, hadoop03 ）
-                    sudo vim /etc/docker/daemon.json
-                        追加
-                            {
-                              ...
-                              "exec-opts": ["native.cgroupdriver=systemd"]
-                            }
-                                告诉 Docker 使用 systemd 作为其 cgroup 驱动程序，这样做的目的是为了与宿主系统的 cgroup 配置保持一致，以便更好地管理容器的资源。
-                    sudo systemctl daemon-reload
-                    sudo systemctl restart docker
+                    概述
+                        设置 Docker 使用 systemd 作为其 cgroup 驱动程序，这样做的目的是为了与宿主系统的 cgroup 保持一致，以便更好地管理容器的资源。
+                    开始
+                        sudo vim /etc/docker/daemon.json
+                            追加
+                                {
+                                  ...
+                                  "exec-opts": ["native.cgroupdriver=systemd"]
+                                }
+                        sudo systemctl daemon-reload
+                        sudo systemctl restart docker
             配置代理
                 export http_proxy=http://192.168.62.185:10809
                 export https_proxy=http://192.168.62.185:10809
