@@ -298,7 +298,7 @@
                         Acquire::http::Proxy "http://192.168.62.185:10809";
                         Acquire::https::Proxy "http://192.168.62.185:10809";
                         
-                            记得删除
+                            仅为了方便安装 kubernetes ，记得删除。
                         
         安装 Kubeadm 工具箱（ hadoop01, hadoop02, hadoop03 ）
             概述
