@@ -271,7 +271,7 @@
                 Kubernetes Node
                     hadoop02
                     hadoop03
-            容器运行时
+            配置容器运行时
                 Docker 27.1.1
                     hadoop01
                     hadoop02
@@ -300,6 +300,15 @@
                                         }
                                 sudo systemctl daemon-reload
                                 sudo systemctl restart docker
+                                
+            关闭 Swap
+                概述
+                    Swap 开启时， Kubelet 无法启动。
+                开始
+                    sudo swapoff -a
+                    sudo vim /etc/fstab
+                        更新
+                            #/swap.img      none    swap    sw      0       0
                                 
             配置代理
                 export http_proxy=http://192.168.62.185:10809
