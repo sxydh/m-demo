@@ -1,3 +1,12 @@
+镜像
+    列表
+        ctr -n <namespace_name> image ls
+    拉取
+        ctr -n <namespace_name> image pull <image_name>
+容器
+    列表
+        ctr -n <namespace_name> task ls
+        
 环境（ https://github.com/containerd/containerd/blob/main/docs/getting-started.md ）
     前置条件
         Ubuntu 20.04.6 LTS
