@@ -272,6 +272,8 @@
                 Kubernetes Node
                     hadoop02
                     hadoop03
+            用户权限
+                sudo su
             配置容器运行时
                 Containerd 1.7.20
                     hadoop01
@@ -283,21 +285,21 @@
                                 CGroup 用于限制分配给进程的资源
                                 容器运行时的 CGroup 和 Kubelet 的 CGroup 需要保持一致
                             开始
-                                sudo mkdir -p /etc/containerd
-                                sudo containerd config default | sudo tee /etc/containerd/config.toml
-                                sudo vim /etc/containerd/config.toml
+                                mkdir -p /etc/containerd
+                                containerd config default | tee /etc/containerd/config.toml
+                                vim /etc/containerd/config.toml
                                     更新
                                         [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
                                             SystemdCgroup = true
-                                sudo systemctl daemon-reload
-                                sudo systemctl restart containerd
+                                systemctl daemon-reload
+                                systemctl restart containerd
                                 
             关闭 Swap
                 概述
                     Swap 开启时， Kubelet 无法启动。
                 开始
-                    sudo swapoff -a
-                    sudo vim /etc/fstab
+                    swapoff -a
+                    vim /etc/fstab
                         更新
                             #/swap.img      none    swap    sw      0       0
                                 
@@ -305,7 +307,7 @@
                 export http_proxy=http://192.168.62.185:10809
                 export https_proxy=http://192.168.62.185:10809
                 
-                sudo vim /etc/apt/apt.conf
+                vim /etc/apt/apt.conf
                     追加
                         Acquire::http::Proxy "http://192.168.62.185:10809";
                         Acquire::https::Proxy "http://192.168.62.185:10809";
@@ -316,21 +318,21 @@
             概述
                 Kubeadm 工具箱用于创建 Kubernetes 集群
             开始
-                sudo apt-get update
-                sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+                apt-get update
+                apt-get install -y apt-transport-https ca-certificates curl gpg
                     安装 K8s 依赖包
                     
-                sudo mkdir -p -m 755 /etc/apt/keyrings
-                curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+                mkdir -p -m 755 /etc/apt/keyrings
+                curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
                     下载 K8s 公钥
                     
-                echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+                echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | tee /etc/apt/sources.list.d/kubernetes.list
                     添加 K8s 仓库
                     此操作会覆盖 /etc/apt/sources.list.d/kubernetes.list 中现存的所有配置
                     
-                sudo apt-get update
-                sudo apt-get install -y kubelet kubeadm kubectl
-                sudo apt-mark hold kubelet kubeadm kubectl
+                apt-get update
+                apt-get install -y kubelet kubeadm kubectl
+                apt-mark hold kubelet kubeadm kubectl
                     锁定版本
         创建 K8s 集群
             概述
@@ -338,8 +340,6 @@
             开始
                 初始化 Kubernetes Master （ hadoop01 ）
                 
-                    sudo su
-                    source /etc/profile
                     ctr -n k8s.io image pull registry.k8s.io/kube-apiserver:v1.30.3
                     ctr -n k8s.io image pull registry.k8s.io/kube-controller-manager:v1.30.3
                     ctr -n k8s.io image pull registry.k8s.io/kube-scheduler:v1.30.3
@@ -351,10 +351,8 @@
                     exit
                     
                         先拉取初始化所需要的镜像列表，该列表可通过以下命令获取：
-                            sudo kubeadm config images list
+                            kubeadm config images list
                             
-                    sudo su
-                    source /etc/profile
                     kubeadm init \
                         --apiserver-advertise-address=192.168.233.129 \
                         --pod-network-cidr=10.244.0.0/16 \
@@ -373,8 +371,6 @@
                         一个集群只能部署一个 Pod 网络插件
                     开始
                         
-                        sudo su
-                        source /etc/profile
                         ctr image pull docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel1
                         ctr image pull docker.io/flannel/flannel:v0.25.5
                             
@@ -384,7 +380,7 @@
                         exit
                         
                 初始化 Kubernetes Node （ hadoop02, hadoop03 ）
-                    sudo kubeadm join 192.168.233.129:6443 \
+                    kubeadm join 192.168.233.129:6443 \
                         --token fgzkud.oznw7r37m7fo0b57 \
                         --discovery-token-ca-cert-hash sha256:587a8d3f6c8ff811dfc67042f3ed980b8ed9cd2b855d1f3a493415b97413f947
                     
