@@ -170,9 +170,6 @@ Docker Compose
             代理
                 export http_proxy=http://192.168.62.185:10809
                 export https_proxy=http://192.168.62.185:10809
-                
-                sudo export http_proxy=http://192.168.62.185:10809
-                sudo export https_proxy=http://192.168.62.185:10809
         准备文件
             sudo mkdir -p /opt/module/docker
             sudo chown -R sxydh:sxydh /opt/module/docker
