@@ -286,8 +286,6 @@
                                 告诉 Docker 使用 systemd 作为其 cgroup 驱动程序，这样做的目的是为了与宿主系统的 cgroup 配置保持一致，以便更好地管理容器的资源。
                     systemctl daemon-reload
                     systemctl restart docker
-            用户权限
-                sudo su
             配置代理
                 export http_proxy=http://192.168.62.185:10809
                 export https_proxy=http://192.168.62.185:10809
