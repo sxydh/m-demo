@@ -320,14 +320,14 @@
             开始
                 初始化 Kubernetes Master （ hadoop01 ）
                     sudo kubeadm init \
-                    --apiserver-advertise-address=192.168.233.129 \
-                    --pod-network-cidr=10.244.0.0/16 \
-                    --ignore-preflight-errors='all'
+                        --apiserver-advertise-address=192.168.233.129 \
+                        --pod-network-cidr=10.244.0.0/16 \
+                        --ignore-preflight-errors='all'
                     
-                        --apiserver-advertise-address ：设置控制平面节点 API 服务器的广播地址。
-                        --pod-network-cidr ：设置 Pod 网络地址范围。
-                        
-                        初始化完成后，需要按照控制台提示执行相关操作。
+                            --apiserver-advertise-address ：设置控制平面节点 API 服务器的广播地址。
+                            --pod-network-cidr ：设置 Pod 网络地址范围。
+                            
+                            初始化完成后，需要按照控制台提示执行相关操作。
                         
                 初始化 Kubernetes Node （ hadoop02, hadoop03 ）
                     
