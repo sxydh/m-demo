@@ -273,33 +273,24 @@
                     hadoop02
                     hadoop03
             配置容器运行时
-                Docker 27.1.1
+                Containerd 1.7.20
                     hadoop01
                     hadoop02
                     hadoop03
                     
-                        启用 CRI 插件
+                        配置 CGroup
                             概述
-                                CRI （ Container Runtime Interface ）是容器运行时接口
-                                Kubelet 需要通过 CRI 来使用容器运行时
-                                Docker 默认禁用 CRI 插件，需要显示开启。 
+                                CGroup 用于限制分配给进程的资源
+                                容器运行时的 CGroup 和 Kubelet 的 CGroup 需要保持一致
                             开始
+                                sudo mkdir -p /etc/containerd
+                                sudo containerd config default | sudo tee /etc/containerd/config.toml
                                 sudo vim /etc/containerd/config.toml
                                     更新
-                                        #disabled_plugins = ["cri"]
-                                sudo systemctl restart containerd
-                            
-                        配置 Cgroup 驱动
-                            概述
-                                配置 Docker 使用 systemd 作为其 cgroup 驱动程序，这样做的目的是为了与宿主系统的 cgroup 保持一致，以便更好地管理容器的资源。
-                            开始
-                                sudo vim /etc/docker/daemon.json
-                                    追加
-                                        {
-                                          "exec-opts": ["native.cgroupdriver=systemd"]
-                                        }
+                                        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+                                            SystemdCgroup = true
                                 sudo systemctl daemon-reload
-                                sudo systemctl restart docker
+                                sudo systemctl restart containerd
                                 
             关闭 Swap
                 概述
