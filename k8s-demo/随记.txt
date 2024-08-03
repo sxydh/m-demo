@@ -263,9 +263,9 @@
     版本 1.30 （ https://kubernetes.io/zh-cn/docs/setup/production-environment/tools/kubeadm/install-kubeadm/ ）
         前置条件
             Ubuntu 20.04.6 LTS
-                192.168.233.129   hadoop01
-                192.168.233.130   hadoop02
-                192.168.233.131   hadoop03
+                192.168.233.129 hadoop01
+                192.168.233.130 hadoop02
+                192.168.233.131 hadoop03
             规划资源
                 Kubernetes Master
                     hadoop01
@@ -346,6 +346,18 @@
                 使用 Kubeadm 工具箱创建 Kubernetes 集群
             开始
                 初始化 Kubernetes Master （ hadoop01 ）
+                    sudo kubeadm config images pull \
+                        --image-repository=registry.aliyuncs.com/google_containers \
+                        
+                            先拉取初始化所需要的镜像
+                            拉取后验证镜像列表：
+                                sudo ctr --namespace k8s.io image list
+                
+                    sudo ctr --namespace k8s.io image pull registry.aliyuncs.com/google_containers/pause:3.8
+                    sudo ctr --namespace k8s.io image tag registry.aliyuncs.com/google_containers/pause:3.8 registry.k8s.io/pause:3.8
+                        拉取 pause:3.8 镜像，并且打上指定标签。
+                        这一步是因为 Kubelet 启动需要特定的 registry.k8s.io/pause:3.8 镜像。
+                
                     sudo kubeadm init \
                         --apiserver-advertise-address=192.168.233.129 \
                         --image-repository=registry.aliyuncs.com/google_containers \
@@ -355,13 +367,8 @@
                             --apiserver-advertise-address ：设置控制平面节点 API 服务器的广播地址。
                             --pod-network-cidr ：设置 Pod 网络地址范围。
                             
-                            初始化完成后，需要按照控制台提示执行相关操作。
-                            如果初始化失败，可以参考以下原因：
-                                https://blog.csdn.net/m0_53928179/article/details/139068769
-                        
-                初始化 Kubernetes Node （ hadoop02, hadoop03 ）
-                    
-                    
+                            然后初始化，初始化完成后需要按照控制台提示执行相关操作。
+
                 部署 Pod 网络插件（ hadoop01 ）
                     概述
                         你必须部署一个基于 Pod 网络插件的 CNI （ Container Network Interface ）， 以便你的 Pod 可以相互通信。
@@ -369,5 +376,11 @@
                     开始
                         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
                             建议开启代理
+                        
+                初始化 Kubernetes Node （ hadoop02, hadoop03 ）
+                    sudo kubeadm join 192.168.233.129:6443 \
+                        --token fgzkud.oznw7r37m7fo0b57 \
+                        --discovery-token-ca-cert-hash sha256:587a8d3f6c8ff811dfc67042f3ed980b8ed9cd2b855d1f3a493415b97413f947
+                    
         卸载 K8s 集群
             https://kubernetes.io/zh-cn/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down
