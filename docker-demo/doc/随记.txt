@@ -202,3 +202,6 @@ Docker Compose
             sudo systemctl restart docker
                 验证
                     sudo systemctl show --property=Environment docker
+        配置用户（可选）
+            sudo usermod -aG docker sxydh
+                将用户 sxydh 添加到用户组 docker
