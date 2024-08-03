@@ -170,15 +170,18 @@ Docker Compose
             代理
                 export http_proxy=http://192.168.62.185:10809
                 export https_proxy=http://192.168.62.185:10809
+                
+                sudo export http_proxy=http://192.168.62.185:10809
+                sudo export https_proxy=http://192.168.62.185:10809
         准备文件
             sudo mkdir -p /opt/module/docker
             sudo chown -R sxydh:sxydh /opt/module/docker
             cd /opt/module/docker
-            sudo wget -e use_proxy=yes -e http_proxy=http://192.168.62.185:10809 https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64/containerd.io_1.7.19-1_amd64.deb
-            sudo wget -e use_proxy=yes -e http_proxy=http://192.168.62.185:10809 https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64/docker-ce_27.1.1-1~ubuntu.20.04~focal_amd64.deb
-            sudo wget -e use_proxy=yes -e http_proxy=http://192.168.62.185:10809 https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64/docker-ce-cli_27.1.1-1~ubuntu.20.04~focal_amd64.deb
-            sudo wget -e use_proxy=yes -e http_proxy=http://192.168.62.185:10809 https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64/docker-buildx-plugin_0.16.1-1~ubuntu.20.04~focal_amd64.deb
-            sudo wget -e use_proxy=yes -e http_proxy=http://192.168.62.185:10809 https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64/docker-compose-plugin_2.29.1-1~ubuntu.20.04~focal_amd64.deb
+            wget https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64/containerd.io_1.7.19-1_amd64.deb
+            wget https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64/docker-ce_27.1.1-1~ubuntu.20.04~focal_amd64.deb
+            wget https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64/docker-ce-cli_27.1.1-1~ubuntu.20.04~focal_amd64.deb
+            wget https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64/docker-buildx-plugin_0.16.1-1~ubuntu.20.04~focal_amd64.deb
+            wget https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64/docker-compose-plugin_2.29.1-1~ubuntu.20.04~focal_amd64.deb
         安装服务
             sudo dpkg -i \
                 ./containerd.io_1.7.19-1_amd64.deb \  
