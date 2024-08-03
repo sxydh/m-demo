@@ -136,125 +136,127 @@
             Elasticsearch
             Logstash
             Kibana
-开发环境（ https://bbs.huaweicloud.com/blogs/380596 ）
-    前置条件
-        Ubuntu 20.04.6 LTS
-            192.168.233.129   hadoop01
-            192.168.233.130   hadoop02
-            192.168.233.131   hadoop03
-
-            sudo vim /etc/hostname
-                配置主机名
-                三台主机都要进行配置
-                需要重启
-            sudo vim /etc/hosts
-                配置主机列表
-                三台主机都要进行配置
-                追加或更新
-                    192.168.233.129 hadoop01
-                    192.168.233.130 hadoop02
-                    192.168.233.131 hadoop03
-                需要重启
-        规划资源
-            Master   hadoop01   192.168.233.129
-            Node     hadoop02   192.168.233.130
-            Node     hadoop03   192.168.233.131
-        用户权限
-            sudo su
-        关闭 Swap （ hadoop01/hadoop02/hadoop03 ， Swap 会影响容器性能）
-            swapoff -a
-            sed -ri 's/.*swap.*/#&/' /etc/fstab
-                -r ：启用正则表达式。
-                -i ：原地编辑。
-                's/.*swap.*/#&/' ：替换命令，在包含 swap 的行前加 # ，即注释掉该行。
-                /etc/fstab ：要编辑的文件路径。
-        桥接网络（ hadoop01/hadoop02/hadoop03 ，确保容器网络进出都经过 ip6tables/iptables ，以应用网络安全规则）
-            cat > /etc/sysctl.d/k8s.conf << EOF
-            net.bridge.bridge-nf-call-ip6tables = 1
-            net.bridge.bridge-nf-call-iptables = 1
+环境
+    20240303 (https://bbs.huaweicloud.com/blogs/380596)
+        前置条件
+            Ubuntu 20.04.6 LTS
+                192.168.233.129   hadoop01
+                192.168.233.130   hadoop02
+                192.168.233.131   hadoop03
+        
+                sudo vim /etc/hostname
+                    配置主机名
+                    三台主机都要进行配置
+                    需要重启
+                sudo vim /etc/hosts
+                    配置主机列表
+                    三台主机都要进行配置
+                    追加或更新
+                        192.168.233.129 hadoop01
+                        192.168.233.130 hadoop02
+                        192.168.233.131 hadoop03
+                    需要重启
+            规划资源
+                Master   hadoop01   192.168.233.129
+                Node     hadoop02   192.168.233.130
+                Node     hadoop03   192.168.233.131
+            用户权限
+                sudo su
+            关闭 Swap （ hadoop01/hadoop02/hadoop03 ， Swap 会影响容器性能）
+                swapoff -a
+                sed -ri 's/.*swap.*/#&/' /etc/fstab
+                    -r ：启用正则表达式。
+                    -i ：原地编辑。
+                    's/.*swap.*/#&/' ：替换命令，在包含 swap 的行前加 # ，即注释掉该行。
+                    /etc/fstab ：要编辑的文件路径。
+            桥接网络（ hadoop01/hadoop02/hadoop03 ，确保容器网络进出都经过 ip6tables/iptables ，以应用网络安全规则）
+                cat > /etc/sysctl.d/k8s.conf << EOF
+                net.bridge.bridge-nf-call-ip6tables = 1
+                net.bridge.bridge-nf-call-iptables = 1
+                EOF
+        
+                sysctl --system
+        
+        安装 Docker （ hadoop01/hadoop02/hadoop03 ， 20.10.16 ）
+            略
+                参考 docker-demo
+        
+            systemctl enable docker
+                添加开机自启
+        
+            vim /etc/docker/daemon.json
+                追加
+                    {
+                      ...
+                      "exec-opts": ["native.cgroupdriver=systemd"]
+                    }
+                        告诉 Docker 使用 systemd 作为其 cgroup 驱动程序，这样做的目的是为了与宿主系统的 cgroup 配置保持一致，以便更好地管理容器的资源。
+        
+                systemctl daemon-reload
+                    重新加载 systemd 守护程序的配置文件
+                systemctl restart docker
+        
+        安装 K8s 核心组件（ hadoop01/hadoop02/hadoop03 ）
+            curl http://mirrors.huaweicloud.com/kubernetes/yum/doc/apt-key.gpg | apt-key add -
+                添加 K8s GPG 密钥到受信任列表
+        
+            cat > /etc/apt/sources.list.d/kubernetes.list << EOF
+            deb http://mirrors.huaweicloud.com/kubernetes/apt/ kubernetes-xenial main
             EOF
-
-            sysctl --system
-
-    安装 Docker （ hadoop01/hadoop02/hadoop03 ， 20.10.16 ）
-        略
-            参考 docker-demo
-
-        systemctl enable docker
-            添加开机自启
-
-        vim /etc/docker/daemon.json
-            追加
-                {
-                  ...
-                  "exec-opts": ["native.cgroupdriver=systemd"]
-                }
-                    告诉 Docker 使用 systemd 作为其 cgroup 驱动程序，这样做的目的是为了与宿主系统的 cgroup 配置保持一致，以便更好地管理容器的资源。
-
-            systemctl daemon-reload
-                重新加载 systemd 守护程序的配置文件
-            systemctl restart docker
-
-    安装 K8s 核心组件（ hadoop01/hadoop02/hadoop03 ）
-        curl http://mirrors.huaweicloud.com/kubernetes/yum/doc/apt-key.gpg | apt-key add -
-            添加 K8s GPG 密钥到受信任列表
-
-        cat > /etc/apt/sources.list.d/kubernetes.list << EOF
-        deb http://mirrors.huaweicloud.com/kubernetes/apt/ kubernetes-xenial main
-        EOF
-            添加 k8s 镜像源
-
-        apt update
-        apt install -y kubelet=1.23.9-00 kubeadm=1.23.9-00 kubectl=1.23.9-00
-        systemctl enable kubelet
-
-    启动 K8s 集群（ hadoop01 ）
-        kubeadm init \
-        --apiserver-advertise-address=192.168.233.129 \
-        --image-repository registry.aliyuncs.com/google_containers \
-        --pod-network-cidr=10.244.0.0/16 \
-        --ignore-preflight-errors='all'
-            初始化 K8s Master ，执行之后需要按照控制台提示进行操作。
-
-        kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-            安装网络组件 Flannel ，为集群提供虚拟网络，让各节点上的 Pod 之间可以互相通信。
-            建议 docker 使用 socks5 代理的情况下安装 Flannel
-            如果安装失败，通过以下命令删除后再重试：
-                kubectl delete -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-
-    加入 K8s 集群（ hadoop02/hadoop03 ）
-        kubeadm join 192.168.233.129:6443 --token <token> \
-                --discovery-token-ca-cert-hash sha256:<sha256>
-
-    安装 K8s Dashboard （ hadoop01 ， 2.5.1 ， https://skyao.io/learning-kubernetes/docs/installation/kubeadm/dashboard ）
-        kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.1/aio/deploy/recommended.yaml
-            安装完成后，是以 ClusterIP 的形式对外曝露服务，只能在集群内部访问，需要将 ClusterIP 更新为 NodePort ：
-                kubectl edit service kubernetes-dashboard -n kubernetes-dashboard
-                    更新
-                        spec:
-                            ...
-                            type: NodePort
-            查看 Dashboard 所在节点：
-                kubectl get pods -A -o wide | grep kubernetes-dashboard
-            查看 Dashboard 所在端口：
-                kubectl -n kubernetes-dashboard get service kubernetes-dashboard
-            获取 Dashboard 登录 token
-                kubectl -n kube-system describe $(kubectl -n kube-system get secret -n kube-system -o name | grep namespace) | grep token
-            登录 Dashboard
-                https://<ip>:<port>
-                    如果浏览器因为安全问题无法进入，可以在页面空白处输入以下内容即可：
-                        thisisunsafe
-
-    部署应用
-        简单示例
-            kubectl create deployment nginx --image=nginx
-                创建部署
-
-                kubectl expose deployment nginx --port=80 --type=NodePort
-                    服务曝露
-                kubectl scale -n default deployment nginx --replicas=2
-                    服务伸缩
-                验证
-                    kubectl get service -A -o wide
-                        服务端口查看
-                            http://<any_cluster_node_ip>:<port>
+                添加 k8s 镜像源
+        
+            apt update
+            apt install -y kubelet=1.23.9-00 kubeadm=1.23.9-00 kubectl=1.23.9-00
+            systemctl enable kubelet
+        
+        启动 K8s 集群（ hadoop01 ）
+            kubeadm init \
+            --apiserver-advertise-address=192.168.233.129 \
+            --image-repository registry.aliyuncs.com/google_containers \
+            --pod-network-cidr=10.244.0.0/16 \
+            --ignore-preflight-errors='all'
+                初始化 K8s Master ，执行之后需要按照控制台提示进行操作。
+    
+            kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+                安装网络组件 Flannel ，为集群提供虚拟网络，让各节点上的 Pod 之间可以互相通信。
+                建议 docker 使用 socks5 代理的情况下安装 Flannel
+                如果安装失败，通过以下命令删除后再重试：
+                    kubectl delete -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+        
+        加入 K8s 集群（ hadoop02/hadoop03 ）
+            kubeadm join 192.168.233.129:6443 --token <token> \
+                    --discovery-token-ca-cert-hash sha256:<sha256>
+        
+        安装 K8s Dashboard （ hadoop01 ， 2.5.1 ， https://skyao.io/learning-kubernetes/docs/installation/kubeadm/dashboard ）
+            kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.1/aio/deploy/recommended.yaml
+                安装完成后，是以 ClusterIP 的形式对外曝露服务，只能在集群内部访问，需要将 ClusterIP 更新为 NodePort ：
+                    kubectl edit service kubernetes-dashboard -n kubernetes-dashboard
+                        更新
+                            spec:
+                                ...
+                                type: NodePort
+                查看 Dashboard 所在节点：
+                    kubectl get pods -A -o wide | grep kubernetes-dashboard
+                查看 Dashboard 所在端口：
+                    kubectl -n kubernetes-dashboard get service kubernetes-dashboard
+                获取 Dashboard 登录 token
+                    kubectl -n kube-system describe $(kubectl -n kube-system get secret -n kube-system -o name | grep namespace) | grep token
+                登录 Dashboard
+                    https://<ip>:<port>
+                        如果浏览器因为安全问题无法进入，可以在页面空白处输入以下内容即可：
+                            thisisunsafe
+        
+        部署应用
+            简单示例
+                kubectl create deployment nginx --image=nginx
+                    创建部署
+        
+                    kubectl expose deployment nginx --port=80 --type=NodePort
+                        服务曝露
+                    kubectl scale -n default deployment nginx --replicas=2
+                        服务伸缩
+                    验证
+                        kubectl get service -A -o wide
+                            服务端口查看
+                                http://<any_cluster_node_ip>:<port>
+    20240803 (https://kubernetes.io/zh-cn/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
