@@ -356,6 +356,8 @@
                             --pod-network-cidr ：设置 Pod 网络地址范围。
                             
                             初始化完成后，需要按照控制台提示执行相关操作。
+                            如果初始化失败，可以参考以下原因：
+                                https://blog.csdn.net/m0_53928179/article/details/139068769
                         
                 初始化 Kubernetes Node （ hadoop02, hadoop03 ）
                     
