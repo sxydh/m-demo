@@ -10,3 +10,5 @@
         passwd
             修改当前用户密码
     列表
+    切换
+        su <username>
