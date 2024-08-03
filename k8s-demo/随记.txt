@@ -277,6 +277,7 @@
                     hadoop02
                     hadoop03
                     
+                配置驱动程序（ hadoop01, hadoop02, hadoop03 ）
                     sudo vim /etc/docker/daemon.json
                         追加
                             {
