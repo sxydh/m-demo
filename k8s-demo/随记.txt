@@ -259,6 +259,7 @@
                         kubectl get service -A -o wide
                             服务端口查看
                                 http://<any_cluster_node_ip>:<port>
+                                
     版本 1.30 （ https://kubernetes.io/zh-cn/docs/setup/production-environment/tools/kubeadm/install-kubeadm/ ）
         前置条件
             Ubuntu 20.04.6 LTS
