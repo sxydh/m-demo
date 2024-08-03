@@ -137,7 +137,7 @@
             Logstash
             Kibana
 环境
-    20240303 (https://bbs.huaweicloud.com/blogs/380596)
+    版本 1.23.9 （ https://bbs.huaweicloud.com/blogs/380596 ）
         前置条件
             Ubuntu 20.04.6 LTS
                 192.168.233.129   hadoop01
@@ -259,4 +259,77 @@
                         kubectl get service -A -o wide
                             服务端口查看
                                 http://<any_cluster_node_ip>:<port>
-    20240803 (https://kubernetes.io/zh-cn/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
+    版本 1.30 （ https://kubernetes.io/zh-cn/docs/setup/production-environment/tools/kubeadm/install-kubeadm/ ）
+        前置条件
+            Ubuntu 20.04.6 LTS
+                192.168.233.129   hadoop01
+                192.168.233.130   hadoop02
+                192.168.233.131   hadoop03
+            规划资源
+                Kubernetes Master
+                    hadoop01
+                Kubernetes Node
+                    hadoop02
+                    hadoop03
+            容器运行时
+                Docker 27.1.1
+                    hadoop01
+                    hadoop02
+                    hadoop03
+                    
+                    sudo vim /etc/docker/daemon.json
+                        追加
+                            {
+                              ...
+                              "exec-opts": ["native.cgroupdriver=systemd"]
+                            }
+                                告诉 Docker 使用 systemd 作为其 cgroup 驱动程序，这样做的目的是为了与宿主系统的 cgroup 配置保持一致，以便更好地管理容器的资源。
+                    systemctl daemon-reload
+                    systemctl restart docker
+            用户权限
+                sudo su
+        安装 Kubeadm 工具箱（ hadoop01, hadoop02, hadoop03 ）
+            概述
+                Kubeadm 工具箱用于创建 Kubernetes 集群
+            开始
+                sudo apt-get update
+                sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+                    安装 K8s 依赖包
+                    
+                sudo mkdir -p -m 755 /etc/apt/keyrings
+                curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+                    下载 K8s 公钥
+                    
+                echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+                    添加 K8s 仓库
+                    此操作会覆盖 /etc/apt/sources.list.d/kubernetes.list 中现存的所有配置
+                    
+                sudo apt-get update
+                sudo apt-get install -y kubelet kubeadm kubectl
+                sudo apt-mark hold kubelet kubeadm kubectl
+                    锁定版本
+        创建 K8s 集群
+            概述
+                使用 Kubeadm 工具箱创建 Kubernetes 集群
+            开始
+                初始化 Kubernetes Master （ hadoop01 ）
+                    kubeadm init \
+                    --apiserver-advertise-address=192.168.233.129 \
+                    --pod-network-cidr=10.244.0.0/16 \
+                    --ignore-preflight-errors='all'
+                    
+                        --apiserver-advertise-address ：设置控制平面节点 API 服务器的广播地址。
+                        --pod-network-cidr ：设置 Pod 网络地址范围。
+                        
+                        初始化完成后，需要按照控制台提示执行相关操作。
+                        
+                初始化 Kubernetes Node （ hadoop02, hadoop03 ）
+                    
+                    
+                部署 Pod 网络插件（ hadoop01 ）
+                    概述
+                        你必须部署一个基于 Pod 网络插件的 CNI （ Container Network Interface ）， 以便你的 Pod 可以相互通信。
+                        一个集群只能部署一个 Pod 网络插件
+                    开始
+                        kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+                            建议开启代理
