@@ -1,0 +1,8 @@
+概述
+    Wget 用于下载文件
+语法
+    wget [options] <url>
+样例
+    wget -P /opt/module/tmp -e use_proxy=yes -e http_proxy=http://192.168.211.185:10809 https://github.com/sxydh/m-demo/blob/main/README.md
+        -e ：用于执行命令。
+        -P ：用于指定下载文件的保存路径，如果不存在会自动创建。
