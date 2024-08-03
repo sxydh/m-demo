@@ -106,56 +106,58 @@ Docker Compose
     前置条件
         Ubuntu 20.04.6 LTS（192.168.233.129）
     安装 Docker
-        sudo apt-get update
-        sudo apt-get install \
-            apt-transport-https \
-            ca-certificates \
-            curl \
-            gnupg \
-            lsb-release
-        curl -fsSL https://mirrors.tencent.com/docker-ce/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-            从 Docker 镜像源获取 Docker 的 GPG 公钥
-        echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://mirrors.tencent.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-            向 sources.list 中添加 Docker 软件源
-        sudo apt-get update
-        sudo apt-get install docker-ce docker-ce-cli containerd.io
-            指定版本
-                sudo apt-get install docker-ce=5:20.10.16~3-0~ubuntu-focal docker-ce-cli=5:20.10.16~3-0~ubuntu-focal containerd.io
-            验证
-                systemctl status docker
-            查看日志
-                journalctl -u docker.service
-
-        sudo vim /etc/docker/daemon.json
-            该步骤是可选的
-            配置镜像源（如果 pull 失败优先排查镜像源问题）
-                追加或更新
-                    {
-                        "registry-mirrors": [
-                            "https://xdsjndfq.mirror.aliyuncs.com"
-                        ]
-                    }
-                sudo systemctl daemon-reload
-                sudo systemctl restart docker
-
-        sudo mkdir -p /etc/systemd/system/docker.service.d
-        sudo vim /etc/systemd/system/docker.service.d/http-proxy.conf
-            以上步骤是可选的
-            配置 docker 使用 socks5 代理：
-                追加或更新
-                    [Service]
-                    Environment="HTTP_PROXY=socks5://192.168.139.185:10808"
-                    Environment="HTTPS_PROXY=socks5://192.168.139.185:10808"
-
-                sudo systemctl daemon-reload
-                sudo systemctl restart docker
-                
+        APT 方式
+            sudo apt-get update
+            sudo apt-get install \
+                apt-transport-https \
+                ca-certificates \
+                curl \
+                gnupg \
+                lsb-release
+            curl -fsSL https://mirrors.tencent.com/docker-ce/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+                从 Docker 镜像源获取 Docker 的 GPG 公钥
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://mirrors.tencent.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+                向 sources.list 中添加 Docker 软件源
+            sudo apt-get update
+            sudo apt-get install docker-ce docker-ce-cli containerd.io
+                指定版本
+                    sudo apt-get install docker-ce=5:20.10.16~3-0~ubuntu-focal docker-ce-cli=5:20.10.16~3-0~ubuntu-focal containerd.io
                 验证
-                    sudo systemctl show --property=Environment docker
+                    systemctl status docker
+                查看日志
+                    journalctl -u docker.service
 
-        sudo usermod -aG docker sxydh
-            将当前用户添加到 docker 用户组，注意需要重新登录。
-            验证
-                docker run --rm hello-world
-    安装 Docker Compose
-        sudo apt-get install docker-compose
+            sudo vim /etc/docker/daemon.json
+                该步骤是可选的
+                配置镜像源（如果 pull 失败优先排查镜像源问题）
+                    追加或更新
+                        {
+                            "registry-mirrors": [
+                                "https://xdsjndfq.mirror.aliyuncs.com"
+                            ]
+                        }
+                    sudo systemctl daemon-reload
+                    sudo systemctl restart docker
+
+            sudo mkdir -p /etc/systemd/system/docker.service.d
+            sudo vim /etc/systemd/system/docker.service.d/http-proxy.conf
+                以上步骤是可选的
+                配置 docker 使用 socks5 代理：
+                    追加或更新
+                        [Service]
+                        Environment="HTTP_PROXY=socks5://192.168.139.185:10808"
+                        Environment="HTTPS_PROXY=socks5://192.168.139.185:10808"
+
+                    sudo systemctl daemon-reload
+                    sudo systemctl restart docker
+
+                    验证
+                        sudo systemctl show --property=Environment docker
+
+            sudo usermod -aG docker sxydh
+                将当前用户添加到 docker 用户组，注意需要重新登录。
+                验证
+                    docker run --rm hello-world
+            
+            sudo apt-get install docker-compose
+                安装 Docker Compose
