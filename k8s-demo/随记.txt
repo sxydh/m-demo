@@ -348,6 +348,7 @@
                 初始化 Kubernetes Master （ hadoop01 ）
                     sudo kubeadm init \
                         --apiserver-advertise-address=192.168.233.129 \
+                        --image-repository=registry.aliyuncs.com/google_containers \
                         --pod-network-cidr=10.244.0.0/16 \
                         --ignore-preflight-errors='all'
                     
