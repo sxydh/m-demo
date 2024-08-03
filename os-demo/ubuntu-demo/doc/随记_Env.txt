@@ -1,0 +1,7 @@
+样例
+    sudo vim /etc/profile
+        追加或更新
+            export http_proxy=http://192.168.62.185:10809
+            export https_proxy=http://192.168.62.185:10809
+    source /etc/profile
+        立即生效，仅对当前用户。
