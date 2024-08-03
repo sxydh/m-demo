@@ -103,10 +103,11 @@ Docker Compose
         Docker Compose 是用于定义和运行多个 Docker 的工具
         Docker Compose 使用 YAML 文件（通常命名为 docker-compose.yml ）来配置多个容器服务，这些服务可以是 Web 服务器、数据库、缓存等。
 环境（https://yeasy.gitbook.io/docker_practice/）
-    前置条件
-        Ubuntu 20.04.6 LTS（192.168.233.129）
-    安装 Docker
-        APT 方式
+    APT 方式
+        前置条件
+            Ubuntu 20.04.6 LTS
+                hadoop01 192.168.233.129
+        安装 Docker
             sudo apt-get update
             sudo apt-get install \
                 apt-transport-https \
@@ -126,7 +127,7 @@ Docker Compose
                     systemctl status docker
                 查看日志
                     journalctl -u docker.service
-
+            
             sudo vim /etc/docker/daemon.json
                 该步骤是可选的
                 配置镜像源（如果 pull 失败优先排查镜像源问题）
@@ -138,7 +139,7 @@ Docker Compose
                         }
                     sudo systemctl daemon-reload
                     sudo systemctl restart docker
-
+            
             sudo mkdir -p /etc/systemd/system/docker.service.d
             sudo vim /etc/systemd/system/docker.service.d/http-proxy.conf
                 以上步骤是可选的
@@ -147,17 +148,22 @@ Docker Compose
                         [Service]
                         Environment="HTTP_PROXY=socks5://192.168.139.185:10808"
                         Environment="HTTPS_PROXY=socks5://192.168.139.185:10808"
-
+            
                     sudo systemctl daemon-reload
                     sudo systemctl restart docker
-
+            
                     验证
                         sudo systemctl show --property=Environment docker
-
+            
             sudo usermod -aG docker sxydh
                 将当前用户添加到 docker 用户组，注意需要重新登录。
                 验证
                     docker run --rm hello-world
-            
+                    
+        安装 Docker Compose
             sudo apt-get install docker-compose
-                安装 Docker Compose
+                
+    Package 方式
+        前置条件
+            Ubuntu 20.04.6 LTS
+                hadoop01 192.168.233.129
