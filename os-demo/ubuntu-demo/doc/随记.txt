@@ -22,6 +22,11 @@
         清理
             apt purge <package_name> 
     网络
+        修改
+            sudo vim /etc/hostname
+                配置主机名
+            sudo vim /etc/hosts
+                配置域名映射
         查看
             lsof -i:8080
                 查看端口占用
