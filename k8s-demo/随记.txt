@@ -337,21 +337,21 @@
                 使用 Kubeadm 工具箱创建 Kubernetes 集群
             开始
                 初始化 Kubernetes Master （ hadoop01 ）
-                    sudo kubeadm config images pull \
-                        --image-repository=registry.aliyuncs.com/google_containers \
-                        
-                            先拉取初始化所需要的镜像
-                            拉取后验证镜像列表：
-                                sudo ctr --namespace k8s.io image list
                 
-                    sudo ctr --namespace k8s.io image pull registry.aliyuncs.com/google_containers/pause:3.8
-                    sudo ctr --namespace k8s.io image tag registry.aliyuncs.com/google_containers/pause:3.8 registry.k8s.io/pause:3.8
-                        拉取 pause:3.8 镜像，并且打上指定标签。
-                        这一步是因为 Kubelet 启动需要特定的 registry.k8s.io/pause:3.8 镜像。
+                    sudo ctr -n k8s.io image pull registry.k8s.io/kube-apiserver:v1.30.3
+                    sudo ctr -n k8s.io image pull registry.k8s.io/kube-controller-manager:v1.30.3
+                    sudo ctr -n k8s.io image pull registry.k8s.io/kube-scheduler:v1.30.3
+                    sudo ctr -n k8s.io image pull registry.k8s.io/kube-proxy:v1.30.3
+                    sudo ctr -n k8s.io image pull registry.k8s.io/coredns/coredns:v1.11.1
+                    sudo ctr -n k8s.io image pull registry.k8s.io/pause:3.9
+                    sudo ctr -n k8s.io image pull registry.k8s.io/pause:3.8
+                    sudo ctr -n k8s.io image pull registry.k8s.io/etcd:3.5.12-0
+                    
+                        先拉取初始化所需要的镜像列表，该列表可通过以下命令获取：
+                            sudo kubeadm config images list
                 
                     sudo kubeadm init \
                         --apiserver-advertise-address=192.168.233.129 \
-                        --image-repository=registry.aliyuncs.com/google_containers \
                         --pod-network-cidr=10.244.0.0/16 \
                         --ignore-preflight-errors='all'
                     
@@ -362,11 +362,10 @@
 
                 部署 Pod 网络插件（ hadoop01 ）
                     概述
-                        你必须部署一个基于 Pod 网络插件的 CNI （ Container Network Interface ）， 以便你的 Pod 可以相互通信。
+                        必须部署一个基于 Pod 网络插件的 CNI （ Container Network Interface ）， 以便于 Pod 间可以相互通信。
                         一个集群只能部署一个 Pod 网络插件
                     开始
                         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-                            建议开启代理
                         
                 初始化 Kubernetes Node （ hadoop02, hadoop03 ）
                     sudo kubeadm join 192.168.233.129:6443 \
