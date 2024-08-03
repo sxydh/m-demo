@@ -296,7 +296,6 @@
                                 sudo vim /etc/docker/daemon.json
                                     追加
                                         {
-                                          ...
                                           "exec-opts": ["native.cgroupdriver=systemd"]
                                         }
                                 sudo systemctl daemon-reload
