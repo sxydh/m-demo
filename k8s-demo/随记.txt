@@ -338,19 +338,24 @@
             开始
                 初始化 Kubernetes Master （ hadoop01 ）
                 
-                    sudo ctr -n k8s.io image pull registry.k8s.io/kube-apiserver:v1.30.3
-                    sudo ctr -n k8s.io image pull registry.k8s.io/kube-controller-manager:v1.30.3
-                    sudo ctr -n k8s.io image pull registry.k8s.io/kube-scheduler:v1.30.3
-                    sudo ctr -n k8s.io image pull registry.k8s.io/kube-proxy:v1.30.3
-                    sudo ctr -n k8s.io image pull registry.k8s.io/coredns/coredns:v1.11.1
-                    sudo ctr -n k8s.io image pull registry.k8s.io/pause:3.9
-                    sudo ctr -n k8s.io image pull registry.k8s.io/pause:3.8
-                    sudo ctr -n k8s.io image pull registry.k8s.io/etcd:3.5.12-0
+                    sudo su
+                    source /etc/profile
+                    ctr -n k8s.io image pull registry.k8s.io/kube-apiserver:v1.30.3
+                    ctr -n k8s.io image pull registry.k8s.io/kube-controller-manager:v1.30.3
+                    ctr -n k8s.io image pull registry.k8s.io/kube-scheduler:v1.30.3
+                    ctr -n k8s.io image pull registry.k8s.io/kube-proxy:v1.30.3
+                    ctr -n k8s.io image pull registry.k8s.io/coredns/coredns:v1.11.1
+                    ctr -n k8s.io image pull registry.k8s.io/pause:3.9
+                    ctr -n k8s.io image pull registry.k8s.io/pause:3.8
+                    ctr -n k8s.io image pull registry.k8s.io/etcd:3.5.12-0
+                    exit
                     
                         先拉取初始化所需要的镜像列表，该列表可通过以下命令获取：
                             sudo kubeadm config images list
-                
-                    sudo kubeadm init \
+                            
+                    sudo su
+                    source /etc/profile
+                    kubeadm init \
                         --apiserver-advertise-address=192.168.233.129 \
                         --pod-network-cidr=10.244.0.0/16 \
                         --ignore-preflight-errors='all'
@@ -359,13 +364,24 @@
                             --pod-network-cidr ：设置 Pod 网络地址范围。
                             
                             然后初始化，初始化完成后需要按照控制台提示执行相关操作。
+                            
+                    exit
 
                 部署 Pod 网络插件（ hadoop01 ）
                     概述
                         必须部署一个基于 Pod 网络插件的 CNI （ Container Network Interface ）， 以便于 Pod 间可以相互通信。
                         一个集群只能部署一个 Pod 网络插件
                     开始
+                        
+                        sudo su
+                        source /etc/profile
+                        ctr image pull docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel1
+                        ctr image pull docker.io/flannel/flannel:v0.25.5
+                            
+                            先拉取部署 CNI 所需要的镜像，避免后续步骤失败。
+                        
                         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+                        exit
                         
                 初始化 Kubernetes Node （ hadoop02, hadoop03 ）
                     sudo kubeadm join 192.168.233.129:6443 \
