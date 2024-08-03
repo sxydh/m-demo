@@ -1,0 +1,28 @@
+环境（ https://github.com/containerd/containerd/blob/main/docs/getting-started.md ）
+    前置条件
+        Ubuntu 20.04.6 LTS
+            192.168.233.129
+        用户权限
+            sudo su
+        网络代理
+            export http_proxy=http://192.168.62.185:10809
+            export https_proxy=http://192.168.62.185:10809
+    安装 Containerd
+        mkdir -p /opt/module/tmp
+        cd /opt/module/tmp
+        wget https://github.com/containerd/containerd/releases/download/v1.7.20/containerd-1.7.20-linux-amd64.tar.gz
+        tar Cxzvf /usr/local containerd-1.7.20-linux-amd64.tar.gz
+        
+        wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+        mv containerd.service /usr/local/lib/systemd/system/
+        systemctl daemon-reload
+        systemctl enable --now containerd
+    安装 Runc
+        cd /opt/module/tmp
+        wget https://github.com/opencontainers/runc/releases/download/v1.1.13/runc.amd64
+        install -m 755 runc.amd64 /usr/local/sbin/runc
+    安装 CNI
+        cd /opt/module/tmp
+        mkdir -p /opt/cni/bin
+        wget https://github.com/containernetworking/plugins/releases/download/v1.5.1/cni-plugins-linux-amd64-v1.5.1.tgz
+        tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.5.1.tgz
