@@ -348,7 +348,6 @@
                     ctr -n k8s.io image pull registry.k8s.io/pause:3.9
                     ctr -n k8s.io image pull registry.k8s.io/pause:3.8
                     ctr -n k8s.io image pull registry.k8s.io/etcd:3.5.12-0
-                    exit
                     
                         先拉取初始化所需要的镜像列表，该列表可通过以下命令获取：
                             kubeadm config images list
@@ -363,8 +362,6 @@
                             
                             然后初始化，初始化完成后需要按照控制台提示执行相关操作。
                             
-                    exit
-
                 部署 Pod 网络插件（ hadoop01 ）
                     概述
                         必须部署一个基于 Pod 网络插件的 CNI （ Container Network Interface ）， 以便于 Pod 间可以相互通信。
@@ -377,7 +374,6 @@
                             先拉取部署 CNI 所需要的镜像，避免后续步骤失败。
                         
                         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-                        exit
                         
                 初始化 Kubernetes Node （ hadoop02, hadoop03 ）
                     kubeadm join 192.168.233.129:6443 \
