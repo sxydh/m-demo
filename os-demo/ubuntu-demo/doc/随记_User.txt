@@ -9,6 +9,9 @@
     修改
         passwd
             修改当前用户密码
+        usermod -aG <group_name> <user_name>
+            -a ：将用户附加到用户组。
+            -G ：用户组列表。
     列表
     切换
-        su <username>
+        su <user_name>
