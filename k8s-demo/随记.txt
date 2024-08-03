@@ -345,3 +345,5 @@
                     开始
                         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
                             建议开启代理
+        卸载 K8s 集群
+            https://kubernetes.io/zh-cn/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down
