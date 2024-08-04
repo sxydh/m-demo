@@ -51,3 +51,6 @@
         [host."https://xdsjndfq.mirror.aliyuncs.com"]
           capabilities = ["pull", "resolve"]
         EOF
+        
+        systemctl daemon-reload
+        systemctl restart containerd
