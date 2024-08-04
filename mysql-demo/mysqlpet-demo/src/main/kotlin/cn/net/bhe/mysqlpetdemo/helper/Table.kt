@@ -10,7 +10,7 @@ object Table {
                 statement.execute(
                     " create table if not exists t_order ( " +
                             " order_id bigint, " +
-                            " order_number varchar(20), " +
+                            " order_number varchar(30), " +
                             " user_id bigint, " +
                             " order_date datetime, " +
                             " order_status char(1), " +
