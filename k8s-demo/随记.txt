@@ -372,6 +372,7 @@
                                 export KUBECONFIG=/etc/kubernetes/admin.conf
                                 
                     journalctl -u kubelet -n 100 -f
+                    journalctl -u containerd -n 100 -f
                             
                 部署 Pod 网络插件（ hadoop01 ）
                     概述
