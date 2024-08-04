@@ -365,7 +365,8 @@
                             --apiserver-advertise-address ：设置控制平面节点 API 服务器的广播地址。
                             --pod-network-cidr ：设置 Pod 网络地址范围。
                             
-                            初始化 Master ，初始化完成后需要按照控制台提示执行相关操作：
+                            初始化 Master ，建议退出代理。
+                            初始化完成后需要按照控制台提示执行相关操作：
                                 mkdir -p $HOME/.kube
                                 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
                                 chown $(id -u):$(id -g) $HOME/.kube/config
@@ -402,13 +403,15 @@
                         --token <token> \
                         --discovery-token-ca-cert-hash sha256:<sha256>
                         
-                            获取 token ：
+                            token =
                                 kubeadm token list
                                     如果过期可以重新创建：
                                         kubeadm token create
-                            获取 sha256 ：
+                            sha256 =
                                 openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | \
                                     openssl dgst -sha256 -hex | sed 's/^.* //'
+                                    
+                            初始化 Node ，建议退出代理。
                                     
                     journalctl -u kubelet -n 100 -f
                     
