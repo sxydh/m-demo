@@ -48,8 +48,6 @@
         mkdir -p /etc/containerd/certs.d/docker.io
         cat > /etc/containerd/certs.d/docker.io/hosts.toml << EOF
         server = "https://docker.io"
-        [host."https://xdsjndfq.mirror.aliyuncs.com"]
-          capabilities = ["pull", "resolve"]
         [host."https://docker.m.daocloud.io"]
           capabilities = ["pull", "resolve"]
         EOF
@@ -57,8 +55,6 @@
         mkdir -p /etc/containerd/certs.d/gcr.io
         cat > /etc/containerd/certs.d/gcr.io/hosts.toml << EOF
         server = "https://gcr.io"
-        [host."https://xdsjndfq.mirror.aliyuncs.com"]
-          capabilities = ["pull", "resolve"]
         [host."https://docker.m.daocloud.io"]
           capabilities = ["pull", "resolve"]
         EOF
@@ -66,8 +62,6 @@
         mkdir -p /etc/containerd/certs.d/k8s.gcr.io
         cat > /etc/containerd/certs.d/k8s.gcr.io/hosts.toml << EOF
         server = "https://k8s.gcr.io"
-        [host."https://xdsjndfq.mirror.aliyuncs.com"]
-          capabilities = ["pull", "resolve"]
         [host."https://docker.m.daocloud.io"]
           capabilities = ["pull", "resolve"]
         EOF
@@ -75,8 +69,6 @@
         mkdir -p /etc/containerd/certs.d/quay.io
         cat > /etc/containerd/certs.d/quay.io/hosts.toml << EOF
         server = "https://quay.io"
-        [host."https://xdsjndfq.mirror.aliyuncs.com"]
-          capabilities = ["pull", "resolve"]
         [host."https://docker.m.daocloud.io"]
           capabilities = ["pull", "resolve"]
         EOF
@@ -84,8 +76,6 @@
         mkdir -p /etc/containerd/certs.d/registry.k8s.io
         cat > /etc/containerd/certs.d/registry.k8s.io/hosts.toml << EOF
         server = "https://registry.k8s.io"
-        [host."https://xdsjndfq.mirror.aliyuncs.com"]
-          capabilities = ["pull", "resolve"]
         [host."https://docker.m.daocloud.io"]
           capabilities = ["pull", "resolve"]
         EOF
