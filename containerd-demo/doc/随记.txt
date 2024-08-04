@@ -36,6 +36,18 @@
         mkdir -p /opt/cni/bin
         wget https://github.com/containernetworking/plugins/releases/download/v1.5.1/cni-plugins-linux-amd64-v1.5.1.tgz
         tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.5.1.tgz
-    配置 Registry （可选）
-        https://blog.csdn.net/IOT_AI/article/details/131975562
-        https://www.cnblogs.com/liy36/p/16590745.html
+        
+    配置 Registry （可选， https://blog.csdn.net/IOT_AI/article/details/131975562, https://www.cnblogs.com/liy36/p/16590745.html ）
+        mkdir -p /etc/containerd
+        containerd config default | tee /etc/containerd/config.toml
+        vim /etc/containerd/config.toml
+            更新
+                [plugins."io.containerd.grpc.v1.cri".registry]
+                    config_path = "/etc/containerd/certs.d"
+                    
+        mkdir -p /etc/containerd/certs.d/docker.io
+        cat > /etc/containerd/certs.d/docker.io/hosts.toml << EOF
+        server = "https://docker.io"
+        [host."https://xdsjndfq.mirror.aliyuncs.com"]
+          capabilities = ["pull", "resolve"]
+        EOF
