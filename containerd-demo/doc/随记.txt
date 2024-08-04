@@ -14,11 +14,8 @@
         用户权限
             sudo su
         网络代理
-            vim /etc/profile
-                追加或更新
-                    export http_proxy="http://192.168.62.185:10809"
-                    export https_proxy="http://192.168.62.185:10809"
-            source /etc/profile
+            export http_proxy="http://192.168.62.185:10809"
+            export https_proxy="http://192.168.62.185:10809"
     安装 Containerd
         mkdir -p /opt/module/tmp
         cd /opt/module/tmp
