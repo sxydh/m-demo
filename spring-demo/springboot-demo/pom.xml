@@ -17,6 +17,7 @@
         <module>skywalking-demo</module>
         <module>pinpoint-demo</module>
         <module>aop-demo</module>
+        <module>redis-demo</module>
     </modules>
 
     <properties>

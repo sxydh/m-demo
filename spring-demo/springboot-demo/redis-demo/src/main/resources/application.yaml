@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: redis-demo
+
+server:
+  port: 20010
