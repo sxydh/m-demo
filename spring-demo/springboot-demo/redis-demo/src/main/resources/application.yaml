@@ -1,6 +1,13 @@
 spring:
   application:
     name: redis-demo
+  redis:
+    host: 192.168.233.129
+    port: 6379
+    username:
+    password:
+    database: 0
+    client-type: lettuce
 
 server:
   port: 20010
