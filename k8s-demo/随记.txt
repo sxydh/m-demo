@@ -390,6 +390,7 @@
                         
                 初始化 Kubernetes Node （ hadoop02, hadoop03 ）
                 
+                    ctr image pull registry.k8s.io/pause:3.9
                     ctr image pull registry.k8s.io/pause:3.8
                     ctr image pull registry.k8s.io/kube-proxy:v1.30.3
                     ctr image pull docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel1
