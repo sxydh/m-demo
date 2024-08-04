@@ -370,6 +370,9 @@
                             --pod-network-cidr ：设置 Pod 网络地址范围。
                             
                             初始化 Master ，初始化完成后需要按照控制台提示执行相关操作：
+                                mkdir -p $HOME/.kube
+                                cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+                                chown $(id -u):$(id -g) $HOME/.kube/config
                                 export KUBECONFIG=/etc/kubernetes/admin.conf
                                 
                     journalctl -u kubelet -n 100 -f
