@@ -1,6 +1,12 @@
 环境
     配置代理
-        sudo vim /etc/apt/apt.conf
-            追加
-                Acquire::http::Proxy "http://192.168.134.185:10809";
-                Acquire::https::Proxy "http://192.168.134.185:10809";
+        临时方案
+            apt-get install \
+                -o Acquire::http::Proxy="http://192.168.62.185:10809" \
+                -o Acquire::https::Proxy="http://192.168.62.185:10809" \
+                curl
+        永久方案
+            sudo vim /etc/apt/apt.conf
+                追加
+                    Acquire::http::Proxy "http://192.168.134.185:10809";
+                    Acquire::https::Proxy "http://192.168.134.185:10809";
