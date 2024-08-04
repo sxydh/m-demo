@@ -315,13 +315,6 @@
             配置代理
                 export http_proxy=http://192.168.62.185:10809
                 export https_proxy=http://192.168.62.185:10809
-                
-                vim /etc/apt/apt.conf
-                    追加
-                        Acquire::http::Proxy "http://192.168.62.185:10809";
-                        Acquire::https::Proxy "http://192.168.62.185:10809";
-                        
-                            仅为了方便安装 kubernetes ，记得删除。
                         
         安装 Kubeadm 工具箱（ hadoop01, hadoop02, hadoop03 ）
             概述
@@ -340,7 +333,10 @@
                     此操作会覆盖 /etc/apt/sources.list.d/kubernetes.list 中现存的所有配置
                     
                 apt-get update
-                apt-get install -y kubelet kubeadm kubectl
+                apt-get install -y \
+                    -o Acquire::http::Proxy="http://192.168.62.185:10809" \
+                    -o Acquire::https::Proxy="http://192.168.62.185:10809" \
+                    kubelet kubeadm kubectl
                 apt-mark hold kubelet kubeadm kubectl
                     锁定版本
         创建 K8s 集群
