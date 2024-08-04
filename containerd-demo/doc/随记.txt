@@ -36,3 +36,6 @@
         mkdir -p /opt/cni/bin
         wget https://github.com/containernetworking/plugins/releases/download/v1.5.1/cni-plugins-linux-amd64-v1.5.1.tgz
         tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.5.1.tgz
+    配置 Registry （可选）
+        https://blog.csdn.net/IOT_AI/article/details/131975562
+        https://www.cnblogs.com/liy36/p/16590745.html
