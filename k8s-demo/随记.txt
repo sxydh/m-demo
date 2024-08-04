@@ -380,8 +380,8 @@
                         一个集群只能部署一个 Pod 网络插件
                     开始
                         
-                        ctr image pull docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel1
-                        ctr image pull docker.io/flannel/flannel:v0.25.5
+                        ctr -n k8s.io image pull docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel1
+                        ctr -n k8s.io image pull docker.io/flannel/flannel:v0.25.5
                             
                             先拉取部署 CNI 所需要的镜像，避免后续步骤由于拉取问题引起失败。
                         
@@ -390,10 +390,11 @@
                         
                 初始化 Kubernetes Node （ hadoop02, hadoop03 ）
                 
-                    ctr image pull registry.k8s.io/pause:3.9
-                    ctr image pull registry.k8s.io/pause:3.8
-                    ctr image pull registry.k8s.io/kube-proxy:v1.30.3
-                    ctr image pull docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel1
+                    ctr -n k8s.io image pull registry.k8s.io/pause:3.9
+                    ctr -n k8s.io image pull registry.k8s.io/pause:3.8
+                    ctr -n k8s.io image pull registry.k8s.io/kube-proxy:v1.30.3
+                    ctr -n k8s.io image pull docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel1
+                    ctr -n k8s.io image pull docker.io/flannel/flannel:v0.25.5
                     
                         先拉取初始化 Node 所需要的镜像，避免后续步骤由于拉取问题引起失败。
                 
