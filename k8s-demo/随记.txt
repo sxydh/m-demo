@@ -274,27 +274,23 @@
                     hadoop03
             用户权限
                 sudo su
-            配置容器运行时
+            配置容器运行时（ hadoop01, hadoop02, hadoop03 ）
                 Containerd 1.7.20
-                    hadoop01
-                    hadoop02
-                    hadoop03
-                    
-                        配置 CGroup
-                            概述
-                                CGroup 用于限制分配给进程的资源
-                                容器运行时的 CGroup 和 Kubelet 的 CGroup 需要保持一致
-                            开始
-                                mkdir -p /etc/containerd
-                                containerd config default | tee /etc/containerd/config.toml
-                                vim /etc/containerd/config.toml
-                                    更新
-                                        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
-                                            SystemdCgroup = true
-                                systemctl daemon-reload
-                                systemctl restart containerd
+                    配置 CGroup
+                        概述
+                            CGroup 用于限制分配给进程的资源
+                            容器运行时的 CGroup 和 Kubelet 的 CGroup 需要保持一致
+                        开始
+                            mkdir -p /etc/containerd
+                            containerd config default | tee /etc/containerd/config.toml
+                            vim /etc/containerd/config.toml
+                                更新
+                                    [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+                                        SystemdCgroup = true
+                            systemctl daemon-reload
+                            systemctl restart containerd
                                 
-            关闭 Swap
+            关闭 Swap （ hadoop01, hadoop02, hadoop03 ）
                 概述
                     Swap 开启时， Kubelet 无法启动。
                 开始
@@ -302,6 +298,19 @@
                     vim /etc/fstab
                         更新
                             #/swap.img      none    swap    sw      0       0
+                            
+            配置网络（ hadoop01, hadoop02, hadoop03 ）
+                cat > /etc/sysctl.d/k8s.conf << EOF
+                net.bridge.bridge-nf-call-ip6tables = 1
+                net.bridge.bridge-nf-call-iptables  = 1
+                net.ipv4.ip_forward                 = 1
+                EOF
+                
+                    net.bridge.bridge-nf-call-ip6tables ：当数据包通过桥接设备时，是否检查 ip6tables 规则。
+                    net.bridge.bridge-nf-call-iptables ：当数据包通过桥接设备时，是否检查 iptables 规则。
+                    net.ipv4.ip_forward ：是否允许将收到的数据包转发到其它网络接口。
+        
+                sysctl --system
                                 
             配置代理
                 export http_proxy=http://192.168.62.185:10809
@@ -349,7 +358,7 @@
                     ctr -n k8s.io image pull registry.k8s.io/pause:3.8
                     ctr -n k8s.io image pull registry.k8s.io/etcd:3.5.12-0
                     
-                        先拉取初始化所需要的镜像列表，该列表可通过以下命令获取：
+                        先拉取初始化 Master 所需要的镜像列表，避免后续步骤由于拉取问题引起失败，该镜像列表可通过以下命令获取：
                             kubeadm config images list
                             
                     kubeadm init \
@@ -360,7 +369,10 @@
                             --apiserver-advertise-address ：设置控制平面节点 API 服务器的广播地址。
                             --pod-network-cidr ：设置 Pod 网络地址范围。
                             
-                            然后初始化，初始化完成后需要按照控制台提示执行相关操作。
+                            初始化 Master ，初始化完成后需要按照控制台提示执行相关操作：
+                                export KUBECONFIG=/etc/kubernetes/admin.conf
+                                
+                    journalctl -u kubelet -n 100 -f
                             
                 部署 Pod 网络插件（ hadoop01 ）
                     概述
@@ -371,14 +383,25 @@
                         ctr image pull docker.io/flannel/flannel-cni-plugin:v1.5.1-flannel1
                         ctr image pull docker.io/flannel/flannel:v0.25.5
                             
-                            先拉取部署 CNI 所需要的镜像，避免后续步骤失败。
+                            先拉取部署 CNI 所需要的镜像，避免后续步骤由于拉取问题引起失败。
                         
                         kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+                        kubectl get pod -o wide -n kube-flannel
                         
                 初始化 Kubernetes Node （ hadoop02, hadoop03 ）
                     kubeadm join 192.168.233.129:6443 \
-                        --token fgzkud.oznw7r37m7fo0b57 \
-                        --discovery-token-ca-cert-hash sha256:587a8d3f6c8ff811dfc67042f3ed980b8ed9cd2b855d1f3a493415b97413f947
+                        --token <token> \
+                        --discovery-token-ca-cert-hash sha256:<sha256>
+                        
+                            获取 token ：
+                                kubeadm token list
+                                    如果过期可以重新创建：
+                                        kubeadm token create
+                            获取 sha256 ：
+                                openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | \
+                                    openssl dgst -sha256 -hex | sed 's/^.* //'
+                                    
+                    journalctl -u kubelet -n 100 -f
                     
         卸载 K8s 集群
             https://kubernetes.io/zh-cn/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down
