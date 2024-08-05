@@ -1,0 +1,8 @@
+File
+    Open Heap Dump
+        Open Overview Pane
+            Dominator Tree
+                List objects
+                    with outgoing references
+                    with incoming references
+            Leak Suspects
