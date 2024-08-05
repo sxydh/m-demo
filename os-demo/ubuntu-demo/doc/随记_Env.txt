@@ -11,4 +11,6 @@
     临时变量
         export http_proxy=http://192.168.62.185:10809
         
-        http_proxy=http://192.168.62.185:10809 && echo $http_proxy
+        http_proxy=http://192.168.62.185:10809
+        
+        http_proxy=$(echo http://192.168.62.185:10809)
