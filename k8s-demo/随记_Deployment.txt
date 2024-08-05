@@ -32,7 +32,15 @@
                           - name: container-mysql-demo
                             image: mysql
                             ports:
-                            - containerPort: 80
+                            - containerPort: 3306
+                            env:
+                            - name: MYSQL_ROOT_PASSWORD
+                              value: 123
+                            volumeMounts:
+                            - name: mysql-volume
+                          volume:
+                          - name: mysql-volume
+                            emptyDir: {}
             kubectl create -f deployment_mysql_demo.yaml -n default
             kubectl get pod -n wide -n default
             POD_NAME=$(kubectl get pod -n default | grep mysql-demo | awk 'NR==1 {print $1}') && kubectl describe pod $POD_NAME -n default
