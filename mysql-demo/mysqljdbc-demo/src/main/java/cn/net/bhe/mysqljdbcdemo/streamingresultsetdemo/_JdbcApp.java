@@ -7,7 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class _Main {
+public class _JdbcApp {
 
     public static void main(String[] args) throws Exception {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://192.168.233.129:3306/pet_demo", "root", "123")) {
