@@ -7,6 +7,35 @@
         kubectl scale deployment/<deployment_name> --replicas=<target_number>
 环境
     创建 Deployment
+        基于 Nginx
+            mkdir -p /opt/module/tmp
+            cd /opt/module/tmp
+            vim deployment_nginx_demo.yaml
+                追加
+                    apiVersion: apps/v1
+                    kind: Deployment
+                    metadata:
+                      name: deployment-nginx-demo
+                      labels:
+                        app: deployment-nginx-demo
+                    spec:
+                      replicas: 1
+                      selector:
+                        matchLabels:
+                          app: pod-nginx-demo
+                      template:
+                        metadata:
+                          labels:
+                            app: pod-nginx-demo
+                        spec:
+                          containers:
+                          - name: container-nginx-demo
+                            image: nginx
+                            ports:
+                            - containerPort: 80
+            kubectl create -f deployment_nginx_demo.yaml -n default
+            kubectl delete -f deployment_nginx_demo -n default
+            
         基于 Tomcat
             mkdir -p /opt/module/tmp
             cd /opt/module/tmp
