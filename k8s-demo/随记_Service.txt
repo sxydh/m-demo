@@ -9,6 +9,32 @@
         kubectl get service -o wide -n <namespace_name>
 环境
     创建 Service
+        基于 ClusterIP
+            mkdir -p /opt/module/tmp
+            cd /opt/module/tmp
+            vim service_clusterip_demo.yaml
+                追加
+                    apiVersion: v1
+                    kind: Service
+                    metadata:
+                      name: service-clusterip-demo
+                    spec:
+                      selector:
+                        app: pod-tomcat-demo
+                      # 外部可以通过 externalIPs 访问该服务
+                      externalIPs:
+                        - 192.168.233.129
+                      ports:
+                        - protocol: TCP
+                          # Service 监听的端口
+                          port: 8080
+                          # Pod 监听的端口
+                          targetPort: 8080
+                      type: ClusterIP
+            kubectl create -f service_clusterip_demo.yaml -n default
+            kubectl get service -o wide -n default
+            kubectl delete -f service_clusterip_demo.yaml -n default
+            
         基于 NodePort
             mkdir -p /opt/module/tmp
             cd /opt/module/tmp
