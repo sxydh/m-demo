@@ -28,8 +28,7 @@
                         
                     java -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="heapdumps/" -jar <jar_name>
                         HeapDumpOnOutOfMemoryError ：设置 OOM 时保存 dump 文件。
-                        HeapDumpPath ：设置 dump 文件保存位置。
-                        heapdumps ：该文件夹需要提前创建好。
+                        HeapDumpPath ：设置 dump 文件保存位置，文件夹需要提前创建好。
                         
                 Xms
                     java -Xms8m -jar <jar_name>
