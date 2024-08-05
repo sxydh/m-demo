@@ -38,47 +38,52 @@
         tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.5.1.tgz
         
     配置 Registry （可选， https://blog.csdn.net/IOT_AI/article/details/131975562, https://www.cnblogs.com/liy36/p/16590745.html ）
-        mkdir -p /etc/containerd
-        containerd config default | tee /etc/containerd/config.toml
-        vim /etc/containerd/config.toml
-            更新
-                [plugins."io.containerd.grpc.v1.cri".registry]
-                    config_path = "/etc/containerd/certs.d"
-                    
-        mkdir -p /etc/containerd/certs.d/docker.io
-        cat > /etc/containerd/certs.d/docker.io/hosts.toml << EOF
-        server = "https://docker.io"
-        [host."https://docker.m.daocloud.io"]
-          capabilities = ["pull", "resolve"]
-        EOF
-        
-        mkdir -p /etc/containerd/certs.d/gcr.io
-        cat > /etc/containerd/certs.d/gcr.io/hosts.toml << EOF
-        server = "https://gcr.io"
-        [host."https://docker.m.daocloud.io"]
-          capabilities = ["pull", "resolve"]
-        EOF
-        
-        mkdir -p /etc/containerd/certs.d/k8s.gcr.io
-        cat > /etc/containerd/certs.d/k8s.gcr.io/hosts.toml << EOF
-        server = "https://k8s.gcr.io"
-        [host."https://docker.m.daocloud.io"]
-          capabilities = ["pull", "resolve"]
-        EOF
-        
-        mkdir -p /etc/containerd/certs.d/quay.io
-        cat > /etc/containerd/certs.d/quay.io/hosts.toml << EOF
-        server = "https://quay.io"
-        [host."https://docker.m.daocloud.io"]
-          capabilities = ["pull", "resolve"]
-        EOF
-        
-        mkdir -p /etc/containerd/certs.d/registry.k8s.io
-        cat > /etc/containerd/certs.d/registry.k8s.io/hosts.toml << EOF
-        server = "https://registry.k8s.io"
-        [host."https://docker.m.daocloud.io"]
-          capabilities = ["pull", "resolve"]
-        EOF
-        
-        systemctl daemon-reload
-        systemctl restart containerd
+        概述
+            镜像加速
+            国内可选：
+                https://atomhub.openatom.cn/
+        开始
+            mkdir -p /etc/containerd
+            containerd config default | tee /etc/containerd/config.toml
+            vim /etc/containerd/config.toml
+                更新
+                    [plugins."io.containerd.grpc.v1.cri".registry]
+                        config_path = "/etc/containerd/certs.d"
+                        
+            mkdir -p /etc/containerd/certs.d/docker.io
+            cat > /etc/containerd/certs.d/docker.io/hosts.toml << EOF
+            server = "https://docker.io"
+            [host."https://docker.m.daocloud.io"]
+              capabilities = ["pull", "resolve"]
+            EOF
+            
+            mkdir -p /etc/containerd/certs.d/gcr.io
+            cat > /etc/containerd/certs.d/gcr.io/hosts.toml << EOF
+            server = "https://gcr.io"
+            [host."https://docker.m.daocloud.io"]
+              capabilities = ["pull", "resolve"]
+            EOF
+            
+            mkdir -p /etc/containerd/certs.d/k8s.gcr.io
+            cat > /etc/containerd/certs.d/k8s.gcr.io/hosts.toml << EOF
+            server = "https://k8s.gcr.io"
+            [host."https://docker.m.daocloud.io"]
+              capabilities = ["pull", "resolve"]
+            EOF
+            
+            mkdir -p /etc/containerd/certs.d/quay.io
+            cat > /etc/containerd/certs.d/quay.io/hosts.toml << EOF
+            server = "https://quay.io"
+            [host."https://docker.m.daocloud.io"]
+              capabilities = ["pull", "resolve"]
+            EOF
+            
+            mkdir -p /etc/containerd/certs.d/registry.k8s.io
+            cat > /etc/containerd/certs.d/registry.k8s.io/hosts.toml << EOF
+            server = "https://registry.k8s.io"
+            [host."https://docker.m.daocloud.io"]
+              capabilities = ["pull", "resolve"]
+            EOF
+            
+            systemctl daemon-reload
+            systemctl restart containerd
