@@ -9,22 +9,27 @@
         kubectl get service -o wide -n <namespace_name>
 环境
     创建 Service
-        mkdir -p /opt/module/tmp
-        cd /opt/module/tmp
-        vim service_demo.yaml
-            追加
-                apiVersion: v1
-                kind: Service
-                metadata:
-                  name: service-demo
-                spec:
-                  selector:
-                    app: pod-tomcat-demo
-                  ports:
-                    - protocol: TCP
-                      port: 80
-                      targetPort: 8080
-                  type: ClusterIP
-        kubectl create -f service_demo.yaml -n default
-        kubectl get service -o wide -n default
-        kubectl describe service service-demo -n default
+        基于 NodePort
+            mkdir -p /opt/module/tmp
+            cd /opt/module/tmp
+            vim service_nodeport_demo.yaml
+                追加
+                    apiVersion: v1
+                    kind: Service
+                    metadata:
+                      name: service-nodeport-demo
+                    spec:
+                      selector:
+                        app: pod-tomcat-demo
+                      ports:
+                        - protocol: TCP
+                          # Node 监听的端口，限制在 30000-32767 范围为内。
+                          nodePort: 30808
+                          # Service 监听的端口
+                          port: 8080
+                          # Pod 监听的端口
+                          targetPort: 8080
+                      type: NodePort
+            kubectl create -f service_nodeport_demo.yaml -n default
+            kubectl get service -o wide -n default
+            kubectl delete -f service_nodeport_demo.yaml -n default
