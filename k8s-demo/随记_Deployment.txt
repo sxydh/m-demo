@@ -7,29 +7,30 @@
         kubectl scale deployment/<deployment_name> --replicas=<target_number>
 环境
     创建 Deployment
-        mkdir -p /opt/module/tmp
-        cd /opt/module/tmp
-        vim deployment_tomcat_demo.yaml
-            追加
-                apiVersion: apps/v1
-                kind: Deployment
-                metadata:
-                  name: deployment-tomcat-demo
-                  labels:
-                    app: deployment-tomcat-demo
-                spec:
-                  replicas: 1
-                  selector:
-                    matchLabels:
-                      app: pod-tomcat-demo
-                  template:
+        基于 Tomcat
+            mkdir -p /opt/module/tmp
+            cd /opt/module/tmp
+            vim deployment_tomcat_demo.yaml
+                追加
+                    apiVersion: apps/v1
+                    kind: Deployment
                     metadata:
+                      name: deployment-tomcat-demo
                       labels:
-                        app: pod-tomcat-demo
+                        app: deployment-tomcat-demo
                     spec:
-                      containers:
-                      - name: container-tomcat-demo
-                        image: tomcat
-                        ports:
-                        - containerPort: 8080
-        kubectl create -f deployment_tomcat_demo.yaml -n default
+                      replicas: 1
+                      selector:
+                        matchLabels:
+                          app: pod-tomcat-demo
+                      template:
+                        metadata:
+                          labels:
+                            app: pod-tomcat-demo
+                        spec:
+                          containers:
+                          - name: container-tomcat-demo
+                            image: tomcat
+                            ports:
+                            - containerPort: 8080
+            kubectl create -f deployment_tomcat_demo.yaml -n default
