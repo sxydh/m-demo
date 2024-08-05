@@ -9,37 +9,47 @@
                          <main_args_value> \
                          <main_args_value2>
                         -D ： 附加系统参数，可以通过 System.getProperties() 获取。
+                        
                 classpath
                     java <-classpath|-cp> <jar_name> <main_class_name>
                         指定类加载器的搜索入口
+                        
                 XX
                     java -Xss512k -jar <jar_name>
                         Xss ：线程栈大小。
+                        
                     java -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -jar <jar_name>
                         MetaspaceSize ：元空间初始化大小。
                         MaxMetaspaceSize ：元空间最大大小。
+                        
                     java -XX:NewSize=128m -XX:MaxNewSize=256m -jar <jar_name>
                         NewSize ：年轻代初始化大小。
                         MaxNewSize ：年轻代最大大小。
+                        
                     java -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath="heapdumps/" -jar <jar_name>
                         HeapDumpOnOutOfMemoryError ：设置 OOM 时保存 dump 文件。
                         HeapDumpPath ：设置 dump 文件保存位置。
                         heapdumps ：该文件夹需要提前创建好。
+                        
                 Xms
                     java -Xms8m -jar <jar_name>
                         Xms ：堆最小值，默认为年轻代和老年代的配置之和。
+                        
                 Xmx
                     java -Xmx8m -jar <jar_name>
                         Xmx ：堆最大值，默认为年轻代和老年代的配置之和。
+                        
                 Xlog
                     java -Xlog:help
                         help ：获取 JVM 日志配置帮助。
+                        
                     java -Xlog:gc*=info:file=gcinfo.txt:time,pid,level,tags:filecount=5,filesize=1m -jar <jar_name>
                         info ：设置 GC 日志级别。
                         file ：设置 GC 日志目标文件。
                         time,pid,level,tags ：设置 GC 日志条目中包含的额外信息。
                         filecount ：设置 GC 日志文件数量。
                         filesize ：设置 GC 日志文件大小限制。
+                        
         jmap
             https://docs.oracle.com/en/java/javase/17/docs/specs/man/jmap.html
                 dump
