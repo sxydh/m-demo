@@ -41,6 +41,7 @@
         概述
             镜像加速
             国内可选：
+                https://docker.m.daocloud.io
                 https://atomhub.openatom.cn/
         开始
             mkdir -p /etc/containerd
