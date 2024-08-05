@@ -1,0 +1,30 @@
+概述
+    Arthas 是 Java 应用线上监控诊断工具，可用于查看线程、内存、类和方法调用等信息。
+样例
+    dashboard -i 5000
+        -i ：设置刷新间隔时间。
+        
+        查看实时数据面板
+        
+    dump cn.net.bhe.redisdemo.* -d D:/Code/Temp/Keep
+        -d ：设置 dump 路径。
+        
+        dump 加载类的字节码文件到指定路径
+        
+    getstatic org.springframework.boot.SpringApplication *
+    
+        * ：所有属性。
+        
+        查看类的静态属性
+        
+    heapdump D:/Code/Temp/Keep
+        dump 堆到指定路径
+        
+    thread -b
+        查看阻塞线程，只支持查找 synchronized 关键字阻塞的线程。
+        
+    vmoption
+        查看 VM 参数
+    
+    watch org.apache.logging.log4j.spi.AbstractLogger tryLogMessage "{params, target, returnObj}"
+        查看函数调用参数
