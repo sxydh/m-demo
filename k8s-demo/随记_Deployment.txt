@@ -35,10 +35,11 @@
                             - containerPort: 3306
                             env:
                             - name: MYSQL_ROOT_PASSWORD
-                              value: 123
+                              value: "123"
                             volumeMounts:
                             - name: mysql-volume
-                          volume:
+                              mountPath: /var/lib/mysql
+                          volumes:
                           - name: mysql-volume
                             emptyDir: {}
             kubectl create -f deployment_mysql_demo.yaml -n default
