@@ -23,13 +23,13 @@
                         app: pod-nginx-demo
                       # 外部可以通过 externalIPs 访问该服务
                       externalIPs:
-                        - 192.168.233.129
+                      - 192.168.233.129
                       ports:
-                        - protocol: TCP
-                          # Service 监听的端口
-                          port: 80
-                          # Pod 监听的端口
-                          targetPort: 80
+                      - protocol: TCP
+                        # Service 监听的端口
+                        port: 80
+                        # Pod 监听的端口
+                        targetPort: 80
                       type: ClusterIP
             kubectl create -f service_clusterip_demo.yaml -n default
             kubectl get service -o wide -n default
@@ -48,13 +48,13 @@
                       selector:
                         app: pod-nginx-demo
                       ports:
-                        - protocol: TCP
-                          # Node 监听的端口，限制在 30000-32767 范围内，如果未指定则取随机值。
-                          nodePort: 30808
-                          # Service 监听的端口
-                          port: 80
-                          # Pod 监听的端口
-                          targetPort: 80
+                      - protocol: TCP
+                        # Node 监听的端口，限制在 30000-32767 范围内，如果未指定则取随机值。
+                        nodePort: 30808
+                        # Service 监听的端口
+                        port: 80
+                        # Pod 监听的端口
+                        targetPort: 80
                       type: NodePort
             kubectl create -f service_nodeport_demo.yaml -n default
             kubectl get service -o wide -n default
