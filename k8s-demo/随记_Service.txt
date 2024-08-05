@@ -20,7 +20,7 @@
                       name: service-clusterip-demo
                     spec:
                       selector:
-                        app: pod-tomcat-demo
+                        app: pod-nginx-demo
                       # 外部可以通过 externalIPs 访问该服务
                       externalIPs:
                         - 192.168.233.129
@@ -46,7 +46,7 @@
                       name: service-nodeport-demo
                     spec:
                       selector:
-                        app: pod-tomcat-demo
+                        app: pod-nginx-demo
                       ports:
                         - protocol: TCP
                           # Node 监听的端口，限制在 30000-32767 范围为内。
