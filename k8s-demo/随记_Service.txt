@@ -33,8 +33,8 @@
                       type: ClusterIP
             kubectl create -f service_clusterip_demo.yaml -n default
             kubectl get service -o wide -n default
-            kubectl edit service -o wide -n default
-            kubectl delete -f service_clusterip_demo.yaml -n default
+            kubectl edit service service-clusterip-demo -n default
+            kubectl delete service service-clusterip-demo -n default
             
         基于 NodePort
             mkdir -p /opt/module/tmp
@@ -59,4 +59,4 @@
                       type: NodePort
             kubectl create -f service_nodeport_demo.yaml -n default
             kubectl get service -o wide -n default
-            kubectl delete -f service_nodeport_demo.yaml -n default
+            kubectl delete service service-nodeport-demo -n default

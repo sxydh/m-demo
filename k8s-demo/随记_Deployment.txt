@@ -48,7 +48,7 @@
             POD_NAME=$(kubectl get pod -n default | grep mysql-demo | awk 'NR==1 {print $1}') && kubectl logs $POD_NAME -n default
             POD_NAME=$(kubectl get pod -n default | grep mysql-demo | awk 'NR==1 {print $1}') && kubectl exec -it $POD_NAME -n default -- bash
             POD_NAME=$(kubectl get pod -n default | grep mysql-demo | awk 'NR==1 {print $1}') && kubectl port-forward pod/$POD_NAME -n default 3306:3306 --address=192.168.233.129
-            kubectl delete -f deployment_mysql_demo.yaml -n default
+            kubectl delete deployment deployment-mysql-demo -n default
     
         基于 Nginx
             mkdir -p /opt/module/tmp
@@ -80,7 +80,7 @@
             kubectl get pod -o wide -n default
             POD_NAME=$(kubectl get pod -n default | grep nginx-demo | awk 'NR==1 {print $1}') && kubectl describe pod $POD_NAME -n default
             POD_NAME=$(kubectl get pod -n default | grep nginx-demo | awk 'NR==1 {print $1}') && kubectl logs $POD_NAME -n default
-            kubectl delete -f deployment_nginx_demo.yaml -n default
+            kubectl delete deployment deployment-nginx-demo -n default
             
         基于 Tomcat
             mkdir -p /opt/module/tmp
@@ -112,4 +112,4 @@
             kubectl get pod -o wide -n default
             POD_NAME=$(kubectl get pod -n default | grep tomcat-demo | awk 'NR==1 {print $1}') && kubectl describe pod $POD_NAME -n default
             POD_NAME=$(kubectl get pod -n default | grep tomcat-demo | awk 'NR==1 {print $1}') && kubectl logs $POD_NAME -n default
-            kubectl delete -f deployment_tomcat_demo.yaml -n default
+            kubectl delete deployment deployment-tomcat-demo -n default
