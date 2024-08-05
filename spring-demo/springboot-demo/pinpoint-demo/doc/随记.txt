@@ -9,7 +9,7 @@
                 Pinpoint
                     参考 m-demo/apm-demo/pinpoint-demo/随记.txt
     修改配置
-        Pinpoint Agent（ https://github.com/pinpoint-apm/pinpoint/releases/download/v2.5.4/pinpoint-agent-2.5.4.tar.gz ）
+        Pinpoint Agent （ https://github.com/pinpoint-apm/pinpoint/releases/download/v2.5.4/pinpoint-agent-2.5.4.tar.gz ）
             profiles\release\pinpoint.config
                 更新
                     profiler.transport.grpc.collector.ip=192.168.233.129
