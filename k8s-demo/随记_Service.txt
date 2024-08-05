@@ -49,7 +49,7 @@
                         app: pod-nginx-demo
                       ports:
                         - protocol: TCP
-                          # Node 监听的端口，限制在 30000-32767 范围为内。
+                          # Node 监听的端口，限制在 30000-32767 范围内，如果未指定则取随机值。
                           nodePort: 30808
                           # Service 监听的端口
                           port: 80
