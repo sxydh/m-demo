@@ -27,9 +27,9 @@
                       ports:
                         - protocol: TCP
                           # Service 监听的端口
-                          port: 8080
+                          port: 80
                           # Pod 监听的端口
-                          targetPort: 8080
+                          targetPort: 80
                       type: ClusterIP
             kubectl create -f service_clusterip_demo.yaml -n default
             kubectl get service -o wide -n default
@@ -52,9 +52,9 @@
                           # Node 监听的端口，限制在 30000-32767 范围为内。
                           nodePort: 30808
                           # Service 监听的端口
-                          port: 8080
+                          port: 80
                           # Pod 监听的端口
-                          targetPort: 8080
+                          targetPort: 80
                       type: NodePort
             kubectl create -f service_nodeport_demo.yaml -n default
             kubectl get service -o wide -n default
