@@ -122,3 +122,6 @@
                             Harbor12345
                                 新建项目
                                 推送镜像
+                                
+                删除：
+                    helm uninstall harbor-instance -n harbor
