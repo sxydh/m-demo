@@ -3,6 +3,11 @@
 命令
     列表
         kubectl get deployment -o wide -n <namespace_name>
+        
+    重启
+        kubectl rollout restart deployment <deployment_name> -n <namespace_name>
+            rollout ：滚动方式重启。
+            
     扩缩
         kubectl scale deployment/<deployment_name> --replicas=<target_number>
 环境
