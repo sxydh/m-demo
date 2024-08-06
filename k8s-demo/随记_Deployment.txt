@@ -118,6 +118,9 @@
                             - containerPort: 8080
             kubectl create -f deployment_tomcat_demo.yaml -n default
             kubectl get pod -o wide -n default
+            
             POD_NAME=$(kubectl get pod -n default | grep tomcat-demo | awk 'NR==1 {print $1}') && kubectl describe pod $POD_NAME -n default
             POD_NAME=$(kubectl get pod -n default | grep tomcat-demo | awk 'NR==1 {print $1}') && kubectl logs $POD_NAME -n default
+            POD_NAME=$(kubectl get pod -n default | grep tomcat-demo | awk 'NR==1 {print $1}') && kubectl exec -it $POD_NAME -n default -- bash
+            
             kubectl delete deployment deployment-tomcat-demo -n default

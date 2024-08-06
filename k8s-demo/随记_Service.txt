@@ -7,6 +7,8 @@
         kubectl edit service <service_name> -n <namespace_name>
     列表
         kubectl get service -o wide -n <namespace_name>
+问题
+    Pod 无法 Ping 同一个 Node 的 Service
 环境
     创建 Service
         基于 ClusterIP
