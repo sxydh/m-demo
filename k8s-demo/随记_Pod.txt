@@ -3,11 +3,21 @@
         kubectl create -f nginx-pod.yaml -n <namespace_name>
     列表
         kubectl get pod -o wide -n <namespace_name>
-            进入 Pod
-                kubectl exec -it <pod_name> -n <namespace> -- bash
+        
+        kubectl get pods -n <namespace_name> -o jsonpath="{.items[*].spec['initContainers', 'containers'][*].image}" |\
+        tr -s '[[:space:]]' '\n' |\
+        sort |\
+        uniq -c
+        
+            镜像列表
+            
     详情
         kubectl describe pod <pod_name> -n <namespace_name>
         kubectl logs <pod_name> -n <namespace_name>
+        
+        kubectl exec -it <pod_name> -n <namespace> -- bash
+            进入
+            
     导出
         kubectl port-forward pod/<pod_name> -n <namespace_name> <node_port>:<pod_port> --address=<node_ip>
     编辑
