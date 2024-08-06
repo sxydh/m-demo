@@ -396,6 +396,7 @@
                         
                 初始化 Kubernetes Node （ hadoop02, hadoop03 ）
                 
+                    ctr -n k8s.io image pull registry.k8s.io/coredns/coredns:v1.11.1
                     ctr -n k8s.io image pull registry.k8s.io/pause:3.9
                     ctr -n k8s.io image pull registry.k8s.io/pause:3.8
                     ctr -n k8s.io image pull registry.k8s.io/kube-proxy:v1.30.3
