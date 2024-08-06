@@ -146,5 +146,8 @@
                     POD_NAME=$(kubectl get pod -n harbor | grep harbor-instance-registry | awk 'NR==1 {print $1}') && kubectl exec -it $POD_NAME -n harbor -- bash
                     POD_NAME=$(kubectl get pod -n harbor | grep harbor-instance-trivy | awk 'NR==1 {print $1}') && kubectl exec -it $POD_NAME -n harbor -- bash
                     
+                重启：
+                    kubectl delete pod --all -n harbor
+                    
                 删除：
                     helm uninstall harbor-instance -n harbor
