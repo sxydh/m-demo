@@ -428,6 +428,7 @@
                             不开启 ipvs 会出现以下问题，同一个 Node 下 Pod 与 Pod 可以通信，但是 Pod 与 Service 无法通信，目前无法解决。
                     开始
                         安装依赖（ hadoop01, hadoop02, hadoop03 ）
+                            apt-get update
                             apt-get install -y ipvsadm ipset
                         更新应用（ hadoop01 ）
                             kubectl edit configmap kube-proxy -n kube-system
@@ -436,7 +437,12 @@
                                     iptables:
                                       # 控制源地址转换
                                       masqueradeAll: true
-                            kubectl delete pod -all -n kube-system
+                            kubectl delete pod --all -n kube-system
+                            kubectl get pod -o wide -n kube-system
+                            
+                            POD_NAME=$(kubectl get pod -n kube-system | grep kube-proxy | awk 'NR==1 {print $1}') && kubectl logs $POD_NAME -n kube-system
+                            POD_NAME=$(kubectl get pod -n kube-system | grep kube-proxy | awk 'NR==2 {print $1}') && kubectl logs $POD_NAME -n kube-system
+                            POD_NAME=$(kubectl get pod -n kube-system | grep kube-proxy | awk 'NR==3 {print $1}') && kubectl logs $POD_NAME -n kube-system
                     
         卸载 K8s 集群
             https://kubernetes.io/zh-cn/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down
