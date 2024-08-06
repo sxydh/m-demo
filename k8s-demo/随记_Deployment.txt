@@ -9,7 +9,7 @@
             rollout ：滚动方式重启。
             
     扩缩
-        kubectl scale deployment/<deployment_name> --replicas=<target_number>
+        kubectl scale deployment/<deployment_name> --replicas=<target_number> -n <namespace_name>
 环境
     创建 Deployment
         基于 MySQL
@@ -83,8 +83,11 @@
                             - containerPort: 80
             kubectl create -f deployment_nginx_demo.yaml -n default
             kubectl get pod -o wide -n default
+            
             POD_NAME=$(kubectl get pod -n default | grep nginx-demo | awk 'NR==1 {print $1}') && kubectl describe pod $POD_NAME -n default
             POD_NAME=$(kubectl get pod -n default | grep nginx-demo | awk 'NR==1 {print $1}') && kubectl logs $POD_NAME -n default
+            POD_NAME=$(kubectl get pod -n default | grep nginx-demo | awk 'NR==1 {print $1}') && kubectl exec -it $POD_NAME -n default -- bash
+            
             kubectl delete deployment deployment-nginx-demo -n default
             
         基于 Tomcat
