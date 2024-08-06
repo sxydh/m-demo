@@ -106,6 +106,13 @@
 
                 验证：
                     kubectl get pod -o wide -n harbor
+                    kubectl get deployment -o wide -n harbor
+                    
+                    kubectl rollout restart deployment harbor-instance-core -n harbor
+                    kubectl rollout restart deployment harbor-instance-jobservice -n harbor
+                    kubectl rollout restart deployment harbor-instance-nginx -n harbor
+                    kubectl rollout restart deployment harbor-instance-portal -n harbor
+                    kubectl rollout restart deployment harbor-instance-registry -n harbor
                     
                     POD_NAME=$(kubectl get pod -n harbor | grep harbor-instance-core | awk 'NR==1 {print $1}') && kubectl describe pod $POD_NAME -n harbor
                     POD_NAME=$(kubectl get pod -n harbor | grep harbor-instance-database | awk 'NR==1 {print $1}') && kubectl describe pod $POD_NAME -n harbor
