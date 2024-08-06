@@ -85,7 +85,7 @@
                 goharbor ：本地仓库名称。
                 harbor ：拉取 Chart 名称。
             tar -zxvf harbor-1.15.0.tgz
-            cd harbor
+            cd /opt/module/harbor/harbor
             vim values.yaml
                 更新
                     expose:
