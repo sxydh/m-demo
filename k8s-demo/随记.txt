@@ -420,5 +420,23 @@
                                     
                     journalctl -u kubelet -n 100 -f
                     
+                开启 ipvs
+                    概述
+                        ipvs （ IP Virtual Server ）用于实现传输层负载均衡
+                        K8s 默认使用 iptables 而不是 ipvs
+                        开启 ipvs 原因：
+                            不开启 ipvs 会出现以下问题，同一个 Node 下 Pod 与 Pod 可以通信，但是 Pod 与 Service 无法通信，目前无法解决。
+                    开始
+                        安装依赖（ hadoop01, hadoop02, hadoop03 ）
+                            apt-get install -y ipvsadm ipset
+                        更新应用（ hadoop01 ）
+                            kubectl edit configmap kube-proxy -n kube-system
+                                更新
+                                    mode: "ipvs"
+                                    iptables:
+                                      # 控制源地址转换
+                                      masqueradeAll: true
+                            kubectl delete pod -all -n kube-system
+                    
         卸载 K8s 集群
             https://kubernetes.io/zh-cn/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down
