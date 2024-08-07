@@ -1,5 +1,9 @@
 环境
     离线模式
+        settings.xml
+            <mirrors>
+                // 都注释掉
+            </mirrors>
         pom.xml
             <repositories>
                 <repository>
