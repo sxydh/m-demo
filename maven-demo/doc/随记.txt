@@ -1,0 +1,10 @@
+环境
+    离线模式
+        pom.xml
+            <repositories>
+                <repository>
+                    <id>anyId</id>
+                    <name>anyName</name>
+                    <url>file://C:\Users\Administrator\.m2\repository</url>
+                </repository>
+            </repositories>
