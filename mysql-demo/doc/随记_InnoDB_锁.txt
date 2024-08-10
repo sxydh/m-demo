@@ -1,0 +1,16 @@
+概述
+    锁用于保证并发环境下的数据一致性
+锁分类
+    Shared Lock （共享锁）
+    Exclusive Lock （排它锁）
+    
+    Intention Lock （意向锁）
+        Intention Shared Lock （意向共享锁）
+        Intention Exclusive Lock （意向排它锁）
+        
+    AUTO-INC Lock （自增主键锁）
+    
+    Record Lock （记录锁）
+    Gap Lock （间隙锁）
+    Next-Key Lock （临键锁）
+    Insert Intention Lock （插入意向锁）
