@@ -425,8 +425,8 @@
                     概述
                         ipvs （ IP Virtual Server ）用于实现传输层负载均衡
                         K8s 默认使用 iptables 而不是 ipvs
-                        开启 ipvs 原因：
-                            不开启 ipvs 会出现以下问题，同一个 Node 下 Pod 与 Pod 可以通信，但是 Pod 与 Service 无法通信，目前无法解决。
+                        开启 ipvs 原因：不开启 ipvs 会出现以下问题，同一个 Node 下 Pod 与 Pod 可以通信，但是 Pod 与 Service 无法通信，目前无法解决。
+                        注意：开启 ipvs 时，不要创建带 externalIPs 的 Service ，否则会导致 Master 无法与 Node 通信，目前无法解决。
                     开始（ https://juejin.cn/post/7158567812011655204 ）
                         安装依赖（ hadoop01, hadoop02, hadoop03 ）
                             apt-get update
