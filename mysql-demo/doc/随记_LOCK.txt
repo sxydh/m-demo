@@ -1,0 +1,6 @@
+概述
+    LOCK 用于加锁
+    UNLOCK 用于解锁
+开始
+    LOCK TABLES <table_name> <READ|WRITE> [, <table_name> <table_name>]
+        锁表

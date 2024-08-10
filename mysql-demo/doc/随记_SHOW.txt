@@ -1,0 +1,5 @@
+概述
+    SHOW 用于查看数据库、表、服务器等信息。
+开始
+    SHOW OPEN TABLES [FROM <database_name>] [WHERE <expr>]
+        查看打开的表的信息
