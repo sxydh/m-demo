@@ -2,16 +2,74 @@
     概述
         锁用于保证并发环境下的数据一致性
     分类
-        Shared Lock （共享锁）
-        Exclusive Lock （排它锁）
-        
-        Intention Lock （意向锁）
+        表级锁
             Intention Shared Lock （意向共享锁）
             Intention Exclusive Lock （意向排它锁）
-            
-        AUTO-INC Lock （自增主键锁）
         
-        Record Lock （记录锁）
-        Gap Lock （间隙锁）
-        Next-Key Lock （临键锁）
-        Insert Intention Lock （插入意向锁）
+            Shared Lock （共享锁）
+            Exclusive Lock （排它锁）
+            
+            AUTO-INC Lock （自增主键锁）
+            
+        行级锁
+            Shared Lock （共享锁）
+            Exclusive Lock （排它锁）
+            
+            Record Lock （记录锁）
+            Gap Lock （间隙锁）
+            Next-Key Lock （临键锁）
+            Insert Intention Lock （插入意向锁）
+    兼容性（ https://dev.mysql.com/doc/refman/8.4/en/innodb-locking.html#innodb-intention-locks ）
+        兼容
+            表级锁
+                IS
+                    select * from t_order for share;
+                        IS
+                            select * from t_order for share;
+                        IX
+                            select * from t_order for update;
+                                实际互斥，与文档不一致，未解决。
+                        S
+                            lock tables t_order read;
+                IX
+                    select * from t_order for update;
+                        IS
+                            select * from t_order for share;
+                                实际互斥，与文档不一致，未解决。
+                        IX
+                            select * from t_order for update;
+                                实际互斥，与文档不一致，未解决。
+                S
+                    lock tables t_order read;
+                        IS
+                            select * from t_order for share;
+                        S
+                            lock tables t_order read;
+        互斥
+            表级锁
+                IS
+                    select * from t_order for share;
+                        X
+                            lock tables t_order write;
+                IX
+                    select * from t_order for update;
+                        S
+                            lock tables t_order read;
+                        X
+                            lock tables t_order write;
+                S
+                    lock tables t_order read;
+                        IX
+                            select * from t_order for update;
+                        X
+                            lock tables t_order write;
+                X
+                    lock tables t_order write;
+                        IS
+                            select * from t_order for share;
+                        IX
+                            select * from t_order for update;
+                        S
+                            lock tables t_order read;
+                        X
+                            lock tables t_order write;
