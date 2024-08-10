@@ -23,9 +23,6 @@
                     spec:
                       selector:
                         app: pod-mysql-demo
-                      # 外部可以通过 externalIPs 访问该服务
-                      externalIPs:
-                      - 192.168.233.129
                       ports:
                       - protocol: TCP
                         # Service 监听的端口
