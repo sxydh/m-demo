@@ -107,3 +107,5 @@
                                 lock tables t_order read;
                             X
                                 lock tables t_order write;
+            验证
+                SELECT DISTINCT OBJECT_NAME, LOCK_TYPE, LOCK_MODE, LOCK_STATUS FROM performance_schema.data_locks;
