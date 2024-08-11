@@ -31,6 +31,10 @@
                                                 order_date, user_id
                                 命中
                                     explain select * from t_order where order_date = '2024-08-11 17:52:46' and user_id = '102930247824474219';
+                                    explain select * from t_order where order_date > '2024-08-11 17:52:46' and user_id = '102930247824474219';
+                                        如果 > 范围过大，不会走索引。
+                                    explain select * from t_order where order_date between '2024-08-11 17:52:46' and '2024-08-11 17:53:46' and user_id = '102930247824474219';
+                                        如果 between 范围过大，不会走索引。
                                 未命中
                                     explain select * from t_order where order_date = '2024-08-11 17:52:46' or user_id = '102930247824474219';
                     全文索引
