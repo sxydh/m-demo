@@ -20,7 +20,7 @@
                     组合索引
                         概述
                             多个字段构成的索引
-                        规则
+                        命中规则
                             最左匹配
                     全文索引
     锁（ https://dev.mysql.com/doc/refman/8.4/en/innodb-locking.html ）
