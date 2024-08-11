@@ -41,7 +41,7 @@ if __name__ == '__main__':
         r = ''
         while True:
             try:
-                sleep(1)
+                sleep(0.5)
                 tbody = driver.find_element(by=By.TAG_NAME, value='tbody')
                 trs = tbody.find_elements(by=By.TAG_NAME, value='tr')
                 for tr in trs:
