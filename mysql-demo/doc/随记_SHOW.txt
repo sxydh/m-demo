@@ -2,7 +2,11 @@
     https://dev.mysql.com/doc/refman/8.4/en/show.html
     SHOW 用于查看数据库、表、服务器等信息。
 开始
+    SHOW BINLOG EVENTS [IN '<binlog_name>'] [FROM <pos>] [LIMIT <offset> [, count]];
+        查看 binlog 详情
+    SHOW BINARY LOGS;
+        查看 binlog 列表
     SHOW ENGINE INNODB STATUS;
         查看 InnoDB 状态
     SHOW OPEN TABLES [FROM <database_name>] [WHERE <expr>];
-        查看打开的表的信息
+        查看打开的表列表
