@@ -38,6 +38,7 @@ if __name__ == '__main__':
         driver.find_elements(by=By.CLASS_NAME, value='JG-an03')[2].click()
 
         # 解析结果
+        r = ''
         while True:
             try:
                 sleep(1)
@@ -45,11 +46,11 @@ if __name__ == '__main__':
                 trs = tbody.find_elements(by=By.TAG_NAME, value='tr')
                 for tr in trs:
                     tds = tr.find_elements(by=By.TAG_NAME, value='td')
-                    print(tds[0].get_attribute('innerText'), end=', ')
+                    r += tds[0].get_attribute('innerText') + ', '
                     spans = tds[2].find_elements(by=By.TAG_NAME, value='span')
                     for span in spans:
-                        print(span.get_attribute('innerText'), end=', ')
-                    print(tds[3].get_attribute('innerText'))
+                        r += span.get_attribute('innerText') + ', '
+                    r += tds[3].get_attribute('innerText')
                 break
             except Exception as e:
                 print(e)
