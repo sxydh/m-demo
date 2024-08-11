@@ -10,3 +10,5 @@
         查看 InnoDB 状态
     SHOW OPEN TABLES [FROM <database_name>] [WHERE <expr>];
         查看打开的表列表
+    SHOW TABLE STATUS；
+        查看表详情
