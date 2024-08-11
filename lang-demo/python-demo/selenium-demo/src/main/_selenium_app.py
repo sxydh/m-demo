@@ -54,6 +54,8 @@ if __name__ == '__main__':
                 break
             except Exception as e:
                 print(e)
+        with open('tmp/output.txt', mode='w', encoding='utf-8') as ofile:
+            ofile.write(r)
 
         sds = eds
 
