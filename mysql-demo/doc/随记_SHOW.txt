@@ -1,4 +1,5 @@
 概述
+    https://dev.mysql.com/doc/refman/8.4/en/show.html
     SHOW 用于查看数据库、表、服务器等信息。
 开始
     SHOW ENGINE INNODB STATUS;
