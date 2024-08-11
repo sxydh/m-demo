@@ -1,105 +1,109 @@
-锁（ https://dev.mysql.com/doc/refman/8.4/en/innodb-locking.html ）
-    概述
-        锁用于保证并发环境下的数据一致性
-    分类
-        表级锁
-            Intention Shared Lock
-                概述
-                    意向共享锁
-                开始
-                    select * from t_order for share;
-            Intention Exclusive Lock
-                概述
-                    意向排它锁
-                开始
-                    select * from t_order for update;
-        
-            Shared Lock
-                概述
-                    共享锁
-                开始
-                    lock tables t_order read;
-            Exclusive Lock
-                概述
-                    排它锁
-                开始
-                    lock tables t_order write;
+概述
+    https://dev.mysql.com/doc/refman/8.4/en/innodb-storage-engine.html
+    存储引擎
+开始
+    锁（ https://dev.mysql.com/doc/refman/8.4/en/innodb-locking.html ）
+        概述
+            锁用于保证并发环境下的数据一致性
+        分类
+            表级锁
+                Intention Shared Lock
+                    概述
+                        意向共享锁
+                    开始
+                        select * from t_order for share;
+                Intention Exclusive Lock
+                    概述
+                        意向排它锁
+                    开始
+                        select * from t_order for update;
             
-            AUTO-INC Lock
-                概述
-                    自增主键锁
-        行级锁
-            Record Lock
-                概述
-                    记录锁
-                    Record Lock 基于唯一索引，在某行上加锁。
-                开始
-                    select * from t_order where order_id = '102579818403561472' for update;
-            Gap Lock
-                概述
-                    间隙锁
-                    Gap Lock 基于非唯一索引，在某个区间上加锁。
-                开始
-                    select * from t_order where order_id between '102579818403561472' and '102579818403561479' for update;
-            Next-Key Lock
-                概述
-                    临键锁
-                开始
-                    Next-Key Lock = Record Lock + Gap Lock
-            Insert Intention Lock
-                概述
-                    插入意向锁
-    兼容性
-        兼容
-            表级锁
-                IS
-                    select * from t_order for share;
-                        IS
-                            select * from t_order for share;
-                        IX
-                            select * from t_order for update;
-                                实际互斥，与文档不一致，未解决。
-                        S
-                            lock tables t_order read;
-                IX
-                    select * from t_order for update;
-                        IS
-                            select * from t_order for share;
-                                实际互斥，与文档不一致，未解决。
-                        IX
-                            select * from t_order for update;
-                                实际互斥，与文档不一致，未解决。
-                S
-                    lock tables t_order read;
-                        IS
-                            select * from t_order for share;
-                        S
-                            lock tables t_order read;
-        互斥
-            表级锁
-                IS
-                    select * from t_order for share;
-                        X
-                            lock tables t_order write;
-                IX
-                    select * from t_order for update;
-                        S
-                            lock tables t_order read;
-                        X
-                            lock tables t_order write;
-                S
-                    lock tables t_order read;
-                        IX
-                            select * from t_order for update;
-                        X
-                            lock tables t_order write;
-                X
-                    lock tables t_order write;
-                        IS
-                            select * from t_order for share;
-                        IX
-                            select * from t_order for update;
-                        S
-                            lock tables t_order read;
-                        X
-                            lock tables t_order write;
+                Shared Lock
+                    概述
+                        共享锁
+                    开始
+                        lock tables t_order read;
+                Exclusive Lock
+                    概述
+                        排它锁
+                    开始
+                        lock tables t_order write;
+                
+                AUTO-INC Lock
+                    概述
+                        自增主键锁
+            行级锁
+                Record Lock
+                    概述
+                        记录锁
+                        Record Lock 基于唯一索引，在某行上加锁。
+                    开始
+                        select * from t_order where order_id = '102579818403561472' for update;
+                Gap Lock
+                    概述
+                        间隙锁
+                        Gap Lock 基于非唯一索引，在某个区间上加锁。
+                    开始
+                        select * from t_order where order_id between '102579818403561472' and '102579818403561479' for update;
+                Next-Key Lock
+                    概述
+                        临键锁
+                    开始
+                        Next-Key Lock = Record Lock + Gap Lock
+                Insert Intention Lock
+                    概述
+                        插入意向锁
+        兼容性
+            兼容
+                表级锁
+                    IS
+                        select * from t_order for share;
+                            IS
+                                select * from t_order for share;
+                            IX
+                                select * from t_order for update;
+                                    实际互斥，与文档不一致，未解决。
+                            S
+                                lock tables t_order read;
+                    IX
+                        select * from t_order for update;
+                            IS
+                                select * from t_order for share;
+                                    实际互斥，与文档不一致，未解决。
+                            IX
+                                select * from t_order for update;
+                                    实际互斥，与文档不一致，未解决。
+                    S
+                        lock tables t_order read;
+                            IS
+                                select * from t_order for share;
+                            S
+                                lock tables t_order read;
+            互斥
+                表级锁
+                    IS
+                        select * from t_order for share;
+                            X
+                                lock tables t_order write;
+                    IX
+                        select * from t_order for update;
+                            S
+                                lock tables t_order read;
+                            X
+                                lock tables t_order write;
+                    S
+                        lock tables t_order read;
+                            IX
+                                select * from t_order for update;
+                            X
+                                lock tables t_order write;
+                    X
+                        lock tables t_order write;
+                            IS
+                                select * from t_order for share;
+                            IX
+                                select * from t_order for update;
+                            S
+                                lock tables t_order read;
+                            X
+                                lock tables t_order write;
