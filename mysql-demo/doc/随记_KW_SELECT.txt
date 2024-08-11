@@ -1,7 +1,13 @@
 概述
     查询
 开始
+    SELECT * FROM information_schema.STATISTICS;
+        查看索引列表
     SELECT * FROM information_schema.TABLES;
+        查看表列表
+    SELECT * FROM mysql.innodb_index_stats;
+        查看索引列表
+    SELECT * FROM mysql.innodb_table_stats;
         查看表列表
     SELECT * FROM performance_schema.data_locks;
         查看锁列表
