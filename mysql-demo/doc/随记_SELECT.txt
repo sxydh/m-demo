@@ -1,6 +1,8 @@
 概述
     查询
 开始
+    SELECT * FROM information_schema.TABLES;
+        查看表列表
     SELECT * FROM performance_schema.data_locks;
         查看锁列表
     SELECT * FROM performance_schema.data_lock_waits;
