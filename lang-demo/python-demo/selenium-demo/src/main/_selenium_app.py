@@ -18,8 +18,8 @@ if __name__ == '__main__':
 
     sds = '2004-01-01'
     eds = ''
-    while eds <= '2024-01-01':
-        eds = add_days(sds, 10)
+    while eds <= '2024-08-01':
+        eds = add_days(sds, 20)
 
         # 自定义查询
         driver.find_element(by=By.CLASS_NAME, value='wq-xlk01').click()
@@ -36,6 +36,23 @@ if __name__ == '__main__':
 
         # 开始查询
         driver.find_elements(by=By.CLASS_NAME, value='JG-an03')[2].click()
+
+        # 解析结果
+        while True:
+            try:
+                sleep(1)
+                tbody = driver.find_element(by=By.TAG_NAME, value='tbody')
+                trs = tbody.find_elements(by=By.TAG_NAME, value='tr')
+                for tr in trs:
+                    tds = tr.find_elements(by=By.TAG_NAME, value='td')
+                    print(tds[0].get_attribute('innerText'), end=', ')
+                    spans = tds[2].find_elements(by=By.TAG_NAME, value='span')
+                    for span in spans:
+                        print(span.get_attribute('innerText'), end=', ')
+                    print(tds[3].get_attribute('innerText'))
+                break
+            except Exception as e:
+                print(e)
 
         sds = eds
 
