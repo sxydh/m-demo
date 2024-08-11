@@ -30,9 +30,9 @@
                                             index
                                                 order_date, user_id
                                 命中
-                                    explain select * from t_order where order_date='2024-08-11 17:52:46' and user_id = '102930247824474219';
+                                    explain select * from t_order where order_date = '2024-08-11 17:52:46' and user_id = '102930247824474219';
                                 未命中
-                                    explain select * from t_order where order_date='2024-08-11 17:52:46' or user_id = '102930247824474219';
+                                    explain select * from t_order where order_date = '2024-08-11 17:52:46' or user_id = '102930247824474219';
                     全文索引
     锁（ https://dev.mysql.com/doc/refman/8.4/en/innodb-locking.html ）
         前置条件
