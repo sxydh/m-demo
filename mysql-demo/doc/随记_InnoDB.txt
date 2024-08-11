@@ -21,7 +21,18 @@
                         概述
                             多个字段构成的索引
                         命中规则
-                            最左匹配
+                            概述
+                                总体原则：最左匹配。
+                            开始
+                                前置条件
+                                    table
+                                        t_order
+                                            index
+                                                order_date, user_id
+                                命中
+                                    explain select * from t_order where order_date='2024-08-11 17:52:46' and user_id = '102930247824474219';
+                                未命中
+                                    explain select * from t_order where order_date='2024-08-11 17:52:46' or user_id = '102930247824474219';
                     全文索引
     锁（ https://dev.mysql.com/doc/refman/8.4/en/innodb-locking.html ）
         前置条件
@@ -157,4 +168,4 @@
                             X
                                 lock tables t_order write;
             验证
-                SELECT DISTINCT OBJECT_NAME, INDEX_NAME, LOCK_TYPE, LOCK_MODE, LOCK_STATUS, LOCK_DATA FROM performance_schema.data_locks;
+                select distinct object_name, index_name, lock_type, lock_mode, lock_status, lock_data from performance_schema.data_locks;
