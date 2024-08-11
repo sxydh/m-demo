@@ -2,6 +2,27 @@
     https://dev.mysql.com/doc/refman/8.4/en/innodb-storage-engine.html
     存储引擎
 开始
+    索引（ https://dev.mysql.com/doc/refman/8.4/en/innodb-indexes.html ）
+        概述
+            索引用于提升查询效率
+        类型
+            聚簇索引
+                概述
+                    聚簇索引默认是主键索引，如果没有显示定义主键索引或唯一索引，则 MySQL 会自动创建一列（值是 Row ID ）作为聚簇索引。
+                    B+ 树实现，叶子节点包含关键字和数据，非叶子节点仅包含关键字。
+            第二索引
+                概述
+                    聚簇索引之外的索引
+                    B+ 树实现，叶子节点包含关键字和聚簇索引值，非叶子节点仅包含关键字。
+                类型
+                    普通索引
+                    唯一索引
+                    组合索引
+                        概述
+                            多个字段构成的索引
+                        规则
+                            最左匹配
+                    全文索引
     锁（ https://dev.mysql.com/doc/refman/8.4/en/innodb-locking.html ）
         前置条件
             事务隔离级别：可重复读。
