@@ -1,0 +1,7 @@
+概述
+    查询
+开始
+    SELECT * FROM performance_schema.data_locks;
+        查看锁列表
+    SELECT * FROM performance_schema.data_lock_waits;
+        查看阻塞列表
