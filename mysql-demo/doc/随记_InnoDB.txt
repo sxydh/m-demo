@@ -3,90 +3,118 @@
     存储引擎
 开始
     锁（ https://dev.mysql.com/doc/refman/8.4/en/innodb-locking.html ）
+        前置条件
+            事务隔离级别：可重复读。
         概述
-            锁用于保证并发环境下的数据一致性
-        分类
+            锁用于在并发环境下保证数据的一致性
+        类型
             表级锁
-                Intention Shared Lock
-                    概述
-                        意向共享锁
-                    开始
-                        select * from t_order for share;
-                Intention Exclusive Lock
-                    概述
-                        意向排它锁
-                    开始
-                        select * from t_order for update;
-            
-                Shared Lock
-                    概述
-                        共享锁
-                    开始
-                        lock tables t_order read;
-                Exclusive Lock
-                    概述
-                        排它锁
-                    开始
-                        lock tables t_order write;
-                
-                AUTO-INC Lock
-                    概述
-                        自增主键锁
+                锁模式
+                    Intention Shared Lock
+                        概述
+                            意向共享锁
+                            加行级锁 Shared Lock 的同时会加表级锁 Intention Shared Lock
+                        开始
+                            select * from t_order for share;
+                                会加行级锁 Shared Lock 和表级锁 Intention Shared Lock
+                                
+                    Intention Exclusive Lock
+                        概述
+                            意向排它锁
+                            加行级锁 Exclusive Lock 的同时会加表级锁 Intention Exclusive Lock
+                        开始
+                            select * from t_order for update;
+                                会加行级锁 Exclusive Lock 和表级锁 Intention Exclusive Lock
+                    
+                    Shared Lock
+                        概述
+                            共享锁
+                        开始
+                            lock tables t_order read;
+                    Exclusive Lock
+                        概述
+                            排它锁
+                        开始
+                            lock tables t_order write;
+                    
+                    AUTO-INC Lock
+                        概述
+                            自增主键锁
             行级锁
-                Record Lock
-                    概述
-                        记录锁
-                        Record Lock 基于唯一索引，在某行上加锁。
-                    开始
-                        select * from t_order where order_id = '102579818403561472' for update;
-                Gap Lock
-                    概述
-                        间隙锁
-                        Gap Lock 基于非唯一索引，在某个区间上加锁。
-                    开始
-                        select * from t_order where order_id between '102579818403561472' and '102579818403561479' for update;
-                Next-Key Lock
-                    概述
-                        临键锁
-                    开始
-                        Next-Key Lock = Record Lock + Gap Lock
-                Insert Intention Lock
-                    概述
-                        插入意向锁
+                锁模式
+                    Record Lock
+                        概述
+                            记录锁，可以是共享 S 的，也可以是互斥 X 的。
+                            Record Lock 基于索引，在行上加 Record Lock 。
+                            假设索引 idx 存在值 1 ， 3 ， 4 ，语句命中索引 idx 且条件值是 3 ，则最终会在 3 上加 Record Lock 。
+                            注意：
+                                如果没有命中索引（不是没有命中值），会在所有行上加 Next-Key Lock 。
+                                    如果加的是互斥的 Next-Key Lock ，则其它事务的增删改都会被阻塞。
+                        开始
+                            select * from t_order where order_id = '1' for update;
+                                order_id 必须命中索引，而且存在条件值 1 ，才会加 X 型的 Record Lock 。
+                    Gap Lock
+                        概述
+                            间隙锁，可以是共享 S 的，也可以是互斥 X 的。
+                            Gap Lock 基于索引，在开区间上加锁。
+                            假设索引 idx 存在值 1 ， 3 ， 4 ，语句命中索引且条件值是 2 ，则最终会在开区间 (1, 3) 上加 Gap Lock 。
+                        开始
+                            select * from t_order where order_id = '2' for update;
+                                order_id 必须命中索引，而且不存在条件值 2 ，才会加 X 型的 Gap Lock 。
+                    Next-Key Lock
+                        概述
+                            临键锁，可以是共享 S 的，也可以是互斥 X 的。
+                            Next-Key Lock 基于索引，在左开右闭区间上加锁。
+                            假设索引 idx 存在值 1 ， 3 ， 4 ，语句命中索引且条件值是 >= 2 ，则最终会在区间 (2, 3] 和 (3, +infi] 上加 Next-Key Lock 。
+                        开始
+                            select * from t_order where order_id >= '2' for update;
+                                order_id 必须命中索引，而且区间条件包含已存在的记录，才会加 X 型的 Next-Key Lock 。
+                    Insert Intention Lock
+                        概述
+                            插入意向锁
         兼容性
+            前置条件
+                table
+                    t_order
+                        index
+                            order_id
+                                1
+                                3
+                                4
+            概述
+                总体原则：读读兼容，读写互斥，写写互斥。
+                后续示例未列出 Record Lock 、 Gap Lock 、 Next-Key Lock ，但其兼容性遵循总体原则。 
+                注意：意向锁之间兼容。
             兼容
                 表级锁
                     IS
-                        select * from t_order for share;
+                        select * from t_order where order_id = '0' for share;
                             IS
-                                select * from t_order for share;
+                                select * from t_order where order_id = '5' for share;
                             IX
-                                select * from t_order for update;
-                                    实际互斥，与文档不一致，未解决。
+                                select * from t_order where order_id = '5' for update;
                             S
                                 lock tables t_order read;
                     IX
-                        select * from t_order for update;
+                        select * from t_order where order_id = '0' for update;
                             IS
-                                select * from t_order for share;
-                                    实际互斥，与文档不一致，未解决。
+                                select * from t_order where order_id = '5' for share;
                             IX
-                                select * from t_order for update;
-                                    实际互斥，与文档不一致，未解决。
+                                select * from t_order where order_id = '5' for update;
                     S
                         lock tables t_order read;
                             IS
-                                select * from t_order for share;
+                                select * from t_order where order_id = '5' for share;
                             S
                                 lock tables t_order read;
             互斥
                 表级锁
                     IS
-                        select * from t_order for share;
+                        select * from t_order where order_id = '0' for share;
                             X
                                 lock tables t_order write;
                     IX
-                        select * from t_order for update;
+                        select * from t_order where order_id = '0' for update;
                             S
                                 lock tables t_order read;
                             X
@@ -94,18 +122,18 @@
                     S
                         lock tables t_order read;
                             IX
-                                select * from t_order for update;
+                                select * from t_order where order_id = '5' for update;
                             X
                                 lock tables t_order write;
                     X
                         lock tables t_order write;
                             IS
-                                select * from t_order for share;
+                                select * from t_order where order_id = '5' for share;
                             IX
-                                select * from t_order for update;
+                                select * from t_order where order_id = '5' for update;
                             S
                                 lock tables t_order read;
                             X
                                 lock tables t_order write;
             验证
-                SELECT DISTINCT OBJECT_NAME, LOCK_TYPE, LOCK_MODE, LOCK_STATUS FROM performance_schema.data_locks;
+                SELECT DISTINCT OBJECT_NAME, INDEX_NAME, LOCK_TYPE, LOCK_MODE, LOCK_STATUS, LOCK_DATA FROM performance_schema.data_locks;
