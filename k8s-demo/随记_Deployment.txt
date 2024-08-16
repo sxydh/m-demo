@@ -124,3 +124,43 @@
             POD_NAME=$(kubectl get pod -n default | grep tomcat-demo | awk 'NR==1 {print $1}') && kubectl exec -it $POD_NAME -n default -- bash
             
             kubectl delete deployment deployment-tomcat-demo -n default
+            
+        基于 Grafana
+            mkdir -p /opt/module/tmp
+            cd /opt/module/tmp
+            vim deployment_grafana_demo.yaml
+                追加
+                    apiVersion: apps/v1
+                    kind: Deployment
+                    metadata:
+                      name: deployment-grafana-demo
+                      labels:
+                        app: deployment-grafana-demo
+                    spec:
+                      replicas: 1
+                      selector:
+                        matchLabels:
+                          app: pod-grafana-demo
+                      template:
+                        metadata:
+                          labels:
+                            app: pod-grafana-demo
+                        spec:
+                          containers:
+                          - name: container-grafana-demo
+                            image: grafana/grafana:latest
+                            ports:
+                            - containerPort: 3000
+                            volumeMounts:
+                            - name: grafana-volume
+                              mountPath: /var/lib/grafana
+                          volumes:
+                          - name: grafana-volume
+                            emptyDir: {}
+            kubectl create -f deployment_grafana_demo.yaml -n default
+            kubectl get pod -o wide -n default
+            POD_NAME=$(kubectl get pod -n default | grep grafana-demo | awk 'NR==1 {print $1}') && kubectl describe pod $POD_NAME -n default
+            POD_NAME=$(kubectl get pod -n default | grep grafana-demo | awk 'NR==1 {print $1}') && kubectl logs $POD_NAME -n default
+            POD_NAME=$(kubectl get pod -n default | grep grafana-demo | awk 'NR==1 {print $1}') && kubectl exec -it $POD_NAME -n default -- bash
+            POD_NAME=$(kubectl get pod -n default | grep grafana-demo | awk 'NR==1 {print $1}') && kubectl port-forward pod/$POD_NAME -n default 3306:3306 --address=192.168.233.129
+            kubectl delete deployment deployment-grafana-demo -n default
