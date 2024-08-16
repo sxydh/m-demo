@@ -1,0 +1,7 @@
+Container
+    Form
+        The Form is the main object of Windows Forms. A Windows Forms application will usually have a form displayed at all times.
+    FlowLayoutPanel
+        The FlowLayoutPanel control arranges its contents in a horizontal or vertical flow direction.
+    TableLayoutPanel
+        The TableLayoutPanel control arranges its contents in a grid.

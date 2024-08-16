@@ -1,0 +1,6 @@
+https://learn.microsoft.com/en-us/windows/win32/api/
+    Headers
+        Winbase.sh
+            https://learn.microsoft.com/en-us/windows/win32/api/winbase/
+                SetThreadExecutionState
+                    https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setthreadexecutionstate
