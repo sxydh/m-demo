@@ -162,5 +162,5 @@
             POD_NAME=$(kubectl get pod -n default | grep grafana-demo | awk 'NR==1 {print $1}') && kubectl describe pod $POD_NAME -n default
             POD_NAME=$(kubectl get pod -n default | grep grafana-demo | awk 'NR==1 {print $1}') && kubectl logs $POD_NAME -n default
             POD_NAME=$(kubectl get pod -n default | grep grafana-demo | awk 'NR==1 {print $1}') && kubectl exec -it $POD_NAME -n default -- bash
-            POD_NAME=$(kubectl get pod -n default | grep grafana-demo | awk 'NR==1 {print $1}') && kubectl port-forward pod/$POD_NAME -n default 3306:3306 --address=192.168.233.129
+            POD_NAME=$(kubectl get pod -n default | grep grafana-demo | awk 'NR==1 {print $1}') && kubectl port-forward pod/$POD_NAME -n default 3000:3000 --address=192.168.233.129
             kubectl delete deployment deployment-grafana-demo -n default
