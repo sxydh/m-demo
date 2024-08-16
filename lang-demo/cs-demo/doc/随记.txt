@@ -1,6 +1,6 @@
 概述
-    C#是静态类型语言
-    C#编译后产生exe文件，由CLR执行，与Java类似。
+    C# 是静态类型语言
+    C# 编译后产生 exe 文件，由 CLR 执行，与 Java 类似。
 基础
     变量
         参见代码
@@ -30,14 +30,3 @@
         参加代码
     IO
         参加代码
-环境
-    Visual Studio
-        常用快捷键
-            格式化：Ctrl + D，Ctrl + K。
-            复制行：Ctrl + C，Ctrl + V。
-            删除行：Ctrl + Shift + L。
-            重组织：Ctrl + R + G。
-            运行（针对启动项目）：Ctrl + F5。
-            编译（针对当前文件）：Ctrl + F7。
-            生成（启动项目可执行文件）：Ctrl + B。
-            生成（解决方案下所有项目可执行文件）：Ctrl + Shift + B。

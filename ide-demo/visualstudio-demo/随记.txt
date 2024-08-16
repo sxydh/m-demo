@@ -10,4 +10,6 @@
     注释行
         Ctrl + K 然后 Ctrl + C
     返回上一个位置
-        Ctrl + -
+        Ctrl -
+    前进下一个位置
+        Ctrl +
