@@ -1,4 +1,8 @@
 https://www.w3schools.com/cssref/css_selectors.php
+    element element
+        开始
+            div p
+                Selects all <p> elements inside <div> elements
     [attribute]
         开始
             [target]
