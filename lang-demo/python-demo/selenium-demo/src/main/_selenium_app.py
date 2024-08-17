@@ -50,7 +50,7 @@ if __name__ == '__main__':
                     spans = tds[2].find_elements(by=By.TAG_NAME, value='span')
                     for span in spans:
                         r += span.get_attribute('innerText') + ', '
-                    r += tds[3].get_attribute('innerText') + '\r'
+                    r += tds[3].get_attribute('innerText') + '\n'
                 break
             except Exception as e:
                 print(e)
