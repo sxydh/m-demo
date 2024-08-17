@@ -65,9 +65,12 @@ def pull_queries():
 def pull_jobs():
     cities = read_rows('cities')
     queries = read_rows('queries')
+    jobs = read_rows('jobs')
 
     for city in cities:
         for query in queries:
+            if f'{city},{query}' in jobs:
+                continue
             # 分页循环
             page = 1
             n = 1
@@ -94,6 +97,7 @@ def pull_jobs():
                         sleep(1)
                 page += 1
                 sleep(1)
+            append(r=f'{city},{query}', f='jobs')
 
 
 if __name__ == '__main__':
