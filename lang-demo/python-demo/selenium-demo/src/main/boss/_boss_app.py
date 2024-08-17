@@ -21,9 +21,12 @@ def pull_cities():
             city_group_section = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='.city-group-section')
             city_group_item_list = chrome_cli.find_elements(src=city_group_section, by=By.CSS_SELECTOR, value='.city-group-item ul a')
             cities = []
+            cities_with_chs = []
             for (i, city_group_item) in enumerate(city_group_item_list):
                 ka = city_group_item.get_attribute('ka')
                 cities.append(ka.split('_')[-1])
+                text = city_group_item.get_attribute('innerText').trim()
+                cities_with_chs.append(f'{ka},{text}')
             append(r=str.join('\n', cities), f='cities')
             break
         except Exception as e:
