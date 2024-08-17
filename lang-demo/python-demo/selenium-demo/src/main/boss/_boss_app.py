@@ -14,19 +14,16 @@ def pull_cities():
     # 重试循环
     while True:
         try:
-            chrome_cli.get('https://www.zhipin.com/web/geek/job')
-            switch_city = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='[ka="switch_city_dialog_open"]')
+            chrome_cli.get('https://www.zhipin.com/')
+            switchover_city = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='.switchover-city')
             login_close()
-            chrome_cli.click(switch_city)
-            city_char_list = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.city-char-list > li')
+            chrome_cli.click(switchover_city)
+            city_group_section = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='.city-group-section')
+            city_group_item_list = chrome_cli.find_elements(src=city_group_section, by=By.CSS_SELECTOR, value='.city-group-item ul a')
             cities = []
-            for (i, city_char) in enumerate(city_char_list):
-                if i == 0:
-                    continue
-                chrome_cli.click(city_char)
-                city_list = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.city-list-select a')
-                for city in city_list:
-                    cities.append(city.get_attribute('innerText'))
+            for (i, city_group_item) in enumerate(city_group_item_list):
+                ka = city_group_item.get_attribute('ka')
+                cities.append(ka.split('_')[-1])
             append(r=str.join('\n', cities), f='cities')
             break
         except Exception as e:
