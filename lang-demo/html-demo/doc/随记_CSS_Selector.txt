@@ -1,0 +1,11 @@
+https://www.w3schools.com/cssref/css_selectors.php
+    [attribute]
+        概述
+            Selects all elements with a target attribute
+        开始
+            [target]
+    [attribute=value]
+        概述
+            Selects all elements with target="_blank"
+        开始
+            [target="_blank"]
