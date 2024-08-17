@@ -79,7 +79,7 @@ def pull_jobs():
                     'https://www.zhipin.com/overseas/',
                     'https://app.zhipin.com/'
                 ]))
-                sleep(1)
+                sleep(random.choice([1, 1, 1, 2, 3]))
 
             # 分页循环
             page = 1
