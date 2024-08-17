@@ -21,13 +21,13 @@ def find_element(src, by, value):
 
 
 def find_elements(src, by, value):
-    i = 3
-    while i > 0:
+    c = 3
+    while c > 0:
         try:
             WebDriverWait(driver, 10).until(ec.presence_of_element_located((by, value)))
             return src.find_elements(by=by, value=value)
         except Exception as e:
-            i -= 1
+            c -= 1
             print(e)
     raise Exception(f'by={by}, value={value} not found')
 
