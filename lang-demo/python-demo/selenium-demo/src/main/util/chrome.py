@@ -8,12 +8,14 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 class ChromeCli:
 
-    def __init__(self, url, proxy=None):
+    def __init__(self, url, proxy=None, headless=True, images_disabled=True):
         options = Options()
-        options.add_argument('--headless=new')
-        options.add_argument('--blink-settings=imagesEnabled=false')
         if proxy:
             options.add_argument(f'--proxy-server={proxy}')
+        if headless:
+            options.add_argument('--headless=new')
+        if images_disabled:
+            options.add_argument('--blink-settings=imagesEnabled=false')
         self.driver = webdriver.Chrome(
             service=Service(ChromeDriverManager().install()),
             options=options
