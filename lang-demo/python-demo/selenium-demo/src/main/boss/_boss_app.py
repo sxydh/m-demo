@@ -7,14 +7,15 @@ from src.main.util.chrome_cli import ChromeCli
 from src.main.util.common import append, append_e, read_rows
 
 
-def start():
-    def login_close():
-        close = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='[ka="boss-login-close"]', timeout=0, count=1, raise_e=False)
-        if close is not None:
-            chrome_cli.click(close)
+def pull_cities():
+    pass
 
-    chrome_cli = ChromeCli(headless=False)
 
+def pull_queries():
+    pass
+
+
+def pull_jobs():
     cities = read_rows('cities')
     queries = read_rows('queries')
 
@@ -46,4 +47,15 @@ def start():
 
 
 if __name__ == '__main__':
-    start()
+    chrome_cli = ChromeCli(headless=False)
+
+
+    def login_close():
+        close = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='[ka="boss-login-close"]', timeout=0, count=1, raise_e=False)
+        if close is not None:
+            chrome_cli.click(close)
+
+
+    pull_cities()
+    pull_queries()
+    pull_jobs()
