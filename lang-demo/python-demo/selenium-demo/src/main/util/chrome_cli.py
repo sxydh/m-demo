@@ -24,26 +24,26 @@ class ChromeCli:
         self.driver.maximize_window()
         self.driver.get(url)
 
-    def find_element_d(self, by, value, count=3):
-        return self.find_element(src=self.driver, by=by, value=value, count=count)
+    def find_element_d(self, by, value, timeout=10, count=3):
+        return self.find_element(src=self.driver, by=by, value=value, timeout=timeout, count=count)
 
-    def find_element(self, src, by, value, count=3):
+    def find_element(self, src, by, value, timeout=10, count=3):
         while count > 0:
             try:
-                WebDriverWait(self.driver, 10).until(ec.presence_of_element_located((by, value)))
+                WebDriverWait(self.driver, timeout).until(ec.presence_of_element_located((by, value)))
                 return src.find_element(by=by, value=value)
             except Exception as e:
                 count -= 1
                 print(e)
         raise Exception(f'by={by}, value={value} not found')
 
-    def find_elements_d(self, by, value, count=3):
-        return self.find_elements(src=self.driver, by=by, value=value, count=count)
+    def find_elements_d(self, by, value, timeout=10, count=3):
+        return self.find_elements(src=self.driver, by=by, value=value, timeout=timeout, count=count)
 
-    def find_elements(self, src, by, value, count=3):
+    def find_elements(self, src, by, value, timeout=10, count=3):
         while count > 0:
             try:
-                WebDriverWait(self.driver, 10).until(ec.presence_of_element_located((by, value)))
+                WebDriverWait(self.driver, timeout).until(ec.presence_of_element_located((by, value)))
                 return src.find_elements(by=by, value=value)
             except Exception as e:
                 count -= 1
