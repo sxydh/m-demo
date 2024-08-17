@@ -85,7 +85,7 @@ def pull_jobs():
 
                         # 解析内容
                         login_close()
-                        jobs = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.job-list-box li')
+                        jobs = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.job-list-box .job-card-wrapper')
                         for job in jobs:
                             append(f'###########{job.get_attribute('innerHTML')}')
                         break
