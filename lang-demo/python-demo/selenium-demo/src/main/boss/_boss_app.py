@@ -37,12 +37,12 @@ def start():
                         jobs = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.job-list-box li')
                         for job in jobs:
                             append(job.get_attribute('innerHTML'))
-                        page += 1
-                        sleep(1)
                         break
                     except Exception as e:
                         append_e(str(e))
                         sleep(1)
+                page += 1
+                sleep(1)
 
 
 if __name__ == '__main__':
