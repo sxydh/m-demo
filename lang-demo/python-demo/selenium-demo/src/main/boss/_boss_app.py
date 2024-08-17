@@ -8,7 +8,30 @@ from src.main.util.common import append, append_e, read_rows
 
 
 def pull_cities():
-    pass
+    cities = read_rows('cities')
+    if len(cities) > 0 and cities[0] != '':
+        return
+    # 重试循环
+    while True:
+        try:
+            chrome_cli.get('https://www.zhipin.com/web/geek/job')
+            switch_city = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='[ka="switch_city_dialog_open"]')
+            login_close()
+            chrome_cli.click(switch_city)
+            city_char_list = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.city-char-list > li')
+            cities = []
+            for (i, city_char) in enumerate(city_char_list):
+                if i == 0:
+                    continue
+                chrome_cli.click(city_char)
+                city_list = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.city-list-select a')
+                for city in city_list:
+                    cities.append(city.get_attribute('innerText'))
+            append(r=str.join('\n', cities), f='cities')
+            break
+        except Exception as e:
+            append_e(str(e))
+            sleep(1)
 
 
 def pull_queries():
