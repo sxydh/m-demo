@@ -24,31 +24,29 @@ class ChromeCli:
         self.driver.maximize_window()
         self.driver.get(url)
 
-    def find_element_d(self, by, value):
-        return self.find_element(self.driver, by, value)
+    def find_element_d(self, by, value, count=3):
+        return self.find_element(src=self.driver, by=by, value=value, count=count)
 
-    def find_element(self, src, by, value):
-        i = 3
-        while i > 0:
+    def find_element(self, src, by, value, count=3):
+        while count > 0:
             try:
                 WebDriverWait(self.driver, 10).until(ec.presence_of_element_located((by, value)))
                 return src.find_element(by=by, value=value)
             except Exception as e:
-                i -= 1
+                count -= 1
                 print(e)
         raise Exception(f'by={by}, value={value} not found')
 
-    def find_elements_d(self, by, value):
-        return self.find_elements(self.driver, by, value)
+    def find_elements_d(self, by, value, count=3):
+        return self.find_elements(src=self.driver, by=by, value=value, count=count)
 
-    def find_elements(self, src, by, value):
-        c = 3
-        while c > 0:
+    def find_elements(self, src, by, value, count=3):
+        while count > 0:
             try:
                 WebDriverWait(self.driver, 10).until(ec.presence_of_element_located((by, value)))
                 return src.find_elements(by=by, value=value)
             except Exception as e:
-                c -= 1
+                count -= 1
                 print(e)
         raise Exception(f'by={by}, value={value} not found')
 
