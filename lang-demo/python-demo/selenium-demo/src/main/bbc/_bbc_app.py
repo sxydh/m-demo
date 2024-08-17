@@ -4,7 +4,7 @@ from src.main.util.chrome_cli import ChromeCli
 from src.main.util.common import append
 
 if __name__ == '__main__':
-    chrome_cli = ChromeCli(url='https://www.bbc.com/news', proxy='127.0.0.1:10809')
+    chrome_cli = ChromeCli(proxy='127.0.0.1:10809')
 
     while True:
         nav = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='[data-testid="level2-navigation-container"]')
