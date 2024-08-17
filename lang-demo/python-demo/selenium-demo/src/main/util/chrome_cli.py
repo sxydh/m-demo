@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support import expected_conditions as ec
@@ -23,6 +24,9 @@ class ChromeCli:
         self.driver.maximize_window()
         self.driver.get(url)
 
+    def find_element_d(self, by, value):
+        return self.find_element(self.driver, by, value)
+
     def find_element(self, src, by, value):
         i = 3
         while i > 0:
@@ -44,3 +48,6 @@ class ChromeCli:
                 c -= 1
                 print(e)
         raise Exception(f'by={by}, value={value} not found')
+
+    def click(self, ele):
+        ActionChains(self.driver).move_to_element(ele).click().perform()
