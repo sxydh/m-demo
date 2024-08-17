@@ -84,6 +84,7 @@ def pull_jobs():
                         jobs = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.job-list-box li')
                         for job in jobs:
                             append(job.get_attribute('innerHTML'))
+                            append('\n')
                         break
                     except Exception as e:
                         append_e(str(e))
