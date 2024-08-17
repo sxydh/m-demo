@@ -35,7 +35,30 @@ def pull_cities():
 
 
 def pull_queries():
-    pass
+    queries = read_rows('queries')
+    if len(queries) > 0 and queries[0] != '':
+        return
+    # 重试循环
+    while True:
+        try:
+            chrome_cli.get('https://www.zhipin.com/web/geek/job')
+            condition_position_select = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='.condition-position-select')
+            login_close()
+            chrome_cli.click(condition_position_select)
+            sel_position_list = chrome_cli.find_elements(src=condition_position_select, by=By.CSS_SELECTOR, value='li')
+            queries = []
+            for (i, sel_position) in enumerate(sel_position_list):
+                if i == 0:
+                    continue
+                chrome_cli.click(sel_position)
+                position_list = chrome_cli.find_elements(src=condition_position_select, by=By.CSS_SELECTOR, value='.condition-position-list a')
+                for position in position_list:
+                    queries.append(position.get_attribute('innerText'))
+            append(r=str.join('\n', queries), f='queries')
+            break
+        except Exception as e:
+            append_e(str(e))
+            sleep(1)
 
 
 def pull_jobs():
