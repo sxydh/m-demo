@@ -25,10 +25,10 @@ def pull_cities():
             for (i, city_group_item) in enumerate(city_group_item_list):
                 ka = city_group_item.get_attribute('ka')
                 cities.append(ka.split('_')[-1])
-                text = city_group_item.get_attribute('innerText').trim()
+                text = city_group_item.get_attribute('innerText').strip()
                 cities_with_chs.append(f'{ka},{text}')
             append(r=str.join('\n', cities), f='cities')
-            append(r=str.join('\n', cities), f='cities_with_chs')
+            append(r=str.join('\n', cities_with_chs), f='cities_with_chs')
             break
         except Exception as e:
             append_e(str(e))
