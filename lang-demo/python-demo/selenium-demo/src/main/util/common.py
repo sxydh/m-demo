@@ -8,6 +8,6 @@ def append_e(r):
         o.write(r + '\r')
 
 
-def read_rows():
-    with open('tmp/input.txt', mode='r', encoding='utf-8') as i:
+def read_rows(f):
+    with open(f'input/{f}', mode='r', encoding='utf-8') as i:
         return i.read().split('\r')
