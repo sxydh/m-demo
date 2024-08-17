@@ -22,7 +22,11 @@ class ChromeCli:
             options=options
         )
         self.driver.maximize_window()
-        self.driver.get(url)
+        self.url = url
+        self.refresh()
+
+    def refresh(self):
+        self.driver.get(self.url)
 
     def find_element_d(self, by, value, timeout=10, count=3, raise_e=True):
         return self.find_element(src=self.driver, by=by, value=value, timeout=timeout, count=count, raise_e=raise_e)
