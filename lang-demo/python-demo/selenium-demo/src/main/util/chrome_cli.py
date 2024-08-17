@@ -11,7 +11,7 @@ from src.main.util.common import append_e
 
 class ChromeCli:
 
-    def __init__(self, url, proxy=None, headless=True, images_disabled=True):
+    def __init__(self, proxy=None, headless=True, images_disabled=True):
         options = Options()
         if proxy:
             options.add_argument(f'--proxy-server={proxy}')
@@ -24,12 +24,9 @@ class ChromeCli:
             options=options
         )
         self.driver.maximize_window()
-        self.url = url
-        self.refresh()
 
-    def refresh(self, url=None):
-        self.url = url if url else self.url
-        self.driver.get(self.url)
+    def get(self, url):
+        self.driver.get(url)
 
     def find_element_d(self, by, value, timeout=10, count=3, raise_e=True):
         return self.find_element(src=self.driver, by=by, value=value, timeout=timeout, count=count, raise_e=raise_e)
