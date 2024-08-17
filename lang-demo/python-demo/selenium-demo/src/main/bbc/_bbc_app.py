@@ -33,7 +33,7 @@ def find_elements(src, by, value):
 
 
 def write(r):
-    with open('tmp/output.txt', mode='a', encoding='utf-8') as o:
+    with open('tmp/output.txt', mode='w', encoding='utf-8') as o:
         o.write(r + '\r')
 
 
