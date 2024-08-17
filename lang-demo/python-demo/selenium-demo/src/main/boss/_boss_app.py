@@ -28,6 +28,7 @@ def pull_cities():
                 text = city_group_item.get_attribute('innerText').trim()
                 cities_with_chs.append(f'{ka},{text}')
             append(r=str.join('\n', cities), f='cities')
+            append(r=str.join('\n', cities), f='cities_with_chs')
             break
         except Exception as e:
             append_e(str(e))
