@@ -34,7 +34,7 @@ def find_elements(src, by, value):
 
 def write(r):
     with open('tmp/output.txt', mode='a', encoding='utf-8') as o:
-        o.write(r)
+        o.write(r + '\r')
 
 
 if __name__ == '__main__':
