@@ -27,7 +27,8 @@ class ChromeCli:
         self.url = url
         self.refresh()
 
-    def refresh(self):
+    def refresh(self, url=None):
+        self.url = url if url else self.url
         self.driver.get(self.url)
 
     def find_element_d(self, by, value, timeout=10, count=3, raise_e=True):
