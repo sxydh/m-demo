@@ -1,3 +1,4 @@
+import undetected_chromedriver as uc
 from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
@@ -11,19 +12,28 @@ from src.main.util.common import append_e
 
 class ChromeCli:
 
-    def __init__(self, proxy=None, headless=True, images_disabled=True):
-        options = Options()
-        if proxy:
-            options.add_argument(f'--proxy-server={proxy}')
-        if headless:
-            options.add_argument('--headless=new')
-        if images_disabled:
-            options.add_argument('--blink-settings=imagesEnabled=false')
-        self.driver = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install()),
-            options=options
-        )
-        self.driver.maximize_window()
+    def __init__(self, undetected=False, proxy=None, headless=True, images_disabled=True):
+        if undetected:
+            options = Options()
+            if images_disabled:
+                options.add_argument('--blink-settings=imagesEnabled=false')
+            self.driver = uc.Chrome(
+                options=options
+            )
+            self.driver.maximize_window()
+        else:
+            options = Options()
+            if proxy:
+                options.add_argument(f'--proxy-server={proxy}')
+            if headless:
+                options.add_argument('--headless=new')
+            if images_disabled:
+                options.add_argument('--blink-settings=imagesEnabled=false')
+            self.driver = webdriver.Chrome(
+                service=Service(ChromeDriverManager().install()),
+                options=options
+            )
+            self.driver.maximize_window()
 
     def get(self, url):
         self.driver.get(url)
