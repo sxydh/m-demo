@@ -46,6 +46,7 @@ if __name__ == '__main__':
         service=Service(ChromeDriverManager().install()),
         options=options
     )
+    driver.maximize_window()
 
     driver.get('https://www.bbc.com/news')
 
