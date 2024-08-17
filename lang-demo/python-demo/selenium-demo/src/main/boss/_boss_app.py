@@ -39,6 +39,7 @@ def start():
                             append(job.get_attribute('innerHTML'))
                         page += 1
                         sleep(1)
+                        break
                     except Exception as e:
                         append_e(str(e))
                         sleep(1)
