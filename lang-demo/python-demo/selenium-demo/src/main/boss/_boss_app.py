@@ -76,7 +76,7 @@ def pull_jobs():
                 while True:
                     try:
                         chrome_cli.get(f'https://www.zhipin.com/web/geek/job?query={quote(query)}&city={quote(city)}&page={page}')
-                        job_empty_box = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='.job-empty-box', timeout=1)
+                        job_empty_box = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='.job-empty-box', timeout=1, raise_e=False)
                         if job_empty_box is not None:
                             break
                         options_pages = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.options-pages a')
