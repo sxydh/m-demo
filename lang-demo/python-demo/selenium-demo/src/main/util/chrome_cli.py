@@ -6,6 +6,8 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
+from src.main.util.common import append_e
+
 
 class ChromeCli:
 
@@ -47,7 +49,7 @@ class ChromeCli:
                 return src.find_elements(by=by, value=value)
             except Exception as e:
                 count -= 1
-                print(e)
+                append_e(str(e))
         if raise_e:
             raise Exception(f'by={by}, value={value} not found')
         return []
