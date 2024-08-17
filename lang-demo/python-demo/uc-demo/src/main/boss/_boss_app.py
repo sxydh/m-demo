@@ -72,14 +72,14 @@ def pull_jobs():
         for query in queries:
             if f'{city},{query}' in jobs:
                 continue
-            if random.choice([False, True, False]):
+            if random.choice([True, False]):
                 chrome_cli.get(random.choice([
                     'https://www.zhipin.com/web/geek/job-recommend',
                     'https://www.zhipin.com/gongsi',
                     'https://www.zhipin.com/overseas/',
                     'https://app.zhipin.com/'
                 ]))
-                sleep(random.choice([1, 1, 1, 2, 3]))
+                sleep(random.choice([1, 1, 1, 1, 3]))
 
             # 分页循环
             page = 1
