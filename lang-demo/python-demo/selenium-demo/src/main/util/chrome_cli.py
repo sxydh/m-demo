@@ -38,6 +38,9 @@ class ChromeCli:
                 print(e)
         raise Exception(f'by={by}, value={value} not found')
 
+    def find_elements_d(self, by, value):
+        return self.find_elements(self.driver, by, value)
+
     def find_elements(self, src, by, value):
         c = 3
         while c > 0:
