@@ -108,7 +108,9 @@ def pull_jobs():
                         sleep(1)
                 page += 1
                 sleep(1)
+
             append(r=f'{city},{query}', f='jobs')
+            sleep(random.choice([1, 1, 1, 2, 3]))
 
 
 if __name__ == '__main__':
