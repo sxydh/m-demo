@@ -106,7 +106,7 @@ def pull_jobs():
 
 
 if __name__ == '__main__':
-    chrome_cli = ChromeCli(headless=False)
+    chrome_cli = ChromeCli(undetected=True, headless=False)
 
 
     def login_close():
