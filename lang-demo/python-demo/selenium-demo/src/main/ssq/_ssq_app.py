@@ -1,20 +1,14 @@
-import datetime
 from time import sleep
 
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-
-def add_days(ds, delta):
-    d = datetime.datetime.strptime(ds, '%Y-%m-%d')
-    return (d + datetime.timedelta(days=delta)).strftime('%Y-%m-%d')
-
+from src.main.util.chrome_cli import ChromeCli
+from src.main.util.common import add_days
 
 # https://www.selenium.dev/documentation/webdriver/getting_started/first_script/
 if __name__ == '__main__':
-    driver = webdriver.Chrome()
-
-    driver.get("https://www.zhcw.com/kjxx/ssq/")
+    chrome_cli = ChromeCli(images_disabled=True)
+    chrome_cli.get("https://www.zhcw.com/kjxx/ssq/")
 
     sds = '2004-01-01'
     eds = ''
@@ -22,35 +16,38 @@ if __name__ == '__main__':
         eds = add_days(sds, 20)
 
         # 自定义查询
-        driver.find_element(by=By.CLASS_NAME, value='wq-xlk01').click()
-        cx_tj = driver.find_element(by=By.CLASS_NAME, value='cx-tj')
-        cx_tj.find_elements(by=By.TAG_NAME, value='div')[2].click()
+        wq_xlk01 = chrome_cli.find_element_d(by=By.CLASS_NAME, value='wq-xlk01')
+        chrome_cli.click(wq_xlk01)
+        cx_tj = chrome_cli.find_element_d(by=By.CLASS_NAME, value='cx-tj')
+        div_2 = chrome_cli.find_elements(src=cx_tj, by=By.TAG_NAME, value='div')[2]
+        chrome_cli.click(div_2)
 
         # 按日期查询
-        start_c = driver.find_element(by=By.ID, value='startC')
-        end_c = driver.find_element(by=By.ID, value='endC')
+        start_c = chrome_cli.find_element_d(by=By.ID, value='startC')
+        end_c = chrome_cli.find_element_d(by=By.ID, value='endC')
         start_c.clear()
         end_c.clear()
         start_c.send_keys(sds)
         end_c.send_keys(eds)
 
         # 开始查询
-        driver.find_elements(by=By.CLASS_NAME, value='JG-an03')[2].click()
+        jg_an03_2 = chrome_cli.find_elements_d(by=By.CLASS_NAME, value='JG-an03')[2]
+        chrome_cli.click(jg_an03_2)
 
         # 解析结果
         r = ''
         while True:
             try:
                 sleep(0.5)
-                tbody = driver.find_element(by=By.TAG_NAME, value='tbody')
-                trs = tbody.find_elements(by=By.TAG_NAME, value='tr')
+                tbody = chrome_cli.find_element_d(by=By.TAG_NAME, value='tbody')
+                trs = tbody.find_elements(src=tbody, by=By.TAG_NAME, value='tr')
                 for tr in trs:
-                    tds = tr.find_elements(by=By.TAG_NAME, value='td')
-                    r += tds[0].get_attribute('innerText') + ', '
-                    spans = tds[2].find_elements(by=By.TAG_NAME, value='span')
+                    tds = chrome_cli.find_elements(src=tr, by=By.TAG_NAME, value='td')
+                    r += f'{tds[0].get_attribute('innerText')}, '
+                    spans = chrome_cli.find_elements(src=tds[2], by=By.TAG_NAME, value='span')
                     for span in spans:
-                        r += span.get_attribute('innerText') + ', '
-                    r += tds[3].get_attribute('innerText') + '\n'
+                        r += f'{span.get_attribute('innerText')}, '
+                    r += f'{tds[3].get_attribute('innerText')}\n'
                 break
             except Exception as e:
                 print(e)
