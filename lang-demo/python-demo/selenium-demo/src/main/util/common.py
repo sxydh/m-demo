@@ -1,4 +1,5 @@
 import datetime
+import os
 
 
 def add_days(ds, delta):
@@ -7,6 +8,7 @@ def add_days(ds, delta):
 
 
 def write(r, mode, f):
+    os.makedirs('tmp', exist_ok=True)
     with open(f'tmp/{f}', mode=mode, encoding='utf-8') as o:
         o.write(r)
 
@@ -20,7 +22,8 @@ def append_e(r, f='error.txt'):
 
 
 def read(f):
-    with open(f'tmp/{f}', mode='r', encoding='utf-8') as i:
+    os.makedirs('tmp', exist_ok=True)
+    with open(f'tmp/{f}', mode='xr', encoding='utf-8') as i:
         return i.read()
 
 
