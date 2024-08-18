@@ -1,5 +1,0 @@
-概述
-    https://github.com/ultrafunkamsterdam/undetected-chromedriver
-环境
-    前置条件
-        pip install undetected-chromedriver
