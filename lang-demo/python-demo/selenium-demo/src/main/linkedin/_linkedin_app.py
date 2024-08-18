@@ -30,11 +30,12 @@ def pull_jobs():
 
                         job_list = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.jobs-search__results-list li', timeout=1, count=3)
                         for job in job_list:
+                            sleep(random.choice([1, 1, 2, 2, 3]))
                             chrome_cli.move_to_element(job)
                             chrome_cli.click(job)
                             show_more = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='[data-tracking-control-name="public_jobs_show-more-html-btn"]')
-                            chrome_cli.click(show_more)
                             sleep(random.choice([1, 1, 2, 2, 3]))
+                            chrome_cli.click(show_more)
                         break
                     except Exception as e:
                         append_e(str(e))
