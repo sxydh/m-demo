@@ -7,7 +7,7 @@ from src.main.util.common import add_days, append_e
 
 # https://www.selenium.dev/documentation/webdriver/getting_started/first_script/
 if __name__ == '__main__':
-    chrome_cli = ChromeCli(images_disabled=True)
+    chrome_cli = ChromeCli(headless=False, images_disabled=True)
     chrome_cli.get("https://www.zhcw.com/kjxx/ssq/")
 
     sds = '2004-01-01'
