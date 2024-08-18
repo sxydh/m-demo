@@ -62,5 +62,8 @@ class ChromeCli:
             raise Exception(f'by={by}, value={value} not found')
         return []
 
+    def move_to_element(self, ele):
+        ActionChains(self.driver).move_to_element(ele).perform()
+
     def click(self, ele):
         ActionChains(self.driver).move_to_element(ele).click().perform()
