@@ -3,7 +3,7 @@ from time import sleep
 from selenium.webdriver.common.by import By
 
 from src.main.util.chrome_cli import ChromeCli
-from src.main.util.common import add_days
+from src.main.util.common import add_days, append_e
 
 # https://www.selenium.dev/documentation/webdriver/getting_started/first_script/
 if __name__ == '__main__':
@@ -50,7 +50,7 @@ if __name__ == '__main__':
                     r += f'{tds[3].get_attribute('innerText')}\n'
                 break
             except Exception as e:
-                print(e)
+                append_e(str(e))
         with open('tmp/output.txt', mode='a', encoding='utf-8') as o:
             o.write(r)
 
