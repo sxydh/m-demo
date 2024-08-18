@@ -65,13 +65,19 @@ def pull_queries():
 def pull_jobs():
     cities = read_rows('cities')
     queries = read_rows('queries')
+    jobs = read_rows('jobs')
 
     for city in cities:
         for query in queries:
+
+            if f'{city},{query}' in jobs:
+                continue
+
             # 分页循环
             page = 1
             n = 1
             while page <= n:
+
                 # 重试循环
                 while True:
                     try:
@@ -92,8 +98,11 @@ def pull_jobs():
                     except Exception as e:
                         append_e(str(e))
                         sleep(1)
+
                 page += 1
                 sleep(1)
+
+            append(r=f'{city},{query}', f='jobs')
 
 
 if __name__ == '__main__':
