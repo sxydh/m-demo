@@ -20,8 +20,8 @@ if __name__ == '__main__':
                 for link in links:
                     headline = chrome_cli.find_element(src=link, by=By.CSS_SELECTOR, value='[data-testid="card-headline"]')
                     description = chrome_cli.find_element(src=link, by=By.CSS_SELECTOR, value='[data-testid="card-description"]')
-                    append('    ' + headline.get_attribute('innerText'))
-                    append('        ' + description.get_attribute('innerText'))
+                    append(f'    {headline.get_attribute('innerText')}')
+                    append(f'        {description.get_attribute('innerText')}')
                 next_button = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='[data-testid="pagination-next-button"]')
                 if next_button.get_attribute('disabled') == 'true':
                     break
