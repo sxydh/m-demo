@@ -40,7 +40,7 @@ if __name__ == '__main__':
             try:
                 sleep(0.5)
                 tbody = chrome_cli.find_element_d(by=By.TAG_NAME, value='tbody')
-                trs = tbody.find_elements(src=tbody, by=By.TAG_NAME, value='tr')
+                trs = chrome_cli.find_elements(src=tbody, by=By.TAG_NAME, value='tr')
                 for tr in trs:
                     tds = chrome_cli.find_elements(src=tr, by=By.TAG_NAME, value='td')
                     r += f'{tds[0].get_attribute('innerText')}, '
