@@ -23,7 +23,10 @@ def append_e(r, f='error.txt'):
 
 def read(f):
     os.makedirs('tmp', exist_ok=True)
-    with open(f'tmp/{f}', mode='a', encoding='utf-8') as i:
+    f = f'tmp/{f}'
+    with open(f, mode='a', encoding='utf-8') as i:
+        pass
+    with open(f, mode='r', encoding='utf-8') as i:
         return i.read()
 
 
