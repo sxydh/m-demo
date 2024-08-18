@@ -12,7 +12,7 @@ def write(r, mode, f):
 
 
 def append(r, f='output.txt'):
-    write(r=f'{r}\n', mode='a', f=f)
+    write(r=f'{r}\n', mode='a+', f=f)
 
 
 def append_e(r, f='error.txt'):
