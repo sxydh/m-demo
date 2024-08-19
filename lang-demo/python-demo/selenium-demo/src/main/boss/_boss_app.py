@@ -92,6 +92,7 @@ def pull_jobs():
                 # 重试循环
                 while True:
                     try:
+                        append(r=f'{doing_flag} => page = {page}', f='logs')
                         chrome_cli.get(f'https://www.zhipin.com/web/geek/job?query={quote(query)}&city={quote(city)}&page={page}')
                         job_empty_box = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='.job-empty-box', timeout=1, raise_e=False)
                         if job_empty_box is not None:
@@ -117,7 +118,7 @@ def pull_jobs():
 
 
 if __name__ == '__main__':
-    chrome_cli = ChromeCli(undetected=True, headless=True, proxy='m829.kdltps.com:15818')
+    chrome_cli = ChromeCli(undetected=True, headless=False, proxy='m829.kdltps.com:15818')
 
 
     def login_close():
