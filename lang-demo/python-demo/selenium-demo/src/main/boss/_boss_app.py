@@ -141,5 +141,5 @@ if __name__ == '__main__':
 
 
     for _ in range(5):
-        sleep(1)
+        sleep(2)
         threading.Thread(target=spider_task).start()
