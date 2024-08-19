@@ -140,5 +140,6 @@ if __name__ == '__main__':
         pull_jobs(cli=ChromeCli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True))
 
 
-    for _ in range(2):
+    for _ in range(5):
+        sleep(1)
         threading.Thread(target=spider_task).start()
