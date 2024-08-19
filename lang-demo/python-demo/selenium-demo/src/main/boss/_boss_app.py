@@ -73,7 +73,6 @@ def pull_jobs():
 
             doing_flag = f'{city},{query},{datetime.now().hour}'
             done_flag = f'{city},{query}'
-            append(r=doing_flag, f='jobs')
 
             start_time = time.time()
             jobs = read_rows('jobs')
@@ -82,6 +81,8 @@ def pull_jobs():
                 append_e(f'{doing_flag} => read_rows.diff_time = {diff_time}')
             if doing_flag in jobs or done_flag in jobs:
                 continue
+
+            append(r=doing_flag, f='jobs')
 
             # 分页循环
             page = 1
