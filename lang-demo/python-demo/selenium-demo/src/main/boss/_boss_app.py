@@ -135,13 +135,15 @@ def init():
     sleep(1)
     cli.close()
 
+
+if __name__ == '__main__':
+    init()
+
+
     def pull_jobs_task():
         pull_jobs(cli=Cli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True))
+
 
     for _ in range(5):
         sleep(2)
         threading.Thread(target=pull_jobs_task).start()
-
-
-if __name__ == '__main__':
-    init()
