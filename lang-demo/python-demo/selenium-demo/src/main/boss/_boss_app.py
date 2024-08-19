@@ -116,7 +116,7 @@ def pull_jobs():
 
 
 if __name__ == '__main__':
-    chrome_cli = ChromeCli(undetected=True, headless=False, proxy='m829.kdltps.com:15818')
+    chrome_cli = ChromeCli(undetected=True, headless=True, proxy='m829.kdltps.com:15818')
 
 
     def login_close():
