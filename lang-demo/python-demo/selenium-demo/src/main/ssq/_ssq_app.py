@@ -2,7 +2,7 @@ from time import sleep
 
 from selenium.webdriver.common.by import By
 
-from src.main.util.chrome_cli import ChromeCli
+from src.main.util.cli import ChromeCli
 from src.main.util.common import add_days, append_e
 
 # https://www.selenium.dev/documentation/webdriver/getting_started/first_script/

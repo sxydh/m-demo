@@ -6,7 +6,7 @@ from urllib.parse import quote
 
 from selenium.webdriver.common.by import By
 
-from src.main.util.chrome_cli import ChromeCli
+from src.main.util.cli import ChromeCli
 from src.main.util.common import append, append_e, read_rows
 
 

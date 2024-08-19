@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 
-from src.main.util.chrome_cli import ChromeCli
+from src.main.util.cli import ChromeCli
 from src.main.util.common import append
 
 if __name__ == '__main__':
