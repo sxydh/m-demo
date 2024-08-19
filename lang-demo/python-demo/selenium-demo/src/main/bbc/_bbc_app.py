@@ -3,7 +3,8 @@ from selenium.webdriver.common.by import By
 from src.main.util.cli import Cli
 from src.main.util.common import append
 
-if __name__ == '__main__':
+
+def start():
     cli = Cli(proxy='127.0.0.1:10809')
 
     while True:
@@ -26,3 +27,7 @@ if __name__ == '__main__':
                 if next_button.get_attribute('disabled') == 'true':
                     break
                 cli.click(next_button)
+
+
+if __name__ == '__main__':
+    start()
