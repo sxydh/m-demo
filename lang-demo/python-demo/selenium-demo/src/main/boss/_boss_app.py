@@ -126,20 +126,22 @@ def pull_jobs(cli: Cli):
             append(r=done_flag, f='jobs')
 
 
-if __name__ == '__main__':
-    chrome_cli = Cli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True)
+def init():
+    cli = Cli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True)
 
-    pull_cities(chrome_cli)
-    pull_queries(chrome_cli)
+    pull_cities(cli)
+    pull_queries(cli)
 
     sleep(1)
-    chrome_cli.close()
-
+    cli.close()
 
     def pull_jobs_task():
         pull_jobs(cli=Cli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True))
 
-
     for _ in range(5):
         sleep(2)
         threading.Thread(target=pull_jobs_task).start()
+
+
+if __name__ == '__main__':
+    init()
