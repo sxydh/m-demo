@@ -136,10 +136,10 @@ if __name__ == '__main__':
     chrome_cli.close()
 
 
-    def spider_task():
+    def pull_jobs_task():
         pull_jobs(cli=ChromeCli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True))
 
 
     for _ in range(5):
         sleep(2)
-        threading.Thread(target=spider_task).start()
+        threading.Thread(target=pull_jobs_task).start()
