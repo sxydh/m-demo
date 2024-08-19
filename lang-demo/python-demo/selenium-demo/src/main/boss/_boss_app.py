@@ -6,17 +6,17 @@ from urllib.parse import quote
 
 from selenium.webdriver.common.by import By
 
-from src.main.util.cli import ChromeCli
+from src.main.util.cli import Cli
 from src.main.util.common import append, append_e, read_rows
 
 
-def login_close(cli: ChromeCli):
+def login_close(cli: Cli):
     close = cli.find_element_d(by=By.CSS_SELECTOR, value='[ka="boss-login-close"]', timeout=0, count=1, raise_e=False)
     if close is not None:
         cli.click(close)
 
 
-def pull_cities(cli: ChromeCli):
+def pull_cities(cli: Cli):
     cities = read_rows('cities')
     if len(cities) > 0 and cities[0] != '':
         return
@@ -73,7 +73,7 @@ def pull_queries(cli):
             sleep(1)
 
 
-def pull_jobs(cli: ChromeCli):
+def pull_jobs(cli: Cli):
     cities = read_rows('cities')
     queries = read_rows('queries')
 
@@ -127,7 +127,7 @@ def pull_jobs(cli: ChromeCli):
 
 
 if __name__ == '__main__':
-    chrome_cli = ChromeCli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True)
+    chrome_cli = Cli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True)
 
     pull_cities(chrome_cli)
     pull_queries(chrome_cli)
@@ -137,7 +137,7 @@ if __name__ == '__main__':
 
 
     def pull_jobs_task():
-        pull_jobs(cli=ChromeCli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True))
+        pull_jobs(cli=Cli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True))
 
 
     for _ in range(5):

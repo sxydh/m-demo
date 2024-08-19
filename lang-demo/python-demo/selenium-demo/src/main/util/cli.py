@@ -10,7 +10,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from src.main.util.common import append_e
 
 
-class ChromeCli:
+class Cli:
 
     def __init__(self, undetected=False, proxy=None, headless=True, images_disabled=True):
         if undetected:

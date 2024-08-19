@@ -3,7 +3,7 @@ from time import sleep
 
 from selenium.webdriver.common.by import By
 
-from src.main.util.cli import ChromeCli
+from src.main.util.cli import Cli
 from src.main.util.common import append_e, read_rows
 
 
@@ -46,7 +46,7 @@ def pull_jobs():
 
 
 if __name__ == '__main__':
-    chrome_cli = ChromeCli(undetected=True, headless=False, proxy='127.0.0.1:10809')
+    chrome_cli = Cli(undetected=True, headless=False, proxy='127.0.0.1:10809')
 
 
     def in_login():

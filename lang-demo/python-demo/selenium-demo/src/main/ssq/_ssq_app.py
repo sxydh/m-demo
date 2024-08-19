@@ -2,12 +2,12 @@ from time import sleep
 
 from selenium.webdriver.common.by import By
 
-from src.main.util.cli import ChromeCli
+from src.main.util.cli import Cli
 from src.main.util.common import add_days, append_e
 
 # https://www.selenium.dev/documentation/webdriver/getting_started/first_script/
 if __name__ == '__main__':
-    chrome_cli = ChromeCli(headless=False, images_disabled=True)
+    chrome_cli = Cli(headless=False, images_disabled=True)
     chrome_cli.get("https://www.zhcw.com/kjxx/ssq/")
 
     sds = '2004-01-01'
