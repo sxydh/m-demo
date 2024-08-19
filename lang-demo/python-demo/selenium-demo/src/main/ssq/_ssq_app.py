@@ -5,10 +5,10 @@ from selenium.webdriver.common.by import By
 from src.main.util.cli import Cli
 from src.main.util.common import add_days, append_e
 
-# https://www.selenium.dev/documentation/webdriver/getting_started/first_script/
-if __name__ == '__main__':
-    chrome_cli = Cli(headless=False, images_disabled=True)
-    chrome_cli.get("https://www.zhcw.com/kjxx/ssq/")
+
+def start():
+    cli = Cli(headless=False, images_disabled=True)
+    cli.get("https://www.zhcw.com/kjxx/ssq/")
 
     sds = '2004-01-01'
     eds = ''
@@ -16,35 +16,35 @@ if __name__ == '__main__':
         eds = add_days(sds, 20)
 
         # 自定义查询
-        wq_xlk01 = chrome_cli.find_element_d(by=By.CLASS_NAME, value='wq-xlk01')
-        chrome_cli.click(wq_xlk01)
-        cx_tj = chrome_cli.find_element_d(by=By.CLASS_NAME, value='cx-tj')
-        div_2 = chrome_cli.find_elements(src=cx_tj, by=By.TAG_NAME, value='div')[2]
-        chrome_cli.click(div_2)
+        wq_xlk01 = cli.find_element_d(by=By.CLASS_NAME, value='wq-xlk01')
+        cli.click(wq_xlk01)
+        cx_tj = cli.find_element_d(by=By.CLASS_NAME, value='cx-tj')
+        div_2 = cli.find_elements(src=cx_tj, by=By.TAG_NAME, value='div')[2]
+        cli.click(div_2)
 
         # 按日期查询
-        start_c = chrome_cli.find_element_d(by=By.ID, value='startC')
-        end_c = chrome_cli.find_element_d(by=By.ID, value='endC')
+        start_c = cli.find_element_d(by=By.ID, value='startC')
+        end_c = cli.find_element_d(by=By.ID, value='endC')
         start_c.clear()
         end_c.clear()
         start_c.send_keys(sds)
         end_c.send_keys(eds)
 
         # 开始查询
-        jg_an03_2 = chrome_cli.find_elements_d(by=By.CLASS_NAME, value='JG-an03')[2]
-        chrome_cli.click(jg_an03_2)
+        jg_an03_2 = cli.find_elements_d(by=By.CLASS_NAME, value='JG-an03')[2]
+        cli.click(jg_an03_2)
 
         # 解析结果
         r = ''
         while True:
             try:
                 sleep(0.5)
-                tbody = chrome_cli.find_element_d(by=By.TAG_NAME, value='tbody')
-                trs = chrome_cli.find_elements(src=tbody, by=By.TAG_NAME, value='tr')
+                tbody = cli.find_element_d(by=By.TAG_NAME, value='tbody')
+                trs = cli.find_elements(src=tbody, by=By.TAG_NAME, value='tr')
                 for tr in trs:
-                    tds = chrome_cli.find_elements(src=tr, by=By.TAG_NAME, value='td')
+                    tds = cli.find_elements(src=tr, by=By.TAG_NAME, value='td')
                     r += f'{tds[0].get_attribute('innerText')}, '
-                    spans = chrome_cli.find_elements(src=tds[2], by=By.TAG_NAME, value='span')
+                    spans = cli.find_elements(src=tds[2], by=By.TAG_NAME, value='span')
                     for span in spans:
                         r += f'{span.get_attribute('innerText')}, '
                     r += f'{tds[3].get_attribute('innerText')}\n'
@@ -57,3 +57,7 @@ if __name__ == '__main__':
         sds = eds
 
         sleep(2)
+
+
+if __name__ == '__main__':
+    start()
