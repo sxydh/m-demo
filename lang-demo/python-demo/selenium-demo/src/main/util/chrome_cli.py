@@ -15,6 +15,8 @@ class ChromeCli:
     def __init__(self, undetected=False, proxy=None, headless=True, images_disabled=True):
         if undetected:
             options = Options()
+            if proxy:
+                options.add_argument(f'--proxy-server={proxy}')
             if images_disabled:
                 options.add_argument('--blink-settings=imagesEnabled=false')
             self.driver = uc.Chrome(

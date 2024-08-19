@@ -1,3 +1,5 @@
+import time
+from datetime import datetime
 from time import sleep
 from urllib.parse import quote
 
@@ -65,12 +67,20 @@ def pull_queries():
 def pull_jobs():
     cities = read_rows('cities')
     queries = read_rows('queries')
-    jobs = read_rows('jobs')
 
     for city in cities:
         for query in queries:
 
-            if f'{city},{query}' in jobs:
+            doing_flag = f'{city},{query},{datetime.now().hour}'
+            done_flag = f'{city},{query}'
+            append(r=doing_flag, f='jobs')
+
+            start_time = time.time()
+            jobs = read_rows('jobs')
+            diff_time = time.time() - start_time
+            if diff_time >= 1:
+                append_e(f'{doing_flag} => read_rows.diff_time = {diff_time}')
+            if doing_flag in jobs or done_flag in jobs:
                 continue
 
             # 分页循环
@@ -102,11 +112,11 @@ def pull_jobs():
                 page += 1
                 sleep(1)
 
-            append(r=f'{city},{query}', f='jobs')
+            append(r=done_flag, f='jobs')
 
 
 if __name__ == '__main__':
-    chrome_cli = ChromeCli(undetected=True, headless=False)
+    chrome_cli = ChromeCli(undetected=True, headless=False, proxy='m829.kdltps.com:15818')
 
 
     def login_close():
