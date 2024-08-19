@@ -1,3 +1,4 @@
+import threading
 import time
 from datetime import datetime
 from time import sleep
@@ -9,22 +10,29 @@ from src.main.util.chrome_cli import ChromeCli
 from src.main.util.common import append, append_e, read_rows
 
 
-def pull_cities():
+def login_close(cli: ChromeCli):
+    close = cli.find_element_d(by=By.CSS_SELECTOR, value='[ka="boss-login-close"]', timeout=0, count=1, raise_e=False)
+    if close is not None:
+        cli.click(close)
+
+
+def pull_cities(cli: ChromeCli):
     cities = read_rows('cities')
     if len(cities) > 0 and cities[0] != '':
         return
+
     # 重试循环
     while True:
         try:
-            chrome_cli.get('https://www.zhipin.com/')
-            switchover_city = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='.switchover-city')
-            login_close()
-            chrome_cli.click(switchover_city)
-            city_group_section = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='.city-group-section')
-            city_group_item_list = chrome_cli.find_elements(src=city_group_section, by=By.CSS_SELECTOR, value='.city-group-item ul a')
+            cli.get('https://www.zhipin.com/')
+            switchover_city = cli.find_element_d(by=By.CSS_SELECTOR, value='.switchover-city')
+            login_close(cli)
+            cli.click(switchover_city)
+            city_group_section = cli.find_element_d(by=By.CSS_SELECTOR, value='.city-group-section')
+            city_group_item_list = cli.find_elements(src=city_group_section, by=By.CSS_SELECTOR, value='.city-group-item ul a')
             cities = []
             cities_with_chs = []
-            for (i, city_group_item) in enumerate(city_group_item_list):
+            for (_, city_group_item) in enumerate(city_group_item_list):
                 ka = city_group_item.get_attribute('ka')
                 cities.append(ka.split('_')[-1])
                 text = city_group_item.get_attribute('innerText').strip()
@@ -37,24 +45,25 @@ def pull_cities():
             sleep(1)
 
 
-def pull_queries():
+def pull_queries(cli):
     queries = read_rows('queries')
     if len(queries) > 0 and queries[0] != '':
         return
+
     # 重试循环
     while True:
         try:
-            chrome_cli.get('https://www.zhipin.com/web/geek/job')
-            condition_position_select = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='.condition-position-select')
-            login_close()
-            chrome_cli.click(condition_position_select)
-            sel_position_list = chrome_cli.find_elements(src=condition_position_select, by=By.CSS_SELECTOR, value='li')
+            cli.get('https://www.zhipin.com/web/geek/job')
+            condition_position_select = cli.find_element_d(by=By.CSS_SELECTOR, value='.condition-position-select')
+            login_close(cli)
+            cli.click(condition_position_select)
+            sel_position_list = cli.find_elements(src=condition_position_select, by=By.CSS_SELECTOR, value='li')
             queries = []
             for (i, sel_position) in enumerate(sel_position_list):
                 if i == 0:
                     continue
-                chrome_cli.click(sel_position)
-                position_list = chrome_cli.find_elements(src=condition_position_select, by=By.CSS_SELECTOR, value='.condition-position-list a')
+                cli.click(sel_position)
+                position_list = cli.find_elements(src=condition_position_select, by=By.CSS_SELECTOR, value='.condition-position-list a')
                 for position in position_list:
                     queries.append(position.get_attribute('innerText'))
             append(r=str.join('\n', queries), f='queries')
@@ -64,7 +73,7 @@ def pull_queries():
             sleep(1)
 
 
-def pull_jobs():
+def pull_jobs(cli: ChromeCli):
     cities = read_rows('cities')
     queries = read_rows('queries')
 
@@ -93,17 +102,17 @@ def pull_jobs():
                 while True:
                     try:
                         append(r=f'{doing_flag} => page = {page}', f='logs')
-                        chrome_cli.get(f'https://www.zhipin.com/web/geek/job?query={quote(query)}&city={quote(city)}&page={page}')
-                        job_empty_box = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='.job-empty-box', timeout=1, raise_e=False)
+                        cli.get(f'https://www.zhipin.com/web/geek/job?query={quote(query)}&city={quote(city)}&page={page}')
+                        job_empty_box = cli.find_element_d(by=By.CSS_SELECTOR, value='.job-empty-box', timeout=1, raise_e=False)
                         if job_empty_box is not None:
                             break
-                        options_pages = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.options-pages a')
+                        options_pages = cli.find_elements_d(by=By.CSS_SELECTOR, value='.options-pages a')
                         if len(options_pages) > 2:
                             n = int(options_pages[-2].get_attribute('innerText'))
 
                         # 解析内容
-                        login_close()
-                        jobs = chrome_cli.find_elements_d(by=By.CSS_SELECTOR, value='.job-list-box .job-card-wrapper')
+                        login_close(cli)
+                        jobs = cli.find_elements_d(by=By.CSS_SELECTOR, value='.job-list-box .job-card-wrapper')
                         for job in jobs:
                             append(f'###########{job.get_attribute('innerHTML')}')
                         break
@@ -120,13 +129,13 @@ def pull_jobs():
 if __name__ == '__main__':
     chrome_cli = ChromeCli(undetected=True, headless=False, proxy='m829.kdltps.com:15818')
 
-
-    def login_close():
-        close = chrome_cli.find_element_d(by=By.CSS_SELECTOR, value='[ka="boss-login-close"]', timeout=0, count=1, raise_e=False)
-        if close is not None:
-            chrome_cli.click(close)
+    pull_cities(chrome_cli)
+    pull_queries(chrome_cli)
 
 
-    pull_cities()
-    pull_queries()
-    pull_jobs()
+    def spider_task():
+        pull_jobs(cli=ChromeCli(undetected=True, headless=False, proxy='m829.kdltps.com:15818'))
+
+
+    for _ in range(2):
+        threading.Thread(target=spider_task).start()
