@@ -70,3 +70,6 @@ class ChromeCli:
 
     def click(self, ele):
         ActionChains(self.driver).move_to_element(ele).click().perform()
+
+    def close(self):
+        self.driver.close()

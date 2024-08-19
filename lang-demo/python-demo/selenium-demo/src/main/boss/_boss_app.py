@@ -132,6 +132,9 @@ if __name__ == '__main__':
     pull_cities(chrome_cli)
     pull_queries(chrome_cli)
 
+    sleep(1)
+    chrome_cli.close()
+
 
     def spider_task():
         pull_jobs(cli=ChromeCli(undetected=True, headless=False, proxy='m829.kdltps.com:15818'))
