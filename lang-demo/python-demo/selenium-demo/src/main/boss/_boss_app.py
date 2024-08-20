@@ -79,7 +79,14 @@ def pull_jobs(cli: Cli):
     queries = read_rows('queries')
 
     for city in cities:
+
+        if city == 'return':
+            return
+
         for query in queries:
+
+            if query == 'return':
+                return
 
             doing_flag = f'{city},{query},{datetime.now().hour}'
             done_flag = f'{city},{query}'
@@ -149,7 +156,7 @@ def start():
                           proxy=proxy,
                           images_disabled=True))
 
-    for _ in range(5):
+    for _ in range(10):
         sleep(2)
         threading.Thread(target=pull_jobs_task).start()
 
