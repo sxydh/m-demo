@@ -156,7 +156,7 @@ def start():
                           proxy=proxy,
                           images_disabled=True))
 
-    for _ in range(10):
+    for _ in range(8):
         sleep(2)
         threading.Thread(target=pull_jobs_task).start()
 
