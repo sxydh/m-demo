@@ -1,3 +1,4 @@
+import sys
 import threading
 import time
 from datetime import datetime
@@ -129,7 +130,7 @@ def pull_jobs(cli: Cli):
 def init():
     cli = Cli(undetected=True,
               headless=False,
-              proxy='m829.kdltps.com:15818',
+              proxy=proxy,
               images_disabled=True)
 
     pull_cities(cli)
@@ -145,7 +146,7 @@ def start():
     def pull_jobs_task():
         pull_jobs(cli=Cli(undetected=True,
                           headless=False,
-                          proxy='m829.kdltps.com:15818',
+                          proxy=proxy,
                           images_disabled=True))
 
     for _ in range(5):
@@ -154,4 +155,8 @@ def start():
 
 
 if __name__ == '__main__':
+    proxy = None
+    if len(sys.argv) > 1:
+        proxy = sys.argv[1]
+
     start()
