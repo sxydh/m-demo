@@ -127,7 +127,10 @@ def pull_jobs(cli: Cli):
 
 
 def init():
-    cli = Cli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True)
+    cli = Cli(undetected=True,
+              headless=False,
+              proxy='m829.kdltps.com:15818',
+              images_disabled=True)
 
     pull_cities(cli)
     pull_queries(cli)
@@ -140,7 +143,10 @@ def start():
     init()
 
     def pull_jobs_task():
-        pull_jobs(cli=Cli(undetected=True, headless=False, proxy='m829.kdltps.com:15818', images_disabled=True))
+        pull_jobs(cli=Cli(undetected=True,
+                          headless=False,
+                          proxy='m829.kdltps.com:15818',
+                          images_disabled=True))
 
     for _ in range(5):
         sleep(2)
