@@ -149,7 +149,7 @@ def init():
     jobs = read_rows('jobs')
     job_set = set()
     for job in jobs:
-        job_set.add(job.split(',')[0:2])
+        job_set.add(str.join(',', job.split(',')[:2]))
     append(r=str.join('\n', job_set), f='jobs_set')
     remove(f='jobs')
     rename(f='jobs_set', new_f='jobs')
