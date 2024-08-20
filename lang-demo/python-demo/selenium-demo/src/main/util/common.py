@@ -29,7 +29,7 @@ def read(f):
     with rlock:
         os.makedirs('tmp', exist_ok=True)
         f = f'tmp/{f}'
-        with open(f, mode='a', encoding='utf-8') as i:
+        with open(f, mode='a', encoding='utf-8') as _:
             pass
         with open(f, mode='r', encoding='utf-8') as i:
             return i.read()
@@ -40,8 +40,10 @@ def read_rows(f='input.txt'):
 
 
 def rename(f, new_f):
-    os.rename(f'tmp/{f}', f'tmp/{new_f}')
+    with rlock:
+        os.rename(f'tmp/{f}', f'tmp/{new_f}')
 
 
 def remove(f):
-    os.remove(f'tmp/{f}')
+    with rlock:
+        os.remove(f'tmp/{f}')
