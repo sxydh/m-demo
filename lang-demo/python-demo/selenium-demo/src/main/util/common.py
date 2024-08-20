@@ -41,3 +41,7 @@ def read_rows(f='input.txt'):
 
 def rename(f, new_f):
     os.rename(f'tmp/{f}', f'tmp/{new_f}')
+
+
+def remove(f):
+    os.remove(f'tmp/{f}')

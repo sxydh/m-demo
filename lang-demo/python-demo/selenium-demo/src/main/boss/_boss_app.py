@@ -8,7 +8,7 @@ from urllib.parse import quote
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
-from src.main.util.common import append, append_e, read_rows
+from src.main.util.common import append, append_e, read_rows, rename, remove
 
 
 def login_close(cli: Cli):
@@ -145,6 +145,14 @@ def init():
 
     sleep(1)
     cli.close()
+
+    jobs = read_rows('jobs')
+    job_set = set()
+    for job in jobs:
+        job_set.add(job.split(',')[0:2])
+    append(r=str.join('\n', job_set), f='jobs_set')
+    remove(f='jobs')
+    rename(f='jobs_set', new_f='jobs')
 
 
 def start():
