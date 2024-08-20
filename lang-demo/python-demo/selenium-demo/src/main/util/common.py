@@ -37,3 +37,7 @@ def read(f):
 
 def read_rows(f='input.txt'):
     return read(f).split('\n')
+
+
+def rename(f, new_f):
+    os.rename(f'tmp/{f}', f'tmp/{new_f}')
