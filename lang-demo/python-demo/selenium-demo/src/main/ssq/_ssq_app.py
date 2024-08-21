@@ -51,7 +51,6 @@ def start():
 
                     with get_sqlite_connection() as conn:
                         conn.cursor()
-                        conn.execute(f'create table if not exists t_ssq (id, n1, n2, n3, n4, n5, n6, n7)')
                         conn.execute(f'insert into t_ssq values ({r})')
 
                 break
@@ -64,4 +63,8 @@ def start():
 
 
 if __name__ == '__main__':
+    with get_sqlite_connection() as conn:
+        conn.cursor()
+        conn.execute(f'create table if not exists t_ssq (id, n1, n2, n3, n4, n5, n6, n7)')
+
     start()
