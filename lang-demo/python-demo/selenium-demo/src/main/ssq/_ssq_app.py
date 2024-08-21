@@ -65,6 +65,7 @@ def init():
     with get_sqlite_connection() as conn:
         conn.cursor()
         conn.execute(f'create table if not exists t_ssq (id text, n1 text, n2 text, n3 text, n4 text, n5 text, n6 text, n7 text)')
+        conn.execute(f'truncate table t_ssq')
 
 
 if __name__ == '__main__':
