@@ -49,6 +49,10 @@ def render(xaxis_data, yaxis_datas: list[YaxisData]):
     line.render('tmp/ssq_echarts.html')
 
 
-if __name__ == '__main__':
+def start():
     xaxis_data, yaxis_datas = get_data()
     render(xaxis_data, yaxis_datas)
+
+
+if __name__ == '__main__':
+    start()
