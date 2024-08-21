@@ -10,9 +10,9 @@ def start():
     cli = Cli(headless=False, images_disabled=True)
     cli.get('https://www.zhcw.com/kjxx/ssq/')
 
-    sds = '2024-08-01'
+    sds = '2023-08-01'
     eds = ''
-    while eds <= '2024-08-01':
+    while eds <= '2024-08-21':
         eds = add_days(sds, 20)
 
         # 自定义查询
@@ -65,7 +65,7 @@ def init():
     with get_sqlite_connection() as conn:
         conn.cursor()
         conn.execute(f'create table if not exists t_ssq (id text, n1 text, n2 text, n3 text, n4 text, n5 text, n6 text, n7 text)')
-        conn.execute(f'truncate table t_ssq')
+        conn.execute(f'delete from t_ssq')
 
 
 if __name__ == '__main__':
