@@ -10,4 +10,4 @@ if __name__ == '__main__':
         LineItem(name='一月', value=randint(100, 160)),
         LineItem(name='二月', value=randint(100, 160)),
         LineItem(name='三月', value=randint(100, 160))])
-    line.render('line_demo.html')
+    line.render('tmp/line_demo.html')
