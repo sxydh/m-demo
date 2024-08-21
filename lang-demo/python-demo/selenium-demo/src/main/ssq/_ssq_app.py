@@ -43,11 +43,11 @@ def start():
                 trs = cli.find_elements(src=tbody, by=By.TAG_NAME, value='tr')
                 for tr in trs:
                     tds = cli.find_elements(src=tr, by=By.TAG_NAME, value='td')
-                    r += f'{tds[0].get_attribute('innerText')},'
+                    r += f'\'{tds[0].get_attribute('innerText')}\', '
                     spans = cli.find_elements(src=tds[2], by=By.TAG_NAME, value='span')
                     for span in spans:
-                        r += f'{span.get_attribute('innerText')},'
-                    r += f'{tds[3].get_attribute('innerText')}'
+                        r += f'\'{span.get_attribute('innerText')}\', '
+                    r += f'\'{tds[3].get_attribute('innerText')}\''
 
                     with get_sqlite_connection() as conn:
                         conn.cursor()
