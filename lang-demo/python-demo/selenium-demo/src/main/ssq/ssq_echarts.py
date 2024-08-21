@@ -1,23 +1,13 @@
-import pymysql
 from pyecharts import options
 from pyecharts.charts import Line
+
+from src.main.util.common import get_mysql_connection
 
 
 class YaxisData:
     def __init__(self, name, data):
         self.name = name
         self.data = data
-
-
-def get_mysql_connection():
-    return pymysql.connect(
-        host='192.168.233.129',
-        port=3306,
-        user='root',
-        password='123',
-        db='ssq',
-        charset='utf8mb4'
-    )
 
 
 def get_xaxis_data():

@@ -3,7 +3,7 @@ from time import sleep
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
-from src.main.util.common import add_days, append_e
+from src.main.util.common import add_days, append_e, append
 
 
 def start():
@@ -43,16 +43,17 @@ def start():
                 trs = cli.find_elements(src=tbody, by=By.TAG_NAME, value='tr')
                 for tr in trs:
                     tds = cli.find_elements(src=tr, by=By.TAG_NAME, value='td')
-                    r += f'{tds[0].get_attribute('innerText')}, '
+                    r += f'{tds[0].get_attribute('innerText')},'
                     spans = cli.find_elements(src=tds[2], by=By.TAG_NAME, value='span')
                     for span in spans:
-                        r += f'{span.get_attribute('innerText')}, '
+                        r += f'{span.get_attribute('innerText')},'
                     r += f'{tds[3].get_attribute('innerText')}\n'
                 break
             except Exception as e:
                 append_e(str(e))
-        with open('tmp/output.txt', mode='a', encoding='utf-8') as o:
-            o.write(r)
+
+        # 保存结果
+        append(r)
 
         sds = eds
 

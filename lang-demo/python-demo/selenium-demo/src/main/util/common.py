@@ -2,6 +2,8 @@ import datetime
 import os
 import threading
 
+import pymysql
+
 rlock = threading.RLock()
 
 
@@ -47,3 +49,14 @@ def rename(f, new_f):
 def remove(f):
     with rlock:
         os.remove(f'tmp/{f}')
+
+
+def get_mysql_connection():
+    return pymysql.connect(
+        host='192.168.233.129',
+        port=3306,
+        user='root',
+        password='123',
+        db='ssq',
+        charset='utf8mb4'
+    )
