@@ -2,3 +2,4 @@ selenium~=4.23.1
 webdriver-manager~=4.0.2
 undetected-chromedriver~=3.5.3
 setuptools~=72.2.0
+pyecharts~=2.0.6
