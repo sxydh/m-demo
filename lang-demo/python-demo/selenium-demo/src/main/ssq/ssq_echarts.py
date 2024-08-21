@@ -47,6 +47,9 @@ def render(xaxis_data, bar_data: YaxisData, line_datas: list[YaxisData]):
         bar_width='30%',
         itemstyle_opts=options.ItemStyleOpts(opacity=0.2)
     )
+    bar.set_global_opts(
+        yaxis_opts=options.AxisOpts(interval=1)
+    )
 
     line = Line(init_opts=options.InitOpts(width='4000px', height='100vh'))
     line.add_xaxis(xaxis_data)
@@ -55,7 +58,7 @@ def render(xaxis_data, bar_data: YaxisData, line_datas: list[YaxisData]):
             series_name=yaxis_data.name,
             y_axis=yaxis_data.data)
     line.set_global_opts(
-        yaxis_opts=options.AxisOpts(min_=1, split_number=33, max_=33)
+        yaxis_opts=options.AxisOpts(interval=1)
     )
 
     bar.overlap(line)
