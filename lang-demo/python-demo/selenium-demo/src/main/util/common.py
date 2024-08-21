@@ -1,5 +1,6 @@
 import datetime
 import os
+import sqlite3
 import threading
 
 import pymysql
@@ -60,3 +61,7 @@ def get_mysql_connection():
         db='ssq',
         charset='utf8mb4'
     )
+
+
+def get_sqlite_connection():
+    return sqlite3.connect('ssq.db')
