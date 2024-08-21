@@ -10,17 +10,11 @@ class YaxisData:
         self.data = data
 
 
-def get_xaxis_data():
+def get_data():
     with get_mysql_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute('select row_number() over(order by id desc) as rn from t_ssq limit 10')
-        return [r[0] for r in cursor.fetchall()]
-
-
-def get_yaxis_datas():
-    with get_mysql_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute('select n1, n2, n3, n4, n5, n6, n7 from t_ssq order by id desc limit 10')
+        cursor.execute('select distinct n1, n2, n3, n4, n5, n6, n7, id from t_ssq order by id desc limit 10')
+        xaxis_data = []
         yaxis_datas = [
             YaxisData('红1', []),
             YaxisData('红2', []),
@@ -31,6 +25,7 @@ def get_yaxis_datas():
             YaxisData('蓝1', []),
         ]
         for r in cursor.fetchall():
+            xaxis_data.append(r[7])
             yaxis_datas[0].data.append(r[0])
             yaxis_datas[1].data.append(r[1])
             yaxis_datas[2].data.append(r[2])
@@ -38,7 +33,7 @@ def get_yaxis_datas():
             yaxis_datas[4].data.append(r[4])
             yaxis_datas[5].data.append(r[5])
             yaxis_datas[6].data.append(r[6])
-        return yaxis_datas
+        return [xaxis_data, yaxis_datas]
 
 
 def render(xaxis_data, yaxis_datas: list[YaxisData]):
@@ -55,4 +50,5 @@ def render(xaxis_data, yaxis_datas: list[YaxisData]):
 
 
 if __name__ == '__main__':
-    render(get_xaxis_data(), get_yaxis_datas())
+    xaxis_data, yaxis_datas = get_data()
+    render(xaxis_data, yaxis_datas)
