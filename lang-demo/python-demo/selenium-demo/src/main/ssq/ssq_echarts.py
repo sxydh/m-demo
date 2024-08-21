@@ -13,7 +13,7 @@ class YaxisData:
 def get_data():
     with get_mysql_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute('select distinct n1, n2, n3, n4, n5, n6, n7, id from t_ssq order by id desc limit 10')
+        cursor.execute('select distinct n1, n2, n3, n4, n5, n6, n7, id from t_ssq order by id desc limit 30')
         xaxis_data = []
         yaxis_datas = [
             YaxisData('红1', []),
@@ -37,7 +37,7 @@ def get_data():
 
 
 def render(xaxis_data, yaxis_datas: list[YaxisData]):
-    line = Line(init_opts=options.InitOpts(width='100wh', height='100vh'))
+    line = Line(init_opts=options.InitOpts(width='4000px', height='100vh'))
     line.add_xaxis(xaxis_data)
     for yaxis_data in yaxis_datas:
         line.add_yaxis(
