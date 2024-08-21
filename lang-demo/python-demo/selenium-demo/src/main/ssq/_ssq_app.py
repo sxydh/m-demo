@@ -10,7 +10,7 @@ def start():
     cli = Cli(headless=False, images_disabled=True)
     cli.get('https://www.zhcw.com/kjxx/ssq/')
 
-    sds = '2023-08-01'
+    sds = '2024-04-01'
     eds = ''
     while eds <= '2024-08-21':
         eds = add_days(sds, 20)
