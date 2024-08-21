@@ -1,7 +1,7 @@
 from pyecharts import options
 from pyecharts.charts import Line
 
-from src.main.util.common import get_mysql_connection
+from src.main.util.common import get_sqlite_connection
 
 
 class YaxisData:
@@ -11,7 +11,7 @@ class YaxisData:
 
 
 def get_data():
-    with get_mysql_connection() as conn:
+    with get_sqlite_connection() as conn:
         cursor = conn.cursor()
         cursor.execute('select distinct n1, n2, n3, n4, n5, n6, n7, id from t_ssq order by id desc limit 30')
         xaxis_data = []
