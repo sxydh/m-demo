@@ -44,6 +44,7 @@ def render(xaxis_data, bar_data: YaxisData, line_datas: list[YaxisData]):
     bar.add_yaxis(
         series_name=bar_data.name,
         y_axis=bar_data.data,
+        bar_width='30%',
         itemstyle_opts=options.ItemStyleOpts(opacity=0.2)
     )
 
