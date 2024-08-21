@@ -3,12 +3,12 @@ from time import sleep
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
-from src.main.util.common import add_days, append_e, append
+from src.main.util.common import add_days, append_e, get_sqlite_connection
 
 
 def start():
     cli = Cli(headless=False, images_disabled=True)
-    cli.get("https://www.zhcw.com/kjxx/ssq/")
+    cli.get('https://www.zhcw.com/kjxx/ssq/')
 
     sds = '2024-08-01'
     eds = ''
@@ -47,13 +47,16 @@ def start():
                     spans = cli.find_elements(src=tds[2], by=By.TAG_NAME, value='span')
                     for span in spans:
                         r += f'{span.get_attribute('innerText')},'
-                    r += f'{tds[3].get_attribute('innerText')}\n'
+                    r += f'{tds[3].get_attribute('innerText')}'
+
+                    with get_sqlite_connection() as conn:
+                        conn.cursor()
+                        conn.execute(f'create table if not exists t_ssq (id, n1, n2, n3, n4, n5, n6, n7)')
+                        conn.execute(f'insert into t_ssq values ({r})')
+
                 break
             except Exception as e:
                 append_e(str(e))
-
-        # 保存结果
-        append(r)
 
         sds = eds
 
