@@ -62,9 +62,11 @@ def start():
         sleep(2)
 
 
-if __name__ == '__main__':
+def init():
     with get_sqlite_connection() as conn:
         conn.cursor()
         conn.execute(f'create table if not exists t_ssq (id, n1, n2, n3, n4, n5, n6, n7)')
 
+
+if __name__ == '__main__':
     start()
