@@ -64,4 +64,4 @@ def get_mysql_connection():
 
 
 def get_sqlite_connection():
-    return sqlite3.connect('ssq.db')
+    return sqlite3.connect('tmp/ssq.db')
