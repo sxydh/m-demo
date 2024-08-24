@@ -1,15 +1,23 @@
-快捷键
-    格式化
-        Ctrl + K 然后 Ctrl + D
-    格式化引入
-        Ctrl + R + G
-    复制行
-        Ctrl + C 然后 Ctrl + V
-    删除行
-        Ctrl + Shift + L
-    注释行
-        Ctrl + K 然后 Ctrl + C
-    返回上一个位置
-        Ctrl -
-    前进下一个位置
-        Ctrl +
+工具
+    选项
+        环境
+            键盘
+                格式化
+                    Ctrl + K 然后 Ctrl + D
+                格式化引入
+                    Ctrl + R + G
+                复制行
+                    Ctrl + C 然后 Ctrl + V
+                删除行
+                    Ctrl + Shift + L
+                注释行
+                    Ctrl + K 然后 Ctrl + C
+                返回上一个位置
+                    Ctrl -
+                前进下一个位置
+                    Ctrl +
+项目
+    属性
+        应用程序
+            Win32 资源
+                图标
