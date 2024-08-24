@@ -1,6 +1,11 @@
-开发经验
+经验
     点击前确保元素可见
         有可能需要滚动
         有可能被其它元素覆盖
         有可能窗口太小导致元素被设计到折叠菜单内部
     点击前确保元素是最新的
+    
+环境
+    Chrome Driver
+        https://googlechromelabs.github.io/chrome-for-testing/
+        https://chromedriver.storage.googleapis.com/index.html
