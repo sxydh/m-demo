@@ -4,3 +4,13 @@ https://learn.microsoft.com/en-us/windows/win32/api/
             https://learn.microsoft.com/en-us/windows/win32/api/winbase/
                 SetThreadExecutionState
                     https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setthreadexecutionstate
+        Winuser.sh
+            https://learn.microsoft.com/en-us/windows/win32/api/winuser/
+                GetForegroundWindow
+                    https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getforegroundwindow
+                GetWindowLongA
+                    https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowlonga
+                SetWindowsHookExA
+                    https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexa
+                SetWindowPos
+                    https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos
