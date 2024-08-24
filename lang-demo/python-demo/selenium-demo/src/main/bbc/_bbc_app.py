@@ -6,6 +6,7 @@ from src.main.util.common import append
 
 def start():
     cli = Cli(proxy='127.0.0.1:10809')
+    cli.get('https://www.bbc.com/news')
 
     while True:
         nav = cli.find_element_d(by=By.CSS_SELECTOR, value='[data-testid="level2-navigation-container"]')
