@@ -16,9 +16,13 @@ class Cli:
                  undetected=False,
                  proxy=None,
                  headless=True,
-                 images_disabled=True):
+                 images_disabled=True,
+                 argument=None):
+        options = Options()
+        if argument is not None:
+            for arg in argument:
+                options.add_argument(arg)
         if undetected:
-            options = Options()
             if proxy:
                 options.add_argument(f'--proxy-server={proxy}')
             if images_disabled:
@@ -29,7 +33,6 @@ class Cli:
             )
             self.driver.maximize_window()
         else:
-            options = Options()
             if proxy:
                 options.add_argument(f'--proxy-server={proxy}')
             if headless:
