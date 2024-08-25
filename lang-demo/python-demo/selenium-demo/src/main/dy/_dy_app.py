@@ -1,5 +1,3 @@
-import time
-
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
@@ -43,8 +41,6 @@ def start():
                 cli.click(arrow)
             except Exception as _:
                 pass
-
-        time.sleep(0.5)
 
 
 if __name__ == '__main__':
