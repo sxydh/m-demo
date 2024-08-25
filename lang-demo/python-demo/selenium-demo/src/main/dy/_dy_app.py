@@ -39,7 +39,7 @@ def start():
 
         try:
             login_close(cli)
-            arrow = cli.find_element_d(by=By.CSS_SELECTOR, value='[data-e2e="video-switch-next-arrow"]', timeout=0, count=1, raise_e=False)
+            arrow = cli.find_element_d(by=By.CSS_SELECTOR, value='[data-e2e="video-switch-next-arrow"]', timeout=1, count=1, raise_e=False)
             cli.click(arrow)
         except Exception as _:
             pass
