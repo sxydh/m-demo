@@ -35,12 +35,13 @@ def start():
                 print(player.get_attribute('innerText'))
                 print()
         except Exception as _:
-            try:
-                login_close(cli)
-                arrow = cli.find_element_d(by=By.CSS_SELECTOR, value='[data-e2e="video-switch-next-arrow"]', timeout=0, count=1, raise_e=False)
-                cli.click(arrow)
-            except Exception as _:
-                pass
+            pass
+        try:
+            login_close(cli)
+            arrow = cli.find_element_d(by=By.CSS_SELECTOR, value='[data-e2e="video-switch-next-arrow"]', timeout=0, count=1, raise_e=False)
+            cli.click(arrow)
+        except Exception as _:
+            pass
 
 
 if __name__ == '__main__':
