@@ -17,11 +17,15 @@ class Cli:
                  proxy=None,
                  headless=True,
                  images_disabled=True,
-                 argument=None):
+                 arguments=None,
+                 extensions=None):
         options = Options()
-        if argument is not None:
-            for arg in argument:
+        if arguments is not None:
+            for arg in arguments:
                 options.add_argument(arg)
+        if extensions is not None:
+            for ext in extensions:
+                options.add_extension(ext)
         if undetected:
             if proxy:
                 options.add_argument(f'--proxy-server={proxy}')
