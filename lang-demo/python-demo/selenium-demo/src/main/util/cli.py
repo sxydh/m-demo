@@ -40,7 +40,6 @@ class Cli:
             if images_disabled:
                 options.add_argument('--blink-settings=imagesEnabled=false')
             self.driver = webdriver.Chrome(
-                service=Service(ChromeDriverManager().install()),
                 options=options
             )
             self.driver.maximize_window()
