@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
+from src.main.util.common import append_e
 
 
 def login_close(cli: Cli):
@@ -34,15 +35,15 @@ def start():
                 print(info.get_attribute('innerText'))
                 print(player.get_attribute('innerText'))
                 print()
-        except Exception as _:
-            pass
+        except Exception as e:
+            append_e(str(e))
 
         try:
             login_close(cli)
             arrow = cli.find_element_d(by=By.CSS_SELECTOR, value='[data-e2e="video-switch-next-arrow"]', timeout=1, count=1, raise_e=False)
             cli.click(arrow)
-        except Exception as _:
-            pass
+        except Exception as e:
+            append_e(str(e))
 
 
 if __name__ == '__main__':
