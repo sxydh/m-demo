@@ -27,6 +27,11 @@
                 "id": "pic",
                 "enabled": true,
                 "path": "rules_pic.json"
+            },
+            {
+                "id": "cdn",
+                "enabled": true,
+                "path": "rules_cdn.json"
             }
         ]
     },
