@@ -39,7 +39,8 @@ def start():
                 print()
 
             login_close(cli)
-            keyboard.press_and_release('down')
+            arrow = cli.find_element_d(by=By.CSS_SELECTOR, value='[data-e2e="video-switch-next-arrow"]')
+            cli.click(arrow)
         except Exception as _:
             pass
 
