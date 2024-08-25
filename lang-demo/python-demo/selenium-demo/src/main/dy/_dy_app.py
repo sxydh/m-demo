@@ -1,6 +1,5 @@
 import time
 
-import keyboard
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
@@ -37,12 +36,13 @@ def start():
                 print(info.get_attribute('innerText'))
                 print(player.get_attribute('innerText'))
                 print()
-
-            login_close(cli)
-            arrow = cli.find_element_d(by=By.CSS_SELECTOR, value='[data-e2e="video-switch-next-arrow"]')
-            cli.click(arrow)
         except Exception as _:
-            pass
+            try:
+                login_close(cli)
+                arrow = cli.find_element_d(by=By.CSS_SELECTOR, value='[data-e2e="video-switch-next-arrow"]', timeout=0, count=1, raise_e=False)
+                cli.click(arrow)
+            except Exception as _:
+                pass
 
         time.sleep(0.5)
 
