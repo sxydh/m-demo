@@ -1,5 +1,6 @@
 import time
 
+import keyboard
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
@@ -11,6 +12,7 @@ def login_close(cli: Cli):
         cli.click(close)
 
 
+# noinspection PyBroadException
 def start():
     cli = Cli(undetected=False,
               images_disabled=True,
@@ -19,10 +21,29 @@ def start():
     cli.get('https://www.douyin.com/?recommend=1')
 
     while True:
-        arrow = cli.find_element_d(by=By.CSS_SELECTOR, value='[data-e2e="video-switch-next-arrow"]')
-        login_close(cli)
-        cli.click(arrow)
-        time.sleep(1)
+        try:
+            login_close(cli)
+            infos = cli.find_elements_d(by=By.CSS_SELECTOR, value='.video-info-detail')
+            players = cli.find_elements_d(by=By.CSS_SELECTOR, value='.immersive-player-switch-on-hide-interaction-area')
+            info = None
+            player = None
+            if len(infos) == 1:
+                info = infos[0]
+                player = players[0]
+            elif len(infos) == 3:
+                info = infos[1]
+                player = players[1]
+            if info is not None:
+                print(info.get_attribute('innerText'))
+                print(player.get_attribute('innerText'))
+                print()
+
+            login_close(cli)
+            keyboard.press_and_release('down')
+        except Exception as _:
+            pass
+
+        time.sleep(0.5)
 
 
 if __name__ == '__main__':
