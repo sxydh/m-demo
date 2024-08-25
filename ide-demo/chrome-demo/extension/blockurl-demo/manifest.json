@@ -1,0 +1,36 @@
+{
+    "manifest_version": 3,
+    "name": "Block URL Demo",
+    "version": "1.0",
+    "permissions": [
+        "declarativeNetRequest"
+    ],
+    "action": {
+        "default_popup": "helloworld.html",
+        "default_icon": {
+            "16": "images/icon16.png",
+            "48": "images/icon48.png",
+            "128": "images/icon128.png"
+        }
+    },
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "declarative_net_request": {
+        "rule_resources": [
+            {
+                "id": "vod",
+                "enabled": true,
+                "path": "rules_vod.json"
+            },
+            {
+                "id": "pic",
+                "enabled": true,
+                "path": "rules_pic.json"
+            }
+        ]
+    },
+    "background": {
+        "service_worker": "background.js"
+    }
+}
