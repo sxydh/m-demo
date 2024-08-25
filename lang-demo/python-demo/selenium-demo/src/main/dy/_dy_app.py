@@ -1,7 +1,7 @@
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
-from src.main.util.common import append_e
+from src.main.util.common import append_e, append
 
 
 def login_close(cli: Cli):
@@ -32,9 +32,8 @@ def start():
                 info = infos[1]
                 player = players[1]
             if info is not None:
-                print(info.get_attribute('innerText'))
-                print(player.get_attribute('innerText'))
-                print()
+                append(info.get_attribute('innerText'))
+                append(player.get_attribute('innerText'))
         except Exception as e:
             append_e(str(e))
 
