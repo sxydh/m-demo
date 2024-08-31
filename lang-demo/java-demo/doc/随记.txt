@@ -54,7 +54,7 @@
                 dump
                     jmap -dump:format=b,file=<filename> <pid>
                         format ：设置 dump 文件格式。
-环境
+开发环境
     JDK11
         sudo mkdir /opt/module/jdk
         sudo chown -R sxydh:sxydh /opt/module/jdk
