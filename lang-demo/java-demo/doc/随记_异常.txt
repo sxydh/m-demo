@@ -1,0 +1,37 @@
+概述
+    Exception ，异常是程序运行时遇到的问题，这些问题通常是可以预见和被处理的。
+    Error ，错误是系统级的问题，这些问题是程序无法控制和恢复的。
+异常体系
+    Throwable
+        Error
+            NoSuchFieldError
+                产生场景：
+                    包版本冲突
+            NoSuchMethodError
+                产生场景：
+                    包版本冲突
+            OutOfMemoryError
+                产生场景：
+                    堆 OOM
+            StackOverflowError
+                产生场景：
+                    栈 OOM
+        Exception
+            可检查异常
+                IOException
+                FileNotFoundException
+                ClassNotFoundException
+                NoSuchFieldException
+                NoSuchMethodException
+            不可检异常
+                NullPointerException
+                NumberFormatException
+                IndexOutOfBoundsException
+                ClassCastException
+                UnsupportedOperationException
+                IllegalMonitorStateException
+异常处理
+    性能开销
+        创建一个 Exception 实例，会对栈进行快照，这是一个相对比较重的操作。
+    最佳实践
+        try{} catch() 不要捕获通用的 Exception ，而是特定的 Exception 。
