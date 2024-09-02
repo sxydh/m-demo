@@ -2,7 +2,7 @@ spring:
   datasource:
     driver-class-name: oracle.jdbc.OracleDriver
     username: system
-    password: oracle123
+    password: 123
     url: jdbc:oracle:thin:@192.168.233.129:1521:orcl
 mybatis:
   mapper-locations: classpath:mapper/*.xml
