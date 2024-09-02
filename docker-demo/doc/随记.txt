@@ -11,6 +11,10 @@
     拉取
         docker pull [options] [docker_registry_ip[:port]/]<repo_name>[:tag]
             docker pull ubuntu:18.04
+    保存
+        docker save <image_id> > <file_name.tar>
+    载入
+        docker load < <file_name.tar>
     删除
         docker image rm [options] <image_name1> [<image_name2> ...]
             docker image rm ubuntu:18.04
