@@ -8,4 +8,9 @@
         from dual
     </select>
 
+    <select id="selectSeqHelloWorldNextval" resultType="Long">
+        select seq_hello_world.nextval
+        from dual
+    </select>
+
 </mapper>

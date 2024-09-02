@@ -4,4 +4,6 @@ public interface HelloWorldMapper {
 
     String selectHelloWorld();
 
+    Long selectSeqHelloWorldNextval();
+
 }

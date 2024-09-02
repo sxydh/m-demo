@@ -16,6 +16,9 @@ public class HelloWorldServiceImpl implements HelloWorldService {
     public void init() {
         String string = helloWorldMapper.selectHelloWorld();
         System.out.println(string);
+
+        Long nextval = helloWorldMapper.selectSeqHelloWorldNextval();
+        System.out.println(nextval);
     }
 
 }
