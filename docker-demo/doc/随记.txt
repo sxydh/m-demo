@@ -80,7 +80,7 @@
     重启
         docker restart <container_id/container_name>
     删除
-        docker rm <container_id/container_name>
+        docker rm -f <container_id/container_name>
 
         删除所有
             docker container prune
