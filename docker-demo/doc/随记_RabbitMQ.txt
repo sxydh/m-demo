@@ -7,3 +7,6 @@
         -e RABBITMQ_DEFAULT_USER=admin \
         -e RABBITMQ_DEFAULT_PASS=123 \
         rabbitmq:3-management
+        
+    docker ps
+    docker rm -f rabbitmq-demo
