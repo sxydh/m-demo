@@ -1,20 +1,26 @@
-# 使用官方 JDK11 镜像作为基础镜像
-FROM openjdk:11-jdk
-
-# 设置工作目录
-WORKDIR /
-
-# 设置挂载卷
-# 挂载点在宿主机上的路径为 /var/lib/docker/volumes/<uid>/_data
-VOLUME ["/data1","/data2"]
-
-# 添加文件到容器
-ADD quickstart-demo-1.0-SNAPSHOT.jar /tmp/quickstart-demo-1.0-SNAPSHOT.jar
-
-# 执行脚本（容器启动时）
-ENTRYPOINT ["sleep"]
-
-# 执行命令（容器启动时）
-# CMD 中的参数会被追加到 ENTRYPOINT
-# CMD 中的参数可以被宿主机 docker run 参数中的命令所覆盖
-CMD ["10000000"]
+开始
+    JDK11
+        sudo mkdir -p /opt/module/tmp
+        sudo chown -R sxydh:sxydh /opt/module/tmp
+            vim Dockerfile
+                追加
+                    # 使用官方 JDK11 镜像作为基础镜像
+                    FROM openjdk:11-jdk
+                    
+                    # 设置工作目录
+                    WORKDIR /
+                    
+                    # 设置挂载卷
+                    # 挂载点在宿主机上的路径为 /var/lib/docker/volumes/<uid>/_data
+                    VOLUME ["/data1","/data2"]
+                    
+                    # 添加文件到容器
+                    ADD quickstart-demo-1.0-SNAPSHOT.jar /tmp/quickstart-demo-1.0-SNAPSHOT.jar
+                    
+                    # 执行脚本（容器启动时）
+                    ENTRYPOINT ["sleep"]
+                    
+                    # 执行命令（容器启动时）
+                    # CMD 中的参数会被追加到 ENTRYPOINT
+                    # CMD 中的参数可以被宿主机 docker run 参数中的命令所覆盖
+                    CMD ["10000000"]
