@@ -1,8 +1,33 @@
-Layout options
-    https://learn.microsoft.com/en-us/dotnet/desktop/winforms/controls/layout?view=netdesktop-8.0
-        Form
-            The Form is the main object of Windows Forms. A Windows Forms application will usually have a form displayed at all times.
-        FlowLayoutPanel
-            The FlowLayoutPanel control arranges its contents in a horizontal or vertical flow direction.
-        TableLayoutPanel
-            The TableLayoutPanel control arranges its contents in a grid.
+Controls
+    https://learn.microsoft.com/en-us/dotnet/desktop/winforms/?view=netdesktop-8.0
+        Layout
+            https://learn.microsoft.com/en-us/dotnet/desktop/winforms/controls/layout?view=netdesktop-8.0
+                Position
+                    System.Drawing.Point(int x, int y)
+                Size
+                    System.Drawing.Size(int width, int height)
+                Dock
+                    The Dock property sets which border of the control is aligned to the corresponding side of the parent, and how the control is resized within the parent.
+                    When a control is docked, the container determines the space it should occupy and resizes and places the control. 
+                        If the control is docked to the top, the Height of the control is respected but the Width is automatically adjusted.
+                        If a control is docked to the left, the Width of the control is respected but the Height is automatically adjusted.
+                    The Location of the control can't be manually set as docking a control automatically controls its position.
+                Anchor
+                    Anchoring a control allows you to tie the control to one or more sides of the parent container. 
+                    As the container changes in size, any child control will maintain its distance to the anchored side.
+                AutoSize
+                    The AutoSize property enables a control to change its size, if necessary, to fit the size specified by the PreferredSize property.
+                    Only some controls support the AutoSize property. In addition, some controls that support the AutoSize property also supports the AutoSizeMode property.
+                
+                Container
+                    Form
+                        The Form is the main object of Windows Forms. A Windows Forms application will usually have a form displayed at all times.
+                    FlowLayoutPanel
+                        The FlowLayoutPanel control arranges its contents in a horizontal or vertical flow direction.
+                    TableLayoutPanel
+                        The TableLayoutPanel control arranges its contents in a grid.
+                        
+.NET API browser
+    System.Windows.Forms
+        DataGridView
+            
