@@ -6,4 +6,4 @@ spring:
       database: db_demo
       authentication-database: admin
       username: root
-      password: 123
+      password: '123'
