@@ -1,5 +1,5 @@
 开始
-    docker run -d -it \
+    docker run -d \
         -p 5432:5432 \
         --name postgres-demo \
         -e POSTGRES_PASSWORD=123 \
