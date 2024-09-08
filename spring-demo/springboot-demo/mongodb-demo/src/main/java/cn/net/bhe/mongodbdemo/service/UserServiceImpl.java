@@ -6,11 +6,13 @@ import cn.net.bhe.mongodbdemo.dao.po.UserPO;
 import cn.net.bhe.mongodbdemo.dao.query.UserQuery;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class UserServiceImpl implements UserService {
 
     @Resource
