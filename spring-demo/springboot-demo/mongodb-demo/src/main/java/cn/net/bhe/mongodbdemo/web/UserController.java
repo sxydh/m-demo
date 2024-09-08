@@ -46,7 +46,7 @@ public class UserController {
                     } else if ("2".equals(line)) {
                         UserDTO userDTO = new UserDTO();
                         List<UserDTO> dtoList = this.listUsers(userDTO);
-                        System.out.println(dtoList);
+                        log.info(dtoList.toString());
                     }
                 }
             } catch (Exception e) {
