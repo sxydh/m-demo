@@ -7,8 +7,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
 @Data
+@Document(collation = "user")
 public class UserPO {
 
     public static UserPO of(UserQuery query) {
