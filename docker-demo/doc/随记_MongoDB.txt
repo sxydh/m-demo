@@ -1,0 +1,10 @@
+开始
+    docker run -d \
+        -p 27017:27017 \
+        --name mongodb-demo \
+    	-e MONGO_INITDB_ROOT_USERNAME=root \
+    	-e MONGO_INITDB_ROOT_PASSWORD=123 \
+    	mongo
+        
+    dokcer ps | grep mongodb-demo
+    docker rm -f mongodb-demo
