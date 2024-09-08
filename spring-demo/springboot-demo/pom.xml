@@ -19,6 +19,7 @@
         <module>aop-demo</module>
         <module>redis-demo</module>
         <module>mybatis-demo</module>
+        <module>mongodb-demo</module>
     </modules>
 
     <properties>
