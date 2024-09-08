@@ -5,4 +5,4 @@
         postgres
         
     docker ps
-    docker rm -f rabbitmq-demo
+    docker rm -f postgres-demo
