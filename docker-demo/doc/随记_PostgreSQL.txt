@@ -1,0 +1,9 @@
+开始
+    docker run -d -it \
+        --name postgres-demo \
+        -e POSTGRES_PASSWORD=123 \
+        postgres
+        
+        
+    docker ps
+    docker rm -f rabbitmq-demo
