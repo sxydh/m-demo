@@ -49,8 +49,10 @@ def pull_new_houses(force=False):
             cli.get(city)
             close_login(cli)
             nav_list = cli.find_elements_d(by=By.CSS_SELECTOR, value='.nav-channel-list li a', timeout=5, count=1)
-            new_house = nav_list[0].get_attribute('href')
-            append(f='new_houses', r=new_house)
+            href = nav_list[0].get_attribute('href')
+            if href.index('/sale/') >= 0:
+                continue
+            append(f='new_houses', r=href)
         except Exception as e:
             append_e(f='new_houses_error', r=city)
             append_e(str(e))
@@ -75,6 +77,9 @@ def pull_mods(force=False):
         for new_house in new_houses:
             try:
                 new_house = new_house.split('?')[0]
+                if new_houses.index('sale') >= 0:
+                    conn.execute(f'insert into mods(new_house) values(\'{new_house}\')')
+                    continue
                 cli.get(f'{new_house}loupan/all/s1/')
                 close_login(cli)
                 empty = cli.find_element_d(by=By.CSS_SELECTOR, value='.empty', timeout=0, count=1, raise_e=False)
