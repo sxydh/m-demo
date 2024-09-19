@@ -77,7 +77,7 @@ def pull_mods(force=False):
         for new_house in new_houses:
             try:
                 new_house = new_house.split('?')[0]
-                if new_houses.index('sale') >= 0:
+                if new_house.index('sale') >= 0:
                     conn.execute(f'insert into mods(new_house) values(\'{new_house}\')')
                     continue
                 cli.get(f'{new_house}loupan/all/s1/')
