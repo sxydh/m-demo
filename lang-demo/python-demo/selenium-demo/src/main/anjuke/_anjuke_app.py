@@ -66,7 +66,7 @@ def pull_mods(force=False):
         return
 
     with get_sqlite_connection(f='results.db') as conn:
-        conn.execute('create table if not exists results(id integer primary key autoincrement, new_house text, name text, address text, huxing text, price text, tags text, raw text)')
+        conn.execute('create table if not exists results(new_house text, raw text)')
         if force:
             conn.execute('delete from results')
 
