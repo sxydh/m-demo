@@ -59,16 +59,21 @@ def remove(f):
         os.remove(f'tmp/{f}')
 
 
-def get_mysql_connection():
+def get_mysql_connection(host='192.168.233.129',
+                         port=3306,
+                         user='root',
+                         password='123',
+                         db='ssq',
+                         charset='utf8mb4'):
     return pymysql.connect(
-        host='192.168.233.129',
-        port=3306,
-        user='root',
-        password='123',
-        db='ssq',
-        charset='utf8mb4'
-    )
+        host=host,
+        port=port,
+        user=user,
+        password=password,
+        db=db,
+        charset=charset)
 
 
-def get_sqlite_connection():
-    return sqlite3.connect('tmp/ssq.db')
+def get_sqlite_connection(f='ssq.db'):
+    os.makedirs('tmp', exist_ok=True)
+    return sqlite3.connect(f'tmp/{f}')
