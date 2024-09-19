@@ -65,10 +65,10 @@ def pull_mods(force=False):
     if len(new_houses) == 0:
         return
 
-    with get_sqlite_connection(f='mods.db') as conn:
-        conn.execute('create table if not exists mods(id integer primary key autoincrement, new_house text, name text, address text, huxing text, price text, tags text, raw text)')
+    with get_sqlite_connection(f='results.db') as conn:
+        conn.execute('create table if not exists results(id integer primary key autoincrement, new_house text, name text, address text, huxing text, price text, tags text, raw text)')
         if force:
-            conn.execute('delete from mods')
+            conn.execute('delete from results')
 
         cli = Cli(undetected=False,
                   images_disabled=False,
@@ -82,7 +82,7 @@ def pull_mods(force=False):
                 results = cli.find_element_d(by=By.CSS_SELECTOR, value='.list-results', timeout=10, count=1, raise_e=False)
                 if results:
                     results = results.get_attribute('innerHTML')
-                    conn.execute(f'insert into mods(new_house, raw) values(\'{new_house}\', \'{results}\')')
+                    conn.execute(f'insert into results(new_house, raw) values(\'{new_house}\', \'{results}\')')
                     conn.commit()
             except Exception as e:
                 append_e(f='mods_error', r=new_house)
