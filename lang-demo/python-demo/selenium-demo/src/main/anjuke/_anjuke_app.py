@@ -85,7 +85,7 @@ def pull_mods(force=False):
                     conn.execute(f'insert into mods(new_house, raw) values(\'{new_house}\', \'{results}\')')
                     conn.commit()
             except Exception as e:
-                append_e(f='mods', r=new_house)
+                append_e(f='mods_error', r=new_house)
                 append_e(str(e))
 
 
