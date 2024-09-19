@@ -81,11 +81,9 @@ def pull_mods(force=False):
                 if empty:
                     conn.execute(f'insert into mods(new_house) values(\'{new_house}\')')
                     continue
-                mods = cli.find_elements_d(by=By.CSS_SELECTOR, value='.list-results .item-mod', timeout=10, count=1)
-                for mod in mods:
-                    raw = mod.get_attribute('innerHTML')
-                    conn.execute(f'insert into mods(new_house, raw) values(\'{new_house}\', \'{raw}\')')
-                    conn.commit()
+                results = cli.find_element_d(by=By.CSS_SELECTOR, value='.list-results', timeout=10, count=1, raise_e=False)
+                conn.execute(f'insert into mods(new_house, raw) values(\'{new_house}\', \'{results}\')')
+                conn.commit()
             except Exception as e:
                 append_e(f='mods', r=new_house)
                 append_e(str(e))
