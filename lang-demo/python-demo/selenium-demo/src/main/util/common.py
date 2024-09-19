@@ -39,7 +39,10 @@ def read(f):
 
 
 def read_rows(f='input.txt'):
-    return read(f).split('\n')
+    ft = read(f)
+    if ft == '':
+        return []
+    return ft.split('\n')
 
 
 def rename(f, new_f):
