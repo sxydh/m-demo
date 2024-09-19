@@ -64,25 +64,13 @@ def pull_mods(force=False):
         return
 
     with get_sqlite_connection(f='mods.db') as conn:
-        conn.execute('create table if not exists mods(id integer primary key autoincrement, new_house text, name text, address text, huxing text, tags text)')
+        conn.execute('create table if not exists mods(id integer primary key autoincrement, new_house text, name text, address text, huxing text, price text, tags text, raw text)')
         if force:
             conn.execute('delete from mods')
 
         cli = Cli(undetected=False,
                   images_disabled=False,
                   headless=False)
-
-        def get_value_helper(value, is_multi=False):
-            if not is_multi:
-                ve = cli.find_element(src=mod, by=By.CSS_SELECTOR, value=value, timeout=0, count=1, raise_e=False)
-                if ve:
-                    return ve.get_attribute('innerText')
-                return ''
-            else:
-                ves = cli.find_elements(src=mod, by=By.CSS_SELECTOR, value=value, timeout=0, count=1, raise_e=False)
-                if ves:
-                    return ', '.join([ve.get_attribute('innerText') for ve in ves])
-                return ''
 
         for new_house in new_houses:
             try:
@@ -95,11 +83,8 @@ def pull_mods(force=False):
                     continue
                 mods = cli.find_elements_d(by=By.CSS_SELECTOR, value='.list-results .item-mod', timeout=10, count=1)
                 for mod in mods:
-                    name = get_value_helper('.lp-name')
-                    address = get_value_helper('.address')
-                    huxing = get_value_helper('.huxing')
-                    tags = get_value_helper('.tags-wrap span', is_multi=True)
-                    conn.execute(f'insert into mods(new_house, name, address, huxing, tags) values(\'{new_house}\', \'{name}\', \'{address}\', \'{huxing}\', \'{tags}\')')
+                    raw = mod.get_attribute('innerHTML')
+                    conn.execute(f'insert into mods(new_house, raw) values(\'{new_house}\', \'{raw}\')')
                     conn.commit()
             except Exception as e:
                 append_e(f='mods', r=new_house)
