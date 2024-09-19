@@ -28,6 +28,10 @@ def append_e(r, f='error.txt'):
     append(r=r, f=f)
 
 
+def truncate(f):
+    write(r='', mode='w', f=f)
+
+
 def read(f):
     with rlock:
         os.makedirs('tmp', exist_ok=True)
