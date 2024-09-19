@@ -79,10 +79,6 @@ def pull_mods(force=False):
                 new_house = new_house.split('?')[0]
                 cli.get(f'{new_house}loupan/all/s1/')
                 close_login(cli)
-                empty = cli.find_element_d(by=By.CSS_SELECTOR, value='.empty', timeout=0, count=1, raise_e=False)
-                if empty:
-                    conn.execute(f'insert into mods(new_house) values(\'{new_house}\')')
-                    continue
                 results = cli.find_element_d(by=By.CSS_SELECTOR, value='.list-results', timeout=10, count=1, raise_e=False)
                 if results:
                     results = results.get_attribute('innerHTML')
