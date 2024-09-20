@@ -59,8 +59,7 @@ def pull_new_houses(force=False):
     cli.close()
 
 
-# noinspection SqlDialectInspection,SqlNoDataSourceInspection
-def pull_mods(force=False):
+def pull_results(force=False):
     new_houses = read_rows(f='new_houses')
     if len(new_houses) == 0:
         return
@@ -92,4 +91,4 @@ def pull_mods(force=False):
 if __name__ == '__main__':
     pull_cities()
     pull_new_houses()
-    pull_mods()
+    pull_results()
