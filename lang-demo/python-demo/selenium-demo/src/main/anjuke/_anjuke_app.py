@@ -70,7 +70,7 @@ def pull_results(force=False):
     with get_sqlite_connection(f='anjuke.db') as conn:
         conn.execute('create table if not exists result(city text, province text, raw text, total int)')
         if force:
-            conn.execute('delete from results')
+            conn.execute('delete from result')
 
         cli = Cli(undetected=False,
                   images_disabled=False,

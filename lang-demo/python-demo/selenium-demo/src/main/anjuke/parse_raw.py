@@ -7,9 +7,9 @@ from src.main.util.common import get_sqlite_connection
 
 def parse_raw():
     with get_sqlite_connection(f='anjuke.db') as conn:
-        conn.execute('create table if not exists mods(new_house text, name text, price text, price_n int, address text, huxing text, tags text, sort text)')
-        conn.execute('delete from mods')
-        cursor = conn.execute('select new_house, raw from results')
+        conn.execute('create table if not exists mod(new_house text, name text, price text, price_n int, address text, huxing text, tags text, sort text)')
+        conn.execute('delete from mod')
+        cursor = conn.execute('select new_house, raw from result')
         rows = cursor.fetchall()
 
         def helper(src, clazz, is_multi=False):
@@ -34,7 +34,7 @@ def parse_raw():
                 total = int(total)
             else:
                 total = 0
-            conn.execute(f'update results set total = \'{total}\' where new_house = \'{new_house}\'')
+            conn.execute(f'update result set total = \'{total}\' where new_house = \'{new_house}\'')
             conn.commit()
             if total > 0:
                 mods = soup.select('.item-mod')
@@ -49,7 +49,7 @@ def parse_raw():
                     huxing = helper(mod, '.huxing')
                     tags = helper(mod, '.tag-panel i,span', is_multi=True)
                     sort = mod['data-soj']
-                    conn.execute(f'insert into mods(new_house, name, price, price_n, address, huxing, tags, sort) values(\'{new_house}\', \'{name}\', \'{price}\', \'{price_n}\', \'{address}\', \'{huxing}\', \'{tags}\', \'{sort}\')')
+                    conn.execute(f'insert into mod(new_house, name, price, price_n, address, huxing, tags, sort) values(\'{new_house}\', \'{name}\', \'{price}\', \'{price_n}\', \'{address}\', \'{huxing}\', \'{tags}\', \'{sort}\')')
                     conn.commit()
 
 
