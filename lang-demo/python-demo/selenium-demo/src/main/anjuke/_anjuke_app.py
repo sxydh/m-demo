@@ -65,7 +65,7 @@ def pull_mods(force=False):
     if len(new_houses) == 0:
         return
 
-    with get_sqlite_connection(f='results.db') as conn:
+    with get_sqlite_connection(f='anjuke.db') as conn:
         conn.execute('create table if not exists results(new_house text, raw text)')
         if force:
             conn.execute('delete from results')
