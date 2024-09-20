@@ -78,11 +78,14 @@ def pull_results(force=False):
                 new_house = new_house.split('?')[0]
                 cli.get(f'{new_house}loupan/all/s1/')
                 close_login(cli)
-                results = cli.find_element_d(by=By.CSS_SELECTOR, value='.list-results', timeout=10, count=1, raise_e=False)
-                if results:
-                    results = results.get_attribute('innerHTML')
-                    conn.execute(f'insert into results(new_house, raw) values(\'{new_house}\', \'{results}\')')
-                    conn.commit()
+                city = cli.find_element_d(by=By.CSS_SELECTOR, value='.sel-city .city', timeout=10, count=1, raise_e=False)
+                if city:
+                    city = city.get_attribute('innerText').strip()
+                    results = cli.find_element_d(by=By.CSS_SELECTOR, value='.list-results', timeout=10, count=1, raise_e=False)
+                    if results:
+                        results = results.get_attribute('innerHTML')
+                        conn.execute(f'insert into results(new_house, city, raw) values(\'{new_house}\', \'{city}\', \'{results}\')')
+                        conn.commit()
             except Exception as e:
                 append_e(f='mods_error', r=new_house)
                 append_e(str(e))
