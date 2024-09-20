@@ -65,7 +65,7 @@ def pull_results(force=False):
         return
 
     with get_sqlite_connection(f='anjuke.db') as conn:
-        conn.execute('create table if not exists results(new_house text, raw text, total int)')
+        conn.execute('create table if not exists results(new_house text, city text, province text, raw text, total int)')
         if force:
             conn.execute('delete from results')
 
