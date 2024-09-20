@@ -7,7 +7,7 @@ from src.main.util.common import get_sqlite_connection
 
 def parse_raw():
     with get_sqlite_connection(f='anjuke.db') as conn:
-        conn.execute('create table if not exists mods(new_house text, name text, price text, address text, huxing text, tags text, sort text)')
+        conn.execute('create table if not exists mods(new_house text, name text, price text, price_n int, address text, huxing text, tags text, sort text)')
         conn.execute('delete from mods')
         cursor = conn.execute('select new_house, raw from results')
         rows = cursor.fetchall()
@@ -42,11 +42,14 @@ def parse_raw():
                 for mod in mods:
                     name = helper(mod, '.lp-name')
                     price = helper(mod, '.price')
+                    price_n = ''
+                    if len(price) > 0:
+                        price_n = re.search(r'(\d+)', price).group(1)
                     address = helper(mod, '.address')
                     huxing = helper(mod, '.huxing')
                     tags = helper(mod, '.tag-panel i,span', is_multi=True)
                     sort = mod['data-soj']
-                    conn.execute(f'insert into mods(new_house, name, price, address, huxing, tags, sort) values(\'{new_house}\', \'{name}\', \'{price}\', \'{address}\', \'{huxing}\', \'{tags}\', \'{sort}\')')
+                    conn.execute(f'insert into mods(new_house, name, price, price_n, address, huxing, tags, sort) values(\'{new_house}\', \'{name}\', \'{price}\', \'{price_n}\', \'{address}\', \'{huxing}\', \'{tags}\', \'{sort}\')')
                     conn.commit()
 
 
