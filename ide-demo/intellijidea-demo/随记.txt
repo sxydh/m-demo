@@ -1,9 +1,16 @@
 File
     Settings
         Editor
+            Color Scheme
+                General
+                    Identifier under caret
+                    Identifier under caret (write)
             Inspections
                 Java
                     Resource management
                         AutoCloseable used without 'try'-with-resources
+                SQL
+                    SQL dialect detection
+                    No data sources configured
         Plugins
             Maven Helper
