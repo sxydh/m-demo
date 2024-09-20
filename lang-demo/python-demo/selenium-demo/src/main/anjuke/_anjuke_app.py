@@ -68,7 +68,7 @@ def pull_results(force=False):
         return
 
     with get_sqlite_connection(f='anjuke.db') as conn:
-        conn.execute('create table if not exists results(city text, province text, raw text, total int)')
+        conn.execute('create table if not exists result(city text, province text, raw text, total int)')
         if force:
             conn.execute('delete from results')
 
@@ -86,7 +86,7 @@ def pull_results(force=False):
                 results = cli.find_element_d(by=By.CSS_SELECTOR, value='.list-results', timeout=10, count=1, raise_e=False)
                 if results:
                     results = results.get_attribute('innerHTML')
-                    conn.execute(f'insert into results(city, raw) values(\'{new_house_name}\', \'{results}\')')
+                    conn.execute(f'insert into result(city, raw) values(\'{new_house_name}\', \'{results}\')')
                     conn.commit()
             except Exception as e:
                 append_e(f='mods_error', r=new_house)
