@@ -24,7 +24,7 @@ def pull_cities(force=False):
             close_login(cli)
             cities = cli.find_elements_d(by=By.CSS_SELECTOR, value='.ajk-city-cell.is-letter li a')
             for city in cities:
-                append(f='cities', r=city.get_attribute('href'))
+                append(f='cities', r=f'{city.get_attribute('href')},{city.get_attribute('innerText').strip()}')
             break
         except Exception as e:
             append_e(str(e))
