@@ -68,7 +68,7 @@ def pull_results(force=False):
         return
 
     with get_sqlite_connection(f='anjuke.db') as conn:
-        conn.execute('create table if not exists results(new_house text, city text, province text, raw text, total int)')
+        conn.execute('create table if not exists results(city text, province text, raw text, total int)')
         if force:
             conn.execute('delete from results')
 
@@ -78,17 +78,16 @@ def pull_results(force=False):
 
         for new_house in new_houses:
             try:
-                new_house = new_house.split('?')[0]
-                cli.get(f'{new_house}loupan/all/s1/')
+                new_house_split = new_house.split('###')
+                new_house_href = new_house_split[0]
+                new_house_name = new_house_split[1]
+                cli.get(f'{new_house_href.split('?')[0]}loupan/all/s1/')
                 close_login(cli)
-                city = cli.find_element_d(by=By.CSS_SELECTOR, value='.sel-city .city', timeout=10, count=1, raise_e=False)
-                if city:
-                    city = city.get_attribute('innerText').strip()
-                    results = cli.find_element_d(by=By.CSS_SELECTOR, value='.list-results', timeout=10, count=1, raise_e=False)
-                    if results:
-                        results = results.get_attribute('innerHTML')
-                        conn.execute(f'insert into results(new_house, city, raw) values(\'{new_house}\', \'{city}\', \'{results}\')')
-                        conn.commit()
+                results = cli.find_element_d(by=By.CSS_SELECTOR, value='.list-results', timeout=10, count=1, raise_e=False)
+                if results:
+                    results = results.get_attribute('innerHTML')
+                    conn.execute(f'insert into results(city, raw) values(\'{new_house_name}\', \'{results}\')')
+                    conn.commit()
             except Exception as e:
                 append_e(f='mods_error', r=new_house)
                 append_e(str(e))
