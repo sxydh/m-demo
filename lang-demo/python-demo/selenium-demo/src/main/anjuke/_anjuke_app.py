@@ -46,13 +46,16 @@ def pull_new_houses(force=False):
               headless=False)
     for city in cities:
         try:
-            cli.get(city)
+            city_split = city.split('###')
+            city_href = city_split[0]
+            city_name = city_split[1]
+            cli.get(city_href)
             close_login(cli)
             nav_list = cli.find_elements_d(by=By.CSS_SELECTOR, value='.nav-channel-list li a', timeout=5, count=1)
             href = nav_list[0].get_attribute('href')
             if '/sale/' in href:
                 continue
-            append(f='new_houses', r=href)
+            append(f='new_houses', r=f'{href}###{city_name}')
         except Exception as e:
             append_e(f='new_houses_error', r=city)
             append_e(str(e))
