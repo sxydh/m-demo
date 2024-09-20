@@ -9,7 +9,7 @@ def parse_raw():
     with get_sqlite_connection(f='anjuke.db') as conn:
         conn.execute('create table if not exists mod(new_house text, name text, price text, price_n int, address text, huxing text, tags text, sort text)')
         conn.execute('delete from mod')
-        cursor = conn.execute('select new_house, raw from result')
+        cursor = conn.execute('select city, raw from result')
         rows = cursor.fetchall()
 
         def helper(src, clazz, is_multi=False):
