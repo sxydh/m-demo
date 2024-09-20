@@ -20,18 +20,21 @@ class TjbzSpider(scrapy.Spider):
             yield scrapy.Request(urljoin(response.url, province.css("::attr(href)").get()), callback=self.parse_city)
 
     def parse_city(self, response: Response):
-        cities = response.css(".citytr a")
+        cities = response.css(".citytr")
         for city in cities:
+            city = city.css('a')[0]
             append(f='city', r=', '.join(city.css("::text").getall()))
             yield scrapy.Request(urljoin(response.url, city.css("::attr(href)").get()), callback=self.parse_county)
 
     def parse_county(self, response: Response):
-        counties = response.css(".countytr a")
+        counties = response.css(".countytr")
         for county in counties:
+            county = county.css('a')[0]
             append(f='county', r=', '.join(county.css("::text").getall()))
             yield scrapy.Request(urljoin(response.url, county.css("::attr(href)").get()), callback=self.parse_town)
 
     def parse_town(self, response: Response):
-        towns = response.css(".towntr a")
+        towns = response.css(".towntr")
         for town in towns:
+            town = town.css('a')[0]
             append(f='town', r=', '.join(town.css("::text").getall()))
