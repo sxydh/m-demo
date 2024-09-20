@@ -38,7 +38,6 @@ def parse_raw():
             conn.commit()
             if total > 0:
                 mods = soup.select('.item-mod')
-
                 for mod in mods:
                     name = helper(mod, '.lp-name')
                     price = helper(mod, '.price')
@@ -49,7 +48,7 @@ def parse_raw():
                     huxing = helper(mod, '.huxing')
                     tags = helper(mod, '.tag-panel i,span', is_multi=True)
                     sort = mod['data-soj']
-                    conn.execute(f'insert into mod(name, city, price, price_n, address, huxing, tags, sort) values(\'{city}\', \'{name}\', \'{price}\', \'{price_n}\', \'{address}\', \'{huxing}\', \'{tags}\', \'{sort}\')')
+                    conn.execute(f'insert into mod(name, city, price, price_n, address, huxing, tags, sort) values(\'{name}\', \'{city}\', \'{price}\', \'{price_n}\', \'{address}\', \'{huxing}\', \'{tags}\', \'{sort}\')')
                     conn.commit()
 
 
