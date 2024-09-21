@@ -1,3 +1,31 @@
+概述
+    Scrapy 是网络爬虫框架
+    https://scrapy.org/
+架构
+    核心组件
+        Spider
+            概述
+                负责处理响应数据包 Response ，并将处理结果 Item 通过 Scrapy Engine 传递给 Item Pipeline 。
+                Spider 除了可以返回 Item ，还可以产生新的网络请求 Request ，并通过 Scrapy Engine 传递给 Scheduler 。
+        Scheduler
+            概述
+                负责接收网络请求 Request ，放入调度队列，再从队列中取出 Request ，通过 Scrapy Engine 传递给 Downloader 。
+        Downloader
+            概述
+                负责处理网络请求 Request ，并将响应数据包 Response 通过 Scrapy Engine 传递给 Spider 。
+        Item Pipeline
+            概述
+                负责处理结果数据 Item ，例如数据分析、持久化等。
+        Scrapy Engine
+            概述
+                负责 Spider/Scheduler/Downloader/Item Pipeline 之间的数据通信
+    基本过程
+        1 - Spider 产生新的网络请求 Request ，交给 Scheduler 调度。
+        2 - Scheduler 调度 Request 给 Downloader
+        3 - Downloader 获取响应数据包 Response ，交给 Spider 处理。
+        4 - Spider 处理 Response 得到结果数据 Item ，交给 Item Pipeline 处理。
+        5 - Item Pipeline 处理 Item
+        注意：以上过程可以形成一个循环。
 开始
     pip install -i https://pypi.tuna.tsinghua.edu.cn/simple Scrapy
     scrapy startproject stats
