@@ -3,6 +3,7 @@
     https://scrapy.org/
 架构
     核心组件
+    https://www.runoob.com/w3cnote/scrapy-detail.html
         Spider
             概述
                 负责处理响应数据包 Response ，并将处理结果 Item 通过 Scrapy Engine 传递给 Item Pipeline 。
