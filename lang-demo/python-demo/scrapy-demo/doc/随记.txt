@@ -28,7 +28,24 @@
         5 - Item Pipeline 处理 Item
         注意：以上过程可以形成一个循环。
 开始
-    pip install -i https://pypi.tuna.tsinghua.edu.cn/simple Scrapy
-    scrapy startproject stats
-    cd stats
-    scrapy genspider tjbz www.stats.gov.cn
+    创建项目
+        pip install -i https://pypi.tuna.tsinghua.edu.cn/simple Scrapy
+        scrapy startproject stats
+        cd stats
+        scrapy genspider tjbz www.stats.gov.cn
+    项目结构
+        stats
+            scrapy.cfg
+                定义项目部署配置
+            stats
+                items.py
+                    定义爬取数据的数据结构
+                middlewares.py
+                    定义中间件，包含 Spider Middleware/Downloader Middleware 等。
+                pipelines.py
+                    定义数据处理管道
+                settings.py
+                    定义项目运行配置
+                spiders
+                    tjbz.py
+                        定义用户 Spider
