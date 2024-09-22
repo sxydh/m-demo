@@ -16,7 +16,7 @@ class ExampleSpider(scrapy.Spider):
     start_urls = ["https://www.anjuke.com/sy-city.html?from=HomePage_City"]
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
-        if "callback" in response.url:
+        if response.url != self.start_urls[0]:
             yield scrapy.Request(self.start_urls[0], callback=self.parse, dont_filter=True)
             return
 
