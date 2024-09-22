@@ -16,7 +16,7 @@ class ExampleSpider(scrapy.Spider):
     start_urls = ["https://www.anjuke.com/sy-city.html?from=HomePage_City"]
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
-        if self.allowed_domains[0] not in response.url:
+        if "callback" in response.url:
             yield scrapy.Request(self.start_urls[0], callback=self.parse, dont_filter=True)
             return
 
@@ -32,7 +32,7 @@ class ExampleSpider(scrapy.Spider):
         meta_city_item = response.meta["meta_city_item"]
         url = meta_city_item["url"]
 
-        if self.allowed_domains[0] not in response.url:
+        if "callback" in response.url:
             yield scrapy.Request(url, callback=self.parse, dont_filter=True)
             return
 
@@ -57,7 +57,7 @@ class ExampleSpider(scrapy.Spider):
         meta_city_item = response.meta["meta_city_item"]
         new_house_url = meta_city_item["new_house_url"]
 
-        if self.allowed_domains[0] not in response.url:
+        if "callback" in response.url:
             yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, dont_filter=True)
             return
 
@@ -78,6 +78,7 @@ class ExampleSpider(scrapy.Spider):
             price = self.parse_text_helper(new_house, ".price")
             new_house_item["price"] = price
             if price and len(price) > 0:
+                print(price)
                 new_house_item["price_num"] = re.search(r'(\d+)', price).group(1)
             new_house_item["url"] = new_house.css(".lp-name a::attr(href)").get()
             yield new_house_item
