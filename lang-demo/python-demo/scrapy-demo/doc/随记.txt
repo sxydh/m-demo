@@ -37,7 +37,7 @@
                 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple Scrapy
                 scrapy startproject tjbz
                 cd tjbz
-                scrapy genspider tjbz https://www.stats.gov.cn/sj/tjbz
+                scrapy genspider example stats.gov.cn
             项目结构
                 tjbz
                     scrapy.cfg
@@ -63,7 +63,7 @@
                             概述
                                 定义项目运行配置
                         spiders
-                            tjbz.py
+                            example.py
                                 概述
                                     定义用户 Spider
         定义设置
@@ -100,7 +100,7 @@
             tjbz.py
                 class TjbzSpider(scrapy.Spider):
                     name = "tjbz"
-                    allowed_domains = ["https://www.stats.gov.cn/sj/tjbz"]
+                    allowed_domains = ["stats.gov.cn"]
                     start_urls = ["https://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2023/index.html"]
                 
                     def start_requests(self) -> Iterable[Request]:
