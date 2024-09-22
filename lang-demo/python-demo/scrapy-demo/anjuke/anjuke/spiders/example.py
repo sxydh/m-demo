@@ -87,8 +87,8 @@ class ExampleSpider(scrapy.Spider):
         eles = src.css(selector)
         if not is_multi:
             ele = eles[0] if len(eles) > 0 else None
-            return ele.css("::attr(innerText)").get().strip() if ele else None
-        return "".join([ele.css("::attr(innerText)").get().strip() for ele in eles])
+            return "".join([se.strip() for se in ele.css("::text").getall()]) if ele else None
+        return "".join([ele.css("::text").get().strip() for ele in eles])
 
 
 if __name__ == "__main__":
