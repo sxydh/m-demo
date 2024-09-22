@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import sys
@@ -17,6 +18,7 @@ class ExampleSpider(scrapy.Spider):
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
         if response.url != self.start_urls[0]:
+            logging.warning(f"{response.url} != {self.start_urls[0]}")
             yield scrapy.Request(self.start_urls[0], callback=self.parse, dont_filter=True)
             return
 
@@ -32,6 +34,7 @@ class ExampleSpider(scrapy.Spider):
         url = meta_city_item["url"]
 
         if response.url.strip('/') != url.strip('/'):
+            logging.warning(f"{response.url.strip('/')} != {url.strip('/')}")
             yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": meta_city_item}, dont_filter=True)
             return
 
@@ -57,6 +60,7 @@ class ExampleSpider(scrapy.Spider):
         new_house_url = meta_city_item["new_house_url"]
 
         if response.url.strip('/') != new_house_url.strip('/'):
+            logging.warning(f"{response.url.strip('/')} != {new_house_url.strip('/')}")
             yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": meta_city_item}, dont_filter=True)
             return
 
