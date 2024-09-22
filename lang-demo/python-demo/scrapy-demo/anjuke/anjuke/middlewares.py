@@ -2,6 +2,7 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import datetime
 import os
 import random
 
@@ -11,6 +12,7 @@ from scrapy import signals
 from itemadapter import is_item, ItemAdapter
 
 from anjuke.settings import USER_AGENT_LIST
+from util.common import get_sqlite_connection
 
 
 class AnjukeSpiderMiddleware:
@@ -65,6 +67,10 @@ class AnjukeDownloaderMiddleware:
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
 
+    def __init__(self):
+        self.conn = get_sqlite_connection()
+        self.conn.execute("create table if not exists tjbz_log(id integer primary key autoincrement, code text, body text, update_time text)")
+
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -99,6 +105,11 @@ class AnjukeDownloaderMiddleware:
         # - return a Response object
         # - return a Request object
         # - or raise IgnoreRequest
+
+        self.conn.execute("insert into anjuke_log(code, body, update_time) values(?, ?, ?)",
+                          [response.status, response.body, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
+        self.conn.commit()
+
         return response
 
     def process_exception(self, request, exception, spider):
@@ -113,3 +124,6 @@ class AnjukeDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+    def spider_closed(self, spider):
+        self.conn.close()
