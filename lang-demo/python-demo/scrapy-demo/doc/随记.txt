@@ -91,7 +91,7 @@
                 定义 Item Pipeline 链，其中 300 代表顺序优先级。
                 
             HTTPERROR_ALLOWED_CODES = [301]
-                定义可以被用户处理的额外状态码
+                定义可以被用户 Spider 处理的额外状态码
         定义实体
             items.py
                 class TjbzItem(scrapy.Item):
