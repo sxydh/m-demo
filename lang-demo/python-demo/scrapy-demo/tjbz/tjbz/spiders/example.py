@@ -38,7 +38,7 @@ class ExampleSpider(scrapy.Spider):
             item["url"] = response.urljoin(alist[-1].css("::attr(href)").get())
             item["parent_code"] = response.meta["meta_parent"].code
             yield item
-            if item.url:
+            if item["url"]:
                 yield scrapy.Request(url=item.url, callback=callback, meta={"meta_parent": item})
 
 
