@@ -88,7 +88,7 @@ class ExampleSpider(scrapy.Spider):
             ele = arr[0] if len(arr) > 0 else None
             text = "".join([se.strip() for se in ele.css("::text").getall()]) if ele else None
         else:
-            text = ", ".join([ele.css("::text").get().strip() for ele in arr])
+            text = "###".join([ele.css("::text").get().strip() for ele in arr])
         return text.replace("\xa0", "") if text else None
 
 
