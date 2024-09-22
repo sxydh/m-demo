@@ -69,9 +69,6 @@ class TjbzDownloaderMiddleware:
     def __init__(self):
         self.conn = get_sqlite_connection()
         self.conn.execute("create table if not exists tjbz_log(id integer primary key autoincrement, code text, body text, update_time text)")
-        self.conn.execute("delete from tjbz_log where 1 = 1")
-        self.conn.execute("insert into tjbz_log(id) values('-1')")
-        self.conn.commit()
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -101,7 +98,7 @@ class TjbzDownloaderMiddleware:
         # - return a Request object
         # - or raise IgnoreRequest
 
-        self.conn.execute("update tjbz_log set code = ?, body = ?, update_time = ? where id = '-1'",
+        self.conn.execute("insert into tjbz_log(code, body, update_time) values(?, ?, ?)",
                           [response.status, response.body, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
         self.conn.commit()
 
