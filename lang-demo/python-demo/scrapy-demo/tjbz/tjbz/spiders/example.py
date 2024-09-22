@@ -23,12 +23,16 @@ class ExampleSpider(scrapy.Spider):
         parent_level = meta_parent.get("level", 0)
 
         trs = response.css(".provincetr td")
+        level = 1
         if len(trs) == 0 and self.max_level > 1:
             trs += response.css(".citytr")
+            level = 2
         if len(trs) == 0 and self.max_level > 2:
             trs += response.css(".countytr")
+            level = 3
         if len(trs) == 0 and self.max_level > 3:
             trs += response.css(".towntr")
+            level = 4
 
         if len(trs) == 0:
             yield scrapy.Request(url=response.url, callback=self.parse, meta={"meta_parent": meta_parent}, dont_filter=True)
@@ -43,7 +47,7 @@ class ExampleSpider(scrapy.Spider):
                 item["code"] = href.replace('.html', '')
                 item["name"] = tds[0].css("::text").get().strip()
                 item["url"] = response.urljoin(href)
-                item["level"] = parent_level + 1
+                item["level"] = level
             else:
                 item["code"] = tds[0].css("::text").get().strip()
                 item["name"] = tds[-1].css("::text").get().strip()
@@ -51,7 +55,7 @@ class ExampleSpider(scrapy.Spider):
                 al = tds[0].css("a")
                 if len(al) > 0:
                     item["url"] = response.urljoin(al[0].css("::attr(href)").get())
-                item["level"] = parent_level + 1
+                item["level"] = level
             yield item
 
             if "url" in item and item["level"] < self.max_level:
