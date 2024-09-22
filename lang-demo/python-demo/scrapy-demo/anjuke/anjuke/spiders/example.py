@@ -31,7 +31,7 @@ class ExampleSpider(scrapy.Spider):
         meta_city_item = response.meta["meta_city_item"]
         url = meta_city_item["url"]
 
-        if response.url.strip('/') != new_house_url.strip('/'):
+        if response.url.strip('/') != url.strip('/'):
             yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": meta_city_item}, dont_filter=True)
             return
 
