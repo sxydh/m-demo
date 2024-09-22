@@ -64,7 +64,7 @@ class ExampleSpider(scrapy.Spider):
         totals = response.css(".list-results .result")
         if len(totals) != 0:
             total = totals[0]
-            meta_city_item["new_house_total"] = total.css("::text").get().strip()
+            meta_city_item["new_house_total"] = self.parse_text_helper(total, "*")
         yield meta_city_item
 
         new_house_list = response.css(".list-results .item-mod")
