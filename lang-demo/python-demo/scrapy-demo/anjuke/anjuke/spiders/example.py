@@ -98,7 +98,7 @@ class ExampleSpider(scrapy.Spider):
                 if text:
                     ret.append(text.strip())
             ret = "###".join(ret)
-        return ret.replace("\xa0", "") if ret else None
+        return ret.replace("\xa0", "").strip() if ret else None
 
 
 if __name__ == "__main__":
