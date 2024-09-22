@@ -19,7 +19,7 @@ class TjbzPipeline:
 
     def process_item(self, item, spider):
         self.conn.execute("insert into tjbz(code, name, parent_code, url, remark) values (?, ?, ?, ?, ?)",
-                          (item["code"], item["name"], item["parent_code"], item["url"], item["remark"]))
+                          (item["code"], item["name"], item.get("parent_code", ""), item["url"], item.get("remark", "")))
 
     def close_spider(self, spider):
         self.conn.close()
