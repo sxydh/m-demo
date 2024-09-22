@@ -26,5 +26,6 @@ class NewHouseItem(scrapy.Item):
     type = scrapy.Field()
     tag = scrapy.Field()
     price = scrapy.Field()
+    price_num = scrapy.Field()
     url = scrapy.Field()
     remark = scrapy.Field()
