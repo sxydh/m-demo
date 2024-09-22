@@ -112,13 +112,9 @@ class ExampleSpider(scrapy.Spider):
         return ret
 
     def is_request_again(self, ra: str, rb: str) -> bool:
-        ra = ra.strip('/')
-        rb = rb.strip('/')
-        ra = ra[ra.find(".") + 1:]
-        rb = rb[rb.find(".") + 1:]
-        ret = ra != rb
+        ret = abs(len(ra) - len(rb)) > 20
         if ret:
-            logging.warning(f"{ra} != {rb}")
+            logging.warning(f"{ra} <=> {rb}")
         return ret
 
 
