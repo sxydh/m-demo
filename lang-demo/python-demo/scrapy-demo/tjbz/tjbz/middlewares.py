@@ -2,6 +2,7 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import base64
 import datetime
 import os
 import random
@@ -88,11 +89,17 @@ class TjbzDownloaderMiddleware:
         # - or return a Request object
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
-        request.headers['User-Agent'] = random.choice(USER_AGENT_LIST)
+        request.headers["User-Agent"] = random.choice(USER_AGENT_LIST)
         proxy = os.environ.get('PROXY')
         if proxy:
             print(f"Using proxy: {proxy}")
             request.meta['proxy'] = f"http://{proxy}"
+            username = os.environ.get('PROXY_USERNAME')
+            password = os.environ.get('PROXY_PASSWORD')
+            authentication = base64.b64encode(f"{username}:{password}".encode("utf-8"))
+            authentication = f"Basic {authentication}"
+            request.headers["Proxy-Authorization"] = authentication
+            print(f"Proxy authentication: {authentication}")
         return None
 
     def process_response(self, request, response, spider):
