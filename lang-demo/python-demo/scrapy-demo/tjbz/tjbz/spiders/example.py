@@ -1,5 +1,6 @@
 import os
 import sys
+import uuid
 from typing import Any
 
 import scrapy
@@ -31,7 +32,13 @@ class ExampleSpider(scrapy.Spider):
             trs += response.css(".towntr")
 
         if len(trs) == 0:
-            return scrapy.Request(url=response.url, callback=self.parse, meta={"meta_parent": meta_parent})
+            url = response.url
+            uid = str(uuid.uuid4())
+            if "?" in response.url:
+                url += f"&uid={uid}"
+            else:
+                url += f"?uid={uid}"
+            return scrapy.Request(url=url, callback=self.parse, meta={"meta_parent": meta_parent})
 
         for tr in trs:
             tds = tr.css("td")
