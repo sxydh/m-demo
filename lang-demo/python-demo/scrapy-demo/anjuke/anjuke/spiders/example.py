@@ -63,25 +63,25 @@ class ExampleSpider(scrapy.Spider):
         totals = response.css(".list-results .result")
         if len(totals) != 0:
             total = totals[0]
-            meta_city_item["new_house_total"] = self.parse_text_helper(total, "*")
+            meta_city_item["new_house_total"] = self.parse_text_helper(total, "*", replace=(" ", ""))
         yield meta_city_item
 
         new_house_list = response.css(".list-results .item-mod")
         for new_house in new_house_list:
             new_house_item = NewHouseItem()
             new_house_item["city"] = meta_city_item["name"]
-            new_house_item["name"] = self.parse_text_helper(new_house, ".lp-name")
-            new_house_item["address"] = self.parse_text_helper(new_house, ".address")
-            new_house_item["type"] = self.parse_text_helper(new_house, ".huxing")
+            new_house_item["name"] = self.parse_text_helper(new_house, ".lp-name", replace=(" ", ""))
+            new_house_item["address"] = self.parse_text_helper(new_house, ".address", replace=(" ", "#"))
+            new_house_item["type"] = self.parse_text_helper(new_house, ".huxing", replace=(" ", "#"))
             new_house_item["tag"] = self.parse_text_helper(new_house, ".tag-panel i,span", is_multi=True)
-            price = self.parse_text_helper(new_house, ".price")
+            price = self.parse_text_helper(new_house, ".price", replace=(" ", ""))
             new_house_item["price"] = price
             if price is not None and len(price) > 0:
                 new_house_item["price_num"] = re.search(r'(\d+)', price).group(1)
             new_house_item["url"] = new_house.css("a.lp-name::attr(href)").get()
             yield new_house_item
 
-    def parse_text_helper(self, src, selector, is_multi=False, replace=""):
+    def parse_text_helper(self, src, selector, is_multi=False, replace=("", "")):
         ret = None
         arr = src.css(selector)
         if len(arr) == 0:
@@ -100,7 +100,7 @@ class ExampleSpider(scrapy.Spider):
             ret = "###".join(ret)
         if ret:
             ret = ret.replace("\xa0", "").strip()
-            ret = ret.replace(replace, "")
+            ret = ret.replace(replace[0], replace[1])
         return ret
 
 
