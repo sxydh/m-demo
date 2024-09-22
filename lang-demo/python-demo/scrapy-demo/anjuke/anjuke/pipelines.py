@@ -15,7 +15,7 @@ class AnjukePipeline:
 
     def open_spider(self, spider):
         self.conn = get_sqlite_connection()
-        self.conn.execute("create table if not exists anjuke_city(province text, name text, url text, new_house_url text, new_house_total text, remark text)")
+        self.conn.execute("create table if not exists anjuke_city(province text, name text, url text, new_house_url text, new_house_total text, new_house_total_num integer, remark text)")
         self.conn.execute("create table if not exists anjuke_new_house(province text, city text, name text, address text, type text, tag text, price text, price_num integer, url text, remark text)")
         self.conn.execute("delete from anjuke_city where 1 = 1")
         self.conn.execute("delete from anjuke_new_house where 1 = 1")
@@ -23,8 +23,8 @@ class AnjukePipeline:
 
     def process_item(self, item, spider):
         if isinstance(item, CityItem):
-            self.conn.execute("insert into anjuke_city(province, name, url, new_house_url, new_house_total, remark) values(?, ?, ?, ?, ?, ?)",
-                              (item.get("province"), item.get("name"), item.get("url"), item.get("new_house_url"), item.get("new_house_total"), item.get("remark")))
+            self.conn.execute("insert into anjuke_city(province, name, url, new_house_url, new_house_total, new_house_total_num, remark) values(?, ?, ?, ?, ?, ?)",
+                              (item.get("province"), item.get("name"), item.get("url"), item.get("new_house_url"), item.get("new_house_total"), item.get("new_house_total_num"), item.get("remark")))
             self.conn.commit()
         elif isinstance(item, NewHouseItem):
             self.conn.execute("insert into anjuke_new_house(province, city, name, address, type, tag, price, price_num, url, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
