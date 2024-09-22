@@ -33,10 +33,10 @@ class ExampleSpider(scrapy.Spider):
         for ele in arr:
             alist = ele.css("a")
             item = TjbzItem()
-            item.code = alist[0].css("::text").get()
-            item.name = alist[-1].css("::text").get()
-            item.url = response.urljoin(alist[-1].css("::attr(href)").get())
-            item.parent_code = response.meta["meta_parent"].code
+            item["code"] = alist[0].css("::text").get()
+            item["name"] = alist[-1].css("::text").get()
+            item["url"] = response.urljoin(alist[-1].css("::attr(href)").get())
+            item["parent_code"] = response.meta["meta_parent"].code
             yield item
             if item.url:
                 yield scrapy.Request(url=item.url, callback=callback, meta={"meta_parent": item})
