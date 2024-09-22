@@ -1,3 +1,4 @@
+import datetime
 from time import sleep
 
 from selenium.webdriver.common.by import By
@@ -12,7 +13,7 @@ def start():
 
     sds = '2024-04-01'
     eds = ''
-    while eds <= '2024-08-21':
+    while eds <= datetime.datetime.now().strftime('%Y-%m-%d'):
         eds = add_days(sds, 20)
 
         # 自定义查询
