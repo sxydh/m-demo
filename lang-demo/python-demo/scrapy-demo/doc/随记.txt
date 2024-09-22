@@ -65,7 +65,7 @@
                             开始
                                 USER_AGENT = "stats (+http://www.yourdomain.com)"
                                     定义 Request 的请求头 User-Agent
-                                ROBOTSTXT_OBEY = True
+                                ROBOTSTXT_OBEY = False
                                     定义是否遵守 Robot 爬虫约定
                                     
                                 SPIDER_MIDDLEWARES = {
@@ -204,6 +204,8 @@
             https://github.com/rmax/scrapy-redis
             基于 Redis 实现请求调度，避免多个机器运行时，重复调度已经处理的请求。
         开始
+            创建项目
+                ...
             定义设置
                 settings.py
                     SPIDER_MODULES = ["example.spiders"]
@@ -253,7 +255,48 @@
                 
     Splash
         概述
+            Splash 用于渲染网页的脚本内容，是 Scrapy 的扩展组件。
         开始
+            安装服务
+                docker pull scrapinghub/splash
+                ...
+            创建项目
+                ...
+            定义设置
+                settings.py
+                    SPLASH_URL = 'http://192.168.233.129:8050'
+                        定义 Splash 服务
+                    DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+                        定义重复过滤器
+                    HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
+                        定义 HTTP 缓存
+                        
+                    DOWNLOADER_MIDDLEWARES = {
+                        'scrapy_splash.SplashCookiesMiddleware': 723,
+                        'scrapy_splash.SplashMiddleware': 725,
+                        'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+                    }
+                    
+                        定义 Downloader 中间件
+                    
+                    ROBOTSTXT_OBEY = False
+                        定义是否遵守 Robot 爬虫约定
+            定义实体
+                ...
+            构造请求
+                ...
+                    ...(scrapy.Spider):
+                    
+                        def start_requests(self) -> Iterable[Request]:
+                            ...
+                            yield SplashRequest(url=self.start_urls[0],
+                                                callback=...,
+                                                args={'wait': 10}, # 最大超时时间 10 秒
+                                                endpoint='render.html')
+            解析响应
+                ...
+            保存实体
+                ...
     Appium
         概述
         开始
