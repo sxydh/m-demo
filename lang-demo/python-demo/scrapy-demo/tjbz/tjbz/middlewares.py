@@ -91,6 +91,7 @@ class TjbzDownloaderMiddleware:
         request.headers['User-Agent'] = random.choice(USER_AGENT_LIST)
         proxy = os.environ.get('PROXY')
         if proxy:
+            print(f"Using proxy: {proxy}")
             request.meta['proxy'] = proxy
         return None
 
