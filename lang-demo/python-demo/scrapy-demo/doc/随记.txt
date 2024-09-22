@@ -69,19 +69,19 @@
                                     定义是否遵守 Robot 爬虫约定
                                     
                                 SPIDER_MIDDLEWARES = {
-                                    "tjbz.middlewares.StatsSpiderMiddleware": 543,
+                                    "tjbz.middlewares.TjbzSpiderMiddleware": 543,
                                 }
                                 
                                     定义 Spider Middleware 链，其中 543 代表顺序优先级。
                                     
                                 DOWNLOADER_MIDDLEWARES = {
-                                    "tjbz.middlewares.StatsDownloaderMiddleware": 543,
+                                    "tjbz.middlewares.TjbzDownloaderMiddleware": 543,
                                 }
                                 
                                     定义 Downloader Middleware 链，其中 543 代表顺序优先级。
                                 
                                 ITEM_PIPELINES = {
-                                    "tjbz.pipelines.StatsPipeline": 300,
+                                    "tjbz.pipelines.TjbzPipeline": 300,
                                 }
                                 
                                     定义 Item Pipeline 链，其中 300 代表顺序优先级。
@@ -92,7 +92,7 @@
                                     定义用户 Spider
         定义实体
             items.py
-                class StatsItem(scrapy.Item):
+                class TjbzItem(scrapy.Item):
                     ...
         构造请求
             tjbz.py
@@ -127,7 +127,7 @@
                 
         保存实体
             pipelines.py
-                class StatsPipeline:
+                class TjbzPipeline:
                 
                     def open_spider(self, spider):
                         # 生命周期函数，仅执行一次。
@@ -144,7 +144,7 @@
                             
         定义中间件（可选）
             middlewares.py
-                class StatsSpiderMiddleware:
+                class TjbzSpiderMiddleware:
                     def process_spider_output(self, response, result, spider):
                         # Spider 输出预处理
                         # 需要显示返回 iterable of Request/item objects
@@ -152,7 +152,7 @@
                     def process_spider_input(self, response, spider):
                         # Spider 输入预处理
                         ...
-                class StatsDownloaderMiddleware:
+                class TjbzDownloaderMiddleware:
                     def process_request(self, request, spider):
                         # Downloader 请求预处理
                         # 可以用于设置 Cookie/User-Agent/Proxy 等，或者将 Request 给第三方组件（ 例如： Selenium ）执行。
