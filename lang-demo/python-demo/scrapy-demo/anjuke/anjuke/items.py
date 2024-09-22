@@ -17,6 +17,7 @@ class CityItem(scrapy.Item):
     new_house_url = scrapy.Field()
     new_house_total = scrapy.Field()
     new_house_total_num = scrapy.Field()
+    body = scrapy.Field()
     remark = scrapy.Field()
 
 
@@ -30,4 +31,5 @@ class NewHouseItem(scrapy.Item):
     price = scrapy.Field()
     price_num = scrapy.Field()
     url = scrapy.Field()
+    body = scrapy.Field()
     remark = scrapy.Field()
