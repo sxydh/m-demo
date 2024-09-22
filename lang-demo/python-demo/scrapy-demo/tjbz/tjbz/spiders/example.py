@@ -1,17 +1,16 @@
 import os
-import sys
-from typing import Any
-
 import scrapy
+import sys
 from scrapy.cmdline import execute
 from scrapy.http import Response
+from typing import Any
 
 from tjbz.items import TjbzItem
 
 
-class TjbzApp(scrapy.Spider):
-    name = "tjbz"
-    allowed_domains = []
+class ExampleSpider(scrapy.Spider):
+    name = "example"
+    allowed_domains = ["stats.gov.cn"]
     start_urls = ["https://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2023/index.html"]
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
