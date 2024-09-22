@@ -7,6 +7,8 @@ import scrapy
 
 
 class AnjukeItem(scrapy.Item):
+    province = scrapy.Field()
+    city = scrapy.Field()
     name = scrapy.Field()
     address = scrapy.Field()
     type = scrapy.Field()
