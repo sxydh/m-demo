@@ -84,6 +84,7 @@ class AnjukeDownloaderMiddleware:
         #   installed downloader middleware will be called
 
         request.headers["User-Agent"] = random.choice(USER_AGENT_LIST)
+        print(f"Using user agent: {request.headers['User-Agent']}")
         proxy = os.environ.get('PROXY')
         if proxy:
             print(f"Using proxy: {proxy}")
