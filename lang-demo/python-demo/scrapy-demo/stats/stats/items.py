@@ -7,6 +7,6 @@ import scrapy
 
 
 class StatsItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    code = scrapy.Field()
+    name = scrapy.Field()
+    parent_code = scrapy.Field()
