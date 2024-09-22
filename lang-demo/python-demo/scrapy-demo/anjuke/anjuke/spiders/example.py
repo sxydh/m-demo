@@ -19,7 +19,7 @@ class ExampleSpider(scrapy.Spider):
     start_urls = ["https://www.anjuke.com/sy-city.html?from=HomePage_City"]
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
-        if self.is_request_again(response.url, self.start_urls[0]):
+        if self.is_request_again(response.url, self.start_urls[0], response):
             yield scrapy.Request(self.start_urls[0], callback=self.parse, dont_filter=True)
             return
 
@@ -34,7 +34,7 @@ class ExampleSpider(scrapy.Spider):
         meta_city_item = response.meta["meta_city_item"]
         url = meta_city_item["url"]
 
-        if self.is_request_again(response.url, url):
+        if self.is_request_again(response.url, url, response):
             yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
@@ -61,7 +61,7 @@ class ExampleSpider(scrapy.Spider):
         meta_city_item = response.meta["meta_city_item"]
         new_house_url = meta_city_item["new_house_url"]
 
-        if self.is_request_again(response.url, new_house_url):
+        if self.is_request_again(response.url, new_house_url, response):
             yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
