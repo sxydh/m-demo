@@ -92,7 +92,7 @@ class TjbzDownloaderMiddleware:
         proxy = os.environ.get('PROXY')
         if proxy:
             print(f"Using proxy: {proxy}")
-            request.meta['proxy'] = proxy
+            request.meta['proxy'] = f"http://{proxy}"
         return None
 
     def process_response(self, request, response, spider):
