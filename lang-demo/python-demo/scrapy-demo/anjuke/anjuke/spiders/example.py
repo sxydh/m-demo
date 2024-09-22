@@ -113,8 +113,10 @@ class ExampleSpider(scrapy.Spider):
                     ret = ret.replace(replace, "")
         return ret
 
-    def is_request_again(self, ra: str, rb: str) -> bool:
+    def is_request_again(self, ra: str, rb: str, response: Response) -> bool:
         ret = abs(len(ra) - len(rb)) > 20
+        if not ret and response:
+            ret = "antibot" in response.body
         if ret:
             logging.warning(f"{ra} <=> {rb}")
         return ret
