@@ -1,9 +1,12 @@
+import os
+import sys
 from typing import Any
 
 import scrapy
+from scrapy.cmdline import execute
 from scrapy.http import Response
 
-from tjbz.tjbz.items import TjbzItem
+from tjbz.items import TjbzItem
 
 
 class TjbzApp(scrapy.Spider):
@@ -38,3 +41,8 @@ class TjbzApp(scrapy.Spider):
             yield item
             if item.url:
                 yield scrapy.Request(url=item.url, callback=callback, meta={"meta_parent": item})
+
+
+if __name__ == '__main__':
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    execute(['scrapy', 'crawl', 'tjbz'])
