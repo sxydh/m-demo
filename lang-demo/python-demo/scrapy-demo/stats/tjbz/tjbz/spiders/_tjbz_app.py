@@ -13,17 +13,21 @@ class TjbzApp(scrapy.Spider):
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
         provinces = response.css(".provincetr a")
-        yield self.parse_do(provinces, response)
+        yield self.parse_do(response, provinces, self.parse_city)
 
     def parse_city(self, response: Response):
         cities = response.css(".citytr")
-        self.parse_do(cities, response)
+        self.parse_do(response, cities, self.parse_county)
 
     def parse_county(self, response: Response):
         counties = response.css(".countytr")
-        self.parse_do(counties, response)
+        self.parse_do(response, counties, self.parse_town)
 
-    def parse_do(self, arr, response: Response):
+    def parse_town(self, response: Response):
+        towns = response.css(".towntr")
+        self.parse_do(response, towns, None)
+
+    def parse_do(self, response: Response, arr, callback):
         for ele in arr:
             alist = ele.css("a")
             item = TjbzItem()
@@ -32,4 +36,5 @@ class TjbzApp(scrapy.Spider):
             item.url = response.urljoin(alist[-1].css("::attr(href)").get())
             item.parent_code = response.meta["meta_parent"].code
             yield item
-            yield scrapy.Request(url=item.url, callback=self.parse_county, meta={"meta_parent": item})
+            if item.url:
+                yield scrapy.Request(url=item.url, callback=callback, meta={"meta_parent": item})
