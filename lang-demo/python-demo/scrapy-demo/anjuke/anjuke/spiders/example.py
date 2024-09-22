@@ -63,18 +63,18 @@ class ExampleSpider(scrapy.Spider):
         totals = response.css(".list-results .result")
         if len(totals) != 0:
             total = totals[0]
-            meta_city_item["new_house_total"] = self.parse_text_helper(total, "*", replace=(" ", ""))
+            meta_city_item["new_house_total"] = self.parse_text_helper(total, "*", replaces=[" "])
         yield meta_city_item
 
         new_house_list = response.css(".list-results .item-mod")
         for new_house in new_house_list:
             new_house_item = NewHouseItem()
             new_house_item["city"] = meta_city_item["name"]
-            new_house_item["name"] = self.parse_text_helper(new_house, ".lp-name", replace=(" ", ""))
-            new_house_item["address"] = self.parse_text_helper(new_house, ".address", replace=(" ", ""))
-            new_house_item["type"] = self.parse_text_helper(new_house, ".huxing", replace=(" ", ""))
+            new_house_item["name"] = self.parse_text_helper(new_house, ".lp-name", replaces=[" "])
+            new_house_item["address"] = self.parse_text_helper(new_house, ".address", replaces=[" "])
+            new_house_item["type"] = self.parse_text_helper(new_house, ".huxing", replaces=[" ", "\n"])
             new_house_item["tag"] = self.parse_text_helper(new_house, ".tag-panel i,span", is_multi=True)
-            price = self.parse_text_helper(new_house, ".price", replace=(" ", ""))
+            price = self.parse_text_helper(new_house, ".price", replaces=[" "])
             new_house_item["price"] = price
             if price is not None and len(price) > 0:
                 new_house_item["price_num"] = re.search(r'(\d+)', price).group(1)
