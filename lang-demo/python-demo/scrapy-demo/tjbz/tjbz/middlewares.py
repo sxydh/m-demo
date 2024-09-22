@@ -101,7 +101,7 @@ class TjbzDownloaderMiddleware:
         # - return a Request object
         # - or raise IgnoreRequest
 
-        self.conn.execute("update tjbz_log set code, body = ?, update_time = ? where id = '-1'",
+        self.conn.execute("update tjbz_log set code = ?, body = ?, update_time = ? where id = '-1'",
                           [response.status, response.body, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
         self.conn.commit()
 
