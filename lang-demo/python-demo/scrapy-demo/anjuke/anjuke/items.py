@@ -16,6 +16,7 @@ class CityItem(scrapy.Item):
     url = scrapy.Field()
     new_house_url = scrapy.Field()
     new_house_total = scrapy.Field()
+    new_house_total_num = scrapy.Field()
     remark = scrapy.Field()
 
 
