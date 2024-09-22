@@ -16,7 +16,7 @@ class ExampleSpider(scrapy.Spider):
     start_urls = ["https://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2023/index.html"]
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
-        trs = response.css(".provincetr")
+        trs = response.css(".provincetr td")
         trs += response.css(".citytr")
         trs += response.css(".countytr")
         trs += response.css(".towntr")
