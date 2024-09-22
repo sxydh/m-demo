@@ -40,12 +40,14 @@ class ExampleSpider(scrapy.Spider):
 
         navs = response.css(".nav-channel-list > li:first-child")
         if len(navs) == 0:
+            meta_city_item["body"] = response.body
             meta_city_item["remark"] = "len(response.css(\".nav-channel-list > li:first-child\")) == 0"
             yield meta_city_item
             return
         nav = navs[0]
         nav_text = nav.css("::text").get().strip()
         if nav_text != "新房":
+            meta_city_item["body"] = response.body
             meta_city_item["remark"] = "nav.css(\"::text\").get().strip() != \"新房\""
             yield meta_city_item
             return
