@@ -170,7 +170,7 @@
                         # Downloader 异常预处理
                         ...
         启动爬虫
-            scrapy crawl tjbz
+            scrapy crawl tjbz -L INFO
     断点续爬
         概述
             https://github.com/rmax/scrapy-redis
