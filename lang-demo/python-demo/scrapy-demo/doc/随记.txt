@@ -256,7 +256,6 @@
     Splash
         概述
             Splash 用于渲染网页的脚本内容，是 Scrapy 的扩展组件。
-            https://www.bilibili.com/video/BV1WY4y1s7Ns?p=33&vd_source=c866e830ebc8bae23e4374812c76e44d
         开始
             安装服务
                 docker pull scrapinghub/splash
@@ -301,19 +300,16 @@
     Scrapyd
         概述
             Scrapyd 是部署运行 Scrapy 爬虫的框架
-            https://www.bilibili.com/video/BV1WY4y1s7Ns?p=38&vd_source=c866e830ebc8bae23e4374812c76e44d
         开始
             ...
     Gerapy
         概述
             Gerapy 是爬虫管理框架
-            Gerapy 基于 Scrapy/Scrapyd/Scrapyd-Client/Scrapy-Redis/Scrapyd-API/Scrapy-Splash/Jinjia2/Django/Vue.js 开发
-            https://www.bilibili.com/video/BV1WY4y1s7Ns?p=39&vd_source=c866e830ebc8bae23e4374812c76e44d
+            Gerapy 基于 Scrapy/Scrapyd/Scrapyd-Client/Scrapy-Redis/Scrapyd-API/Scrapy-Splash/Jinjia2/Django/Vue.js 开发。
         开始
             ...
     Appium
         概述
             Appium 是 App 爬虫框架
-            https://www.bilibili.com/video/BV1WY4y1s7Ns?p=40&vd_source=c866e830ebc8bae23e4374812c76e44d
         开始
             ...
