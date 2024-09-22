@@ -94,12 +94,6 @@ class TjbzDownloaderMiddleware:
         if proxy:
             print(f"Using proxy: {proxy}")
             request.meta['proxy'] = f"http://{proxy}"
-            username = os.environ.get('PROXY_USERNAME')
-            password = os.environ.get('PROXY_PASSWORD')
-            authentication = base64.b64encode(f"{username}:{password}".encode("utf-8"))
-            authentication = f"Basic {authentication}"
-            request.headers["Proxy-Authorization"] = authentication
-            print(f"Proxy authentication: {authentication}")
         return None
 
     def process_response(self, request, response, spider):
