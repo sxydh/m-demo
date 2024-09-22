@@ -19,8 +19,7 @@ class ExampleSpider(scrapy.Spider):
     start_urls = ["https://www.anjuke.com/sy-city.html?from=HomePage_City"]
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
-        if response.url != self.start_urls[0]:
-            logging.warning(f"{response.url} != {self.start_urls[0]}")
+        if self.is_request_again(response.url, self.start_urls[0]):
             yield scrapy.Request(self.start_urls[0], callback=self.parse, dont_filter=True)
             return
 
@@ -35,8 +34,7 @@ class ExampleSpider(scrapy.Spider):
         meta_city_item = response.meta["meta_city_item"]
         url = meta_city_item["url"]
 
-        if response.url.strip('/') != url.strip('/'):
-            logging.warning(f"{response.url.strip('/')} != {url.strip('/')}")
+        if self.is_request_again(response.url, url):
             yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
@@ -61,8 +59,7 @@ class ExampleSpider(scrapy.Spider):
         meta_city_item = response.meta["meta_city_item"]
         new_house_url = meta_city_item["new_house_url"]
 
-        if response.url.strip('/') != new_house_url.strip('/'):
-            logging.warning(f"{response.url.strip('/')} != {new_house_url.strip('/')}")
+        if self.is_request_again(response.url, new_house_url):
             yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
@@ -114,7 +111,17 @@ class ExampleSpider(scrapy.Spider):
                     ret = ret.replace(replace, "")
         return ret
 
+    def is_request_again(self, ra: str, rb: str) -> bool:
+        ra = ra.strip('/')
+        rb = rb.strip('/')
+        ra = ra[ra.find(".") + 1:]
+        rb = rb[rb.find(".") + 1:]
+        ret = ra != rb
+        if ret:
+            logging.warning(f"{ra} != {rb}")
+        return ret
+
 
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-    execute(["scrapy", "crawl", "example", "-L", "WARN"])
+    execute(["scrapy", "crawl", "example", "-L", "DEBUG"])
