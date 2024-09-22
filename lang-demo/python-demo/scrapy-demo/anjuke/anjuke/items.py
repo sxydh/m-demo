@@ -14,4 +14,5 @@ class AnjukeItem(scrapy.Item):
     type = scrapy.Field()
     tag = scrapy.Field()
     price = scrapy.Field()
+    url = scrapy.Field()
     remark = scrapy.Field()
