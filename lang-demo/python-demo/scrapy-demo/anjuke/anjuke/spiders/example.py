@@ -80,7 +80,7 @@ class ExampleSpider(scrapy.Spider):
             if price is not None and len(price) > 0:
                 print(price)
                 new_house_item["price_num"] = re.search(r'(\d+)', price).group(1)
-            new_house_item["url"] = new_house.css(".lp-name a::attr(href)").get()
+            new_house_item["url"] = new_house.css("a.lp-name::attr(href)").get()
             yield new_house_item
 
     def parse_text_helper(self, src, selector, is_multi=False):
