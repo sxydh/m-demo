@@ -20,7 +20,7 @@ class TjbzPipeline:
         self.conn.commit()
 
     def process_item(self, item, spider):
-        self.conn.execute("insert into tjbz(code, name, parent_code, url, remark) values (?, ?, ?, ?, ?, ?)",
+        self.conn.execute("insert into tjbz(code, name, parent_code, url, level, remark) values (?, ?, ?, ?, ?, ?)",
                           (item["code"], item["name"], item.get("parent_code", None), item.get("url", None), item["level"], item.get("remark", None)))
         self.conn.commit()
 
