@@ -31,7 +31,7 @@ class ExampleSpider(scrapy.Spider):
         meta_city_item = response.meta["meta_city_item"]
         url = meta_city_item["url"]
 
-        if "callback" in response.url:
+        if response.url != url:
             yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": meta_city_item}, dont_filter=True)
             return
 
