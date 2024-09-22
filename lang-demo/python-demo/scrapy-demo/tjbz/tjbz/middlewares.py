@@ -2,6 +2,7 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import datetime
 import random
 
 from scrapy import signals
@@ -10,6 +11,7 @@ from scrapy import signals
 from itemadapter import is_item, ItemAdapter
 
 from tjbz.settings import USER_AGENT_LIST
+from util.common import get_sqlite_connection
 
 
 class TjbzSpiderMiddleware:
@@ -64,6 +66,13 @@ class TjbzDownloaderMiddleware:
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
 
+    def __init__(self):
+        self.conn = get_sqlite_connection()
+        self.conn.execute("create table if not exists tjbz_log(id text, remark text, update_time text)")
+        self.conn.execute("delete from tjbz_log where 1 = 1")
+        self.conn.execute("insert into tjbz_log(id) values('-1')")
+        self.conn.commit()
+
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -91,6 +100,11 @@ class TjbzDownloaderMiddleware:
         # - return a Response object
         # - return a Request object
         # - or raise IgnoreRequest
+
+        self.conn.execute("update tjbz_log set remark = ?, update_time = ? where id = '-1'",
+                          [response.body, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
+        self.conn.commit()
+
         return response
 
     def process_exception(self, request, exception, spider):
