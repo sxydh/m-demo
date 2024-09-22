@@ -3,6 +3,7 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import datetime
+import logging
 import os
 import random
 
@@ -90,10 +91,10 @@ class AnjukeDownloaderMiddleware:
         #   installed downloader middleware will be called
 
         request.headers["User-Agent"] = random.choice(USER_AGENT_LIST)
-        print(f"Using user agent: {request.headers['User-Agent']}")
+        logging.debug(f"Using user agent: {request.headers['User-Agent']}")
         proxy = os.environ.get('PROXY')
         if proxy:
-            print(f"Using proxy: {proxy}")
+            logging.debug(f"Using proxy: {proxy}")
             request.meta['proxy'] = f"http://{proxy}"
 
         return None
