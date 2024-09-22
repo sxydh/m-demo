@@ -9,6 +9,8 @@ File
                 Java
                     Resource management
                         AutoCloseable used without 'try'-with-resources
+                Python
+                    Method is not declared static
                 SQL
                     SQL dialect detection
                     No data sources configured
