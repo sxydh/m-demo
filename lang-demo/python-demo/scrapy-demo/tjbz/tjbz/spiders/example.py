@@ -14,31 +14,43 @@ class ExampleSpider(scrapy.Spider):
     name = "example"
     allowed_domains = ["stats.gov.cn"]
     start_urls = ["https://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2023/index.html"]
+    level = 4
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
+        meta = response.meta
+        meta_parent = meta.get("meta_parent", TjbzItem())
+        parent_code = meta_parent.get("code", None)
+        parent_level = meta_parent.get("level", 0)
+
         trs = response.css(".provincetr td")
-        trs += response.css(".citytr")
-        trs += response.css(".countytr")
-        trs += response.css(".towntr")
+        if self.level > 1:
+            trs += response.css(".citytr")
+        elif self.level > 2:
+            trs += response.css(".countytr")
+        elif self.level > 3:
+            trs += response.css(".towntr")
+
         for tr in trs:
             tds = tr.css("td")
             item = TjbzItem()
             if len(tds) == 1:
-                item["name"] = tds[0].css("::text").get().strip()
                 al = tds[0].css("a")
-                if len(al) > 0:
-                    href = al[0].css("::attr(href)").get()
-                    item["code"] = href.replace('.html', '')
-                    item["url"] = response.urljoin(href)
+                href = al[0].css("::attr(href)").get()
+                item["code"] = href.replace('.html', '')
+                item["name"] = tds[0].css("::text").get().strip()
+                item["url"] = response.urljoin(href)
+                item["level"] = parent_level + 1
             else:
                 item["code"] = tds[0].css("::text").get().strip()
                 item["name"] = tds[-1].css("::text").get().strip()
-                item["parent_code"] = response.meta["meta_parent"]["code"]
+                item["parent_code"] = parent_code
                 al = tds[0].css("a")
                 if len(al) > 0:
                     item["url"] = response.urljoin(al[0].css("::attr(href)").get())
+                item["level"] = parent_level + 1
             yield item
-            if "url" in item:
+
+            if "url" in item and item["level"] < self.level - 1:
                 yield scrapy.Request(url=item["url"], callback=self.parse, meta={"meta_parent": item})
 
 
