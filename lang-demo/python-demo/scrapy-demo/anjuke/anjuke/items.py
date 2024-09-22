@@ -7,6 +7,16 @@ import scrapy
 
 
 class AnjukeItem(scrapy.Item):
+    pass
+
+
+class CityItem(scrapy.Item):
+    province = scrapy.Field()
+    name = scrapy.Field()
+    new_house_total = scrapy.Field()
+
+
+class NewHouseItem(scrapy.Item):
     province = scrapy.Field()
     city = scrapy.Field()
     name = scrapy.Field()
