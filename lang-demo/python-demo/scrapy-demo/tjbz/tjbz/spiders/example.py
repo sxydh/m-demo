@@ -44,4 +44,4 @@ class ExampleSpider(scrapy.Spider):
 
 if __name__ == '__main__':
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-    execute(['scrapy', 'crawl', 'tjbz'])
+    execute(['scrapy', 'crawl', 'example'])
