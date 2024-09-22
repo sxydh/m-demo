@@ -2,11 +2,14 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import random
 
 from scrapy import signals
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
+
+from stats.tjbz.tjbz.settings import USER_AGENT_LIST
 
 
 class TjbzSpiderMiddleware:
@@ -78,7 +81,8 @@ class TjbzDownloaderMiddleware:
         # - or return a Request object
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
-        return None
+        request.headers['User-Agent'] = random.choice(USER_AGENT_LIST)
+        return request
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.

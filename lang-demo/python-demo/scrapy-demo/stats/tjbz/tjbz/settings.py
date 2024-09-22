@@ -15,6 +15,10 @@ NEWSPIDER_MODULE = "tjbz.spiders"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "tjbz (+http://www.yourdomain.com)"
+USER_AGENT_LIST = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT10.0; Win64; x64) AppleWebKit/537"]
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
