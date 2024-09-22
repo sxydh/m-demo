@@ -36,11 +36,12 @@ class ExampleSpider(scrapy.Spider):
             yield scrapy.Request(url, callback=self.parse, dont_filter=True)
             return
 
-        nav = response.css(".nav-channel-list > li:first-child").get()
-        if not nav:
-            meta_city_item["remark"] = "response.css(\".nav-channel-list > li:first-child\").get() is None"
+        navs = response.css(".nav-channel-list > li:first-child")
+        if len(navs) == 0:
+            meta_city_item["remark"] = "len(response.css(\".nav-channel-list > li:first-child\")) == 0"
             yield meta_city_item
             return
+        nav = navs[0]
         nav_text = nav.css("::text").get().strip()
         if nav_text != "新房":
             meta_city_item["remark"] = "nav.css(\"::text\").get().strip() != \"新房\""
@@ -60,8 +61,9 @@ class ExampleSpider(scrapy.Spider):
             yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, dont_filter=True)
             return
 
-        total = response.css(".list-results .result").get()
-        if total:
+        totals = response.css(".list-results .result")
+        if len(totals) != 0:
+            total = totals[0]
             meta_city_item["new_house_total"] = total.css("::text").get().strip()
         yield meta_city_item
 
@@ -81,10 +83,10 @@ class ExampleSpider(scrapy.Spider):
             yield new_house_item
 
     def parse_text_helper(self, src, selector, is_multi=False):
-        if not is_multi:
-            ele = src.css(selector).get()
-            return ele.css("::text").get().strip() if ele else None
         eles = src.css(selector)
+        if not is_multi:
+            ele = eles[0] if len(eles) > 0 else None
+            return ele.css("::text").get().strip() if ele else None
         return "".join([ele.css("::text").get().strip() for ele in eles])
 
 
