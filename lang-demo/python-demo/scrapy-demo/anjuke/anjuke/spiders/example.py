@@ -81,7 +81,7 @@ class ExampleSpider(scrapy.Spider):
             new_house_item["url"] = new_house.css("a.lp-name::attr(href)").get()
             yield new_house_item
 
-    def parse_text_helper(self, src, selector, is_multi=False):
+    def parse_text_helper(self, src, selector, is_multi=False, replace=""):
         ret = None
         arr = src.css(selector)
         if len(arr) == 0:
@@ -98,7 +98,10 @@ class ExampleSpider(scrapy.Spider):
                 if text:
                     ret.append(text.strip())
             ret = "###".join(ret)
-        return ret.replace("\xa0", "").strip() if ret else None
+        if ret:
+            ret = ret.replace("\xa0", "").strip()
+            ret = ret.replace(replace, "")
+        return ret
 
 
 if __name__ == "__main__":
