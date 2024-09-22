@@ -1,9 +1,10 @@
 import os
-import scrapy
 import sys
+from typing import Any
+
+import scrapy
 from scrapy.cmdline import execute
 from scrapy.http import Response
-from typing import Any
 
 from tjbz.items import TjbzItem
 
@@ -36,7 +37,8 @@ class ExampleSpider(scrapy.Spider):
             item["code"] = alist[0].css("::text").get()
             item["name"] = alist[-1].css("::text").get()
             item["url"] = response.urljoin(alist[-1].css("::attr(href)").get())
-            item["parent_code"] = response.meta["meta_parent"].code
+            if "meta_parent" in response.meta:
+                item["parent_code"] = response.meta["meta_parent"]["code"]
             yield item
             if item["url"]:
                 yield scrapy.Request(url=item.url, callback=callback, meta={"meta_parent": item})
