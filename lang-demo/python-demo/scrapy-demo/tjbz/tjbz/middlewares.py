@@ -3,6 +3,7 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import datetime
+import os
 import random
 
 from scrapy import signals
@@ -88,6 +89,7 @@ class TjbzDownloaderMiddleware:
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
         request.headers['User-Agent'] = random.choice(USER_AGENT_LIST)
+        request.meta['proxy'] = os.environ.get('PROXY')
         return None
 
     def process_response(self, request, response, spider):
