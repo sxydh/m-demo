@@ -82,13 +82,23 @@ class ExampleSpider(scrapy.Spider):
             yield new_house_item
 
     def parse_text_helper(self, src, selector, is_multi=False):
+        ret = None
         arr = src.css(selector)
+        if len(arr) == 0:
+            return ret
         if not is_multi:
-            ele = arr[0] if len(arr) > 0 else None
-            text = "".join([se.strip() for se in ele.css("::text").getall()]) if ele else None
+            ele = arr[0]
+            texts = ele.css("::text").getall()
+            if len(texts) > 0:
+                ret = "".join(texts)
         else:
-            text = "###".join([ele.css("::text").get().strip() for ele in arr])
-        return text.replace("\xa0", "") if text else None
+            ret = []
+            for ele in arr:
+                text = ele.css("::text").get()
+                if text:
+                    ret.append(text.strip())
+            ret = "###".join(ret)
+        return ret.replace("\xa0", "") if ret else None
 
 
 if __name__ == "__main__":
