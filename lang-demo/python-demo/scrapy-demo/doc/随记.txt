@@ -299,7 +299,13 @@
                 ...
     Scrapyd
         概述
-            Scrapyd 是用于部署运行 Scrapy 爬虫的框架
+            Scrapyd 是部署运行 Scrapy 爬虫的框架
+        开始
+            ...
+    Gerapy
+        概述
+            Gerapy 是爬虫管理框架
+            Gerapy 基于 Scrapy/Scrapyd/Scrapyd-Client/Scrapy-Redis/Scrapyd-API/Scrapy-Splash/Jinjia2/Django/Vue.js 开发。
         开始
             ...
     Appium
