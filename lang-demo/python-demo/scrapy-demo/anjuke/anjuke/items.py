@@ -13,6 +13,8 @@ class AnjukeItem(scrapy.Item):
 class CityItem(scrapy.Item):
     province = scrapy.Field()
     name = scrapy.Field()
+    url = scrapy.Field()
+    new_house_url = scrapy.Field()
     new_house_total = scrapy.Field()
 
 
