@@ -11,3 +11,4 @@ class TjbzItem(scrapy.Item):
     name = scrapy.Field()
     parent_code = scrapy.Field()
     url = scrapy.Field()
+    remark = scrapy.Field()
