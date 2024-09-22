@@ -33,7 +33,7 @@ class ExampleSpider(scrapy.Spider):
         url = meta_city_item["url"]
 
         if "callback" in response.url:
-            yield scrapy.Request(url, callback=self.parse, dont_filter=True)
+            yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": meta_city_item}, dont_filter=True)
             return
 
         navs = response.css(".nav-channel-list > li:first-child")
@@ -58,7 +58,7 @@ class ExampleSpider(scrapy.Spider):
         new_house_url = meta_city_item["new_house_url"]
 
         if "callback" in response.url:
-            yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, dont_filter=True)
+            yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": meta_city_item}, dont_filter=True)
             return
 
         totals = response.css(".list-results .result")
@@ -77,7 +77,7 @@ class ExampleSpider(scrapy.Spider):
             new_house_item["tag"] = self.parse_text_helper(new_house, ".tag-panel i,span", is_multi=True)
             price = self.parse_text_helper(new_house, ".price")
             new_house_item["price"] = price
-            if price and len(price) > 0:
+            if price is not None and len(price) > 0:
                 print(price)
                 new_house_item["price_num"] = re.search(r'(\d+)', price).group(1)
             new_house_item["url"] = new_house.css(".lp-name a::attr(href)").get()
