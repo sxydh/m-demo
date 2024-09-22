@@ -23,7 +23,7 @@ class AnjukePipeline:
 
     def process_item(self, item, spider):
         if isinstance(item, CityItem):
-            self.conn.execute("insert into anjuke_city(province, name, url, new_house_url, new_house_total, new_house_total_num, remark) values(?, ?, ?, ?, ?, ?)",
+            self.conn.execute("insert into anjuke_city(province, name, url, new_house_url, new_house_total, new_house_total_num, remark) values(?, ?, ?, ?, ?, ?, ?)",
                               (item.get("province"), item.get("name"), item.get("url"), item.get("new_house_url"), item.get("new_house_total"), item.get("new_house_total_num"), item.get("remark")))
             self.conn.commit()
         elif isinstance(item, NewHouseItem):
