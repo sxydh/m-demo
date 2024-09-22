@@ -1,3 +1,4 @@
+import copy
 import logging
 import os
 import re
@@ -11,6 +12,7 @@ from scrapy.http import Response
 from anjuke.items import CityItem, NewHouseItem
 
 
+# noinspection DuplicatedCode
 class ExampleSpider(scrapy.Spider):
     name = "example"
     allowed_domains = ["anjuke.com"]
@@ -27,7 +29,7 @@ class ExampleSpider(scrapy.Spider):
             city_item = CityItem()
             city_item["name"] = city.css("::text").get().strip()
             city_item["url"] = response.urljoin(city.css("::attr(href)").get())
-            yield scrapy.Request(city_item["url"], callback=self.parse_city_new_house_url, meta={"meta_city_item": city_item})
+            yield scrapy.Request(city_item["url"], callback=self.parse_city_new_house_url, meta={"meta_city_item": copy.copy(city_item)})
 
     def parse_city_new_house_url(self, response: Response) -> Any:
         meta_city_item = response.meta["meta_city_item"]
@@ -35,7 +37,7 @@ class ExampleSpider(scrapy.Spider):
 
         if response.url.strip('/') != url.strip('/'):
             logging.warning(f"{response.url.strip('/')} != {url.strip('/')}")
-            yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": meta_city_item}, dont_filter=True)
+            yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
         navs = response.css(".nav-channel-list > li:first-child")
@@ -53,7 +55,7 @@ class ExampleSpider(scrapy.Spider):
         new_house_url = new_house_url.split("?")[0]
         new_house_url = f"{new_house_url}loupan/all/s1"
         meta_city_item["new_house_url"] = new_house_url
-        yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": meta_city_item})
+        yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": copy.copy(meta_city_item)})
 
     def parse_new_house_list(self, response: Response) -> Any:
         meta_city_item = response.meta["meta_city_item"]
@@ -61,7 +63,7 @@ class ExampleSpider(scrapy.Spider):
 
         if response.url.strip('/') != new_house_url.strip('/'):
             logging.warning(f"{response.url.strip('/')} != {new_house_url.strip('/')}")
-            yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": meta_city_item}, dont_filter=True)
+            yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
         totals = response.css(".list-results .result")
