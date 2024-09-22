@@ -297,6 +297,11 @@
                 ...
             保存实体
                 ...
+    Scrapyd
+        概述
+            Scrapyd 是用于部署运行 Scrapy 爬虫的框架
+        开始
+            ...
     Appium
         概述
         开始
