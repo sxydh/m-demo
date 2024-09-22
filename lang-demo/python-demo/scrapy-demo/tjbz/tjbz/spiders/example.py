@@ -30,6 +30,9 @@ class ExampleSpider(scrapy.Spider):
         if len(trs) == 0 and self.level > 3:
             trs += response.css(".towntr")
 
+        if len(trs) == 0:
+            return scrapy.Request(url=response.url, callback=self.parse, meta={"meta_parent": meta_parent})
+
         for tr in trs:
             tds = tr.css("td")
             item = TjbzItem()
@@ -56,4 +59,4 @@ class ExampleSpider(scrapy.Spider):
 
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-    execute(["scrapy", "crawl", "example", "-L", "WARN"])
+    execute(["scrapy", "crawl", "example", "-L", "DEBUG"])
