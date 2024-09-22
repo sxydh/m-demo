@@ -48,7 +48,7 @@
                         开始
                             Spider Middleware
                                 概述
-                                    可以用于设置 Request 的 User Agent/Proxy 等。
+                                    可以用于设置 Request 的 User-Agent/Proxy 等。
                             Downloader Middleware
                                 概述
                                     可以用于实现响应内容的动态渲染等
@@ -60,7 +60,7 @@
                             定义项目运行配置
                         开始
                             USER_AGENT = "stats (+http://www.yourdomain.com)"
-                                定义 Request 的请求头 User Agent
+                                定义 Request 的请求头 User-Agent
                             ROBOTSTXT_OBEY = True
                                 定义是否遵守 Robot 爬虫约定
                                 
