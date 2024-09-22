@@ -14,7 +14,7 @@ class ExampleSpider(scrapy.Spider):
     name = "example"
     allowed_domains = ["stats.gov.cn"]
     start_urls = ["https://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2023/index.html"]
-    level = 4
+    max_level = 4
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
         meta = response.meta
@@ -23,11 +23,11 @@ class ExampleSpider(scrapy.Spider):
         parent_level = meta_parent.get("level", 0)
 
         trs = response.css(".provincetr td")
-        if len(trs) == 0 and self.level > 1:
+        if len(trs) == 0 and self.max_level > 1:
             trs += response.css(".citytr")
-        if len(trs) == 0 and self.level > 2:
+        if len(trs) == 0 and self.max_level > 2:
             trs += response.css(".countytr")
-        if len(trs) == 0 and self.level > 3:
+        if len(trs) == 0 and self.max_level > 3:
             trs += response.css(".towntr")
 
         if len(trs) == 0:
@@ -54,7 +54,7 @@ class ExampleSpider(scrapy.Spider):
                 item["level"] = parent_level + 1
             yield item
 
-            if "url" in item and item["level"] < self.level:
+            if "url" in item and item["level"] < self.max_level:
                 yield scrapy.Request(url=item["url"], callback=self.parse, meta={"meta_parent": item})
 
 
