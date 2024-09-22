@@ -50,7 +50,7 @@ class ExampleSpider(scrapy.Spider):
                 item["level"] = parent_level + 1
             yield item
 
-            if "url" in item and item["level"] < self.level - 1:
+            if "url" in item and item["level"] < self.level:
                 yield scrapy.Request(url=item["url"], callback=self.parse, meta={"meta_parent": item})
 
 
