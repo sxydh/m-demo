@@ -68,7 +68,7 @@ class TjbzDownloaderMiddleware:
 
     def __init__(self):
         self.conn = get_sqlite_connection()
-        self.conn.execute("create table if not exists tjbz_log(id int primary key autoincrement, code text, body text, update_time text)")
+        self.conn.execute("create table if not exists tjbz_log(id integer primary key autoincrement, code text, body text, update_time text)")
         self.conn.execute("delete from tjbz_log where 1 = 1")
         self.conn.execute("insert into tjbz_log(id) values('-1')")
         self.conn.commit()
