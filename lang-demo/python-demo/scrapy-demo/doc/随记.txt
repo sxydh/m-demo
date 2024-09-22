@@ -62,34 +62,36 @@
                         settings.py
                             概述
                                 定义项目运行配置
-                            开始
-                                USER_AGENT = "tjbz (+http://www.yourdomain.com)"
-                                    定义 Request 的请求头 User-Agent
-                                ROBOTSTXT_OBEY = False
-                                    定义是否遵守 Robot 爬虫约定
-                                    
-                                SPIDER_MIDDLEWARES = {
-                                    "tjbz.middlewares.TjbzSpiderMiddleware": 543,
-                                }
-                                
-                                    定义 Spider Middleware 链，其中 543 代表顺序优先级。
-                                    
-                                DOWNLOADER_MIDDLEWARES = {
-                                    "tjbz.middlewares.TjbzDownloaderMiddleware": 543,
-                                }
-                                
-                                    定义 Downloader Middleware 链，其中 543 代表顺序优先级。
-                                
-                                ITEM_PIPELINES = {
-                                    "tjbz.pipelines.TjbzPipeline": 300,
-                                }
-                                
-                                    定义 Item Pipeline 链，其中 300 代表顺序优先级。
-                                    
                         spiders
                             tjbz.py
                                 概述
                                     定义用户 Spider
+        定义设置
+            USER_AGENT = "tjbz (+http://www.yourdomain.com)"
+                定义 Request 的请求头 User-Agent
+            ROBOTSTXT_OBEY = False
+                定义是否遵守 Robot 爬虫约定
+                
+            SPIDER_MIDDLEWARES = {
+                "tjbz.middlewares.TjbzSpiderMiddleware": 543,
+            }
+            
+                定义 Spider Middleware 链，其中 543 代表顺序优先级。
+                
+            DOWNLOADER_MIDDLEWARES = {
+                "tjbz.middlewares.TjbzDownloaderMiddleware": 543,
+            }
+            
+                定义 Downloader Middleware 链，其中 543 代表顺序优先级。
+            
+            ITEM_PIPELINES = {
+                "tjbz.pipelines.TjbzPipeline": 300,
+            }
+            
+                定义 Item Pipeline 链，其中 300 代表顺序优先级。
+                
+            HTTPERROR_ALLOWED_CODES = [301]
+                定义可以被用户处理的额外状态码
         定义实体
             items.py
                 class TjbzItem(scrapy.Item):
