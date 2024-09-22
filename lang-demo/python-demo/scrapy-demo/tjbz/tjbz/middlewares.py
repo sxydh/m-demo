@@ -89,9 +89,9 @@ class TjbzDownloaderMiddleware:
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
         request.headers['User-Agent'] = random.choice(USER_AGENT_LIST)
-        PROXY = os.environ.get('PROXY')
-        if PROXY:
-            request.meta['proxy'] = PROXY
+        proxy = os.environ.get('PROXY')
+        if proxy:
+            request.meta['proxy'] = proxy
         return None
 
     def process_response(self, request, response, spider):
