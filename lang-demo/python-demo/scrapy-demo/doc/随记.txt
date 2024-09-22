@@ -169,6 +169,8 @@
                     def process_exception(self, request, exception, spider):
                         # Downloader 异常预处理
                         ...
+        启动爬虫
+            scrapy crawl tjbz
     断点续爬
         概述
             https://github.com/rmax/scrapy-redis
@@ -187,19 +189,68 @@
             定义实体
                 ...
             构造请求
-                class DmozSpider(CrawlSpider):
-                    # CrawlSpider 继承自 Spider ，增加了按规则提取链接等功能。
-                    ...
+                demoz.py
+                    class DmozSpider(CrawlSpider):
+                        # CrawlSpider 继承自 Spider ，增加了按规则提取链接等功能。
+                        ...
             解析响应
                 ...
             保存实体
                 ...
+            启动爬虫
+                scrapy crawl demoz
     分布式
         概述
             https://github.com/rmax/scrapy-redis
             基于 Redis 实现请求调度，避免多个机器运行时，重复调度已经处理的请求。
         开始
-            
+            定义设置
+                settings.py
+                    SPIDER_MODULES = ["example.spiders"]
+                    NEWSPIDER_MODULE = "example.spiders"
+                
+                    DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+                        定义重复过滤器，基于 Redis 实现。
+                    SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+                        定义请求调度器，基于 Redis 实现。
+                    SCHEDULER_PERSIST = True
+                        定义爬虫结束后是否保留去重集合和调度队列
+                    ITEM_PIPELINES = {
+                        "example.pipelines.ExamplePipeline": 300,
+                        "scrapy_redis.pipelines.RedisPipeline": 400,
+                    }
+                    
+                        定义实体处理管道链
+                    
+                    REDIS_URL = "redis://192.168.233.129:6379"
+                        定义 Redis 服务器
+                        
+                    DOWNLOAD_DELAY = 1
+                        定义请求间隔
+            定义实体
+                ...
+            构造请求
+                myspider_redis.py
+                    class MySpider(RedisSpider):
+                    
+                        redis_key = "myspider:start_urls"
+                    
+                        def __init__(self, *args, **kwargs):
+                            # Dynamically define the allowed domains list.
+                            domain = kwargs.pop("domain", "")
+                            self.allowed_domains = list(filter(None, domain.split(",")))
+                                # 注意： Python3 需要显示 list(...) 以转成列表。
+                            super().__init__(*args, **kwargs)
+            解析响应
+                ...
+            保存实体
+                ...
+            启动爬虫
+                scrapy crawl myspider_redis
+                
+                    1 - 在每个节点上执行上述启动命令
+                    2 - 在 Redis 执行 lpush <redis_key> <start_urls>
+                
     Splash
         概述
         开始
