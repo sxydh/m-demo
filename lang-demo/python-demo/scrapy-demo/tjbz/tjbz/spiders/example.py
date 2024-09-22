@@ -23,11 +23,11 @@ class ExampleSpider(scrapy.Spider):
         parent_level = meta_parent.get("level", 0)
 
         trs = response.css(".provincetr td")
-        if self.level > 1:
+        if len(trs) == 0 and self.level > 1:
             trs += response.css(".citytr")
-        elif self.level > 2:
+        if len(trs) == 0 and self.level > 2:
             trs += response.css(".countytr")
-        elif self.level > 3:
+        if len(trs) == 0 and self.level > 3:
             trs += response.css(".towntr")
 
         for tr in trs:
