@@ -40,14 +40,61 @@
                     定义项目部署配置
                 stats
                     items.py
-                        定义爬取数据的数据结构
+                        概述
+                            定义爬取数据的数据结构
                     middlewares.py
-                        定义中间件，包含 Spider Middleware/Downloader Middleware 等。
+                        概述
+                            定义中间件，包含 Spider Middleware/Downloader Middleware 等。
+                        开始
+                            Spider Middleware
+                                概述
+                                    可以用于设置 Request 的 User Agent/Proxy 等。
+                            Downloader Middleware
+                                概述
+                                    可以用于实现响应内容的动态渲染等
                     pipelines.py
-                        定义数据处理管道
+                        概述    
+                            定义数据处理管道
                     settings.py
-                        定义项目运行配置
+                        概述
+                            定义项目运行配置
+                        开始
+                            USER_AGENT = "stats (+http://www.yourdomain.com)"
+                                定义 Request 的请求头 User Agent
+                            ROBOTSTXT_OBEY = True
+                                定义是否遵守 Robot 爬虫约定
+                                
+                            SPIDER_MIDDLEWARES = {
+                                "stats.middlewares.StatsSpiderMiddleware": 543,
+                            }
+                            
+                                定义 Spider Middleware 链，其中 543 代表顺序优先级。
+                                
+                            DOWNLOADER_MIDDLEWARES = {
+                                "stats.middlewares.StatsDownloaderMiddleware": 543,
+                            }
+                            
+                                定义 Downloader Middleware 链，其中 543 代表顺序优先级。
+                            
+                            ITEM_PIPELINES = {
+                                "stats.pipelines.StatsPipeline": 300,
+                            }
+                            
+                                定义 Item Pipeline 链，其中 300 代表顺序优先级。
+                                
                     spiders
                         tjbz.py
-                            定义用户 Spider
+                            概述
+                                定义用户 Spider
+    断点续爬
+        概述
+        开始
     分布式
+        概述
+        开始
+    Splash
+        概述
+        开始
+    Appium
+        概述
+        开始
