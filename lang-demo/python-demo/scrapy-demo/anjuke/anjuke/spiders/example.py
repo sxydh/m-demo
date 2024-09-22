@@ -71,8 +71,8 @@ class ExampleSpider(scrapy.Spider):
             new_house_item = NewHouseItem()
             new_house_item["city"] = meta_city_item["name"]
             new_house_item["name"] = self.parse_text_helper(new_house, ".lp-name", replace=(" ", ""))
-            new_house_item["address"] = self.parse_text_helper(new_house, ".address", replace=(" ", "#"))
-            new_house_item["type"] = self.parse_text_helper(new_house, ".huxing", replace=(" ", "#"))
+            new_house_item["address"] = self.parse_text_helper(new_house, ".address", replace=(" ", ""))
+            new_house_item["type"] = self.parse_text_helper(new_house, ".huxing", replace=(" ", ""))
             new_house_item["tag"] = self.parse_text_helper(new_house, ".tag-panel i,span", is_multi=True)
             price = self.parse_text_helper(new_house, ".price", replace=(" ", ""))
             new_house_item["price"] = price
@@ -81,7 +81,7 @@ class ExampleSpider(scrapy.Spider):
             new_house_item["url"] = new_house.css("a.lp-name::attr(href)").get()
             yield new_house_item
 
-    def parse_text_helper(self, src, selector, is_multi=False, replace=("", "")):
+    def parse_text_helper(self, src, selector, is_multi=False, replaces: list = None):
         ret = None
         arr = src.css(selector)
         if len(arr) == 0:
@@ -100,7 +100,9 @@ class ExampleSpider(scrapy.Spider):
             ret = "###".join(ret)
         if ret:
             ret = ret.replace("\xa0", "").strip()
-            ret = ret.replace(replace[0], replace[1])
+            if replaces:
+                for replace in replaces:
+                    ret = ret.replace(replace, "")
         return ret
 
 
