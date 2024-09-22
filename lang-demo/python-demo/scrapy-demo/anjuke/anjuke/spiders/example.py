@@ -1,6 +1,7 @@
 import os
+import re
 import sys
-from typing import Any, re
+from typing import Any
 
 import scrapy
 from scrapy.cmdline import execute
