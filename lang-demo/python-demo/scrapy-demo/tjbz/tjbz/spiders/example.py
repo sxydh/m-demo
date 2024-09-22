@@ -16,7 +16,7 @@ class ExampleSpider(scrapy.Spider):
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
         provinces = response.css(".provincetr a")
-        yield self.parse_do(response, provinces, self.parse_city)
+        return self.parse_do(response, provinces, self.parse_city)
 
     def parse_city(self, response: Response):
         cities = response.css(".citytr")
@@ -41,7 +41,7 @@ class ExampleSpider(scrapy.Spider):
                 item["parent_code"] = response.meta["meta_parent"]["code"]
             yield item
             if item["url"]:
-                yield scrapy.Request(url=item.url, callback=callback, meta={"meta_parent": item})
+                yield scrapy.Request(url=item["url"], callback=callback, meta={"meta_parent": item})
 
 
 if __name__ == '__main__':
