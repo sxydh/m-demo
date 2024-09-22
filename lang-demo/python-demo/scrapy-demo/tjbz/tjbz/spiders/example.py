@@ -20,7 +20,6 @@ class ExampleSpider(scrapy.Spider):
         meta = response.meta
         meta_parent = meta.get("meta_parent", TjbzItem())
         parent_code = meta_parent.get("code", None)
-        parent_level = meta_parent.get("level", 0)
 
         trs = response.css(".provincetr td")
         level = 1
@@ -35,8 +34,9 @@ class ExampleSpider(scrapy.Spider):
             level = 4
 
         if len(trs) == 0:
-            yield scrapy.Request(url=response.url, callback=self.parse, meta={"meta_parent": meta_parent}, dont_filter=True)
-            return
+            if "url" in meta_parent:
+                yield scrapy.Request(url=meta_parent["url"], callback=self.parse, meta={"meta_parent": meta_parent}, dont_filter=True)
+                return
 
         for tr in trs:
             tds = tr.css("td")
