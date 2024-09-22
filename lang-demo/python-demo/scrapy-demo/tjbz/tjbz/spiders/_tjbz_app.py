@@ -3,7 +3,7 @@ from typing import Any
 import scrapy
 from scrapy.http import Response
 
-from stats.tjbz.tjbz.items import TjbzItem
+from tjbz.tjbz.items import TjbzItem
 
 
 class TjbzApp(scrapy.Spider):
