@@ -11,9 +11,12 @@ def start():
     cli = Cli(headless=False, images_disabled=True)
     cli.get('https://www.zhcw.com/kjxx/ssq/')
 
-    sds = '2024-04-01'
+    max_eds = datetime.datetime.now()
+    sds = max_eds + datetime.timedelta(days=-30)
+    max_eds = max_eds.strftime('%Y-%m-%d')
+    sds = sds.strftime('%Y-%m-%d')
     eds = ''
-    while eds <= datetime.datetime.now().strftime('%Y-%m-%d'):
+    while eds <= max_eds:
         eds = add_days(sds, 20)
 
         # 自定义查询
