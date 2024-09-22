@@ -20,6 +20,9 @@
         Scrapy Engine
             概述
                 负责 Spider/Scheduler/Downloader/Item Pipeline 之间的数据通信
+        Middleware
+            概述
+                负责 Spider/Downloader 的预处理，类似拦截器。
     基本过程
         1 - Spider 产生新的网络请求 Request ，交给 Scheduler 调度。
         2 - Scheduler 调度 Request 给 Downloader
@@ -30,62 +33,142 @@
 开始
     单机
         创建项目
-            pip install -i https://pypi.tuna.tsinghua.edu.cn/simple Scrapy
-            scrapy startproject stats
-            cd stats
-            scrapy genspider tjbz www.stats.gov.cn
-        项目结构
-            stats
-                scrapy.cfg
-                    定义项目部署配置
+            开始
+                pip install -i https://pypi.tuna.tsinghua.edu.cn/simple Scrapy
+                scrapy startproject stats
+                cd stats
+                scrapy genspider tjbz www.stats.gov.cn
+            项目结构
                 stats
-                    items.py
-                        概述
-                            定义爬取数据的数据结构
-                    middlewares.py
-                        概述
-                            定义中间件，包含 Spider Middleware/Downloader Middleware 等。
-                        开始
-                            Spider Middleware
-                                概述
-                                    可以用于设置 Request 的 User-Agent/Proxy 等。
-                            Downloader Middleware
-                                概述
-                                    可以用于实现响应内容的动态渲染等
-                    pipelines.py
-                        概述    
-                            定义数据处理管道
-                    settings.py
-                        概述
-                            定义项目运行配置
-                        开始
-                            USER_AGENT = "stats (+http://www.yourdomain.com)"
-                                定义 Request 的请求头 User-Agent
-                            ROBOTSTXT_OBEY = True
-                                定义是否遵守 Robot 爬虫约定
-                                
-                            SPIDER_MIDDLEWARES = {
-                                "stats.middlewares.StatsSpiderMiddleware": 543,
-                            }
-                            
-                                定义 Spider Middleware 链，其中 543 代表顺序优先级。
-                                
-                            DOWNLOADER_MIDDLEWARES = {
-                                "stats.middlewares.StatsDownloaderMiddleware": 543,
-                            }
-                            
-                                定义 Downloader Middleware 链，其中 543 代表顺序优先级。
-                            
-                            ITEM_PIPELINES = {
-                                "stats.pipelines.StatsPipeline": 300,
-                            }
-                            
-                                定义 Item Pipeline 链，其中 300 代表顺序优先级。
-                                
-                    spiders
-                        tjbz.py
+                    scrapy.cfg
+                        定义项目部署配置
+                    stats
+                        items.py
                             概述
-                                定义用户 Spider
+                                定义爬取数据的数据结构
+                        middlewares.py
+                            概述
+                                定义中间件，包含 Spider Middleware/Downloader Middleware 等。
+                            开始
+                                Spider Middleware
+                                    概述
+                                        可以用于设置 Request 的 User-Agent/Proxy 等。
+                                Downloader Middleware
+                                    概述
+                                        可以用于实现响应内容的动态渲染等
+                        pipelines.py
+                            概述    
+                                定义数据处理管道
+                        settings.py
+                            概述
+                                定义项目运行配置
+                            开始
+                                USER_AGENT = "stats (+http://www.yourdomain.com)"
+                                    定义 Request 的请求头 User-Agent
+                                ROBOTSTXT_OBEY = True
+                                    定义是否遵守 Robot 爬虫约定
+                                    
+                                SPIDER_MIDDLEWARES = {
+                                    "stats.middlewares.StatsSpiderMiddleware": 543,
+                                }
+                                
+                                    定义 Spider Middleware 链，其中 543 代表顺序优先级。
+                                    
+                                DOWNLOADER_MIDDLEWARES = {
+                                    "stats.middlewares.StatsDownloaderMiddleware": 543,
+                                }
+                                
+                                    定义 Downloader Middleware 链，其中 543 代表顺序优先级。
+                                
+                                ITEM_PIPELINES = {
+                                    "stats.pipelines.StatsPipeline": 300,
+                                }
+                                
+                                    定义 Item Pipeline 链，其中 300 代表顺序优先级。
+                                    
+                        spiders
+                            tjbz.py
+                                概述
+                                    定义用户 Spider
+        定义实体
+            items.py
+                class StatsItem(scrapy.Item):
+                    ...
+        构造请求
+            tjbz.py
+                class TjbzSpider(scrapy.Spider):
+                    name = "tjbz"
+                    allowed_domains = ["www.stats.gov.cn"]
+                    start_urls = ["https://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2023/index.html"]
+                
+                    def start_requests(self) -> Iterable[Request]:
+                        # 构造初始请求，父类已经实现，一般情况下用户不需要覆盖。
+                        # 用户可以覆盖该函数，在这里设置 Cookie 等信息。
+                        ...
+                
+                    def parse(self, response: Response, **kwargs: Any):
+                        ...
+                        yield scrapy.Request(url=..., callback=..., meta=...)
+                        
+                            url ：目标地址。
+                            callback ：回调函数。
+                            meta ：用户参数，用于在不通的解析函数中通信。 
+                                    
+        解析数据
+            tjbz.py
+                class TjbzSpider(scrapy.Spider):
+                    ...
+                
+                    def parse(self, response: Response, **kwargs: Any):
+                        ...
+                        yield {
+                            ...
+                        }
+                
+        保存数据
+            pipelines.py
+                class StatsPipeline:
+                
+                    def open_spider(self, spider):
+                        # 生命周期函数，仅执行一次。
+                        ...
+                
+                    def process_item(self, item, spider):
+                        return item
+                        
+                            注意： Pipeline 是链式处理，需要显示返回值。
+                            
+                    def close_spider(self, spider):
+                        # 生命周期函数，仅执行一次。
+                        ...
+                            
+        定义中间件（可选）
+            middlewares.py
+                class StatsSpiderMiddleware:
+                    def process_spider_output(self, response, result, spider):
+                        # Spider 输出预处理
+                        # 需要显示返回 iterable of Request/item objects
+                        ...
+                    def process_spider_input(self, response, spider):
+                        # Spider 输入预处理
+                        ...
+                class StatsDownloaderMiddleware:
+                    def process_request(self, request, spider):
+                        # Downloader 请求预处理
+                        # 可以用于设置 Cookie/User-Agent/Proxy 等，或者将 Request 给第三方组件（ 例如： Selenium ）执行。
+                        # 如果返回 None ，则继续执行该 Request 。
+                        # 如果返回 Response ，则交给 Spider 处理。
+                        # 如果返回 Request ，则交给 Scheduler 处理。
+                        ...
+                    def process_response(self, request, response, spider):
+                        # Downloader 响应预处理
+                        # 可以用于处理第三方组件得到的响应
+                        # 如果返回 Response ，则交给 Spider 处理。
+                        # 如果返回 Request ，则交给 Scheduler 处理。
+                        ...
+                    def process_exception(self, request, exception, spider):
+                        # Downloader 异常预处理
+                        ...
     断点续爬
         概述
         开始
