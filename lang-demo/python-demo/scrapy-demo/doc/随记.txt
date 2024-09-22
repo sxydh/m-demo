@@ -35,14 +35,14 @@
         创建项目
             开始
                 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple Scrapy
-                scrapy startproject stats
-                cd stats
-                scrapy genspider tjbz www.stats.gov.cn
+                scrapy startproject tjbz
+                cd tjbz
+                scrapy genspider tjbz https://www.stats.gov.cn/sj/tjbz
             项目结构
-                stats
+                tjbz
                     scrapy.cfg
                         定义项目部署配置
-                    stats
+                    tjbz
                         items.py
                             概述
                                 定义爬取数据的数据结构
@@ -63,25 +63,25 @@
                             概述
                                 定义项目运行配置
                             开始
-                                USER_AGENT = "stats (+http://www.yourdomain.com)"
+                                USER_AGENT = "tjbz (+http://www.yourdomain.com)"
                                     定义 Request 的请求头 User-Agent
                                 ROBOTSTXT_OBEY = False
                                     定义是否遵守 Robot 爬虫约定
                                     
                                 SPIDER_MIDDLEWARES = {
-                                    "stats.middlewares.StatsSpiderMiddleware": 543,
+                                    "tjbz.middlewares.StatsSpiderMiddleware": 543,
                                 }
                                 
                                     定义 Spider Middleware 链，其中 543 代表顺序优先级。
                                     
                                 DOWNLOADER_MIDDLEWARES = {
-                                    "stats.middlewares.StatsDownloaderMiddleware": 543,
+                                    "tjbz.middlewares.StatsDownloaderMiddleware": 543,
                                 }
                                 
                                     定义 Downloader Middleware 链，其中 543 代表顺序优先级。
                                 
                                 ITEM_PIPELINES = {
-                                    "stats.pipelines.StatsPipeline": 300,
+                                    "tjbz.pipelines.StatsPipeline": 300,
                                 }
                                 
                                     定义 Item Pipeline 链，其中 300 代表顺序优先级。
@@ -98,7 +98,7 @@
             tjbz.py
                 class TjbzSpider(scrapy.Spider):
                     name = "tjbz"
-                    allowed_domains = ["www.stats.gov.cn"]
+                    allowed_domains = ["https://www.stats.gov.cn/sj/tjbz"]
                     start_urls = ["https://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2023/index.html"]
                 
                     def start_requests(self) -> Iterable[Request]:
