@@ -7,6 +7,9 @@ import scrapy
 
 
 class AnjukeItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    name = scrapy.Field()
+    address = scrapy.Field()
+    type = scrapy.Field()
+    tag = scrapy.Field()
+    price = scrapy.Field()
+    remark = scrapy.Field()
