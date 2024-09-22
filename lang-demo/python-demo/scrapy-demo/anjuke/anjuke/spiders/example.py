@@ -26,7 +26,6 @@ class ExampleSpider(scrapy.Spider):
             city_item["name"] = city.css("::text").get().strip()
             city_item["url"] = response.urljoin(city.css("::attr(href)").get())
             yield scrapy.Request(city_item["url"], callback=self.parse_city_new_house_url, meta={"meta_city_item": city_item})
-            break
 
     def parse_city_new_house_url(self, response: Response) -> Any:
         meta_city_item = response.meta["meta_city_item"]
