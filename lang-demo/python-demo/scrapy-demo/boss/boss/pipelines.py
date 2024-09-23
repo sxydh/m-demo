@@ -5,9 +5,14 @@
 
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
+
+from boss.util.common import get_sqlite_connection
 
 
 class BossPipeline:
+
+    def __init__(self):
+        self.conn = get_sqlite_connection()
+
     def process_item(self, item, spider):
         return item
