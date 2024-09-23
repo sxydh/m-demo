@@ -90,8 +90,11 @@
             
                 定义 Item Pipeline 链，其中 300 代表顺序优先级。
                 
-            HTTPERROR_ALLOWED_CODES = [301]
-                定义可以被用户 Spider 处理的额外状态码
+            HTTPERROR_ALLOW_ALL = True
+                定义所有状态码响应都可以被用户处理
+                可以用来记录失败页面的日志
+            REDIRECT_ENABLED = True
+                允许 Scrapy 自动处理页面重定向
         定义实体
             items.py
                 class TjbzItem(scrapy.Item):
