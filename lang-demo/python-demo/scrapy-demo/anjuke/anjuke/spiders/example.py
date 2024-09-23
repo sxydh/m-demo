@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import sys
+import threading
 import uuid
 from typing import Any
 
@@ -11,6 +12,9 @@ from scrapy.cmdline import execute
 from scrapy.http import Response
 
 from anjuke.items import CityItem, NewHouseItem
+
+city_rlock = threading.RLock()
+city_handled = False
 
 
 # noinspection DuplicatedCode
@@ -23,6 +27,13 @@ class ExampleSpider(scrapy.Spider):
         if self.is_need_request_again(self.start_urls[0], response):
             yield scrapy.Request(self.start_urls[0], callback=self.parse, dont_filter=True)
             return
+
+        global city_rlock
+        global city_handled
+        with city_rlock:
+            if city_handled:
+                return
+            city_handled = True
 
         cities = response.css(".ajk-city-cell.is-letter li a")
         for city in cities:
