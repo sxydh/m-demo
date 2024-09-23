@@ -23,7 +23,7 @@ class ExampleSpider(scrapy.Spider):
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         # 数据来自 https://www.zhipin.com/wapi/zpCommon/data/industryFilterExemption
-        with open("tmp/industry.csv", "r") as f:
+        with open("tmp/industry.csv", "r", encoding="utf-8") as f:
             for line in f.readlines():
                 self.industries.append(line.strip().split(","))
 
