@@ -74,6 +74,8 @@ class ExampleSpider(scrapy.Spider):
         if page_city_name != city_name and not (page_city_name in city_name or city_name in page_city_name):
             logging.warning(f"### city_name from page ### {page_city_name} <=> {city_name}")
             meta_city_item["remark"] = f"page_city_name={page_city_name} <=> city_name={city_name}"
+            yield meta_city_item
+            return
 
         totals = response.css(".list-results .result")
         if len(totals) != 0:
