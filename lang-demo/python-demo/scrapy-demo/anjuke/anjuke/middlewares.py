@@ -107,10 +107,6 @@ class AnjukeDownloaderMiddleware:
         # - return a Request object
         # - or raise IgnoreRequest
 
-        self.conn.execute("insert into anjuke_log(code, body, update_time) values(?, ?, ?)",
-                          [response.status, response.body, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
-        self.conn.commit()
-
         return response
 
     def process_exception(self, request, exception, spider):
