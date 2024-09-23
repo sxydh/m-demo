@@ -44,9 +44,8 @@ class ExampleSpider(scrapy.Spider):
     def parse_job_list(self, response: Response) -> Any:
         meta_filter = response.meta["meta_filter"]
 
-        cur_page = 1
-        max_page = 0
         cur_page = re.search(r"page=(\d+)", response.url).group(1)
+        max_page = 0
         if cur_page:
             cur_page = int(cur_page)
         pages = response.css("options-pages a")
