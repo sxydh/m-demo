@@ -117,3 +117,4 @@ TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
 HTTPERROR_ALLOW_ALL = True
+REDIRECT_ENABLED = False
