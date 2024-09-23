@@ -53,10 +53,13 @@ class ExampleSpider(scrapy.Spider):
             yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
-        maps = response.css("a[title=\"地图找房\"]")
-        if len(maps) != 0:
-            map_url = maps[0].css("a::attr(href)").get()
-            new_house_url = map_url.split("map")[0]
+        mas = response.css("a[title=\"地图找房\"]")
+        if len(mas) != 0:
+            for ma in mas:
+                ma_url = ma.css("a::attr(href)").get()
+                if "loupan" not in ma_url:
+                    continue
+                new_house_url = ma_url.split("map")[0]
 
         if new_house_url is None:
             navs = response.css(".nav-channel-list > li:first-child")
