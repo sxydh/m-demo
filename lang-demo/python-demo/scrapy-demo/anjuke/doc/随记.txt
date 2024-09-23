@@ -1,6 +1,6 @@
 开始
     处理反爬
         如果请求被重定向
-            在下载器中间件，使用 Selenium 人工处理。
+            在下载器中间件的 process_request ，使用 Selenium 人工处理。
         如果响应包含验证
-            在下载器中间件，使用 Selenium 人工处理。
+            在下载器中间件的 process_response ，使用 Selenium 人工处理。
