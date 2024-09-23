@@ -41,6 +41,10 @@ class ExampleSpider(scrapy.Spider):
             city_item["uid"] = str(uuid.uuid4())
             city_item["name"] = city.css("::text").get().strip()
             city_item["url"] = response.urljoin(city.css("::attr(href)").get())
+
+            # if city_item["name"] not in ["三河"]:
+            #     continue
+
             yield city_item
             yield scrapy.Request(city_item["url"], callback=self.parse_city_new_house_url, meta={"meta_city_item": copy.copy(city_item)})
 
@@ -53,31 +57,21 @@ class ExampleSpider(scrapy.Spider):
             yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
-        mas = response.css("a[title=\"地图找房\"]")
-        if len(mas) != 0:
-            for ma in mas:
-                ma_url = ma.css("a::attr(href)").get()
-                if "loupan" not in ma_url:
-                    continue
-                new_house_url = ma_url.split("map")[0]
-                break
-
-        if new_house_url is None:
-            navs = response.css(".nav-channel-list > li:first-child")
-            if len(navs) == 0:
-                meta_city_item["body"] = response.body
-                meta_city_item["remark"] = "len(response.css(\".nav-channel-list > li:first-child\")) == 0"
-                yield meta_city_item
-                return
-            nav = navs[0]
-            nav_text = nav.css("::text").get().strip()
-            if nav_text != "新房":
-                meta_city_item["body"] = response.body
-                meta_city_item["remark"] = f"nav.css(\"::text\").get().strip() == \"{nav_text}\""
-                yield meta_city_item
-                return
-            new_house_url = response.urljoin(nav.css("a::attr(href)").get())
-            new_house_url = new_house_url.split("?")[0]
+        navs = response.css(".nav-channel-list > li:first-child")
+        if len(navs) == 0:
+            meta_city_item["body"] = response.body
+            meta_city_item["remark"] = "len(response.css(\".nav-channel-list > li:first-child\")) == 0"
+            yield meta_city_item
+            return
+        nav = navs[0]
+        nav_text = nav.css("::text").get().strip()
+        if nav_text != "新房":
+            meta_city_item["body"] = response.body
+            meta_city_item["remark"] = f"nav.css(\"::text\").get().strip() == \"{nav_text}\""
+            yield meta_city_item
+            return
+        new_house_url = response.urljoin(nav.css("a::attr(href)").get())
+        new_house_url = new_house_url.split("?")[0]
 
         new_house_url = f"{new_house_url}loupan/all/s1"
         meta_city_item["new_house_url"] = new_house_url
