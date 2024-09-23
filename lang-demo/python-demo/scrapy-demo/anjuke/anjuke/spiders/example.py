@@ -87,7 +87,7 @@ class ExampleSpider(scrapy.Spider):
             new_house_item["address"] = self.parse_text_helper(new_house, ".address", replaces=[" "])
             new_house_item["type"] = self.parse_text_helper(new_house, ".huxing", replaces=[" ", "\n"])
             new_house_item["tag"] = self.parse_text_helper(new_house, ".tag-panel i,span", is_multi=True)
-            price = self.parse_text_helper(new_house, ".price,around-price", replaces=[" "])
+            price = self.parse_text_helper(new_house, ".price,.around-price", replaces=[" "])
             new_house_item["price"] = price
             if price is not None and len(price) > 0:
                 new_house_item["price_num"] = re.search(r'(\d+)', price).group(1)
