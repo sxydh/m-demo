@@ -162,6 +162,7 @@ class ExampleSpider(scrapy.Spider):
         # 地址是反爬验证
         if "callback" in response.url:
             logging.warning(f"### antibot from url ### {response.url} <=> {target_url}")
+            return True
         # 其它错误码
         if response.status != 200:
             logging.warning(f"### error code ### {response.status} <=> {target_url}")
