@@ -126,7 +126,7 @@ class ExampleSpider(scrapy.Spider):
         if antibot_url is not None:
             logging.warning(f"### antibot from page ### {antibot_url} <=> {target_url}")
             return True
-        # 页面是反爬验证
+        # 地址是反爬验证
         if "callback" in response.url:
             logging.warning(f"### antibot from url ### {response.url} <=> {target_url}")
         # 其它错误码
