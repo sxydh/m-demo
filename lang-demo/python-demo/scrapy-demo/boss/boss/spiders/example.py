@@ -33,7 +33,7 @@ class ExampleSpider(scrapy.Spider):
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
         if self.is_need_request_again(response):
-            yield scrapy.Request(url=self.start_urls[0], callback=self.parse)
+            yield scrapy.Request(url=self.start_urls[0], callback=self.parse, dont_filter=True)
             return
 
         for city in self.cities:
