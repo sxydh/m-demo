@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 from time import sleep
 from typing import Any
@@ -43,6 +44,17 @@ class ExampleSpider(scrapy.Spider):
     def parse_job_list(self, response: Response) -> Any:
         meta_filter = response.meta["meta_filter"]
 
+        cur_page = 1
+        max_page = 0
+        cur_page = re.search(r"page=(\d+)", response.url).group(1)
+        if cur_page:
+            cur_page = int(cur_page)
+        pages = response.css("options-pages a")
+        if len(pages) > 0:
+            pages = [page.css("::text").get() for page in pages]
+            pages = [int(page) for page in pages if page]
+            max_page = max(pages)
+
         job_list = response.css(".job-list-box .job-card-wrapper")
         for job in job_list:
             job_item = JobItem()
@@ -58,6 +70,13 @@ class ExampleSpider(scrapy.Spider):
             job_item["job_tag"] = self.parse_text_helper(job, ".job-card-footer", is_multi=True)
             job_item["company_tag"] = self.parse_text_helper(job, ".company-tag-list", is_multi=True)
             yield job_item
+
+        sleep(1)
+        if cur_page and max_page and cur_page < max_page:
+            yield scrapy.Request(
+                url=f"{self.start_urls[0]}?city={meta_filter['city'][0]}&industry={meta_filter['industry'][0]}&experience={meta_filter['experience'][0]}&degree={meta_filter['degree'][0]}&scale={meta_filter['scale'][0]}&page={cur_page + 1}",
+                callback=self.parse_job_list,
+                meta={"meta_filter": meta_filter})
 
     def parse_text_helper(self, src, selector, is_multi=False, replaces: list = " ") -> str | None:
         text = None
@@ -78,4 +97,4 @@ class ExampleSpider(scrapy.Spider):
 
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-    execute(["scrapy", "crawl", "example", "-L", "DEBUG"])
+    execute(["scrapy", "crawl", "example", "-L", "WARN"])
