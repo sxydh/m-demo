@@ -82,6 +82,7 @@ class ExampleSpider(scrapy.Spider):
         for new_house in new_house_list:
             new_house_item = NewHouseItem()
             new_house_item["city"] = meta_city_item["name"]
+            new_house_item["city_new_house_url"] = new_house_url
             new_house_item["name"] = self.parse_text_helper(new_house, ".lp-name", replaces=[" "])
             new_house_item["address"] = self.parse_text_helper(new_house, ".address", replaces=[" "])
             new_house_item["type"] = self.parse_text_helper(new_house, ".huxing", replaces=[" ", "\n"])
