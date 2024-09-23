@@ -58,6 +58,7 @@ class ExampleSpider(scrapy.Spider):
         new_house_url = new_house_url.split("?")[0]
         new_house_url = f"{new_house_url}loupan/all/s1"
         meta_city_item["new_house_url"] = new_house_url
+        yield meta_city_item
         yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": copy.copy(meta_city_item)})
 
     def parse_new_house_list(self, response: Response) -> Any:
@@ -90,6 +91,7 @@ class ExampleSpider(scrapy.Spider):
             if price is not None and len(price) > 0:
                 new_house_item["price_num"] = re.search(r'(\d+)', price).group(1)
             new_house_item["url"] = new_house.css("a.lp-name::attr(href)").get()
+            new_house_item["body"] = new_house
             yield new_house_item
 
     def parse_text_helper(self, src, selector, is_multi=False, replaces: list = None):
