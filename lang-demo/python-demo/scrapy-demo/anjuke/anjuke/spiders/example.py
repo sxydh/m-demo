@@ -60,6 +60,7 @@ class ExampleSpider(scrapy.Spider):
                 if "loupan" not in ma_url:
                     continue
                 new_house_url = ma_url.split("map")[0]
+                break
 
         if new_house_url is None:
             navs = response.css(".nav-channel-list > li:first-child")
@@ -183,4 +184,4 @@ class ExampleSpider(scrapy.Spider):
 
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-    execute(["scrapy", "crawl", "example", "-L", "DEBUG"])
+    execute(["scrapy", "crawl", "example", "-L", "WARN"])
