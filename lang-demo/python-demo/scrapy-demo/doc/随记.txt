@@ -93,8 +93,14 @@
             HTTPERROR_ALLOW_ALL = True
                 定义所有状态码响应都可以被用户处理
                 可以用来记录失败页面的日志
+                
             REDIRECT_ENABLED = True
                 允许 Scrapy 自动处理页面重定向
+            REDIRECT_MAX_TIMES = 100
+            
+            RETRY_ENABLED = True
+                允许 Scrapy 自动重试
+            RETRY_TIMES = 20
         定义实体
             items.py
                 class TjbzItem(scrapy.Item):
