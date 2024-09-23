@@ -114,12 +114,18 @@ class ExampleSpider(scrapy.Spider):
         return ret
 
     def is_need_request_again(self, target_url: str, response: Response = None) -> bool:
-        ret = abs(len(target_url) - len(response.url)) > 20
-        if ret:
-            logging.warning(f"{target_url} <=> {response.url}")
-        return ret
+        # 页面是反爬验证
+        antibot = response.css("#\\@\\@xxzlGatewayUrl")
+        antibot_url = antibot[0].css("::text").get().strip() if antibot is not None and len(antibot) > 0 else None
+        if antibot_url is not None:
+            logging.warning(f"### antibot ### {antibot_url} <=> {target_url}")
+            return True
+        # 页面是反爬验证
+        if "callback" in response.url:
+            logging.warning(f"### antibot ### {response.url} <=> {target_url}")
+        return False
 
 
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-    execute(["scrapy", "crawl", "example", "-L", "DEBUG"])
+    execute(["scrapy", "crawl", "example", "-L", "WARN"])
