@@ -5,6 +5,10 @@
 import logging
 import os
 import random
+from time import sleep
+
+from scrapy.http import HtmlResponse
+import undetected_chromedriver as uc
 
 from scrapy import signals
 
@@ -66,6 +70,10 @@ class BossDownloaderMiddleware:
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
 
+    def __init__(self):
+        self.driver = uc.Chrome()
+        self.driver.maximize_window()
+
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -91,7 +99,10 @@ class BossDownloaderMiddleware:
             logging.debug(f"Using proxy: {proxy}")
             request.meta['proxy'] = f"http://{proxy}"
 
-        return None
+        self.driver.get(request.url)
+        sleep(random.randint(1, 3))
+
+        return HtmlResponse(url=request.url, body=self.driver.page_source, encoding='utf-8')
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
