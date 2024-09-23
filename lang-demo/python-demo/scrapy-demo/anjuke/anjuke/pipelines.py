@@ -34,12 +34,8 @@ class AnjukePipeline:
                                   (item.get("province"), item.get("name"), item.get("url"), item.get("new_house_url"), item.get("new_house_total"), item.get("new_house_total_num"), item.get("body"), item.get("remark"), item.get("uid")))
             self.conn.commit()
         elif isinstance(item, NewHouseItem):
-            if item.get("uid") is None:
-                self.conn.execute("insert into anjuke_new_house(uid, province, city, city_new_house_url, name, address, type, tag, price, price_num, url, body, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                                  (str(uuid.uuid4()), item.get("province"), item.get("city"), item.get("city_new_house_url"), item.get("name"), item.get("address"), item.get("type"), item.get("tag"), item.get("price"), item.get("price_num"), item.get("url"), item.get("body"), item.get("remark")))
-            else:
-                self.conn.execute("update anjuke_new_house set province = ?, city = ?, city_new_house_url = ?, name = ?, address = ?, type = ?, tag = ?, price = ?, price_num = ?, url = ?, body = ?, remark = ? where uid = ?",
-                                  (item.get("province"), item.get("city"), item.get("city_new_house_url"), item.get("name"), item.get("address"), item.get("type"), item.get("tag"), item.get("price"), item.get("price_num"), item.get("url"), item.get("body"), item.get("remark"), item.get("uid")))
+            self.conn.execute("insert into anjuke_new_house(uid, province, city, city_new_house_url, name, address, type, tag, price, price_num, url, body, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                              (str(uuid.uuid4()), item.get("province"), item.get("city"), item.get("city_new_house_url"), item.get("name"), item.get("address"), item.get("type"), item.get("tag"), item.get("price"), item.get("price_num"), item.get("url"), item.get("body"), item.get("remark")))
             self.conn.commit()
 
     def close_spider(self, spider):
