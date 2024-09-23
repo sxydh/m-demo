@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import sys
+import uuid
 from typing import Any
 
 import scrapy
@@ -26,8 +27,10 @@ class ExampleSpider(scrapy.Spider):
         cities = response.css(".ajk-city-cell.is-letter li a")
         for city in cities:
             city_item = CityItem()
+            city_item["uid"] = str(uuid.uuid4())
             city_item["name"] = city.css("::text").get().strip()
             city_item["url"] = response.urljoin(city.css("::attr(href)").get())
+            yield city_item
             yield scrapy.Request(city_item["url"], callback=self.parse_city_new_house_url, meta={"meta_city_item": copy.copy(city_item)})
 
     def parse_city_new_house_url(self, response: Response) -> Any:
