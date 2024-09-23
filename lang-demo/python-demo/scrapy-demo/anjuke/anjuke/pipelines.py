@@ -2,10 +2,8 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-import logging
 import threading
 import uuid
-from time import sleep
 
 from anjuke.items import CityItem, NewHouseItem
 from util.common import get_sqlite_connection
@@ -45,6 +43,4 @@ class AnjukePipeline:
             self.conn.commit()
 
     def close_spider(self, spider):
-        logging.warning("ready to close spider")
-        sleep(15)
         self.conn.close()
