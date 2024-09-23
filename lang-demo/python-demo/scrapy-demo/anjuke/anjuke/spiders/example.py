@@ -19,7 +19,7 @@ class ExampleSpider(scrapy.Spider):
     start_urls = ["https://www.anjuke.com/sy-city.html?from=HomePage_City"]
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
-        if self.is_request_again(response.url, self.start_urls[0], response):
+        if self.is_need_request_again(self.start_urls[0], response):
             yield scrapy.Request(self.start_urls[0], callback=self.parse, dont_filter=True)
             return
 
@@ -34,7 +34,7 @@ class ExampleSpider(scrapy.Spider):
         meta_city_item = response.meta["meta_city_item"]
         url = meta_city_item["url"]
 
-        if self.is_request_again(response.url, url, response):
+        if self.is_need_request_again(url, response):
             yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
@@ -61,7 +61,7 @@ class ExampleSpider(scrapy.Spider):
         meta_city_item = response.meta["meta_city_item"]
         new_house_url = meta_city_item["new_house_url"]
 
-        if self.is_request_again(response.url, new_house_url, response):
+        if self.is_need_request_again(new_house_url, response):
             yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
@@ -113,12 +113,10 @@ class ExampleSpider(scrapy.Spider):
                     ret = ret.replace(replace, "")
         return ret
 
-    def is_request_again(self, ra: str, rb: str, response: Response = None) -> bool:
-        ret = abs(len(ra) - len(rb)) > 20
-        if not ret and response:
-            ret = "verifycode" in str(response.body)
+    def is_need_request_again(self, target_url: str, response: Response = None) -> bool:
+        ret = abs(len(target_url) - len(response.url)) > 20
         if ret:
-            logging.warning(f"{ra} <=> {rb}")
+            logging.warning(f"{target_url} <=> {response.url}")
         return ret
 
 
