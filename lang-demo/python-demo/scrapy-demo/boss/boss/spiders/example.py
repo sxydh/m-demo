@@ -36,7 +36,7 @@ class ExampleSpider(scrapy.Spider):
                     for degree in self.degrees:
                         for scale in self.scales:
                             yield scrapy.Request(
-                                url=f"{self.start_urls[0]}?city={city[0]}&industry={industry[0]}&experience={experience[0]}&degree={degree[0]}&scale={scale[0]}",
+                                url=f"{self.start_urls[0]}?city={city[0]}&industry={industry[0]}&experience={experience[0]}&degree={degree[0]}&scale={scale[0]}&page=1",
                                 callback=self.parse_job_list,
                                 meta={"meta_filter": {"city": city, "industry": industry, "experience": experience, "degree": degree, "scale": scale}})
                             sleep(1)
@@ -50,11 +50,9 @@ class ExampleSpider(scrapy.Spider):
             cur_page = int(cur_page.group(1))
         else:
             cur_page = 1
-        pages = response.css("options-pages a")
-        if len(pages) > 0:
-            pages = [page.css("::text").get() for page in pages]
-            pages = [int(page) for page in pages if page]
-            max_page = max(pages)
+        pages = response.css(".options-pages a")
+        if len(pages) > 2:
+            max_page = int(pages[-2].css("::text").get().strip())
 
         job_list = response.css(".job-list-box .job-card-wrapper")
         for job in job_list:
@@ -75,7 +73,7 @@ class ExampleSpider(scrapy.Spider):
         sleep(1)
         if cur_page and max_page and cur_page < max_page:
             yield scrapy.Request(
-                url=f"{self.start_urls[0]}?city={meta_filter['city'][0]}&industry={meta_filter['industry'][0]}&experience={meta_filter['experience'][0]}&degree={meta_filter['degree'][0]}&scale={meta_filter['scale'][0]}&page={cur_page + 1}",
+                url=f"{response.url.replace(f"page={cur_page}", f"page={cur_page + 1}")}",
                 callback=self.parse_job_list,
                 meta={"meta_filter": meta_filter})
 
