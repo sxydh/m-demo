@@ -48,6 +48,8 @@ class ExampleSpider(scrapy.Spider):
         max_page = 0
         if cur_page:
             cur_page = int(cur_page.group(1))
+        else:
+            cur_page = 1
         pages = response.css("options-pages a")
         if len(pages) > 0:
             pages = [page.css("::text").get() for page in pages]
