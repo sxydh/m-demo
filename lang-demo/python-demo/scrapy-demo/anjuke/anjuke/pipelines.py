@@ -25,10 +25,10 @@ class AnjukePipeline:
 
     def process_item(self, item, spider):
         if isinstance(item, CityItem):
-            city_item = self.conn.execute("select * from anjuke_city where uid = ?", (item.get("uid"),)).fetchone()
-            if city_item is None:
+            db_item = self.conn.execute("select * from anjuke_city where uid = ?", (item.get("uid"),)).fetchone()
+            if db_item is None:
                 self.conn.execute("insert into anjuke_city(uid, province, name, url, new_house_url, new_house_total, new_house_total_num, body, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                                  (str(uuid.uuid4()), item.get("province"), item.get("name"), item.get("url"), item.get("new_house_url"), item.get("new_house_total"), item.get("new_house_total_num"), item.get("body"), item.get("remark")))
+                                  (item.get("uid"), item.get("province"), item.get("name"), item.get("url"), item.get("new_house_url"), item.get("new_house_total"), item.get("new_house_total_num"), item.get("body"), item.get("remark")))
             else:
                 self.conn.execute("update anjuke_city set province = ?, name = ?, url = ?, new_house_url = ?, new_house_total = ?, new_house_total_num = ?, body = ?, remark = ? where uid = ?",
                                   (item.get("province"), item.get("name"), item.get("url"), item.get("new_house_url"), item.get("new_house_total"), item.get("new_house_total_num"), item.get("body"), item.get("remark"), item.get("uid")))
