@@ -86,8 +86,9 @@ class ExampleSpider(scrapy.Spider):
 
         sleep(1)
         if cur_page and max_page and cur_page < max_page:
+            meta_keep["url"] = f"{response.url.replace(f"page={cur_page}", f"page={cur_page + 1}")}"
             yield scrapy.Request(
-                url=f"{response.url.replace(f"page={cur_page}", f"page={cur_page + 1}")}",
+                url=meta_keep["url"],
                 callback=self.parse_job_list,
                 meta={"meta_keep": copy.copy(meta_keep)})
 
