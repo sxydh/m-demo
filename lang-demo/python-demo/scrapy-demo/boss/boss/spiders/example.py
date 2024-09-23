@@ -89,8 +89,7 @@ class ExampleSpider(scrapy.Spider):
             yield scrapy.Request(
                 url=f"{response.url.replace(f"page={cur_page}", f"page={cur_page + 1}")}",
                 callback=self.parse_job_list,
-                meta={"meta_keep": copy.copy(meta_keep)},
-                dont_filter=True)
+                meta={"meta_keep": copy.copy(meta_keep)})
 
     def parse_text_helper(self, src, selector, is_multi=False, replaces: list = " ") -> str | None:
         text = None
