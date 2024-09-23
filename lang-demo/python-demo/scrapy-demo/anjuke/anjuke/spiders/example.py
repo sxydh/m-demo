@@ -51,7 +51,6 @@ class ExampleSpider(scrapy.Spider):
     def parse_city_new_house_url(self, response: Response) -> Any:
         meta_city_item = response.meta["meta_city_item"]
         url = meta_city_item["url"]
-        new_house_url = None
 
         if self.is_need_request_again(url, response):
             yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
