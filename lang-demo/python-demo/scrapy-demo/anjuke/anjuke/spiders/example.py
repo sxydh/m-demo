@@ -51,7 +51,7 @@ class ExampleSpider(scrapy.Spider):
         nav_text = nav.css("::text").get().strip()
         if nav_text != "新房":
             meta_city_item["body"] = response.body
-            meta_city_item["remark"] = "nav.css(\"::text\").get().strip() != \"新房\""
+            meta_city_item["remark"] = f"nav.css(\"::text\").get().strip() == \"{nav_text}\""
             yield meta_city_item
             return
         new_house_url = response.urljoin(nav.css("a::attr(href)").get())
@@ -64,11 +64,15 @@ class ExampleSpider(scrapy.Spider):
     def parse_new_house_list(self, response: Response) -> Any:
         meta_city_item = response.meta["meta_city_item"]
         new_house_url = meta_city_item["new_house_url"]
+        city_name = meta_city_item["name"]
 
         if self.is_need_request_again(new_house_url, response):
             yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
+        page_city_name = self.parse_text_helper(response, ".sel-city .city", replaces=[" "])
+        if page_city_name != city_name:
+            logging.warning(f"### city_name from page ### {page_city_name} <=> {city_name}")
         totals = response.css(".list-results .result")
         if len(totals) != 0:
             total = totals[0]
