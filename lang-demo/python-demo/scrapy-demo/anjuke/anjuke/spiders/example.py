@@ -20,7 +20,7 @@ city_handled = False
 # noinspection DuplicatedCode
 class ExampleSpider(scrapy.Spider):
     name = "example"
-    allowed_domains = ["anjuke.com"]
+    allowed_domains = []
     start_urls = ["https://www.anjuke.com/sy-city.html?from=HomePage_City"]
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
@@ -47,26 +47,34 @@ class ExampleSpider(scrapy.Spider):
     def parse_city_new_house_url(self, response: Response) -> Any:
         meta_city_item = response.meta["meta_city_item"]
         url = meta_city_item["url"]
+        new_house_url = None
 
         if self.is_need_request_again(url, response):
             yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
-        navs = response.css(".nav-channel-list > li:first-child")
-        if len(navs) == 0:
-            meta_city_item["body"] = response.body
-            meta_city_item["remark"] = "len(response.css(\".nav-channel-list > li:first-child\")) == 0"
-            yield meta_city_item
-            return
-        nav = navs[0]
-        nav_text = nav.css("::text").get().strip()
-        if nav_text != "新房":
-            meta_city_item["body"] = response.body
-            meta_city_item["remark"] = f"nav.css(\"::text\").get().strip() == \"{nav_text}\""
-            yield meta_city_item
-            return
-        new_house_url = response.urljoin(nav.css("a::attr(href)").get())
-        new_house_url = new_house_url.split("?")[0]
+        maps = response.css("a[title=\"地图找房\"]")
+        if len(maps) != 0:
+            map_url = maps[0].css("a::attr(href)").get()
+            new_house_url = map_url.split("map")[0]
+
+        if new_house_url is None:
+            navs = response.css(".nav-channel-list > li:first-child")
+            if len(navs) == 0:
+                meta_city_item["body"] = response.body
+                meta_city_item["remark"] = "len(response.css(\".nav-channel-list > li:first-child\")) == 0"
+                yield meta_city_item
+                return
+            nav = navs[0]
+            nav_text = nav.css("::text").get().strip()
+            if nav_text != "新房":
+                meta_city_item["body"] = response.body
+                meta_city_item["remark"] = f"nav.css(\"::text\").get().strip() == \"{nav_text}\""
+                yield meta_city_item
+                return
+            new_house_url = response.urljoin(nav.css("a::attr(href)").get())
+            new_house_url = new_house_url.split("?")[0]
+
         new_house_url = f"{new_house_url}loupan/all/s1"
         meta_city_item["new_house_url"] = new_house_url
         yield meta_city_item
