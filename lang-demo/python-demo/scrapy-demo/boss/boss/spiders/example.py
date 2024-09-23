@@ -32,6 +32,10 @@ class ExampleSpider(scrapy.Spider):
                 self.industries.append(line.strip().split(","))
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
+        if self.is_need_request_again(response):
+            yield scrapy.Request(url=self.start_urls[0], callback=self.parse)
+            return
+
         for city in self.cities:
             for industry in self.industries:
                 for experience in self.experiences:
@@ -109,8 +113,9 @@ class ExampleSpider(scrapy.Spider):
         return text
 
     def is_need_request_again(self, response: Response) -> bool:
-        if "callbackUrl" in response.url:
-            logging.warning(f"### callbackUrl ### {response.url}")
+        sliders = response.css(".page-verify-slider")
+        if len(sliders) > 0:
+            logging.warning(f"### page-verify-slider ### {response.url}")
             return True
         return False
 
