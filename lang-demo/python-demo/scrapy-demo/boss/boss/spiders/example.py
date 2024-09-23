@@ -1,5 +1,6 @@
 import os
 import sys
+from time import sleep
 from typing import Any
 
 import scrapy
@@ -37,7 +38,7 @@ class ExampleSpider(scrapy.Spider):
                                 url=f"{self.start_urls[0]}?city={city[0]}&industry={industry[0]}&experience={experience[0]}&degree={degree[0]}&scale={scale[0]}",
                                 callback=self.parse_job_list,
                                 meta={"meta_filter": {"city": city, "industry": industry, "experience": experience, "degree": degree, "scale": scale}})
-                            return None
+                            sleep(1)
 
     def parse_job_list(self, response: Response) -> Any:
         meta_filter = response.meta["meta_filter"]
