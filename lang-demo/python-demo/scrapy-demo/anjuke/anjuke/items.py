@@ -33,5 +33,6 @@ class NewHouseItem(scrapy.Item):
     price = scrapy.Field()
     price_num = scrapy.Field()
     url = scrapy.Field()
+    city_new_house_url = scrapy.Field()
     body = scrapy.Field()
     remark = scrapy.Field()
