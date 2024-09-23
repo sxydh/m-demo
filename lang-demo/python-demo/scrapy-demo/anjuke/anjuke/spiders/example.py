@@ -91,7 +91,7 @@ class ExampleSpider(scrapy.Spider):
             if price is not None and len(price) > 0:
                 new_house_item["price_num"] = re.search(r'(\d+)', price).group(1)
             new_house_item["url"] = new_house.css("a.lp-name::attr(href)").get()
-            new_house_item["body"] = new_house
+            new_house_item["body"] = str(new_house)
             yield new_house_item
 
     def parse_text_helper(self, src, selector, is_multi=False, replaces: list = None):
@@ -123,11 +123,11 @@ class ExampleSpider(scrapy.Spider):
         antibot = response.css("#\\@\\@xxzlGatewayUrl")
         antibot_url = antibot[0].css("::text").get().strip() if antibot is not None and len(antibot) > 0 else None
         if antibot_url is not None:
-            logging.warning(f"### antibot ### {antibot_url} <=> {target_url}")
+            logging.warning(f"### antibot from page ### {antibot_url} <=> {target_url}")
             return True
         # 页面是反爬验证
         if "callback" in response.url:
-            logging.warning(f"### antibot ### {response.url} <=> {target_url}")
+            logging.warning(f"### antibot from url ### {response.url} <=> {target_url}")
         # 其它错误码
         if response.status != 200:
             logging.warning(f"### errcode ### {response.status} <=> {target_url}")
