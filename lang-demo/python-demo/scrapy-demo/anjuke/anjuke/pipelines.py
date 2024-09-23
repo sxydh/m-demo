@@ -2,6 +2,7 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+import threading
 import uuid
 
 from anjuke.items import CityItem, NewHouseItem
@@ -9,6 +10,9 @@ from util.common import get_sqlite_connection
 
 
 # useful for handling different item types with a single interface
+
+# 重入锁
+city_rlock = threading.RLock()
 
 
 class AnjukePipeline:
@@ -25,14 +29,15 @@ class AnjukePipeline:
 
     def process_item(self, item, spider):
         if isinstance(item, CityItem):
-            db_item = self.conn.execute("select * from anjuke_city where uid = ?", (item.get("uid"),)).fetchone()
-            if db_item is None:
-                self.conn.execute("insert into anjuke_city(uid, province, name, url, new_house_url, new_house_total, new_house_total_num, body, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                                  (item.get("uid"), item.get("province"), item.get("name"), item.get("url"), item.get("new_house_url"), item.get("new_house_total"), item.get("new_house_total_num"), item.get("body"), item.get("remark")))
-            else:
-                self.conn.execute("update anjuke_city set province = ?, name = ?, url = ?, new_house_url = ?, new_house_total = ?, new_house_total_num = ?, body = ?, remark = ? where uid = ?",
-                                  (item.get("province"), item.get("name"), item.get("url"), item.get("new_house_url"), item.get("new_house_total"), item.get("new_house_total_num"), item.get("body"), item.get("remark"), item.get("uid")))
-            self.conn.commit()
+            with city_rlock:
+                db_item = self.conn.execute("select * from anjuke_city where uid = ?", (item.get("uid"),)).fetchone()
+                if db_item is None:
+                    self.conn.execute("insert into anjuke_city(uid, province, name, url, new_house_url, new_house_total, new_house_total_num, body, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                      (item.get("uid"), item.get("province"), item.get("name"), item.get("url"), item.get("new_house_url"), item.get("new_house_total"), item.get("new_house_total_num"), item.get("body"), item.get("remark")))
+                else:
+                    self.conn.execute("update anjuke_city set province = ?, name = ?, url = ?, new_house_url = ?, new_house_total = ?, new_house_total_num = ?, body = ?, remark = ? where uid = ?",
+                                      (item.get("province"), item.get("name"), item.get("url"), item.get("new_house_url"), item.get("new_house_total"), item.get("new_house_total_num"), item.get("body"), item.get("remark"), item.get("uid")))
+                self.conn.commit()
         elif isinstance(item, NewHouseItem):
             self.conn.execute("insert into anjuke_new_house(uid, province, city, city_new_house_url, name, address, type, tag, price, price_num, url, body, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                               (str(uuid.uuid4()), item.get("province"), item.get("city"), item.get("city_new_house_url"), item.get("name"), item.get("address"), item.get("type"), item.get("tag"), item.get("price"), item.get("price_num"), item.get("url"), item.get("body"), item.get("remark")))
