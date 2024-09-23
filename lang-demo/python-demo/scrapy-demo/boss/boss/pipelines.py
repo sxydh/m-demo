@@ -15,4 +15,4 @@ class BossPipeline:
         self.conn = get_sqlite_connection()
 
     def process_item(self, item, spider):
-        return item
+        print(item)
