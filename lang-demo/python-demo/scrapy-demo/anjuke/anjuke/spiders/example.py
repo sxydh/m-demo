@@ -154,12 +154,17 @@ class ExampleSpider(scrapy.Spider):
         if antibot_url is not None:
             logging.warning(f"### antibot from page ### {antibot_url} <=> {target_url}")
             return True
+        # 页面没有内容
+        body = response.css("body")
+        if len(body) == 0:
+            logging.warning(f"### empty page ### len(body) == 0 <=> {target_url}")
+            return True
         # 地址是反爬验证
         if "callback" in response.url:
             logging.warning(f"### antibot from url ### {response.url} <=> {target_url}")
         # 其它错误码
         if response.status != 200:
-            logging.warning(f"### errcode ### {response.status} <=> {target_url}")
+            logging.warning(f"### error code ### {response.status} <=> {target_url}")
             return True
         return False
 
