@@ -85,8 +85,9 @@ class ExampleSpider(scrapy.Spider):
             return
 
         page_city_name = self.parse_text_helper(response, ".sel-city .city", replaces=[" "])
-        if page_city_name != city_name and not (page_city_name in city_name or city_name in page_city_name):
+        if page_city_name is None or (page_city_name != city_name and not (page_city_name in city_name or city_name in page_city_name)):
             logging.warning(f"### city_name from page ### {page_city_name} <=> {city_name}")
+            meta_city_item["body"] = response.body
             meta_city_item["remark"] = f"page_city_name={page_city_name} <=> city_name={city_name}"
             yield meta_city_item
             return
@@ -165,4 +166,4 @@ class ExampleSpider(scrapy.Spider):
 
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-    execute(["scrapy", "crawl", "example", "-L", "WARN"])
+    execute(["scrapy", "crawl", "example", "-L", "DEBUG"])
