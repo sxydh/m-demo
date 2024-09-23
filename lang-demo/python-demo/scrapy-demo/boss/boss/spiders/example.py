@@ -1,3 +1,5 @@
+import copy
+import logging
 import os
 import re
 import sys
@@ -35,14 +37,26 @@ class ExampleSpider(scrapy.Spider):
                 for experience in self.experiences:
                     for degree in self.degrees:
                         for scale in self.scales:
+                            url = f"{self.start_urls[0]}?city={city[0]}&industry={industry[0]}&experience={experience[0]}&degree={degree[0]}&scale={scale[0]}&page=1"
                             yield scrapy.Request(
-                                url=f"{self.start_urls[0]}?city={city[0]}&industry={industry[0]}&experience={experience[0]}&degree={degree[0]}&scale={scale[0]}&page=1",
+                                url=url,
                                 callback=self.parse_job_list,
-                                meta={"meta_filter": {"city": city, "industry": industry, "experience": experience, "degree": degree, "scale": scale}})
+                                meta={
+                                    "meta_keep": {
+                                        "city": city,
+                                        "industry": industry,
+                                        "experience": experience,
+                                        "degree": degree,
+                                        "scale": scale,
+                                        "url": url}})
                             sleep(1)
 
     def parse_job_list(self, response: Response) -> Any:
-        meta_filter = response.meta["meta_filter"]
+        meta_keep = response.meta["meta_keep"]
+
+        if self.is_need_request_again(response):
+            yield scrapy.Request(url=meta_keep["url"], callback=self.parse_job_list, meta={"meta_keep": copy.copy(meta_keep)}, dont_filter=True)
+            return
 
         cur_page = re.search(r"page=(\d+)", response.url)
         max_page = 0
@@ -61,11 +75,11 @@ class ExampleSpider(scrapy.Spider):
             job_item["address"] = self.parse_text_helper(job, ".job-area")
             job_item["salary"] = self.parse_text_helper(job, ".salary")
             job_item["company"] = self.parse_text_helper(job, ".company-name")
-            job_item["city"] = meta_filter["city"][1]
-            job_item["industry"] = meta_filter["industry"][1]
-            job_item["experience"] = meta_filter["experience"][1]
-            job_item["degree"] = meta_filter["degree"][1]
-            job_item["scale"] = meta_filter["scale"][1]
+            job_item["city"] = meta_keep["city"][1]
+            job_item["industry"] = meta_keep["industry"][1]
+            job_item["experience"] = meta_keep["experience"][1]
+            job_item["degree"] = meta_keep["degree"][1]
+            job_item["scale"] = meta_keep["scale"][1]
             job_item["job_tag"] = self.parse_text_helper(job, ".job-card-footer", is_multi=True)
             job_item["company_tag"] = self.parse_text_helper(job, ".company-tag-list", is_multi=True)
             yield job_item
@@ -75,7 +89,8 @@ class ExampleSpider(scrapy.Spider):
             yield scrapy.Request(
                 url=f"{response.url.replace(f"page={cur_page}", f"page={cur_page + 1}")}",
                 callback=self.parse_job_list,
-                meta={"meta_filter": meta_filter})
+                meta={"meta_keep": copy.copy(meta_keep)},
+                dont_filter=True)
 
     def parse_text_helper(self, src, selector, is_multi=False, replaces: list = " ") -> str | None:
         text = None
@@ -92,6 +107,12 @@ class ExampleSpider(scrapy.Spider):
             for replace in replaces:
                 text = text.replace(replace, "")
         return text
+
+    def is_need_request_again(self, response: Response) -> bool:
+        if "callbackUrl" in response.url:
+            logging.warning(f"### callbackUrl ### {response.url}")
+            return True
+        return False
 
 
 if __name__ == "__main__":
