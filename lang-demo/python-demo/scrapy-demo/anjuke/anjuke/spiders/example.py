@@ -123,6 +123,10 @@ class ExampleSpider(scrapy.Spider):
         # 页面是反爬验证
         if "callback" in response.url:
             logging.warning(f"### antibot ### {response.url} <=> {target_url}")
+        # 其它错误码
+        if response.status != 200:
+            logging.warning(f"### errcode ### {response.status} <=> {target_url}")
+            return True
         return False
 
 
