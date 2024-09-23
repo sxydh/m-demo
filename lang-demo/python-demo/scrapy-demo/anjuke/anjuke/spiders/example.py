@@ -67,6 +67,9 @@ class ExampleSpider(scrapy.Spider):
         city_name = meta_city_item["name"]
 
         if self.is_need_request_again(new_house_url, response):
+            meta_city_item["body"] = response.body
+            meta_city_item["remark"] = "is_need_request_again"
+            yield meta_city_item
             yield scrapy.Request(new_house_url, callback=self.parse_new_house_list, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
@@ -87,6 +90,11 @@ class ExampleSpider(scrapy.Spider):
         yield meta_city_item
 
         new_house_list = response.css(".list-results .item-mod")
+        if len(new_house_list) == 0:
+            meta_city_item["body"] = response.body
+            meta_city_item["remark"] = "len(new_house_list) == 0"
+            yield meta_city_item
+            return
         for new_house in new_house_list:
             new_house_item = NewHouseItem()
             new_house_item["city"] = meta_city_item["name"]
