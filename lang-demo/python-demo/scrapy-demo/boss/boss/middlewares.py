@@ -2,11 +2,16 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import logging
+import os
+import random
 
 from scrapy import signals
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
+
+from boss.settings import USER_AGENT_LIST
 
 
 class BossSpiderMiddleware:
@@ -78,6 +83,14 @@ class BossDownloaderMiddleware:
         # - or return a Request object
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
+
+        request.headers["User-Agent"] = random.choice(USER_AGENT_LIST)
+        logging.debug(f"Using user agent: {request.headers['User-Agent']}")
+        proxy = os.environ.get('PROXY')
+        if proxy:
+            logging.debug(f"Using proxy: {proxy}")
+            request.meta['proxy'] = f"http://{proxy}"
+
         return None
 
     def process_response(self, request, response, spider):
