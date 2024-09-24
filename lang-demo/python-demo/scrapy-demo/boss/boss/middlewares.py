@@ -108,7 +108,7 @@ class BossDownloaderMiddleware:
 
         global DOWNLOADER_DRIVER_REBOOT
         if DOWNLOADER_DRIVER_REBOOT:
-            self.driver.close()
+            self.driver.quit()
             self.init_driver()
             DOWNLOADER_DRIVER_REBOOT = False
 
