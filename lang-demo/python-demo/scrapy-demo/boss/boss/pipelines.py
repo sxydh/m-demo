@@ -21,3 +21,6 @@ class BossPipeline:
         self.conn.execute("insert into boss_job(name, address, salary, company, city, industry, experience, degree, scale, job_tag, company_tag) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                           (item.get("name"), item.get("address"), item.get("salary"), item.get("company"), item.get("city"), item.get("industry"), item.get("experience"), item.get("degree"), item.get("scale"), item.get("job_tag"), item.get("company_tag")))
         self.conn.commit()
+
+    def close_spider(self, spider):
+        self.conn.close()
