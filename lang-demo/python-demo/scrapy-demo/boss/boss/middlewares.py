@@ -76,7 +76,8 @@ class BossDownloaderMiddleware:
         proxy = os.environ.get('PROXY')
         if proxy:
             logging.warning(f'Using proxy: {proxy}')
-            options.add_argument(f'--proxy-server={proxy}')
+            options.add_argument(f"--proxy-server={proxy}")
+            options.add_argument("--blink-settings=imagesEnabled=false")
         self.driver = uc.Chrome(options=options)
         self.driver.maximize_window()
 

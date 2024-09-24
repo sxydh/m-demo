@@ -3,7 +3,6 @@ import logging
 import os
 import re
 import sys
-from time import sleep
 from typing import Any
 
 import scrapy
