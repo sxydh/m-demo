@@ -9,6 +9,7 @@ import scrapy
 from scrapy.cmdline import execute
 from scrapy.http import Response
 
+import boss.middlewares
 from boss.items import JobItem
 from boss.util.common import get_sqlite_connection
 
@@ -131,14 +132,19 @@ class ExampleSpider(scrapy.Spider):
         return text or default
 
     def is_need_request_again(self, response: Response) -> bool:
-        if "code=31" in response.url:
-            logging.warning(f"### code=31 ### {response.url}")
-            return True
-        sliders = response.css(".page-verify-slider")
-        if len(sliders) > 0:
-            logging.warning(f"### page-verify-slider ### {response.url}")
-            return True
-        return False
+        ret = False
+        if not ret:
+            if "code=31" in response.url:
+                logging.warning(f"### code=31 ### {response.url}")
+                ret = True
+        if not ret:
+            sliders = response.css(".page-verify-slider")
+            if len(sliders) > 0:
+                logging.warning(f"### page-verify-slider ### {response.url}")
+                ret = True
+        if ret:
+            boss.middlewares.DOWNLOADER_DRIVER_REBOOT = True
+        return ret
 
 
 if __name__ == "__main__":

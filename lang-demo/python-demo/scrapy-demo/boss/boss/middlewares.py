@@ -63,7 +63,7 @@ class BossSpiderMiddleware:
         spider.logger.info("Spider opened: %s" % spider.name)
 
 
-downloader_driver_reboot = False
+DOWNLOADER_DRIVER_REBOOT = False
 
 
 class BossDownloaderMiddleware:
