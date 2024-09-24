@@ -92,7 +92,7 @@ class ExampleSpider(scrapy.Spider):
             job_url = job.css(".job-card-body > a::attr(href)").get()
             if job_url and "?" in job_url:
                 job_item["job_id"] = job_url.split("?")[0]
-            job_item["job_url"] = job_url
+            job_item["job_url"] = response.urljoin(job_url)
             job_item["job_list_url"] = response.url
             yield job_item
 
