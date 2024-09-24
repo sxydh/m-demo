@@ -13,6 +13,7 @@ from boss.items import JobItem
 from boss.util.common import get_sqlite_connection
 
 
+# noinspection DuplicatedCode
 class ExampleSpider(scrapy.Spider):
     name = "example"
     allowed_domains = []
@@ -68,17 +69,18 @@ class ExampleSpider(scrapy.Spider):
             yield scrapy.Request(url=meta_keep["url"], callback=self.parse_job_list, meta={"meta_keep": copy.copy(meta_keep)}, dont_filter=True)
             return
 
-        cur_page = re.search(r"page=(\d+)", response.url)
-        max_page = 0
-        if cur_page:
-            cur_page = int(cur_page.group(1))
-        else:
-            cur_page = 1
-        pages = response.css(".options-pages a")
-        if len(pages) > 2:
-            max_page = int(pages[-2].css("::text").get().strip())
-
         job_list = response.css(".job-list-box .job-card-wrapper")
+        if len(job_list) == 0:
+            job_item = JobItem()
+            job_item["city"] = meta_keep["city"][1]
+            job_item["industry"] = meta_keep["industry"][1]
+            job_item["experience"] = meta_keep["experience"][1]
+            job_item["degree"] = meta_keep["degree"][1]
+            job_item["scale"] = meta_keep["scale"][1]
+            job_item["job_list_url"] = response.url
+            yield job_item
+            return
+
         for job in job_list:
             job_item = JobItem()
             job_item["name"] = self.parse_text_helper(job, ".job-name")
@@ -102,7 +104,11 @@ class ExampleSpider(scrapy.Spider):
             job_item["job_list_url"] = response.url
             yield job_item
 
-        if cur_page and max_page and cur_page < max_page:
+        cur_page = re.search(r"page=(\d+)", response.url)
+        cur_page = int(cur_page.group(1))
+        pages = response.css(".options-pages a")
+        max_page = int(pages[-2].css("::text").get().strip())
+        if cur_page < max_page:
             meta_keep["url"] = f"{response.url.replace(f"page={cur_page}", f"page={cur_page + 1}")}"
             yield scrapy.Request(
                 url=meta_keep["url"],
