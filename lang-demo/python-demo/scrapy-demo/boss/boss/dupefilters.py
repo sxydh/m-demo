@@ -25,4 +25,5 @@ class SqliteDupeFilter(RFPDupeFilter):
             return True
 
     def close(self, reason: str) -> None:
+        super().close(reason)
         self.conn.close()
