@@ -21,7 +21,7 @@ class SqliteDupeFilter(RFPDupeFilter):
     def request_seen(self, request: Request) -> bool:
         if super().request_seen(request):
             return True
-        if self.conn.execute("select 1 from boss_job where job_list_url = ?", request.url).fetchone():
+        if self.conn.execute("select 1 from boss_job where job_list_url = ?", [request.url]).fetchone():
             return True
 
     def close(self, reason: str) -> None:
