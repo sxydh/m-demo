@@ -104,7 +104,7 @@ class ExampleSpider(scrapy.Spider):
         if not is_multi:
             text = arr[0].css("::text").get()
         else:
-            arr = [ele.css("::text").get() for ele in arr]
+            arr = [ele.css("::text").getall() for ele in arr]
             arr = [ele for ele in arr if ele]
             text = "###".join(arr)
         if replaces:
