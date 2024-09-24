@@ -104,7 +104,7 @@ class BossDownloaderMiddleware:
         #   installed downloader middleware will be called
 
         if downloader_driver_reboot:
-            self.driver.quit()
+            self.driver.close()
             self.init_driver()
 
         self.driver.get(request.url)
