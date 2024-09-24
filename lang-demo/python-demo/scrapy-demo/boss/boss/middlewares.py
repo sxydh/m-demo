@@ -63,12 +63,19 @@ class BossSpiderMiddleware:
         spider.logger.info("Spider opened: %s" % spider.name)
 
 
+downloader_driver_reboot = False
+
+
 class BossDownloaderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
 
     def __init__(self):
+        self.driver = None
+        self.init_driver()
+
+    def init_driver(self):
         options = Options()
         proxy = os.environ.get('PROXY')
         if proxy:
@@ -95,6 +102,10 @@ class BossDownloaderMiddleware:
         # - or return a Request object
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
+
+        if downloader_driver_reboot:
+            self.driver.quit()
+            self.init_driver()
 
         self.driver.get(request.url)
         sleep(random.randint(1, 3))
