@@ -134,7 +134,8 @@ class ExampleSpider(scrapy.Spider):
     def is_need_request_again(self, response: Response) -> bool:
         ret = False
         if not ret:
-            if "code=31" in response.url:
+            errors = response.css(".error-content")
+            if len(errors) > 0:
                 logging.warning(f"### code=31 ### {response.url}")
                 ret = True
         if not ret:
