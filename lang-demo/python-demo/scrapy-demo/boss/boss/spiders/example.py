@@ -10,6 +10,7 @@ from scrapy.cmdline import execute
 from scrapy.http import Response
 
 from boss.items import JobItem
+from boss.util.common import get_sqlite_connection
 
 
 class ExampleSpider(scrapy.Spider):
@@ -29,6 +30,7 @@ class ExampleSpider(scrapy.Spider):
         with open("tmp/industry.csv", "r", encoding="utf-8") as f:
             for line in f.readlines():
                 self.industries.append(line.strip().split(","))
+        self.conn = get_sqlite_connection()
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
         if self.is_need_request_again(response):
@@ -39,8 +41,20 @@ class ExampleSpider(scrapy.Spider):
             for industry in self.industries:
                 for experience in self.experiences:
                     for degree in self.degrees:
-                        for scale in self.scales:
-                            url = f"{self.start_urls[0]}?city={city[0]}&industry={industry[0]}&experience={experience[0]}&degree={degree[0]}&scale={scale[0]}&page=1"
+                        for i in range(len(self.scales)):
+                            scale = self.scales[i]
+                            url = f"{self.start_urls[0]}?city={city[0]}"
+                            url += f"&industry={industry[0]}"
+                            url += f"&experience={experience[0]}"
+                            url += f"&degree={degree[0]}"
+                            url += f"&scale={scale[0]}"
+
+                            next_scale = self.scales[i + 1] if i + 1 < len(self.scales) else None
+                            next_exists = self.conn.execute("select 1 from boss_job where instr(job_list_url, ?) > 0", [f"{url}&scale={next_scale[0]}"]).fetchone() if next_scale else None
+                            if next_exists:
+                                continue
+
+                            url += f"&page=1"
                             yield scrapy.Request(
                                 url=url,
                                 callback=self.parse_job_list,
