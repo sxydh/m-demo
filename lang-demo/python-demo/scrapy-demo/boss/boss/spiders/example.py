@@ -48,12 +48,6 @@ class ExampleSpider(scrapy.Spider):
                             url += f"&experience={experience[0]}"
                             url += f"&degree={degree[0]}"
                             url += f"&scale={scale[0]}"
-
-                            next_scale = self.scales[i + 1] if i + 1 < len(self.scales) else None
-                            next_exists = self.conn.execute("select 1 from boss_job where instr(job_list_url, ?) > 0", [f"{url}&scale={next_scale[0]}"]).fetchone() if next_scale else None
-                            if next_exists:
-                                continue
-
                             url += f"&page=1"
                             yield scrapy.Request(
                                 url=url,
