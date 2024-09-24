@@ -53,7 +53,6 @@ class ExampleSpider(scrapy.Spider):
                                         "degree": degree,
                                         "scale": scale,
                                         "url": url}})
-                            sleep(1)
 
     def parse_job_list(self, response: Response) -> Any:
         meta_keep = response.meta["meta_keep"]
@@ -96,7 +95,6 @@ class ExampleSpider(scrapy.Spider):
             job_item["job_list_url"] = response.url
             yield job_item
 
-        sleep(1)
         if cur_page and max_page and cur_page < max_page:
             meta_keep["url"] = f"{response.url.replace(f"page={cur_page}", f"page={cur_page + 1}")}"
             yield scrapy.Request(
