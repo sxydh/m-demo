@@ -9,6 +9,7 @@ from time import sleep
 
 from scrapy.http import HtmlResponse
 import undetected_chromedriver as uc
+from selenium.webdriver.chrome.options import Options
 
 from scrapy import signals
 
@@ -71,7 +72,11 @@ class BossDownloaderMiddleware:
     # passed objects.
 
     def __init__(self):
-        self.driver = uc.Chrome()
+        options = Options()
+        proxy = os.environ.get('PROXY')
+        if proxy:
+            options.add_argument(f'--proxy-server={proxy}')
+        self.driver = uc.Chrome(options=options)
         self.driver.maximize_window()
 
     @classmethod
@@ -91,13 +96,6 @@ class BossDownloaderMiddleware:
         # - or return a Request object
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
-
-        request.headers["User-Agent"] = random.choice(USER_AGENT_LIST)
-        logging.debug(f"Using user agent: {request.headers['User-Agent']}")
-        proxy = os.environ.get('PROXY')
-        if proxy:
-            logging.debug(f"Using proxy: {proxy}")
-            request.meta['proxy'] = f"http://{proxy}"
 
         self.driver.get(request.url)
         sleep(random.randint(1, 3))
