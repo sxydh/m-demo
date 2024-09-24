@@ -135,7 +135,7 @@ class ExampleSpider(scrapy.Spider):
         ret = False
         if not ret:
             ls = response.css(".job-list-wrapper")
-            if len(ls) > 0:
+            if len(ls) == 0:
                 logging.warning(f"### len(response.css(\".job-list-wrapper\")) == 0 ### {response.url}")
                 ret = True
         if ret:
