@@ -131,6 +131,9 @@ class ExampleSpider(scrapy.Spider):
         return text or default
 
     def is_need_request_again(self, response: Response) -> bool:
+        if "code=31" in response.url:
+            logging.warning(f"### code=31 ### {response.url}")
+            return True
         sliders = response.css(".page-verify-slider")
         if len(sliders) > 0:
             logging.warning(f"### page-verify-slider ### {response.url}")
