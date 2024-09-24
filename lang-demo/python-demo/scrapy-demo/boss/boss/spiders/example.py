@@ -84,7 +84,7 @@ class ExampleSpider(scrapy.Spider):
             job_item["experience"] = meta_keep["experience"][1]
             job_item["degree"] = meta_keep["degree"][1]
             job_item["scale"] = meta_keep["scale"][1]
-            job_item["job_tag"] = self.parse_text_helper(job, ".job-card-footer *", is_multi=True)
+            job_item["job_tag"] = self.parse_text_helper(job, ".job-card-footer .tag-list,.info-desc", is_multi=True)
             job_item["company_tag"] = self.parse_text_helper(job, ".company-tag-list *", is_multi=True)
             job_item["body"] = str(job)
             job_url = job.css(".job-card-body > a::attr(href)").get()
