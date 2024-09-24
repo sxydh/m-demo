@@ -103,9 +103,11 @@ class BossDownloaderMiddleware:
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
 
-        if downloader_driver_reboot:
+        global DOWNLOADER_DRIVER_REBOOT
+        if DOWNLOADER_DRIVER_REBOOT:
             self.driver.close()
             self.init_driver()
+            DOWNLOADER_DRIVER_REBOOT = False
 
         self.driver.get(request.url)
         sleep(random.randint(1, 3))
