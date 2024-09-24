@@ -84,7 +84,9 @@ class ExampleSpider(scrapy.Spider):
             job_item["experience"] = meta_keep["experience"][1]
             job_item["degree"] = meta_keep["degree"][1]
             job_item["scale"] = meta_keep["scale"][1]
-            job_item["job_tag"] = self.parse_text_helper(job, ".job-card-footer .tag-list,.info-desc", is_multi=True)
+            job_tag_1 = self.parse_text_helper(job, ".job-card-footer .tag-list *", is_multi=True)
+            job_tag_2 = self.parse_text_helper(job, ".job-card-footer .info-desc *", is_multi=True)
+            job_item["job_tag"] = f"{job_tag_1}###{job_tag_2}" if job_tag_2 else job_tag_1
             job_item["company_tag"] = self.parse_text_helper(job, ".company-tag-list *", is_multi=True)
             job_item["body"] = str(job)
             job_url = job.css(".job-card-body > a::attr(href)").get()
@@ -102,21 +104,20 @@ class ExampleSpider(scrapy.Spider):
                 callback=self.parse_job_list,
                 meta={"meta_keep": copy.copy(meta_keep)})
 
-    def parse_text_helper(self, src, selector, is_multi=False, replaces: list = " ") -> str | None:
+    def parse_text_helper(self, src, selector, is_multi=False, replaces: list = " ", default=None) -> str | None:
         text = None
         arr = src.css(selector)
-        if len(arr) == 0:
-            return text
-        if not is_multi:
-            text = arr[0].css("::text").get()
-        else:
-            arr = [ele.css("::text").get() for ele in arr]
-            arr = [ele for ele in arr if ele]
-            text = "###".join(arr)
-        if replaces:
-            for replace in replaces:
-                text = text.replace(replace, "")
-        return text
+        if len(arr) != 0:
+            if not is_multi:
+                text = arr[0].css("::text").get()
+            else:
+                arr = [ele.css("::text").get() for ele in arr]
+                arr = [ele for ele in arr if ele]
+                text = "###".join(arr)
+            if replaces:
+                for replace in replaces:
+                    text = text.replace(replace, "")
+        return text or default
 
     def is_need_request_again(self, response: Response) -> bool:
         sliders = response.css(".page-verify-slider")
