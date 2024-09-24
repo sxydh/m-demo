@@ -25,6 +25,7 @@ class JobItem(scrapy.Item):
     job_tag = scrapy.Field()
     company_tag = scrapy.Field()
     body = scrapy.Field()
+    job_id = scrapy.Field()
     job_url = scrapy.Field()
     job_list_url = scrapy.Field()
     remark = scrapy.Field()
