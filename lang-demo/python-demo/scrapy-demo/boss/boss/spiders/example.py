@@ -134,14 +134,9 @@ class ExampleSpider(scrapy.Spider):
     def is_need_request_again(self, response: Response) -> bool:
         ret = False
         if not ret:
-            errors = response.css(".error-content")
-            if len(errors) > 0:
-                logging.warning(f"### code=31 ### {response.url}")
-                ret = True
-        if not ret:
-            sliders = response.css(".page-verify-slider")
-            if len(sliders) > 0:
-                logging.warning(f"### page-verify-slider ### {response.url}")
+            ls = response.css(".job-list-wrapper")
+            if len(ls) > 0:
+                logging.warning(f"### len(response.css(\".job-list-wrapper\")) == 0 ### {response.url}")
                 ret = True
         if ret:
             boss.middlewares.DOWNLOADER_DRIVER_REBOOT = True
