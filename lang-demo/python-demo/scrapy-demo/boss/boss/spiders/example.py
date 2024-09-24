@@ -85,7 +85,7 @@ class ExampleSpider(scrapy.Spider):
             job_item["degree"] = meta_keep["degree"][1]
             job_item["scale"] = meta_keep["scale"][1]
             job_tag_1 = self.parse_text_helper(job, ".job-card-footer .tag-list *", is_multi=True)
-            job_tag_2 = self.parse_text_helper(job, ".job-card-footer .info-desc *", is_multi=True)
+            job_tag_2 = self.parse_text_helper(job, ".job-card-footer .info-desc", is_multi=True)
             job_item["job_tag"] = f"{job_tag_1}###{job_tag_2}" if job_tag_2 else job_tag_1
             job_item["company_tag"] = self.parse_text_helper(job, ".company-tag-list *", is_multi=True)
             job_item["body"] = str(job)
