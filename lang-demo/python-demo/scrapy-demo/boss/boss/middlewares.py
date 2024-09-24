@@ -7,16 +7,13 @@ import os
 import random
 from time import sleep
 
-from scrapy.http import HtmlResponse
 import undetected_chromedriver as uc
+from scrapy import signals
+from scrapy.http import HtmlResponse
 from selenium.webdriver.chrome.options import Options
 
-from scrapy import signals
 
 # useful for handling different item types with a single interface
-from itemadapter import is_item, ItemAdapter
-
-from boss.settings import USER_AGENT_LIST
 
 
 class BossSpiderMiddleware:
