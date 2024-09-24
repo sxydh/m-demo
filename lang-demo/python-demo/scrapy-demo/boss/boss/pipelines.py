@@ -2,11 +2,12 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+import os
+
+from boss.util.common import get_sqlite_connection
 
 
 # useful for handling different item types with a single interface
-
-from boss.util.common import get_sqlite_connection
 
 
 class BossPipeline:
@@ -14,7 +15,8 @@ class BossPipeline:
     def __init__(self):
         self.conn = get_sqlite_connection()
         self.conn.execute("create table if not exists boss_job(name text, address text, salary text, company text, city text, industry text, experience text, degree text, scale text, job_tag text, company_tag text, body text, job_id text, job_url text, job_list_url text, remark text)")
-        self.conn.execute("delete from boss_job where 1 = 1")
+        if os.environ.get("CLEAR_JOB") == "1":
+            self.conn.execute("delete from boss_job where 1 = 1")
         self.conn.commit()
 
     def process_item(self, item, spider):
