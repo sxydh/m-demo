@@ -71,6 +71,8 @@
                 定义 Request 的请求头 User-Agent
             ROBOTSTXT_OBEY = False
                 定义是否遵守 Robot 爬虫约定
+            DOWNLOAD_DELAY = 3
+                请求间隔时间
                 
             SPIDER_MIDDLEWARES = {
                 "tjbz.middlewares.TjbzSpiderMiddleware": 543,
