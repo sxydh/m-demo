@@ -85,7 +85,7 @@ class ExampleSpider(scrapy.Spider):
             job_item["degree"] = meta_keep["degree"][1]
             job_item["scale"] = meta_keep["scale"][1]
             job_item["job_tag"] = self.parse_text_helper(job, ".job-card-footer", is_multi=True)
-            job_item["company_tag"] = self.parse_text_helper(job, ".company-tag-list", is_multi=True)
+            job_item["company_tag"] = self.parse_text_helper(job, ".company-tag-list *", is_multi=True)
             yield job_item
 
         sleep(1)
@@ -104,7 +104,7 @@ class ExampleSpider(scrapy.Spider):
         if not is_multi:
             text = arr[0].css("::text").get()
         else:
-            arr = [ele.css("::text").getall() for ele in arr]
+            arr = [ele.css("::text").get() for ele in arr]
             arr = [ele for ele in arr if ele]
             text = "###".join(arr)
         if replaces:
