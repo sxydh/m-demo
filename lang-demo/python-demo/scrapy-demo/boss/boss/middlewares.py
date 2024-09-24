@@ -12,6 +12,8 @@ from scrapy import signals
 from scrapy.http import HtmlResponse
 from selenium.webdriver.chrome.options import Options
 
+from boss.settings import USER_AGENT_LIST
+
 
 # useful for handling different item types with a single interface
 
@@ -82,6 +84,7 @@ class BossDownloaderMiddleware:
             logging.warning(f'Using proxy: {proxy}')
             options.add_argument(f"--proxy-server={proxy}")
             options.add_argument("--blink-settings=imagesEnabled=false")
+            options.add_argument(f"user-agent={random.choice(USER_AGENT_LIST)}")
         self.driver = uc.Chrome(options=options)
         self.driver.maximize_window()
 
