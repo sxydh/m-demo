@@ -70,7 +70,7 @@ class ExampleSpider(scrapy.Spider):
             yield scrapy.Request(url=meta_keep["url"], callback=self.parse_job_list, meta={"meta_keep": copy.copy(meta_keep)}, dont_filter=True)
             return
 
-        boss.middlewares.DOWNLOADER_DRIVER_REBOOT = False
+        boss.middlewares.DOWNLOADER_DRIVER_REBOOT = 0
         job_list = response.css(".job-list-box .job-card-wrapper")
         if len(job_list) == 0:
             job_item = JobItem()
@@ -140,7 +140,7 @@ class ExampleSpider(scrapy.Spider):
                 logging.warning(f"### len(response.css(\".job-list-wrapper\")) == 0 ### {response.url}")
                 ret = True
         if ret:
-            boss.middlewares.DOWNLOADER_DRIVER_REBOOT = True
+            boss.middlewares.DOWNLOADER_DRIVER_REBOOT += 1
         return ret
 
 

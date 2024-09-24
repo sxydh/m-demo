@@ -65,7 +65,7 @@ class BossSpiderMiddleware:
         spider.logger.info("Spider opened: %s" % spider.name)
 
 
-DOWNLOADER_DRIVER_REBOOT = False
+DOWNLOADER_DRIVER_REBOOT = 0
 
 
 class BossDownloaderMiddleware:
@@ -107,11 +107,11 @@ class BossDownloaderMiddleware:
         #   installed downloader middleware will be called
 
         global DOWNLOADER_DRIVER_REBOOT
-        if DOWNLOADER_DRIVER_REBOOT:
+        if DOWNLOADER_DRIVER_REBOOT >= 5:
             self.driver.quit()
             sleep(random.randint(2, 4))
             self.init_driver()
-            DOWNLOADER_DRIVER_REBOOT = False
+            DOWNLOADER_DRIVER_REBOOT = 0
 
         self.driver.get(request.url)
         sleep(random.randint(1, 3))
