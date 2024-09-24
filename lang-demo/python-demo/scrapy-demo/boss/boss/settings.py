@@ -123,3 +123,5 @@ REDIRECT_MAX_TIMES = 100
 
 RETRY_ENABLED = True
 RETRY_TIMES = 20
+
+DUPEFILTER_CLASS = "scrapy.dupefilters.RFPDupeFilter"
