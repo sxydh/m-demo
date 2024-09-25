@@ -79,7 +79,7 @@ class QcwyApp:
                             self.cli.get(url)
                             items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
                             pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
-                            pages = int(pages[-1].get_attribute('innerText').strip()) if pages and len(pages) > 0 else 0
+                            pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
                             self.parse_job_item(fun_type=fun_type[1],
                                                 work_year=work_year[1],
                                                 degree=degree[1],
