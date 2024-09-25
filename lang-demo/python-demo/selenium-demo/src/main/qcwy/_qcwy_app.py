@@ -1,4 +1,5 @@
 import logging
+import threading
 import uuid
 
 from selenium.webdriver.common.by import By
@@ -30,6 +31,8 @@ class JobItem:
 
 
 class QcwyApp:
+    run_flag = True
+
     cli = None
     conn = None
 
@@ -62,7 +65,10 @@ class QcwyApp:
             return True
         return False
 
-    def start(self):
+    def run(self):
+        t = threading.Thread(target=self.console_handler)
+        t.start()
+
         for job_area in self.job_areas:
             for fun_type in self.fun_types:
                 for work_year in self.work_years:
@@ -104,6 +110,9 @@ class QcwyApp:
                                     page += 1
                                     continue
                                 break
+
+                            if not self.run_flag:
+                                return
 
     def close(self):
         self.cli.quit()
@@ -149,7 +158,15 @@ class QcwyApp:
                           [str(uuid.uuid4()), job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_page, job_item.job_pages, job_item.company_tag, job_item.raw, job_item.remark])
         self.conn.commit()
 
+    def console_handler(self):
+        while True:
+            cmd = input('>>> ')
+            if cmd == 'stop':
+                logging.warning('>>> Ready to stop')
+                qcwy_app.run_flag = False
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)
-    QcwyApp().start()
+    qcwy_app = QcwyApp()
+    qcwy_app.run()
