@@ -1,3 +1,6 @@
+import random
+from time import sleep
+
 import undetected_chromedriver as uc
 from selenium import webdriver
 from selenium.webdriver import ActionChains
@@ -78,6 +81,18 @@ class Cli:
 
     def click(self, ele):
         ActionChains(self.driver).move_to_element(ele).click().perform()
+
+    def click_and_move_by_offset(self, ele, y):
+        action_chains = ActionChains(self.driver)
+        action_chains.click_and_hold(ele).perform()
+        moved_y = 0
+        while True:
+            if moved_y >= y:
+                break
+            delta_y = random.randint(1, y - moved_y)
+            sleep(random.randint(100, 500) / 1000)
+            action_chains.move_by_offset(0, delta_y).perform()
+            moved_y += delta_y
 
     def close(self):
         self.driver.close()
