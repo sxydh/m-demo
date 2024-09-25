@@ -38,6 +38,7 @@ class QcwyApp:
                             url += f'&workYear={work_year[0]}'
                             url += f'&degree={degree[0]}'
                             url += f'&companySize={company_size[0]}'
+                            print(url)
 
     def close(self):
         self.cli.quit()
