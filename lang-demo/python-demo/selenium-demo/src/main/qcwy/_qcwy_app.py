@@ -13,7 +13,6 @@ from src.main.util.common import get_sqlite_connection, read_rows
 
 class JobItem:
     uid = None
-    id = None
     name = None
     salary = None
     address = None
@@ -22,6 +21,7 @@ class JobItem:
     fun_type = None
     work_year = None
     degree = None
+    job_id = None
     job_time = None
     job_tag = None
     job_url = None
@@ -57,7 +57,7 @@ class QcwyApp:
 
     def init_db(self):
         with self.get_conn() as conn:
-            conn.execute('create table if not exists qcwy_job(uid text, id text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
+            conn.execute('create table if not exists qcwy_job(uid text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_id text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
 
     def init_db_handler(self):
         t = threading.Thread(target=self.db_handler)
@@ -152,8 +152,8 @@ class QcwyApp:
 
     def save_job_item(self, job_item: JobItem):
         with self.get_conn() as conn:
-            conn.execute(f'insert into qcwy_job(uid, id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, raw, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                         [str(uuid.uuid4()), job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_page, job_item.job_pages, job_item.company_tag, job_item.raw, job_item.remark])
+            conn.execute(f'insert into qcwy_job(uid, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_id, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, raw, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                         [str(uuid.uuid4()), job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_id, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_page, job_item.job_pages, job_item.company_tag, job_item.raw, job_item.remark])
             conn.commit()
 
     def db_handler(self):
@@ -172,18 +172,18 @@ class QcwyApp:
                 soup = BeautifulSoup(raw, 'html.parser')
                 sensors_data = soup.select_one('.sensors_exposure')['sensorsdata']
                 sensors_data = json.loads(sensors_data)
-                job_item.id = sensors_data.get('jobId')
                 job_item.name = self.parse_text_helper(soup, '.jname')
                 job_item.salary = self.parse_text_helper(soup, '.sal')
                 job_item.address = sensors_data.get('jobArea')
                 job_item.company_name = self.parse_text_helper(soup, '.cname')
+                job_item.job_id = sensors_data.get('jobId')
                 job_item.job_time = sensors_data.get('jobTime')
                 job_item.job_tag = self.parse_text_helper(soup, '.tags .tag')
                 job_item.job_page = sensors_data.get('pageNum')
                 job_item.company_tag = self.parse_text_helper(soup, 'span.dc')
 
-                conn.execute(f'update qcwy_job set id=?, name=?, salary=?, address=?, company_name=?, job_time=?, job_tag=?, job_page=?, company_tag=? where uid=?',
-                             [job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.job_time, job_item.job_tag, job_item.job_page, job_item.company_tag, job_item.uid])
+                conn.execute(f'update qcwy_job set name=?, salary=?, address=?, company_name=?, job_id=?, job_time=?, job_tag=?, job_page=?, company_tag=? where uid=?',
+                             [job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.job_id, job_item.job_time, job_item.job_tag, job_item.job_page, job_item.company_tag, job_item.uid])
                 conn.commit()
 
     def console_handler(self):
