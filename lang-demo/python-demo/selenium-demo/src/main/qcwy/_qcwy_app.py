@@ -85,7 +85,7 @@ class QcwyApp:
 
     def filter_url(self, url) -> bool:
         with self.get_conn() as conn:
-            is_filtered = conn.execute('select 1 from qcwy_filter where uid = ?', [url]).fetchone() is None
+            is_filtered = conn.execute('select 1 from qcwy_filter where uid = ?', [url]).fetchone() is not None
             if not is_filtered:
                 # noinspection PyBroadException
                 try:
