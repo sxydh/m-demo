@@ -235,5 +235,3 @@ if __name__ == '__main__':
     for _ in range(3):
         time.sleep(2)
         QcwyApp().start()
-
-    time.sleep(999999)
