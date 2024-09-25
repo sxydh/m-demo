@@ -93,6 +93,8 @@ class QcwyApp:
                     conn.commit()
                 except Exception as _:
                     is_filtered = True
+        if is_filtered:
+            logging.warning(f'is filtered: {url}')
         return is_filtered
 
     def run(self):
