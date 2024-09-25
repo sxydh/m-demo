@@ -56,7 +56,10 @@ class QcwyApp:
 
                             if not is_filter:
                                 self.cli.get(url)
-                                self.cli.find_element_d(by=By.CSS_SELECTOR, value='.joblist-item', timeout=1, count=1, raise_e=False)
+                                self.cli.find_element_d(by=By.CSS_SELECTOR, value='.joblist,j_nolist', timeout=1, count=4, raise_e=False)
+                                slide = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
+                                if slide:
+                                    self.cli.click_and_move_by_x_offset(slide, 400)
 
     def close(self):
         self.cli.quit()
