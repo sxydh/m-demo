@@ -142,7 +142,7 @@ class QcwyApp:
         return '###'.join(elements)
 
     def save_job_item(self, job_item: JobItem):
-        self.conn.execute(f'insert into qcwy_job(id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, job_url, job_list_url, job_pages, company_tag, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        self.conn.execute(f'insert into qcwy_job(id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, job_url, job_list_url, job_pages, company_tag, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                           [job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_pages, job_item.company_tag, job_item.remark])
         self.conn.commit()
 
