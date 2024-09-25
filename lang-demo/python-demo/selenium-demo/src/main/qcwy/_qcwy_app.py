@@ -112,6 +112,7 @@ class QcwyApp:
                                 break
 
                             if not self.run_flag:
+                                self.close()
                                 return
 
     def close(self):
@@ -163,7 +164,8 @@ class QcwyApp:
             cmd = input('>>> ')
             if cmd == 'stop':
                 logging.warning('>>> Ready to stop')
-                qcwy_app.run_flag = False
+                self.run_flag = False
+                break
 
 
 if __name__ == '__main__':
