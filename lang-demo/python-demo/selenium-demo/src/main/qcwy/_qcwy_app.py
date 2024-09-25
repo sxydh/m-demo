@@ -49,7 +49,7 @@ class QcwyApp:
         self.init_db()
         self.init_db_handler()
         self.init_console_handler()
-        self.init_fun_type()
+        self.init_queue()
         self.init_cli()
 
     def get_conn(self):
@@ -58,7 +58,7 @@ class QcwyApp:
     def init_db(self):
         with self.get_conn() as conn:
             conn.execute('create table if not exists qcwy_lock(uid text unique, owner text)')
-            conn.execute('create table if not exists qcwy_queue(uid text unique)')
+            conn.execute('create table if not exists qcwy_queue(uid text unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)')
             conn.execute('create table if not exists qcwy_job(uid text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_id text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
             # noinspection PyBroadException
             try:
@@ -75,29 +75,8 @@ class QcwyApp:
         t = threading.Thread(target=self.console_handler)
         t.start()
 
-    def init_fun_type(self):
+    def init_queue(self):
         self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
-
-    def init_cli(self):
-        self.cli = Cli(undetected=True,
-                       images_disabled=True,
-                       headless=False)
-
-    def filter_url(self, url) -> bool:
-        with self.get_conn() as conn:
-            is_filtered = conn.execute('select 1 from qcwy_queue where uid = ?', [url]).fetchone() is not None
-            if not is_filtered:
-                # noinspection PyBroadException
-                try:
-                    conn.execute('insert into qcwy_queue(uid) values(?)', [url])
-                    conn.commit()
-                except Exception as _:
-                    is_filtered = True
-        if is_filtered:
-            logging.warning(f'is filtered: {url}')
-        return is_filtered
-
-    def run(self):
         for job_area in self.job_areas:
             for fun_type in self.fun_types:
                 for work_year in self.work_years:
@@ -109,44 +88,73 @@ class QcwyApp:
                             url += f'&workYear={work_year[0]}'
                             url += f'&degree={degree[0]}'
                             url += f'&companySize={company_size[0]}'
-
-                            request_url = url
-                            is_filtered = self.filter_url(request_url)
-                            if is_filtered:
-                                continue
-
-                            self.cli.get(request_url)
-                            page = 1
-                            while True:
-                                items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
-                                pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
-                                pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
-                                next_btn = self.cli.find_element_d(by=By.CSS_SELECTOR, value='.pageation .btn-next', timeout=0, count=1, raise_e=False)
-                                verification = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
-                                if verification:
-                                    self.cli.click_and_move_by_x_offset(verification, 400)
+                            with self.get_conn() as conn:
+                                exists = conn.execute('select 1 from qcwy_queue where uid = ?', [url]).fetchone() is not None
+                                if exists:
                                     continue
-                                if len(items) == 0:
-                                    self.cli.get(request_url)
-                                    page = 1
+                                # noinspection PyBroadException
+                                try:
+                                    conn.execute('insert into qcwy_queue(uid, job_area, fun_type, work_year, degree, company_size) values(?, ?, ?, ?, ?, ?)',
+                                                 [url, job_area, fun_type[0], work_year[0], degree[0], company_size[0]])
+                                    conn.commit()
+                                except Exception as _:
                                     continue
 
-                                self.parse_job_item(fun_type=fun_type[1],
-                                                    work_year=work_year[1],
-                                                    degree=degree[1],
-                                                    company_size=company_size[1],
-                                                    job_list_url=request_url,
-                                                    pages=pages,
-                                                    items=items)
-                                if page < pages:
-                                    self.cli.click(next_btn)
-                                    page += 1
-                                    continue
-                                break
+    def init_cli(self):
+        self.cli = Cli(undetected=True,
+                       images_disabled=True,
+                       headless=False)
 
-                            if not self.run_flag:
-                                self.close()
-                                return
+    def run(self):
+        while True:
+            with self.get_conn() as conn:
+                popped = conn.execute('select uid, job_area, fun_type, work_year, degree, company_size from qcwy_queue where uid_owner is null limit 1').fetchone()
+            if popped is None:
+                time.sleep(1)
+                continue
+
+            url = popped[0]
+            fun_type = popped[2]
+            work_year = popped[3]
+            degree = popped[4]
+            company_size = popped[5]
+            with self.get_conn() as conn:
+                updated = conn.execute('update qcwy_queue set uid_owner = ? where uid = ? and uid_owner is null', [threading.get_ident(), url]).fetchone()
+            if updated is None:
+                continue
+
+            self.cli.get(popped)
+            page = 1
+            while True:
+                items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
+                pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
+                pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
+                next_btn = self.cli.find_element_d(by=By.CSS_SELECTOR, value='.pageation .btn-next', timeout=0, count=1, raise_e=False)
+                verification = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
+                if verification:
+                    self.cli.click_and_move_by_x_offset(verification, 400)
+                    continue
+                if len(items) == 0:
+                    self.cli.get(popped)
+                    page = 1
+                    continue
+
+                self.parse_job_item(fun_type=fun_type[1],
+                                    work_year=work_year[1],
+                                    degree=degree[1],
+                                    company_size=company_size[1],
+                                    job_list_url=popped,
+                                    pages=pages,
+                                    items=items)
+                if page < pages:
+                    self.cli.click(next_btn)
+                    page += 1
+                    continue
+                break
+
+            if not self.run_flag:
+                self.close()
+                return
 
     def close(self):
         self.cli.quit()
