@@ -1,3 +1,4 @@
+import json
 import logging
 import time
 
@@ -53,20 +54,50 @@ class QcwyApp:
                             url += f'&companySize={company_size[0]}'
                             url += f'&timestamp={int(time.time())}'
                             is_filter = self.filter_url(url)
+                            if is_filter:
+                                continue
 
-                            if not is_filter:
-                                self.cli.get(url)
-                                self.cli.find_element_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=4, raise_e=False)
-                                slide = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
-                                if slide:
-                                    self.cli.click_and_move_by_x_offset(slide, 400)
+                            self.cli.get(url)
+                            items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
+                            for item in items:
+                                if 'joblist-item' not in item.get_attribute('class'):
+                                    continue
+                                job_item = JobItem()
+                                sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='[sensorsdata]', timeout=0, count=1, raise_e=False)
+                                sensors_data = json.loads(sensors_data.get_attribute('sensorsdata'))
+                                job_item.id = sensors_data.get('id')
+                                job_item.name = self.parse_text_helper(item, '.jname')
+                                job_item.salary = self.parse_text_helper(item, '.sal')
+                                job_item.address = sensors_data.get('jobArea')
+                                job_item.company_name = self.parse_text_helper(item, '.cname')
+                                job_item.fun_type = fun_type[1]
+                                job_item.work_year = work_year[1]
+                                job_item.degree = degree[1]
+                                job_item.job_time = sensors_data.get('jobTime')
+                                job_item.job_tag = self.parse_text_helper(item, '.tags tag', is_multi=True)
+                                job_item.company_tag = self.parse_text_helper(item, '.span.dc', is_multi=True)
+
+                            slide = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
+                            if slide:
+                                self.cli.click_and_move_by_x_offset(slide, 400)
 
     def close(self):
         self.cli.quit()
         self.conn.close()
 
+    def parse_text_helper(self, src, selector, is_multi=False) -> str | None:
+        elements = self.cli.find_elements(src, By.CSS_SELECTOR, value=selector, timeout=0, count=1, raise_e=False)
+        if len(elements) == 0:
+            return None
+        if not is_multi:
+            element = elements[0]
+            return element.get_attribute('innerText').strip() if element else None
+        elements = [element.get_attribute('innerText').strip() for element in elements]
+        return '###'.join(elements)
+
 
 class JobItem:
+    id = None
     name = None
     salary = None
     address = None
@@ -75,6 +106,7 @@ class JobItem:
     fun_type = None
     work_year = None
     degree = None
+    job_time = None
     job_tag = None
     company_tag = None
     remark = None
