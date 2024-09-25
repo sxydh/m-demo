@@ -178,9 +178,9 @@ class QcwyApp:
                 job_item.company_name = self.parse_text_helper(soup, '.cname')
                 job_item.job_id = sensors_data.get('jobId')
                 job_item.job_time = sensors_data.get('jobTime')
-                job_item.job_tag = self.parse_text_helper(soup, '.tags .tag')
+                job_item.job_tag = self.parse_text_helper(soup, '.tags .tag', is_multi=True)
                 job_item.job_page = sensors_data.get('pageNum')
-                job_item.company_tag = self.parse_text_helper(soup, 'span.dc')
+                job_item.company_tag = self.parse_text_helper(soup, 'span.dc', is_multi=True)
 
                 conn.execute(f'update qcwy_job set name=?, salary=?, address=?, company_name=?, job_id=?, job_time=?, job_tag=?, job_page=?, company_tag=? where uid=?',
                              [job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.job_id, job_item.job_time, job_item.job_tag, job_item.job_page, job_item.company_tag, job_item.uid])
