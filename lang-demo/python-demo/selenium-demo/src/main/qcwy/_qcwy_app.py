@@ -140,9 +140,9 @@ class QcwyApp:
             job_item.degree = degree
             job_item.company_size = company_size
             job_item.job_list_url = job_list_url
+            job_item.job_pages = pages
 
             if 'joblist-item' in item.get_attribute('class'):
-                job_item.job_pages = pages
                 job_item.raw = item.get_attribute('innerHTML')
             self.save_job_item(job_item)
 
