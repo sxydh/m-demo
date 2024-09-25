@@ -1,3 +1,6 @@
+import random
+from time import sleep
+
 import pyautogui
 import undetected_chromedriver as uc
 from selenium import webdriver
@@ -92,8 +95,14 @@ class Cli:
             moved_x_offset += delta_x_offset
 
     def click_and_move_by_y_offset_manual(self, x, y, y_offset):
+        sleep(random.uniform(0.2, 1))
         pyautogui.mouseDown(x, y)
-        pyautogui.move(y_offset, 0)
+        sleep(random.uniform(0.05, 0.1))
+        moved_y_offset = 0
+        delta_y_offset = random.randint(100, 150)
+        while moved_y_offset < y_offset:
+            pyautogui.move(delta_y_offset, 0)
+            moved_y_offset += delta_y_offset
         pyautogui.mouseUp()
 
     def close(self):
