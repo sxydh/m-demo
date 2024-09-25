@@ -120,7 +120,7 @@ class QcwyApp:
             if 'joblist-item' in item.get_attribute('class'):
                 sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='[sensorsdata]', timeout=0, count=1, raise_e=False)
                 sensors_data = json.loads(sensors_data.get_attribute('sensorsdata'))
-                job_item.id = sensors_data.get('id')
+                job_item.id = sensors_data.get('jobId')
                 job_item.name = self.parse_text_helper(item, '.jname')
                 job_item.salary = self.parse_text_helper(item, '.sal')
                 job_item.address = sensors_data.get('jobArea')
