@@ -236,4 +236,4 @@ if __name__ == '__main__':
         time.sleep(2)
         QcwyApp().start()
 
-    time.sleep(100)
+    time.sleep(999999)
