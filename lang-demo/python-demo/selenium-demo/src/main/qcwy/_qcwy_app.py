@@ -169,14 +169,14 @@ class QcwyApp:
                 sensors_data = soup.select_one('.sensors_exposure')['sensorsdata']
                 sensors_data = json.loads(sensors_data)
                 job_item.id = sensors_data.get('jobId')
-                job_item.name = soup.select_one('.jname').text
-                job_item.salary = soup.select_one('.sal').text
+                job_item.name = self.parse_text_helper(soup, '.jname')
+                job_item.salary = self.parse_text_helper(soup, '.sal')
                 job_item.address = sensors_data.get('jobArea')
-                job_item.company_name = soup.select_one('.cname').text
+                job_item.company_name = self.parse_text_helper(soup, '.cname')
                 job_item.job_time = sensors_data.get('jobTime')
-                job_item.job_tag = '###'.join([e.text for e in soup.select('.tags .tag')])
+                job_item.job_tag = self.parse_text_helper(soup, '.tags .tag')
                 job_item.job_page = sensors_data.get('pageNum')
-                job_item.company_tag = '###'.join([e.text for e in soup.select('span.dc')])
+                job_item.company_tag = self.parse_text_helper(soup, 'span.dc')
 
                 conn.execute(f'update qcwy_job set id=?, name=?, salary=?, address=?, company_name=?, job_time=?, job_tag=?, job_page=?, company_tag=? where uid=?',
                              [job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.job_time, job_item.job_tag, job_item.job_page, job_item.company_tag, job_item.uid])
@@ -189,6 +189,14 @@ class QcwyApp:
                 logging.warning('>>> Ready to stop')
                 self.run_flag = False
                 break
+
+    def parse_text_helper(self, src, selector, is_multi=False):
+        elements = src.select(selector)
+        if len(elements) == 0:
+            return None
+        if not is_multi:
+            return elements[0].text.strip()
+        return '###'.join([e.text.strip() for e in elements])
 
 
 if __name__ == '__main__':
