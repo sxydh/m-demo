@@ -8,6 +8,22 @@ from src.main.util.cli import Cli
 from src.main.util.common import get_sqlite_connection, read_rows
 
 
+class JobItem:
+    id = None
+    name = None
+    salary = None
+    address = None
+    company_name = None
+    company_size = None
+    fun_type = None
+    work_year = None
+    degree = None
+    job_time = None
+    job_tag = None
+    company_tag = None
+    remark = None
+
+
 class QcwyApp:
     cli = None
     conn = None
@@ -76,6 +92,7 @@ class QcwyApp:
                                 job_item.job_time = sensors_data.get('jobTime')
                                 job_item.job_tag = self.parse_text_helper(item, '.tags tag', is_multi=True)
                                 job_item.company_tag = self.parse_text_helper(item, '.span.dc', is_multi=True)
+                                self.save_job_item(job_item)
 
                             slide = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
                             if slide:
@@ -95,21 +112,10 @@ class QcwyApp:
         elements = [element.get_attribute('innerText').strip() for element in elements]
         return '###'.join(elements)
 
-
-class JobItem:
-    id = None
-    name = None
-    salary = None
-    address = None
-    company_name = None
-    company_size = None
-    fun_type = None
-    work_year = None
-    degree = None
-    job_time = None
-    job_tag = None
-    company_tag = None
-    remark = None
+    def save_job_item(self, job_item: JobItem):
+        self.conn.execute(f'insert into qcwy_job(id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, company_tag, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                          [job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_time, job_item.job_tag, job_item.company_tag, job_item.remark])
+        self.conn.commit()
 
 
 if __name__ == '__main__':
