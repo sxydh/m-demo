@@ -1,6 +1,5 @@
 import json
 import logging
-import time
 
 from selenium.webdriver.common.by import By
 
@@ -73,7 +72,6 @@ class QcwyApp:
                             url += f'&workYear={work_year[0]}'
                             url += f'&degree={degree[0]}'
                             url += f'&companySize={company_size[0]}'
-                            url += f'&timestamp={int(time.time())}'
 
                             request_url = url
                             is_filtered = self.filter_url(request_url)
@@ -81,28 +79,27 @@ class QcwyApp:
                                 continue
 
                             self.cli.get(request_url)
+                            page = 1
                             while True:
                                 items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
                                 pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
                                 pages = len(pages)
+                                next_btn = self.cli.find_element_d(by=By.CSS_SELECTOR, value='.pageation .btn-next', timeout=0, count=1, raise_e=False)
                                 verification = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
                                 if verification:
                                     self.cli.click_and_move_by_x_offset(verification, 400)
                                     continue
-                                break
 
-                            page = 1
-                            while True:
                                 self.parse_job_item(fun_type=fun_type[1],
                                                     work_year=work_year[1],
                                                     degree=degree[1],
                                                     company_size=company_size[1],
-                                                    url=url,
+                                                    job_list_url=request_url,
                                                     pages=pages,
                                                     items=items)
                                 if page < pages:
-                                    next_btn = self.cli.find_element_d(by=By.CSS_SELECTOR, value='.pageation .btn-next', timeout=0, count=1)
                                     self.cli.click(next_btn)
+                                    page += 1
                                     continue
                                 break
 
@@ -110,16 +107,17 @@ class QcwyApp:
         self.cli.quit()
         self.conn.close()
 
-    def parse_job_item(self, *, fun_type, work_year, degree, company_size, url, pages: int, items: list):
+    def parse_job_item(self, *, fun_type, work_year, degree, company_size, job_list_url, pages: int, items: list):
         for item in items:
             job_item = JobItem()
             job_item.fun_type = fun_type
             job_item.work_year = work_year
             job_item.degree = degree
             job_item.company_size = company_size
-            job_item.job_list_url = url
+            job_item.job_list_url = job_list_url
+
             if 'joblist-item' in item.get_attribute('class'):
-                sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='[sensorsdata]', timeout=0, count=1, raise_e=False)
+                sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='.sensors_exposure', timeout=0, count=1, raise_e=False)
                 sensors_data = json.loads(sensors_data.get_attribute('sensorsdata'))
                 job_item.id = sensors_data.get('jobId')
                 job_item.name = self.parse_text_helper(item, '.jname')
@@ -130,7 +128,7 @@ class QcwyApp:
                 job_item.job_tag = self.parse_text_helper(item, '.tags .tag', is_multi=True)
                 job_item.job_page = sensors_data.get('pageNum')
                 job_item.job_pages = pages
-                job_item.company_tag = self.parse_text_helper(item, '.span.dc', is_multi=True)
+                job_item.company_tag = self.parse_text_helper(item, 'span.dc', is_multi=True)
             self.save_job_item(job_item)
 
     def parse_text_helper(self, src, selector, is_multi=False) -> str | None:
