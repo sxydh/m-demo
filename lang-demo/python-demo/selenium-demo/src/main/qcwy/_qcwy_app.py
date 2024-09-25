@@ -8,10 +8,13 @@ class QcwyApp:
         self.cli = Cli()
         self.conn = get_sqlite_connection()
 
+    def start(self):
+        pass
+
     def close(self):
         self.cli.quit()
         self.conn.close()
 
 
 if __name__ == '__main__':
-    pass
+    QcwyApp().start()
