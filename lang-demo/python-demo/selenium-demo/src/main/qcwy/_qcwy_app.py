@@ -78,6 +78,7 @@ class QcwyApp:
 
                             self.cli.get(url)
                             items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
+                            pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager li', timeout=0, count=1, raise_e=False)
                             for item in items:
                                 job_item = JobItem()
                                 job_item.fun_type = fun_type[1]
@@ -94,6 +95,7 @@ class QcwyApp:
                                     job_item.company_name = self.parse_text_helper(item, '.cname')
                                     job_item.job_time = sensors_data.get('jobTime')
                                     job_item.job_tag = self.parse_text_helper(item, '.tags tag', is_multi=True)
+                                    job_item.job_pages = int(pages[-1].get_attribute('innerText').strip())
                                     job_item.company_tag = self.parse_text_helper(item, '.span.dc', is_multi=True)
                                 self.save_job_item(job_item)
 
