@@ -34,7 +34,7 @@ class QcwyApp:
                         for company_size in self.company_sizes:
                             url = self.start_url
                             url += f'&jobArea={job_area}'
-                            url += f'&fun_type={fun_type[0]}'
+                            url += f'&function={fun_type[0]}'
                             url += f'&workYear={work_year[0]}'
                             url += f'&degree={degree[0]}'
                             url += f'&companySize={company_size[0]}'
