@@ -48,6 +48,10 @@ class QcwyApp:
         self.init_db()
         self.init_cli()
 
+    def init_console_handler(self):
+        t = threading.Thread(target=self.console_handler)
+        t.start()
+
     def init_search(self):
         self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
 
@@ -66,9 +70,6 @@ class QcwyApp:
         return False
 
     def run(self):
-        t = threading.Thread(target=self.console_handler)
-        t.start()
-
         for job_area in self.job_areas:
             for fun_type in self.fun_types:
                 for work_year in self.work_years:
