@@ -226,4 +226,4 @@ def thread_handler():
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)
     for _ in range(2):
-        threading.Thread(target=thread_handler())
+        threading.Thread(target=thread_handler()).start()
