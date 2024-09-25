@@ -1,7 +1,10 @@
+import json
 import logging
 import threading
+import time
 import uuid
 
+from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
@@ -44,10 +47,19 @@ class QcwyApp:
     company_sizes = [('01', '少于50人'), ('02', '50-150人'), ('03', '150-500人'), ('04', '500-1000人'), ('05', '1000-5000人'), ('06', '5000-10000人'), ('07', '10000人以上')]
 
     def __init__(self):
+        self.init_db()
+        self.init_db_handler()
         self.init_console_handler()
         self.init_search()
-        self.init_db()
         self.init_cli()
+
+    def init_db(self):
+        self.conn = get_sqlite_connection('qcwy.db')
+        self.conn.execute('create table if not exists qcwy_job(uid text, id text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
+
+    def init_db_handler(self):
+        t = threading.Thread(target=self.db_handler)
+        t.start()
 
     def init_console_handler(self):
         t = threading.Thread(target=self.console_handler)
@@ -55,10 +67,6 @@ class QcwyApp:
 
     def init_search(self):
         self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
-
-    def init_db(self):
-        self.conn = get_sqlite_connection('qcwy.db')
-        self.conn.execute('create table if not exists qcwy_job(uid text, id text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
 
     def init_cli(self):
         self.cli = Cli(undetected=True,
@@ -131,35 +139,43 @@ class QcwyApp:
             job_item.job_list_url = job_list_url
 
             if 'joblist-item' in item.get_attribute('class'):
-                # sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='.sensors_exposure', timeout=0, count=1, raise_e=False)
-                # sensors_data = json.loads(sensors_data.get_attribute('sensorsdata'))
-                # job_item.id = sensors_data.get('jobId')
-                # job_item.name = self.parse_text_helper(item, '.jname')
-                # job_item.salary = self.parse_text_helper(item, '.sal')
-                # job_item.address = sensors_data.get('jobArea')
-                # job_item.company_name = self.parse_text_helper(item, '.cname')
-                # job_item.job_time = sensors_data.get('jobTime')
-                # job_item.job_tag = self.parse_text_helper(item, '.tags .tag', is_multi=True)
-                # job_item.job_page = sensors_data.get('pageNum')
                 job_item.job_pages = pages
-                # job_item.company_tag = self.parse_text_helper(item, 'span.dc', is_multi=True)
                 job_item.raw = item.get_attribute('innerHTML')
             self.save_job_item(job_item)
-
-    def parse_text_helper(self, src, selector, is_multi=False) -> str | None:
-        elements = self.cli.find_elements(src, By.CSS_SELECTOR, value=selector, timeout=0, count=1, raise_e=False)
-        if len(elements) == 0:
-            return None
-        if not is_multi:
-            element = elements[0]
-            return element.get_attribute('innerText').strip() if element else None
-        elements = [element.get_attribute('innerText').strip() for element in elements]
-        return '###'.join(elements)
 
     def save_job_item(self, job_item: JobItem):
         self.conn.execute(f'insert into qcwy_job(uid, id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, raw, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                           [str(uuid.uuid4()), job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_page, job_item.job_pages, job_item.company_tag, job_item.raw, job_item.remark])
         self.conn.commit()
+
+    def db_handler(self):
+        while self.run_flag:
+            row = self.conn.execute('select uid, raw from qcwy_job where raw is not null and name is null limit 1').fetchone()
+            if not row:
+                time.sleep(1)
+                continue
+
+            uid = row[0]
+            raw = row[1]
+
+            job_item = JobItem()
+            job_item.uid = uid
+            soup = BeautifulSoup(raw, 'html.parser')
+            sensors_data = soup.select_one('.sensors_exposure')['sensorsdata']
+            sensors_data = json.loads(sensors_data)
+            job_item.id = sensors_data.get('jobId')
+            job_item.name = soup.select_one('.jname').text
+            job_item.salary = soup.select_one('.sal').text
+            job_item.address = sensors_data.get('jobArea')
+            job_item.company_name = soup.select_one('.cname').text
+            job_item.job_time = sensors_data.get('jobTime')
+            job_item.job_tag = '###'.join([e.text for e in soup.select('.tags .tag')])
+            job_item.job_page = sensors_data.get('pageNum')
+            job_item.company_tag = '###'.join([e.text for e in soup.select('span.dc')])
+
+            self.conn.execute(f'update qcwy_job set id=?, name=?, salary=?, address=?, company_name=?, job_time=?, job_tag=?, job_page=?, company_tag=? where uid=?',
+                              [job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.job_time, job_item.job_tag, job_item.job_page, job_item.company_tag, job_item.uid])
+            self.conn.commit()
 
     def console_handler(self):
         while True:
