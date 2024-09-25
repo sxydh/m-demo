@@ -81,3 +81,6 @@ class Cli:
 
     def close(self):
         self.driver.close()
+
+    def quit(self):
+        self.driver.quit()
