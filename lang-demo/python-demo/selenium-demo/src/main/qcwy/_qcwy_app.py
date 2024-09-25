@@ -45,11 +45,15 @@ class QcwyApp:
 class JobItem:
     name = None
     salary = None
+    company_name = None
+    company_size = None
     fun_type = None
     work_year = None
     degree = None
     address = None
     job_tag = None
+    company_tag = None
+    remark = None
 
 
 if __name__ == '__main__':
