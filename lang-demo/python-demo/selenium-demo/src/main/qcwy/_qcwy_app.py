@@ -18,7 +18,7 @@ class QcwyApp:
 
     def init_db(self):
         self.conn = get_sqlite_connection('qcwy.db')
-        self.conn.execute('create table if not exists qcwy_job()')
+        self.conn.execute('create table if not exists qcwy_job(name, salary, address, company_name, company_size, fun_type, work_year, degree, job_tag, company_tag, remark)')
 
     def url_filter(self, url):
         return True
@@ -45,12 +45,12 @@ class QcwyApp:
 class JobItem:
     name = None
     salary = None
+    address = None
     company_name = None
     company_size = None
     fun_type = None
     work_year = None
     degree = None
-    address = None
     job_tag = None
     company_tag = None
     remark = None
