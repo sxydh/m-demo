@@ -13,7 +13,7 @@ class QcwyApp:
     def __init__(self):
         self.cli = Cli()
         self.conn = get_sqlite_connection()
-        functions = read_rows('function.csv')
+        functions = [f.split(',') for f in read_rows('function.csv')]
 
     def start(self):
         pass
