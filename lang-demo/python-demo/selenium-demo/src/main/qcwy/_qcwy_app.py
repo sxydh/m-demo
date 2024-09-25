@@ -232,6 +232,6 @@ class QcwyApp(threading.Thread):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)
-    for _ in range(3):
+    for _ in range(5):
         time.sleep(2)
         QcwyApp().start()
