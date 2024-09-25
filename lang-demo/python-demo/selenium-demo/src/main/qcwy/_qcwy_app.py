@@ -57,7 +57,14 @@ class QcwyApp:
 
     def init_db(self):
         with self.get_conn() as conn:
+            conn.execute('create table if not exists qcwy_lock(uid text unique, owner text)')
+            conn.execute('create table if not exists qcwy_filter(uid text unique)')
             conn.execute('create table if not exists qcwy_job(uid text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_id text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
+            # noinspection PyBroadException
+            try:
+                conn.execute('insert into qcwy_lock(uid, owner) values (?, ?)', ['qcwy_job', threading.get_ident()])
+            except Exception as _:
+                pass
 
     def init_db_handler(self):
         t = threading.Thread(target=self.db_handler)
