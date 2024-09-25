@@ -1,6 +1,8 @@
 import logging
 import time
 
+from selenium.webdriver.common.by import By
+
 from src.main.util.cli import Cli
 from src.main.util.common import get_sqlite_connection, read_rows
 
@@ -33,7 +35,7 @@ class QcwyApp:
                        images_disabled=True,
                        headless=False)
 
-    def url_filter(self, url):
+    def filter_url(self, url) -> bool:
         print(url)
         return True
 
@@ -50,9 +52,11 @@ class QcwyApp:
                             url += f'&degree={degree[0]}'
                             url += f'&companySize={company_size[0]}'
                             url += f'&timestamp={int(time.time())}'
+                            seen = self.filter_url(url)
 
-                            cli = self.cli
-                            cli.get(url)
+                            if not seen:
+                                self.cli.get(url)
+                                self.cli.find_element_d(by=By.CSS_SELECTOR, value='.joblist', raise_e=False)
 
     def close(self):
         self.cli.quit()
@@ -74,5 +78,5 @@ class JobItem:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.WARN)
     QcwyApp().start()
