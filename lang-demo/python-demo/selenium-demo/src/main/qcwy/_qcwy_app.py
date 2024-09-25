@@ -135,7 +135,7 @@ class QcwyApp:
                     self.cli.click_and_move_by_x_offset(verification, 400)
                     continue
                 if len(items) == 0:
-                    self.cli.get(popped)
+                    self.cli.get(url)
                     page = 1
                     continue
 
@@ -143,7 +143,7 @@ class QcwyApp:
                                     work_year=work_year[1],
                                     degree=degree[1],
                                     company_size=company_size[1],
-                                    job_list_url=popped,
+                                    job_list_url=url,
                                     pages=pages,
                                     items=items)
                 if page < pages:
