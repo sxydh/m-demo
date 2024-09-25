@@ -58,7 +58,7 @@ class QcwyApp:
     def init_db(self):
         with self.get_conn() as conn:
             conn.execute('create table if not exists qcwy_lock(uid text unique, owner text)')
-            conn.execute('create table if not exists qcwy_filter(uid text unique)')
+            conn.execute('create table if not exists qcwy_queue(uid text unique)')
             conn.execute('create table if not exists qcwy_job(uid text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_id text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
             # noinspection PyBroadException
             try:
@@ -85,11 +85,11 @@ class QcwyApp:
 
     def filter_url(self, url) -> bool:
         with self.get_conn() as conn:
-            is_filtered = conn.execute('select 1 from qcwy_filter where uid = ?', [url]).fetchone() is not None
+            is_filtered = conn.execute('select 1 from qcwy_queue where uid = ?', [url]).fetchone() is not None
             if not is_filtered:
                 # noinspection PyBroadException
                 try:
-                    conn.execute('insert into qcwy_filter(uid) values(?)', [url])
+                    conn.execute('insert into qcwy_queue(uid) values(?)', [url])
                     conn.commit()
                 except Exception as _:
                     is_filtered = True
