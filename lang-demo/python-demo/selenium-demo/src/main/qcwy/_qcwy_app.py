@@ -1,5 +1,6 @@
 import logging
 
+from src.main.util.cli import Cli
 from src.main.util.common import get_sqlite_connection, read_rows
 
 
@@ -25,6 +26,11 @@ class QcwyApp:
         self.conn = get_sqlite_connection('qcwy.db')
         self.conn.execute('create table if not exists qcwy_job(name, salary, address, company_name, company_size, fun_type, work_year, degree, job_tag, company_tag, remark)')
 
+    def init_cli(self):
+        self.cli = Cli(undetected=True,
+                       images_disabled=True,
+                       headless=False)
+
     def url_filter(self, url):
         return True
 
@@ -40,7 +46,6 @@ class QcwyApp:
                             url += f'&workYear={work_year[0]}'
                             url += f'&degree={degree[0]}'
                             url += f'&companySize={company_size[0]}'
-                            print(url)
 
     def close(self):
         self.cli.quit()
