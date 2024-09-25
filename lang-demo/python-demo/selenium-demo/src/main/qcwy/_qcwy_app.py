@@ -22,6 +22,7 @@ class JobItem:
     job_tag = None
     job_url = None
     job_list_url = None
+    job_page = None
     job_pages = None
     company_tag = None
     remark = None
@@ -48,7 +49,7 @@ class QcwyApp:
 
     def init_db(self):
         self.conn = get_sqlite_connection('qcwy.db')
-        self.conn.execute('create table if not exists qcwy_job(id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, job_url, job_list_url, job_pages, company_tag, remark)')
+        self.conn.execute('create table if not exists qcwy_job(id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, remark)')
 
     def init_cli(self):
         self.cli = Cli(undetected=True,
@@ -74,36 +75,35 @@ class QcwyApp:
                             url += f'&companySize={company_size[0]}'
                             url += f'&timestamp={int(time.time())}'
 
-                            page = 1
-                            request_url = f'{url}&pageNum={page}'
+                            request_url = url
+                            is_filtered = self.filter_url(request_url)
+                            if is_filtered:
+                                continue
+
+                            self.cli.get(request_url)
                             while True:
-                                is_filtered = self.filter_url(request_url)
-                                if is_filtered:
-                                    break
-                                self.cli.get(request_url)
-
                                 items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
-
+                                pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
+                                pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
                                 verification = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
                                 if verification:
                                     self.cli.click_and_move_by_x_offset(verification, 400)
                                     continue
-
-                                pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
-                                pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
-                                self.parse_job_item(fun_type=fun_type[1],
-                                                    work_year=work_year[1],
-                                                    degree=degree[1],
-                                                    company_size=company_size[1],
-                                                    url=url,
-                                                    pages=pages,
-                                                    items=items)
-
-                                if page < pages:
-                                    request_url = request_url.replace(f'pageNum={page}', f'pageNum={page + 1}')
-                                    page += 1
-                                    continue
                                 break
+
+                            self.parse_job_item(fun_type=fun_type[1],
+                                                work_year=work_year[1],
+                                                degree=degree[1],
+                                                company_size=company_size[1],
+                                                url=url,
+                                                pages=pages,
+                                                items=items)
+
+                            if page < pages:
+                                request_url = request_url.replace(f'pageNum={page}', f'pageNum={page + 1}')
+                                page += 1
+                                continue
+                            break
 
     def close(self):
         self.cli.quit()
@@ -127,6 +127,7 @@ class QcwyApp:
                 job_item.company_name = self.parse_text_helper(item, '.cname')
                 job_item.job_time = sensors_data.get('jobTime')
                 job_item.job_tag = self.parse_text_helper(item, '.tags .tag', is_multi=True)
+                job_item.job_page = sensors_data.get('pageNum')
                 job_item.job_pages = pages
                 job_item.company_tag = self.parse_text_helper(item, '.span.dc', is_multi=True)
             self.save_job_item(job_item)
@@ -142,8 +143,8 @@ class QcwyApp:
         return '###'.join(elements)
 
     def save_job_item(self, job_item: JobItem):
-        self.conn.execute(f'insert into qcwy_job(id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, job_url, job_list_url, job_pages, company_tag, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                          [job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_pages, job_item.company_tag, job_item.remark])
+        self.conn.execute(f'insert into qcwy_job(id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                          [job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_page, job_item.job_pages, job_item.company_tag, job_item.remark])
         self.conn.commit()
 
 
