@@ -1,3 +1,5 @@
+import logging
+
 from src.main.util.common import get_sqlite_connection, read_rows
 
 
@@ -60,4 +62,5 @@ class JobItem:
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     QcwyApp().start()
