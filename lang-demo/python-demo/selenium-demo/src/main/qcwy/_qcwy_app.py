@@ -56,7 +56,7 @@ class QcwyApp:
 
                             if not is_filter:
                                 self.cli.get(url)
-                                self.cli.find_element_d(by=By.CSS_SELECTOR, value='.joblist', raise_e=False)
+                                self.cli.find_element_d(by=By.CSS_SELECTOR, value='.joblist-item', timeout=1, count=1, raise_e=False)
 
     def close(self):
         self.cli.quit()
