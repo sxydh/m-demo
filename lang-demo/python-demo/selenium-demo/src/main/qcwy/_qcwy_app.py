@@ -161,7 +161,7 @@ class QcwyApp:
 
     def console_handler(self):
         while True:
-            cmd = input('>>> ')
+            cmd = input('Please input >>> ')
             if cmd == 'stop':
                 logging.warning('>>> Ready to stop')
                 self.run_flag = False
