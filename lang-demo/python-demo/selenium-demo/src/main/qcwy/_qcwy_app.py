@@ -56,7 +56,8 @@ class QcwyApp:
                        headless=False)
 
     def filter_url(self, url) -> bool:
-        print(url)
+        if self.conn.execute('select 1 from qcwy_job where job_list_url = ?', [url]).fetchone():
+            return True
         return False
 
     def start(self):
@@ -72,14 +73,15 @@ class QcwyApp:
                             url += f'&degree={degree[0]}'
                             url += f'&companySize={company_size[0]}'
                             url += f'&timestamp={int(time.time())}'
-                            is_filter = self.filter_url(url)
-                            if is_filter:
-                                continue
 
                             page = 1
-                            page_url = f'{url}&pageNum={page}'
+                            request_url = f'{url}&pageNum={page}'
                             while True:
-                                self.cli.get(page_url)
+                                is_filtered = self.filter_url(request_url)
+                                if is_filtered:
+                                    break
+                                self.cli.get(request_url)
+
                                 items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
 
                                 verification = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
@@ -98,7 +100,7 @@ class QcwyApp:
                                                     items=items)
 
                                 if page < pages:
-                                    page_url = page_url.replace(f'pageNum={page}', f'pageNum={page + 1}')
+                                    request_url = request_url.replace(f'pageNum={page}', f'pageNum={page + 1}')
                                     page += 1
                                     continue
                                 break
