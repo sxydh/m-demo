@@ -85,16 +85,15 @@ class QcwyApp:
 
     def filter_url(self, url) -> bool:
         with self.get_conn() as conn:
-            if conn.execute('select 1 from qcwy_filter where uid = ?', [url]).fetchone():
-                logging.warning(f'is filtered: {url}')
-                return True
-            # noinspection PyBroadException
-            try:
-                conn.execute('insert into qcwy_filter(uid) values(?)', [url])
-                conn.commit()
-            except Exception as _:
-                return True
-        return False
+            is_filtered = conn.execute('select 1 from qcwy_filter where uid = ?', [url]).fetchone()
+            if not is_filtered:
+                # noinspection PyBroadException
+                try:
+                    conn.execute('insert into qcwy_filter(uid) values(?)', [url])
+                    conn.commit()
+                except Exception as _:
+                    is_filtered = True
+        return is_filtered
 
     def run(self):
         for job_area in self.job_areas:
