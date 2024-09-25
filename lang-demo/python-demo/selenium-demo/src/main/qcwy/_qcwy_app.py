@@ -126,7 +126,7 @@ class QcwyApp:
                 job_item.address = sensors_data.get('jobArea')
                 job_item.company_name = self.parse_text_helper(item, '.cname')
                 job_item.job_time = sensors_data.get('jobTime')
-                job_item.job_tag = self.parse_text_helper(item, '.tags tag', is_multi=True)
+                job_item.job_tag = self.parse_text_helper(item, '.tags .tag', is_multi=True)
                 job_item.job_pages = pages
                 job_item.company_tag = self.parse_text_helper(item, '.span.dc', is_multi=True)
             self.save_job_item(job_item)
