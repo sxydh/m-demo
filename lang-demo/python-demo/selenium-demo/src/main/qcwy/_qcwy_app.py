@@ -13,8 +13,11 @@ class QcwyApp:
     company_sizes = [('01', '少于50人'), ('02', '50-150人'), ('03', '150-500人'), ('04', '500-1000人'), ('05', '1000-5000人'), ('06', '5000-10000人'), ('07', '10000人以上')]
 
     def __init__(self):
-        self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
+        self.init_search()
         self.init_db()
+
+    def init_search(self):
+        self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
 
     def init_db(self):
         self.conn = get_sqlite_connection('qcwy.db')
