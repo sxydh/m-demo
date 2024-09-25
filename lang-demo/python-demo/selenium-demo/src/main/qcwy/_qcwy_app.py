@@ -49,7 +49,7 @@ class QcwyApp:
         self.init_db()
         self.init_db_handler()
         self.init_console_handler()
-        self.init_search()
+        self.init_fun_type()
         self.init_cli()
 
     def get_conn(self):
@@ -75,7 +75,7 @@ class QcwyApp:
         t = threading.Thread(target=self.console_handler)
         t.start()
 
-    def init_search(self):
+    def init_fun_type(self):
         self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
 
     def init_cli(self):
