@@ -123,7 +123,7 @@ class QcwyApp:
             if updated is None:
                 continue
 
-            self.cli.get(popped)
+            self.cli.get(url)
             page = 1
             while True:
                 items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
