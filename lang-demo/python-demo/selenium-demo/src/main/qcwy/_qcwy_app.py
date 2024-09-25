@@ -45,7 +45,7 @@ class QcwyApp:
 
     def init_db(self):
         self.conn = get_sqlite_connection('qcwy.db')
-        self.conn.execute('create table if not exists qcwy_job(name, salary, address, company_name, company_size, fun_type, work_year, degree, job_tag, company_tag, remark)')
+        self.conn.execute('create table if not exists qcwy_job(id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, company_tag, remark)')
 
     def init_cli(self):
         self.cli = Cli(undetected=True,
@@ -76,22 +76,21 @@ class QcwyApp:
                             self.cli.get(url)
                             items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
                             for item in items:
-                                if 'joblist-item' not in item.get_attribute('class'):
-                                    continue
                                 job_item = JobItem()
-                                sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='[sensorsdata]', timeout=0, count=1, raise_e=False)
-                                sensors_data = json.loads(sensors_data.get_attribute('sensorsdata'))
-                                job_item.id = sensors_data.get('id')
-                                job_item.name = self.parse_text_helper(item, '.jname')
-                                job_item.salary = self.parse_text_helper(item, '.sal')
-                                job_item.address = sensors_data.get('jobArea')
-                                job_item.company_name = self.parse_text_helper(item, '.cname')
                                 job_item.fun_type = fun_type[1]
                                 job_item.work_year = work_year[1]
                                 job_item.degree = degree[1]
-                                job_item.job_time = sensors_data.get('jobTime')
-                                job_item.job_tag = self.parse_text_helper(item, '.tags tag', is_multi=True)
-                                job_item.company_tag = self.parse_text_helper(item, '.span.dc', is_multi=True)
+                                if 'joblist-item' not in item.get_attribute('class'):
+                                    sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='[sensorsdata]', timeout=0, count=1, raise_e=False)
+                                    sensors_data = json.loads(sensors_data.get_attribute('sensorsdata'))
+                                    job_item.id = sensors_data.get('id')
+                                    job_item.name = self.parse_text_helper(item, '.jname')
+                                    job_item.salary = self.parse_text_helper(item, '.sal')
+                                    job_item.address = sensors_data.get('jobArea')
+                                    job_item.company_name = self.parse_text_helper(item, '.cname')
+                                    job_item.job_time = sensors_data.get('jobTime')
+                                    job_item.job_tag = self.parse_text_helper(item, '.tags tag', is_multi=True)
+                                    job_item.company_tag = self.parse_text_helper(item, '.span.dc', is_multi=True)
                                 self.save_job_item(job_item)
 
                             slide = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
