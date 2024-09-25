@@ -56,7 +56,8 @@ class QcwyApp:
         return get_sqlite_connection('qcwy.db')
 
     def init_db(self):
-        self.get_conn().execute('create table if not exists qcwy_job(uid text, id text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
+        with self.get_conn() as conn:
+            conn.execute('create table if not exists qcwy_job(uid text, id text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
 
     def init_db_handler(self):
         t = threading.Thread(target=self.db_handler)
@@ -75,8 +76,9 @@ class QcwyApp:
                        headless=False)
 
     def filter_url(self, url) -> bool:
-        if self.get_conn().execute('select 1 from qcwy_job where job_list_url = ?', [url]).fetchone():
-            return True
+        with self.get_conn() as conn:
+            if conn.execute('select 1 from qcwy_job where job_list_url = ?', [url]).fetchone():
+                return True
         return False
 
     def run(self):
