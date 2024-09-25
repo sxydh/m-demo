@@ -111,6 +111,8 @@ class QcwyApp:
                                 if verification:
                                     self.cli.click_and_move_by_x_offset(verification, 400)
                                     continue
+                                if len(items) == 0:
+                                    continue
 
                                 self.parse_job_item(fun_type=fun_type[1],
                                                     work_year=work_year[1],
