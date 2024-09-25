@@ -1,6 +1,4 @@
-import random
-from time import sleep
-
+import pyautogui
 import undetected_chromedriver as uc
 from selenium import webdriver
 from selenium.webdriver import ActionChains
@@ -92,6 +90,11 @@ class Cli:
             delta_x_offset = x_offset - moved_x_offset
             action_chains.move_by_offset(delta_x_offset, 0).perform()
             moved_x_offset += delta_x_offset
+
+    def click_and_move_by_y_offset_manual(self, y_offset):
+        pyautogui.mouseDown()
+        pyautogui.move(y_offset, 0)
+        pyautogui.mouseUp()
 
     def close(self):
         self.driver.close()
