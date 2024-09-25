@@ -216,7 +216,7 @@ class QcwyApp:
         while True:
             cmd = input('Please input >>> ')
             if cmd == 'stop':
-                logging.warning('>>> Ready to stop')
+                logging.warning(f'>>> Ready to stop {threading.get_ident()}')
                 self.run_flag = False
                 break
 
