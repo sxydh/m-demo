@@ -20,6 +20,8 @@ class JobItem:
     degree = None
     job_time = None
     job_tag = None
+    job_url = None
+    job_list_url = None
     company_tag = None
     remark = None
 
