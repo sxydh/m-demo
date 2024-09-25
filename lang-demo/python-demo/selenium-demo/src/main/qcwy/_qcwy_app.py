@@ -218,7 +218,12 @@ class QcwyApp:
         return '###'.join([e.text.strip() for e in elements])
 
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.WARN)
+def thread_handler():
     qcwy_app = QcwyApp()
     qcwy_app.run()
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.WARN)
+    for _ in range(2):
+        threading.Thread(target=thread_handler())
