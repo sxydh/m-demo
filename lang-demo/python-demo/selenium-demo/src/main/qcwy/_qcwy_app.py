@@ -119,8 +119,8 @@ class QcwyApp:
             degree = popped[4]
             company_size = popped[5]
             with self.get_conn() as conn:
-                updated = conn.execute('update qcwy_queue set uid_owner = ? where uid = ? and uid_owner is null', [threading.get_ident(), url]).fetchone()
-            if updated is None:
+                updated = conn.execute('update qcwy_queue set uid_owner = ? where uid = ? and uid_owner is null', [threading.get_ident(), url])
+            if updated.rowcount == 0:
                 continue
 
             self.cli.get(url)
