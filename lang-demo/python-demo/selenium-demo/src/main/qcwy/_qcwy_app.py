@@ -1,4 +1,3 @@
-import json
 import logging
 
 from selenium.webdriver.common.by import By
@@ -118,18 +117,18 @@ class QcwyApp:
             job_item.job_list_url = job_list_url
 
             if 'joblist-item' in item.get_attribute('class'):
-                sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='.sensors_exposure', timeout=0, count=1, raise_e=False)
-                sensors_data = json.loads(sensors_data.get_attribute('sensorsdata'))
-                job_item.id = sensors_data.get('jobId')
-                job_item.name = self.parse_text_helper(item, '.jname')
-                job_item.salary = self.parse_text_helper(item, '.sal')
-                job_item.address = sensors_data.get('jobArea')
-                job_item.company_name = self.parse_text_helper(item, '.cname')
-                job_item.job_time = sensors_data.get('jobTime')
-                job_item.job_tag = self.parse_text_helper(item, '.tags .tag', is_multi=True)
-                job_item.job_page = sensors_data.get('pageNum')
+                # sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='.sensors_exposure', timeout=0, count=1, raise_e=False)
+                # sensors_data = json.loads(sensors_data.get_attribute('sensorsdata'))
+                # job_item.id = sensors_data.get('jobId')
+                # job_item.name = self.parse_text_helper(item, '.jname')
+                # job_item.salary = self.parse_text_helper(item, '.sal')
+                # job_item.address = sensors_data.get('jobArea')
+                # job_item.company_name = self.parse_text_helper(item, '.cname')
+                # job_item.job_time = sensors_data.get('jobTime')
+                # job_item.job_tag = self.parse_text_helper(item, '.tags .tag', is_multi=True)
+                # job_item.job_page = sensors_data.get('pageNum')
                 job_item.job_pages = pages
-                job_item.company_tag = self.parse_text_helper(item, 'span.dc', is_multi=True)
+                # job_item.company_tag = self.parse_text_helper(item, 'span.dc', is_multi=True)
                 job_item.raw = item.get_attribute('innerHTML')
             self.save_job_item(job_item)
 
