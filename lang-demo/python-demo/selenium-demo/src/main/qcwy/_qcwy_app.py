@@ -1,4 +1,5 @@
 import logging
+import time
 
 from src.main.util.cli import Cli
 from src.main.util.common import get_sqlite_connection, read_rows
@@ -18,6 +19,7 @@ class QcwyApp:
     def __init__(self):
         self.init_search()
         self.init_db()
+        self.init_cli()
 
     def init_search(self):
         self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
@@ -32,6 +34,7 @@ class QcwyApp:
                        headless=False)
 
     def url_filter(self, url):
+        print(url)
         return True
 
     def start(self):
@@ -46,6 +49,10 @@ class QcwyApp:
                             url += f'&workYear={work_year[0]}'
                             url += f'&degree={degree[0]}'
                             url += f'&companySize={company_size[0]}'
+                            url += f'&timestamp={int(time.time())}'
+
+                            cli = self.cli
+                            cli.get(url)
 
     def close(self):
         self.cli.quit()
