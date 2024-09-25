@@ -5,3 +5,4 @@ setuptools~=72.2.0
 pyecharts~=2.0.6
 PyMySQL~=1.1.1
 beautifulsoup4~=4.12.3
+PyAutoGUI~=0.9.54
