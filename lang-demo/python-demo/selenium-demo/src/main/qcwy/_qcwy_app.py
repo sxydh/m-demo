@@ -1,26 +1,55 @@
-from src.main.util.cli import Cli
 from src.main.util.common import get_sqlite_connection, read_rows
 
 
 class QcwyApp:
-    start_url = "https://we.51job.com/pc/search?searchType=2&sortType=1"
-    job_areas = ["090200"]
-    functions = []
-    work_years = [("02", "1-3年"), ("03", "3-5年"), ("04", "5-10年"), ("05", "10年以上"), ("06", "无需经验")]
-    degrees = [("01", "初中及以下"), ("02", "高中/中技/中专"), ("03", "大专"), ("04", "本科"), ("05", "硕士"), ("06", "博士"), ("07", "无")]
-    company_sizes = [("01", "少于50人"), ("02", "50-150人"), ("03", "150-500人"), ("04", "500-1000人"), ("05", "1000-5000人"), ("06", "5000-10000人"), ("07", "10000人以上")]
+    cli = None
+    conn = None
+
+    start_url = 'https://we.51job.com/pc/search?searchType=2&sortType=1'
+    job_areas = ['090200']
+    fun_types = []
+    work_years = [('02', '1-3年'), ('03', '3-5年'), ('04', '5-10年'), ('05', '10年以上'), ('06', '无需经验')]
+    degrees = [('01', '初中及以下'), ('02', '高中/中技/中专'), ('03', '大专'), ('04', '本科'), ('05', '硕士'), ('06', '博士'), ('07', '无')]
+    company_sizes = [('01', '少于50人'), ('02', '50-150人'), ('03', '150-500人'), ('04', '500-1000人'), ('05', '1000-5000人'), ('06', '5000-10000人'), ('07', '10000人以上')]
 
     def __init__(self):
-        self.cli = Cli()
-        self.conn = get_sqlite_connection()
-        functions = [f.split(',') for f in read_rows('function.csv')]
+        self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
+        self.init_db()
+
+    def init_db(self):
+        self.conn = get_sqlite_connection('qcwy.db')
+        self.conn.execute('create table if not exists qcwy_job()')
+
+    def url_filter(self, url):
+        return True
 
     def start(self):
-        pass
+        for job_area in self.job_areas:
+            for fun_type in self.fun_types:
+                for work_year in self.work_years:
+                    for degree in self.degrees:
+                        for company_size in self.company_sizes:
+                            url = self.start_url
+                            url += f'&jobArea={job_area}'
+                            url += f'&fun_type={fun_type[0]}'
+                            url += f'&workYear={work_year[0]}'
+                            url += f'&degree={degree[0]}'
+                            url += f'&companySize={company_size[0]}'
+                            self.cli.get(url)
 
     def close(self):
         self.cli.quit()
         self.conn.close()
+
+
+class JobItem:
+    name = None
+    salary = None
+    fun_type = None
+    work_year = None
+    degree = None
+    address = None
+    job_tag = None
 
 
 if __name__ == '__main__':
