@@ -1,5 +1,5 @@
 from src.main.util.cli import Cli
-from src.main.util.common import get_sqlite_connection
+from src.main.util.common import get_sqlite_connection, read_rows
 
 
 class QcwyApp:
@@ -13,6 +13,7 @@ class QcwyApp:
     def __init__(self):
         self.cli = Cli()
         self.conn = get_sqlite_connection()
+        functions = read_rows('function.csv')
 
     def start(self):
         pass
