@@ -78,6 +78,7 @@ class QcwyApp:
     def filter_url(self, url) -> bool:
         with self.get_conn() as conn:
             if conn.execute('select 1 from qcwy_job where job_list_url = ?', [url]).fetchone():
+                logging.warning(f'is filtered: {url}')
                 return True
         return False
 
