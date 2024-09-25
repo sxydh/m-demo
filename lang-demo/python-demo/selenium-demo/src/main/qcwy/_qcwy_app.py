@@ -50,7 +50,7 @@ class QcwyApp:
         self.init_db_handler()
         self.init_console_handler()
         self.init_queue()
-        # self.init_cli()
+        self.init_cli()
 
     def get_conn(self):
         return get_sqlite_connection('qcwy.db')
