@@ -33,7 +33,7 @@ class JobItem:
     remark = None
 
 
-class QcwyApp:
+class QcwyApp(threading.Thread):
     run_flag = True
 
     cli = None
@@ -45,12 +45,13 @@ class QcwyApp:
     degrees = [('01', '初中及以下'), ('02', '高中/中技/中专'), ('03', '大专'), ('04', '本科'), ('05', '硕士'), ('06', '博士'), ('07', '无')]
     company_sizes = [('01', '少于50人'), ('02', '50-150人'), ('03', '150-500人'), ('04', '500-1000人'), ('05', '1000-5000人'), ('06', '5000-10000人'), ('07', '10000人以上')]
 
-    def __init__(self):
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, *, daemon=None):
+        super().__init__(group, target, name, args, kwargs, daemon=daemon)
+        self.init_cli()
         self.init_db()
         self.init_db_handler()
         self.init_console_handler()
         self.init_queue()
-        self.init_cli()
 
     def get_conn(self):
         return get_sqlite_connection('qcwy.db')
@@ -229,12 +230,10 @@ class QcwyApp:
         return '###'.join([e.text.strip() for e in elements])
 
 
-def thread_handler():
-    qcwy_app = QcwyApp()
-    qcwy_app.run()
-
-
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)
     for _ in range(2):
-        threading.Thread(target=thread_handler()).start()
+        time.sleep(2)
+        QcwyApp().start()
+
+    time.sleep(100)
