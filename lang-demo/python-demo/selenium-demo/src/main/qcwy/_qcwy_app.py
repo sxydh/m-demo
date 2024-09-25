@@ -117,7 +117,7 @@ class QcwyApp:
             job_item.degree = degree
             job_item.company_size = company_size
             job_item.job_list_url = url
-            if 'joblist-item' not in item.get_attribute('class'):
+            if 'joblist-item' in item.get_attribute('class'):
                 sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='[sensorsdata]', timeout=0, count=1, raise_e=False)
                 sensors_data = json.loads(sensors_data.get_attribute('sensorsdata'))
                 job_item.id = sensors_data.get('id')
