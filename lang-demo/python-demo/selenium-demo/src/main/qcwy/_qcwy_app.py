@@ -37,7 +37,7 @@ class QcwyApp:
 
     def filter_url(self, url) -> bool:
         print(url)
-        return True
+        return False
 
     def start(self):
         for job_area in self.job_areas:
@@ -52,9 +52,9 @@ class QcwyApp:
                             url += f'&degree={degree[0]}'
                             url += f'&companySize={company_size[0]}'
                             url += f'&timestamp={int(time.time())}'
-                            seen = self.filter_url(url)
+                            is_filter = self.filter_url(url)
 
-                            if not seen:
+                            if not is_filter:
                                 self.cli.get(url)
                                 self.cli.find_element_d(by=By.CSS_SELECTOR, value='.joblist', raise_e=False)
 
