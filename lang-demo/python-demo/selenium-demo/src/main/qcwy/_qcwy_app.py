@@ -79,6 +79,9 @@ class QcwyApp:
                 for work_year in self.work_years:
                     for degree in self.degrees:
                         for company_size in self.company_sizes:
+                            if not self.run_flag:
+                                return
+
                             url = self.start_url
                             url += f'&jobArea={job_area}'
                             url += f'&function={fun_type[0]}'
