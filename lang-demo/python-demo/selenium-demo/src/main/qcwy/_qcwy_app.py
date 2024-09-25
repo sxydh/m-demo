@@ -24,6 +24,7 @@ class JobItem:
     job_page = None
     job_pages = None
     company_tag = None
+    raw = None
     remark = None
 
 
@@ -48,7 +49,7 @@ class QcwyApp:
 
     def init_db(self):
         self.conn = get_sqlite_connection('qcwy.db')
-        self.conn.execute('create table if not exists qcwy_job(id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, remark)')
+        self.conn.execute('create table if not exists qcwy_job(id text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
 
     def init_cli(self):
         self.cli = Cli(undetected=True,
@@ -129,6 +130,7 @@ class QcwyApp:
                 job_item.job_page = sensors_data.get('pageNum')
                 job_item.job_pages = pages
                 job_item.company_tag = self.parse_text_helper(item, 'span.dc', is_multi=True)
+                job_item.raw = item.get_attribute('innerHTML')
             self.save_job_item(job_item)
 
     def parse_text_helper(self, src, selector, is_multi=False) -> str | None:
@@ -142,8 +144,8 @@ class QcwyApp:
         return '###'.join(elements)
 
     def save_job_item(self, job_item: JobItem):
-        self.conn.execute(f'insert into qcwy_job(id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                          [job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_page, job_item.job_pages, job_item.company_tag, job_item.remark])
+        self.conn.execute(f'insert into qcwy_job(id, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, raw, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                          [job_item.id, job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_page, job_item.job_pages, job_item.company_tag, job_item.raw, job_item.remark])
         self.conn.commit()
 
 
