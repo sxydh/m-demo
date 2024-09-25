@@ -92,7 +92,7 @@ class Cli:
             moved_x_offset += delta_x_offset
 
     def click_and_move_by_y_offset_manual(self, x, y, y_offset):
-        pyautogui.mouseDown()
+        pyautogui.mouseDown(x, y)
         pyautogui.move(y_offset, 0)
         pyautogui.mouseUp()
 
