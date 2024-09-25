@@ -63,6 +63,7 @@ class QcwyApp:
             # noinspection PyBroadException
             try:
                 conn.execute('insert into qcwy_lock(uid, owner) values (?, ?)', ['qcwy_job', threading.get_ident()])
+                conn.commit()
             except Exception as _:
                 pass
 
@@ -84,8 +85,14 @@ class QcwyApp:
 
     def filter_url(self, url) -> bool:
         with self.get_conn() as conn:
-            if conn.execute('select 1 from qcwy_job where job_list_url = ?', [url]).fetchone():
+            if conn.execute('select 1 from qcwy_filter where uid = ?', [url]).fetchone():
                 logging.warning(f'is filtered: {url}')
+                return True
+            # noinspection PyBroadException
+            try:
+                conn.execute('insert into qcwy_filter(uid) values(?)', [url])
+                conn.commit()
+            except Exception as _:
                 return True
         return False
 
