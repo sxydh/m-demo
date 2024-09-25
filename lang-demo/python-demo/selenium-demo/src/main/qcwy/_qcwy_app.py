@@ -69,6 +69,10 @@ class QcwyApp:
         t.start()
 
     def init_queue(self):
+        t = threading.Thread(target=self.init_queue_handler)
+        t.start()
+
+    def init_queue_handler(self):
         self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
         for job_area in self.job_areas:
             for fun_type in self.fun_types:
