@@ -112,7 +112,7 @@ class QcwyApp:
                                     self.cli.click_and_move_by_x_offset(verification, 400)
                                     continue
                                 if len(items) == 0:
-                                    self.cli.driver.refresh()
+                                    self.cli.get(request_url)
                                     continue
 
                                 self.parse_job_item(fun_type=fun_type[1],
