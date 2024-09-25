@@ -91,7 +91,7 @@ class Cli:
             action_chains.move_by_offset(delta_x_offset, 0).perform()
             moved_x_offset += delta_x_offset
 
-    def click_and_move_by_y_offset_manual(self, y_offset):
+    def click_and_move_by_y_offset_manual(self, x, y, y_offset):
         pyautogui.mouseDown()
         pyautogui.move(y_offset, 0)
         pyautogui.mouseUp()
