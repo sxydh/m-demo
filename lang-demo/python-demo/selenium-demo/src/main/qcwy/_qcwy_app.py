@@ -79,25 +79,14 @@ class QcwyApp:
                             self.cli.get(url)
                             items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
                             pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
-                            for item in items:
-                                job_item = JobItem()
-                                job_item.fun_type = fun_type[1]
-                                job_item.work_year = work_year[1]
-                                job_item.degree = degree[1]
-                                job_item.job_list_url = url
-                                if 'joblist-item' not in item.get_attribute('class'):
-                                    sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='[sensorsdata]', timeout=0, count=1, raise_e=False)
-                                    sensors_data = json.loads(sensors_data.get_attribute('sensorsdata'))
-                                    job_item.id = sensors_data.get('id')
-                                    job_item.name = self.parse_text_helper(item, '.jname')
-                                    job_item.salary = self.parse_text_helper(item, '.sal')
-                                    job_item.address = sensors_data.get('jobArea')
-                                    job_item.company_name = self.parse_text_helper(item, '.cname')
-                                    job_item.job_time = sensors_data.get('jobTime')
-                                    job_item.job_tag = self.parse_text_helper(item, '.tags tag', is_multi=True)
-                                    job_item.job_pages = int(pages[-1].get_attribute('innerText').strip())
-                                    job_item.company_tag = self.parse_text_helper(item, '.span.dc', is_multi=True)
-                                self.save_job_item(job_item)
+                            pages = int(pages[-1].get_attribute('innerText').strip()) if pages and len(pages) > 0 else 0
+                            self.parse_job_item(fun_type=fun_type[1],
+                                                work_year=work_year[1],
+                                                degree=degree[1],
+                                                company_size=company_size[1],
+                                                url=url,
+                                                pages=pages,
+                                                items=items)
 
                             slide = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
                             if slide:
@@ -106,6 +95,28 @@ class QcwyApp:
     def close(self):
         self.cli.quit()
         self.conn.close()
+
+    def parse_job_item(self, *, fun_type, work_year, degree, company_size, url, pages: int, items: list):
+        for item in items:
+            job_item = JobItem()
+            job_item.fun_type = fun_type
+            job_item.work_year = work_year
+            job_item.degree = degree
+            job_item.company_size = company_size
+            job_item.job_list_url = url
+            if 'joblist-item' not in item.get_attribute('class'):
+                sensors_data = self.cli.find_element(src=item, by=By.CSS_SELECTOR, value='[sensorsdata]', timeout=0, count=1, raise_e=False)
+                sensors_data = json.loads(sensors_data.get_attribute('sensorsdata'))
+                job_item.id = sensors_data.get('id')
+                job_item.name = self.parse_text_helper(item, '.jname')
+                job_item.salary = self.parse_text_helper(item, '.sal')
+                job_item.address = sensors_data.get('jobArea')
+                job_item.company_name = self.parse_text_helper(item, '.cname')
+                job_item.job_time = sensors_data.get('jobTime')
+                job_item.job_tag = self.parse_text_helper(item, '.tags tag', is_multi=True)
+                job_item.job_pages = pages
+                job_item.company_tag = self.parse_text_helper(item, '.span.dc', is_multi=True)
+            self.save_job_item(job_item)
 
     def parse_text_helper(self, src, selector, is_multi=False) -> str | None:
         elements = self.cli.find_elements(src, By.CSS_SELECTOR, value=selector, timeout=0, count=1, raise_e=False)
