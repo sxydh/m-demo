@@ -76,21 +76,32 @@ class QcwyApp:
                             if is_filter:
                                 continue
 
-                            self.cli.get(url)
-                            items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
-                            pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
-                            pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
-                            self.parse_job_item(fun_type=fun_type[1],
-                                                work_year=work_year[1],
-                                                degree=degree[1],
-                                                company_size=company_size[1],
-                                                url=url,
-                                                pages=pages,
-                                                items=items)
+                            page = 1
+                            page_url = f'{url}&pageNum={page}'
+                            while True:
+                                self.cli.get(page_url)
+                                items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
 
-                            slide = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
-                            if slide:
-                                self.cli.click_and_move_by_x_offset(slide, 400)
+                                verification = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
+                                if verification:
+                                    self.cli.click_and_move_by_x_offset(verification, 400)
+                                    continue
+
+                                pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
+                                pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
+                                self.parse_job_item(fun_type=fun_type[1],
+                                                    work_year=work_year[1],
+                                                    degree=degree[1],
+                                                    company_size=company_size[1],
+                                                    url=url,
+                                                    pages=pages,
+                                                    items=items)
+
+                                if page < pages:
+                                    page_url = page_url.replace(f'pageNum={page}', f'pageNum={page + 1}')
+                                    page += 1
+                                    continue
+                                break
 
     def close(self):
         self.cli.quit()
