@@ -127,7 +127,6 @@ class QcwyApp(threading.Thread):
             if updated.rowcount == 0:
                 continue
 
-            logging.warning(f'running url: {url}')
             self.cli.get(url)
             page = 1
             while True:
