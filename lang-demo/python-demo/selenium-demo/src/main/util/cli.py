@@ -82,17 +82,17 @@ class Cli:
     def click(self, ele):
         ActionChains(self.driver).move_to_element(ele).click().perform()
 
-    def click_and_move_by_offset(self, ele, y):
+    def click_and_move_by_offset(self, ele, y_offset):
         action_chains = ActionChains(self.driver)
         action_chains.click_and_hold(ele).perform()
-        moved_y = 0
+        moved_y_offset = 0
         while True:
-            if moved_y >= y:
+            if moved_y_offset >= y_offset:
                 break
-            delta_y = random.randint(1, y - moved_y)
+            delta_y_offset = random.randint(1, y_offset - moved_y_offset)
             sleep(random.randint(100, 500) / 1000)
-            action_chains.move_by_offset(0, delta_y).perform()
-            moved_y += delta_y
+            action_chains.move_by_offset(0, delta_y_offset).perform()
+            moved_y_offset += delta_y_offset
 
     def close(self):
         self.driver.close()
