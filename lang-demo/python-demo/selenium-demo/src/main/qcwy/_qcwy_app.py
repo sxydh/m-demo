@@ -113,6 +113,7 @@ class QcwyApp:
                                     continue
                                 if len(items) == 0:
                                     self.cli.get(request_url)
+                                    page = 1
                                     continue
 
                                 self.parse_job_item(fun_type=fun_type[1],
