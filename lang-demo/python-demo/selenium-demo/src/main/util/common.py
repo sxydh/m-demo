@@ -79,7 +79,7 @@ def get_sqlite_connection(f='ssq.db'):
     return sqlite3.connect(f'tmp/{f}')
 
 
-def try_update(f: str, sql: str, params: list) -> int:
+def try_save(f: str, sql: str, params: list) -> int:
     while True:
         with get_sqlite_connection(f) as conn:
             # noinspection PyBroadException
