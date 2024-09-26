@@ -55,8 +55,8 @@ class QcwyApp(threading.Thread):
 
     def init_db(self):
         with get_sqlite_connection(self.db_file) as conn:
-            conn.execute('create table if not exists qcwy_queue(uid text unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)')
-            conn.execute('create table if not exists qcwy_job(uid text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_id text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
+            conn.execute('create table if not exists qcwy_queue(id integer primary key autoincrement, uid text unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)')
+            conn.execute('create table if not exists qcwy_job(id integer primary key autoincrement, uid text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_id text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
 
     def init_db_handler(self):
         t = threading.Thread(target=self.db_handler)
@@ -104,7 +104,7 @@ class QcwyApp(threading.Thread):
                        headless=False)
 
     def run(self):
-        while True:
+        while self.run_flag:
             uid_owner = str(uuid.uuid4())
             updated = try_save_sqlite(self.db_file,
                                       'update qcwy_queue set uid_owner = ? where uid_owner is null',
