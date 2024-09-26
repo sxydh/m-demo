@@ -93,7 +93,7 @@
                             
                             上传分发文件到测试环境
                             验证：
-                                pip install -i https://test.pypi.org/simple/ m-pyutil==1.0.0
+                                pip install -i https://test.pypi.org/simple/ m-pyutil==<version>
                                 
                         python -m twine upload dist/*
                             上传分发文件到正式环境
