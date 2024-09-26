@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 import sqlite3
 import threading
@@ -90,6 +91,7 @@ def try_save_sqlite(f: str, sql: str, params: list) -> int:
             except Exception as e:
                 if 'database is locked' in str(e):
                     continue
+                logging.warning(e)
                 return 0
 
 
