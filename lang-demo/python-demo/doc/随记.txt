@@ -69,7 +69,13 @@
                 sudo chown sxydh:sxydh /usr/bin/pip
             验证安装
                 python --version
-    包管理
+    依赖仓库
+        PyPI
+            正式环境
+                https://pypi.org/
+            测试环境
+                https://test.pypi.org/
+    包管理器
         pip
             指定源
                 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <包名称>
@@ -77,7 +83,7 @@
     虚拟环境
         venv
         virtualenv
-    IDE
+    开发工具
         PyCharm
             生成依赖清单
                 Tools
