@@ -105,22 +105,22 @@ class QcwyApp(threading.Thread):
 
     def run(self):
         while True:
-            popped = select_one_sqlite(self.db_file,
-                                       'select uid, job_area, fun_type, work_year, degree, company_size from qcwy_queue where uid_owner is null limit 1')
-            if popped is None:
+            uid_owner = str(uuid.uuid4())
+            updated = try_save_sqlite(self.db_file,
+                                      'update qcwy_queue set uid_owner = ? where uid_owner is null',
+                                      [uid_owner])
+            if updated == 0:
                 time.sleep(1)
                 continue
 
+            popped = select_one_sqlite(self.db_file,
+                                       'select uid, job_area, fun_type, work_year, degree, company_size from qcwy_queue where uid_owner = ?',
+                                       [uid_owner])
             url = popped[0]
             fun_type = popped[2]
             work_year = popped[3]
             degree = popped[4]
             company_size = popped[5]
-            updated = try_save_sqlite(self.db_file,
-                                      'update qcwy_queue set uid_owner = ? where uid = ? and uid_owner is null',
-                                      [threading.get_ident(), url])
-            if updated == 0:
-                continue
 
             self.cli.get(url)
             page = 1
