@@ -91,3 +91,12 @@ def try_save_sqlite(f: str, sql: str, params: list) -> int:
                 if 'database is locked' in str(e):
                     continue
                 return 0
+
+
+def select_sqlite(f: str, sql: str, params: list) -> list:
+    with get_sqlite_connection(f) as conn:
+        return conn.execute(sql, params).fetchall()
+
+
+def select_one_sqlite(f: str, sql: str, params: list) -> tuple:
+    return select_sqlite(f, sql, params)[0]
