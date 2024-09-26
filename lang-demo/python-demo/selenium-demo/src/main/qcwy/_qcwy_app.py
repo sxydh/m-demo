@@ -177,7 +177,7 @@ class QcwyApp(threading.Thread):
 
     def save_job_item(self, job_item: JobItem):
         try_save_sqlite(self.db_file,
-                        f'insert into qcwy_job(uid, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_id, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, raw, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                        'insert into qcwy_job(uid, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_id, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, raw, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                         [str(uuid.uuid4()), job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_id, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_page, job_item.job_pages, job_item.company_tag, job_item.raw, job_item.remark])
 
     def parse_text_helper(self, src, selector, is_multi=False, sep='###'):
@@ -215,7 +215,7 @@ class QcwyApp(threading.Thread):
             job_item.company_tag = self.parse_text_helper(soup, 'span.dc', is_multi=True)
 
             try_save_sqlite(self.db_file,
-                            f'update qcwy_job set name=?, salary=?, address=?, company_name=?, job_id=?, job_time=?, job_tag=?, job_page=?, company_tag=? where uid=?',
+                            'update qcwy_job set name=?, salary=?, address=?, company_name=?, job_id=?, job_time=?, job_tag=?, job_page=?, company_tag=? where uid=?',
                             [job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.job_id, job_item.job_time, job_item.job_tag, job_item.job_page, job_item.company_tag, job_item.uid])
 
     def console_handler(self):
