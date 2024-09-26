@@ -91,10 +91,10 @@ class Cli:
             if moved_x_offset >= x_offset:
                 break
             delta_x_offset = x_offset - moved_x_offset
-            delta_x_offset = min(random.randint(200, 600), delta_x_offset)
+            delta_x_offset = min(x_offset / random.randint(2, 4), delta_x_offset)
             action_chains.move_by_offset(delta_x_offset, 0).perform()
             moved_x_offset += delta_x_offset
-            sleep(random.uniform(0.05, 0.5))
+            sleep(random.uniform(0.05, 0.7))
 
     def click_and_move_by_y_offset_manual(self, x, y, y_offset):
         sleep(random.uniform(0.2, 1))
