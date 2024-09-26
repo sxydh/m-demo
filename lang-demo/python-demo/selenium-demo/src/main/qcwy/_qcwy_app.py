@@ -53,11 +53,8 @@ class QcwyApp(threading.Thread):
         self.init_console_handler()
         self.init_queue()
 
-    def get_conn(self):
-        return get_sqlite_connection('qcwy.db')
-
     def init_db(self):
-        with self.get_conn() as conn:
+        with get_sqlite_connection(self.db_file) as conn:
             conn.execute('create table if not exists qcwy_queue(uid text unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)')
             conn.execute('create table if not exists qcwy_job(uid text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_id text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
 
