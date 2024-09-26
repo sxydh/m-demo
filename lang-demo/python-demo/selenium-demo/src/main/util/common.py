@@ -2,6 +2,7 @@ import datetime
 import os
 import sqlite3
 import threading
+from sqlite3 import Connection
 
 import pymysql
 
@@ -77,3 +78,14 @@ def get_mysql_connection(host='192.168.233.129',
 def get_sqlite_connection(f='ssq.db'):
     os.makedirs('tmp', exist_ok=True)
     return sqlite3.connect(f'tmp/{f}')
+
+
+def try_update(conn: Connection, sql: str, params: list) -> int:
+    while True:
+        # noinspection PyBroadException
+        try:
+            cur = conn.execute(sql, params)
+            conn.commit()
+            return cur.rowcount
+        except Exception as _:
+            pass
