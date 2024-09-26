@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
-from src.main.util.common import get_sqlite_connection, read_rows
+from src.main.util.common import get_sqlite_connection, read_rows, try_save_sqlite, select_one_sqlite
 
 
 class JobItem:
@@ -35,7 +35,7 @@ class JobItem:
 
 class QcwyApp(threading.Thread):
     run_flag = True
-
+    db_file = 'qcwy.db'
     cli = None
 
     start_url = 'https://we.51job.com/pc/search?searchType=2&sortType=1'
@@ -92,17 +92,14 @@ class QcwyApp(threading.Thread):
 
                             time.sleep(1)
 
-                            with self.get_conn() as conn:
-                                exists = conn.execute('select 1 from qcwy_queue where uid = ?', [url]).fetchone() is not None
-                                if exists:
-                                    continue
-                                # noinspection PyBroadException
-                                try:
-                                    conn.execute('insert into qcwy_queue(uid, job_area, fun_type, work_year, degree, company_size) values(?, ?, ?, ?, ?, ?)',
-                                                 [url, job_area, fun_type[1], work_year[1], degree[1], company_size[1]])
-                                    conn.commit()
-                                except Exception as _:
-                                    continue
+                            exists = select_one_sqlite(self.db_file,
+                                                       'select 1 from qcwy_queue where uid = ?',
+                                                       [url])
+                            if exists:
+                                continue
+                            try_save_sqlite(self.db_file,
+                                            'insert into qcwy_queue(uid, job_area, fun_type, work_year, degree, company_size) values(?, ?, ?, ?, ?, ?)',
+                                            [url, job_area, fun_type[1], work_year[1], degree[1], company_size[1]])
 
     def init_cli(self):
         self.cli = Cli(undetected=True,
@@ -111,8 +108,8 @@ class QcwyApp(threading.Thread):
 
     def run(self):
         while True:
-            with self.get_conn() as conn_s:
-                popped = conn_s.execute('select uid, job_area, fun_type, work_year, degree, company_size from qcwy_queue where uid_owner is null limit 1').fetchone()
+            popped = select_one_sqlite(self.db_file,
+                                       'select uid, job_area, fun_type, work_year, degree, company_size from qcwy_queue where uid_owner is null limit 1')
             if popped is None:
                 time.sleep(1)
                 continue
@@ -122,10 +119,10 @@ class QcwyApp(threading.Thread):
             work_year = popped[3]
             degree = popped[4]
             company_size = popped[5]
-            with self.get_conn() as conn_u:
-                updated = conn_u.execute('update qcwy_queue set uid_owner = ? where uid = ? and uid_owner is null', [threading.get_ident(), url])
-                conn_u.commit()
-            if updated.rowcount == 0:
+            updated = try_save_sqlite(self.db_file,
+                                      'update qcwy_queue set uid_owner = ? where uid = ? and uid_owner is null',
+                                      [threading.get_ident(), url])
+            if updated == 0:
                 continue
 
             self.cli.get(url)
@@ -179,46 +176,47 @@ class QcwyApp(threading.Thread):
             self.save_job_item(job_item)
 
     def save_job_item(self, job_item: JobItem):
-        while True:
-            with self.get_conn() as conn:
-                # noinspection PyBroadException
-                try:
-                    conn.execute(f'insert into qcwy_job(uid, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_id, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, raw, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                                 [str(uuid.uuid4()), job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_id, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_page, job_item.job_pages, job_item.company_tag, job_item.raw, job_item.remark])
-                    conn.commit()
-                    break
-                except Exception as _:
-                    continue
+        try_save_sqlite(self.db_file,
+                        f'insert into qcwy_job(uid, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_id, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, raw, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                        [str(uuid.uuid4()), job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_id, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_page, job_item.job_pages, job_item.company_tag, job_item.raw, job_item.remark])
+
+    def parse_text_helper(self, src, selector, is_multi=False, sep='###'):
+        elements = src.select(selector)
+        if len(elements) == 0:
+            return None
+        if not is_multi:
+            return elements[0].text.strip()
+        return sep.join([e.text.strip() for e in elements])
 
     def db_handler(self):
         while self.run_flag:
-            with self.get_conn() as conn:
-                row = conn.execute('select uid, raw from qcwy_job where raw is not null and name is null limit 1').fetchone()
-                if not row:
-                    time.sleep(1)
-                    continue
+            row = select_one_sqlite(self.db_file,
+                                    'select uid, raw from qcwy_job where raw is not null and name is null limit 1')
+            if not row:
+                time.sleep(1)
+                continue
 
-                uid = row[0]
-                raw = row[1]
+            uid = row[0]
+            raw = row[1]
 
-                job_item = JobItem()
-                job_item.uid = uid
-                soup = BeautifulSoup(raw, 'html.parser')
-                sensors_data = soup.select_one('.sensors_exposure')['sensorsdata']
-                sensors_data = json.loads(sensors_data)
-                job_item.name = self.parse_text_helper(soup, '.jname')
-                job_item.salary = self.parse_text_helper(soup, '.sal')
-                job_item.address = sensors_data.get('jobArea')
-                job_item.company_name = self.parse_text_helper(soup, '.cname')
-                job_item.job_id = sensors_data.get('jobId')
-                job_item.job_time = sensors_data.get('jobTime')
-                job_item.job_tag = self.parse_text_helper(soup, '.tags .tag', is_multi=True)
-                job_item.job_page = sensors_data.get('pageNum')
-                job_item.company_tag = self.parse_text_helper(soup, 'span.dc', is_multi=True)
+            job_item = JobItem()
+            job_item.uid = uid
+            soup = BeautifulSoup(raw, 'html.parser')
+            sensors_data = soup.select_one('.sensors_exposure')['sensorsdata']
+            sensors_data = json.loads(sensors_data)
+            job_item.name = self.parse_text_helper(soup, '.jname')
+            job_item.salary = self.parse_text_helper(soup, '.sal')
+            job_item.address = sensors_data.get('jobArea')
+            job_item.company_name = self.parse_text_helper(soup, '.cname')
+            job_item.job_id = sensors_data.get('jobId')
+            job_item.job_time = sensors_data.get('jobTime')
+            job_item.job_tag = self.parse_text_helper(soup, '.tags .tag', is_multi=True)
+            job_item.job_page = sensors_data.get('pageNum')
+            job_item.company_tag = self.parse_text_helper(soup, 'span.dc', is_multi=True)
 
-                conn.execute(f'update qcwy_job set name=?, salary=?, address=?, company_name=?, job_id=?, job_time=?, job_tag=?, job_page=?, company_tag=? where uid=?',
-                             [job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.job_id, job_item.job_time, job_item.job_tag, job_item.job_page, job_item.company_tag, job_item.uid])
-                conn.commit()
+            try_save_sqlite(self.db_file,
+                            f'update qcwy_job set name=?, salary=?, address=?, company_name=?, job_id=?, job_time=?, job_tag=?, job_page=?, company_tag=? where uid=?',
+                            [job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.job_id, job_item.job_time, job_item.job_tag, job_item.job_page, job_item.company_tag, job_item.uid])
 
     def console_handler(self):
         while True:
@@ -227,14 +225,6 @@ class QcwyApp(threading.Thread):
                 logging.warning(f'>>> Ready to stop {threading.get_ident()}')
                 self.run_flag = False
                 break
-
-    def parse_text_helper(self, src, selector, is_multi=False):
-        elements = src.select(selector)
-        if len(elements) == 0:
-            return None
-        if not is_multi:
-            return elements[0].text.strip()
-        return '###'.join([e.text.strip() for e in elements])
 
 
 if __name__ == '__main__':
