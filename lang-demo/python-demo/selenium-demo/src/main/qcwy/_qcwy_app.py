@@ -111,8 +111,8 @@ class QcwyApp(threading.Thread):
 
     def run(self):
         while True:
-            with self.get_conn() as conn:
-                popped = conn.execute('select uid, job_area, fun_type, work_year, degree, company_size from qcwy_queue where uid_owner is null limit 1').fetchone()
+            with self.get_conn() as conn_s:
+                popped = conn_s.execute('select uid, job_area, fun_type, work_year, degree, company_size from qcwy_queue where uid_owner is null limit 1').fetchone()
             if popped is None:
                 time.sleep(1)
                 continue
@@ -122,8 +122,9 @@ class QcwyApp(threading.Thread):
             work_year = popped[3]
             degree = popped[4]
             company_size = popped[5]
-            with self.get_conn() as conn:
-                updated = conn.execute('update qcwy_queue set uid_owner = ? where uid = ? and uid_owner is null', [threading.get_ident(), url])
+            with self.get_conn() as conn_u:
+                updated = conn_u.execute('update qcwy_queue set uid_owner = ? where uid = ? and uid_owner is null', [threading.get_ident(), url])
+                conn_u.commit()
             if updated.rowcount == 0:
                 continue
 
@@ -143,10 +144,10 @@ class QcwyApp(threading.Thread):
                     page = 1
                     continue
 
-                self.parse_job_item(fun_type=fun_type[1],
-                                    work_year=work_year[1],
-                                    degree=degree[1],
-                                    company_size=company_size[1],
+                self.parse_job_item(fun_type=fun_type,
+                                    work_year=work_year,
+                                    degree=degree,
+                                    company_size=company_size,
                                     job_list_url=url,
                                     pages=pages,
                                     items=items)
