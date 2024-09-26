@@ -2,6 +2,7 @@ import datetime
 import os
 import sqlite3
 import threading
+from sqlite3 import OperationalError
 
 import pymysql
 
@@ -87,5 +88,7 @@ def try_save(f: str, sql: str, params: list) -> int:
                 cur = conn.execute(sql, params)
                 conn.commit()
                 return cur.rowcount
-            except Exception as _:
+            except OperationalError as _:
                 pass
+            except Exception as _:
+                return 0
