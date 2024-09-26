@@ -93,9 +93,9 @@ def try_save_sqlite(f: str, sql: str, params: list) -> int:
                 return 0
 
 
-def select_sqlite(f: str, sql: str, params: list) -> list:
+def select_sqlite(f: str, sql: str, params: list = None) -> list:
     with get_sqlite_connection(f) as conn:
-        return conn.execute(sql, params).fetchall()
+        return conn.execute(sql, params or []).fetchall()
 
 
 def select_one_sqlite(f: str, sql: str, params: list = None) -> tuple:
