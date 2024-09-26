@@ -99,7 +99,7 @@ class QcwyApp(threading.Thread):
                                 # noinspection PyBroadException
                                 try:
                                     conn.execute('insert into qcwy_queue(uid, job_area, fun_type, work_year, degree, company_size) values(?, ?, ?, ?, ?, ?)',
-                                                 [url, job_area, fun_type[0], work_year[0], degree[0], company_size[0]])
+                                                 [url, job_area, fun_type[1], work_year[1], degree[1], company_size[1]])
                                     conn.commit()
                                 except Exception as _:
                                     continue
