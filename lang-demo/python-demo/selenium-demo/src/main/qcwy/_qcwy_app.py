@@ -107,7 +107,7 @@ class QcwyApp(threading.Thread):
         while self.run_flag:
             uid_owner = str(uuid.uuid4())
             updated = try_save_sqlite(self.db_file,
-                                      'update qcwy_queue set uid_owner = ? where uid_owner is null',
+                                      'update qcwy_queue set uid_owner = ? where id = (select id from qcwy_queue t2 where t2.uid_owner is null limit 1)',
                                       [uid_owner])
             if updated == 0:
                 time.sleep(1)
