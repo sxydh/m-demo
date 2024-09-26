@@ -2,7 +2,6 @@ import datetime
 import os
 import sqlite3
 import threading
-from sqlite3 import OperationalError
 
 import pymysql
 
@@ -88,7 +87,7 @@ def try_save(f: str, sql: str, params: list) -> int:
                 cur = conn.execute(sql, params)
                 conn.commit()
                 return cur.rowcount
-            except OperationalError as _:
-                continue
-            except Exception as _:
+            except Exception as e:
+                if 'database is locked' in str(e):
+                    continue
                 return 0
