@@ -89,6 +89,6 @@ def try_save(f: str, sql: str, params: list) -> int:
                 conn.commit()
                 return cur.rowcount
             except OperationalError as _:
-                pass
+                continue
             except Exception as _:
                 return 0
