@@ -100,4 +100,4 @@ def select_sqlite(f: str, sql: str, params: list) -> list:
 
 def select_one_sqlite(f: str, sql: str, params: list = None) -> tuple:
     with get_sqlite_connection(f) as conn:
-        return conn.execute(sql, params).fetchone()
+        return conn.execute(sql, params or []).fetchone()
