@@ -75,6 +75,27 @@
                 https://pypi.org/
             测试环境
                 https://test.pypi.org/
+                    前置条件
+                        m-pyutil
+                    开始
+                        pip install --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple setuptools wheel
+                        python setup.py sdist bdist_wheel
+                            sdist ：源代码分发（ Source Distribution ），创建一个包含项目源代码的压缩包。
+                            bdist_wheel ：二进制分发（ Binary Distribution Wheel ），创建一个 whl 二进制包文件，可以被快速安装。
+                            
+                                此时可以通过 pip install <file_name.whl> 来安装使用二进制分法包文件
+                                
+                        pip install --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple twine
+                            安装 twine 软件，用于上传分发文件。
+                        python -m twine upload --repository testpypi dist/*
+                            -m ：以模块的方式运行后面的命令，模块运行方式允许你执行一个模块中的主函数。
+                            
+                            上传分发文件到测试环境
+                            验证：
+                                pip install -i https://test.pypi.org/simple/ m-pyutil==1.0.0
+                                
+                        python -m twine upload dist/*
+                            上传分发文件到正式环境
     包管理器
         pip
             指定源
