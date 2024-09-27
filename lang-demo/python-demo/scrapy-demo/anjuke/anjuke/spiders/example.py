@@ -49,7 +49,7 @@ class ExampleSpider(scrapy.Spider):
         url = meta_city_item["url"]
 
         if self.is_need_request_again(url, response):
-            yield scrapy.Request(url, callback=self.parse, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
+            yield scrapy.Request(url, callback=self.parse_city_new_house_url, meta={"meta_city_item": copy.copy(meta_city_item)}, dont_filter=True)
             return
 
         navs = response.css(".nav-channel-list > li:first-child")
