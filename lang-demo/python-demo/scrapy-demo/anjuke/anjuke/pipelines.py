@@ -8,7 +8,6 @@ import uuid
 from m_pyutil.msqlite import create, save, select_one
 
 from anjuke.items import CityItem, NewHouseItem
-from util.common import get_sqlite_connection
 
 # useful for handling different item types with a single interface
 
@@ -18,11 +17,7 @@ city_rlock = threading.RLock()
 class AnjukePipeline:
     db_file = "anjuke.db"
 
-    def __init__(self):
-        self.conn = None
-
     def open_spider(self, spider):
-        self.conn = get_sqlite_connection()
         create(sql="create table if not exists anjuke_city(id integer primary key autoincrement, uid text, province text, name text, url text, new_house_url text, new_house_total text, new_house_total_num integer, body text, remark text)",
                f=self.db_file)
         create(sql="create table if not exists anjuke_new_house(id integer primary key autoincrement, uid text, province text, city text, city_new_house_url text, name text, address text, type text, tag text, price text, price_num integer, url text, body text, remark text)",
