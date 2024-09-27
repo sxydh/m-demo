@@ -8,6 +8,7 @@ import uuid
 from typing import Any
 
 import scrapy
+from m_pyutil.mtmp import read_rows
 from scrapy.cmdline import execute
 from scrapy.http import Response
 
@@ -28,12 +29,17 @@ class ExampleSpider(scrapy.Spider):
             yield scrapy.Request(self.start_urls[0], callback=self.parse, dont_filter=True)
             return
 
+        todo_cities = read_rows(f="todo_cities")
         cities = response.css(".ajk-city-cell.is-letter li a")
         for city in cities:
             city_item = CityItem()
             city_item["uid"] = str(uuid.uuid4())
             city_item["name"] = city.css("::text").get().strip()
             city_item["url"] = response.urljoin(city.css("::attr(href)").get())
+
+            if len(todo_cities) > 0 and city_item["name"] not in todo_cities:
+                continue
+
             yield city_item
             yield scrapy.Request(city_item["url"], callback=self.parse_city_new_house_url, meta={"meta_city_item": copy.copy(city_item)})
 
