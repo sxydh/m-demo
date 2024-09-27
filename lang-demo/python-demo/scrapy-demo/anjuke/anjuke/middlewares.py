@@ -2,18 +2,16 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-import datetime
 import logging
 import os
 import random
 
 from scrapy import signals
 
-# useful for handling different item types with a single interface
-from itemadapter import is_item, ItemAdapter
-
 from anjuke.settings import USER_AGENT_LIST
-from util.common import get_sqlite_connection
+
+
+# useful for handling different item types with a single interface
 
 
 class AnjukeSpiderMiddleware:
