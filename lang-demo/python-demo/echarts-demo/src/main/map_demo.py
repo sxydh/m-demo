@@ -5,6 +5,8 @@ from pyecharts.faker import Faker
 if __name__ == '__main__':
     # 如果代码分行，需要用括号圈起来。
     (Map()
-     .add('商家A', [list(z) for z in zip(Faker.provinces, Faker.values())], 'china')
+     .add(series_name='商家A',
+          data_pair=[list(z) for z in zip(Faker.provinces, Faker.values())],
+          maptype='china')
      .set_global_opts(title_opts=opts.TitleOpts(title='Map-基本示例'))
      .render('tmp/map_demo.html'))
