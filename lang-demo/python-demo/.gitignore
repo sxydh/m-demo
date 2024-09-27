@@ -166,3 +166,4 @@ cython_debug/
 logs
 tmp
 __pycache__
+_trial_temp
