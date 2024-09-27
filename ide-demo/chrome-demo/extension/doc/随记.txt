@@ -1,3 +1,14 @@
 开始
+    目录结构
+        manifest.json
+            定义插件配置
+        helloworld.html
+            定义插件自身的页面
+        helloworld.js
+            定义插件自身页面的脚本
+        background.js
+            定义插件后台脚本，如监听浏览器事件、管理插件状态等。
+        images
+            定义插件自身的资源文件
     加载扩展
         使用 Chrome 直接加载扩展文件夹
