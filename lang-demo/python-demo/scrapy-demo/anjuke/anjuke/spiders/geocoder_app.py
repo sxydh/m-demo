@@ -15,7 +15,6 @@ def geocoder_handler():
         if not new_house:
             break
 
-        id = new_house[0]
         city = new_house[1]
         address = new_house[2]
         if not address or len(address) == 0:
@@ -36,7 +35,7 @@ def geocoder_handler():
         location = f"{lng},{lat}"
 
         save(sql="update anjuke_new_house set location=? where id=?",
-             params=[location, id],
+             params=[location, new_house[0]],
              f=DB_FILE)
         time.sleep(0.2)
 
