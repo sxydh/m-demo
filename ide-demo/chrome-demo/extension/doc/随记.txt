@@ -1,14 +1,43 @@
 开始
     目录结构
-        manifest.json
-            定义插件配置
-        helloworld.html
-            定义插件自身的页面
-        helloworld.js
-            定义插件自身页面的脚本
-        background.js
-            定义插件后台脚本，如监听浏览器事件、管理插件状态等。
-        images
-            定义插件自身的资源文件
+        helloworld-demo
+            manifest.json
+                定义插件配置
+                    开始
+                        {
+                            "manifest_version": 3, # 插件 API 版本
+                            "name": "Hello World", # 插件名称
+                            "version": "1.0", # 插件版本
+                            "action": {
+                                "default_popup": "helloworld.html", # 插件自身页面
+                                "default_icon": {
+                                    "16": "images/icon16.png",
+                                    "48": "images/icon48.png",
+                                    "128": "images/icon128.png"
+                                } # 插件图标
+                            },
+                            "background": {
+                                "service_worker": "background.js" # 插件后台脚本
+                            },
+                            "content_scripts": [
+                                {
+                                    "matches": [
+                                        "<all_urls>" # 网页匹配规则
+                                    ],
+                                    "run_at": "document_start", # 脚本运行时机
+                                    "js": [
+                                        "content.js" # 网页脚本
+                                    ]
+                                }
+                            ]
+                        }
+            helloworld.html
+                定义插件自身的页面
+            helloworld.js
+                定义插件自身页面的脚本
+            background.js
+                定义插件后台脚本，如监听浏览器事件、管理插件状态等。
+            images/
+                定义插件自身的资源文件
     加载扩展
         使用 Chrome 直接加载扩展文件夹
