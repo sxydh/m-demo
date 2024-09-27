@@ -85,7 +85,7 @@ def try_save_sqlite(f: str, sql: str, params: list) -> int:
         with get_sqlite_connection(f) as conn:
             # noinspection PyBroadException
             try:
-                cur = conn.execute(sql, params)
+                cur = conn.execute(sql, params or [])
                 conn.commit()
                 return cur.rowcount
             except Exception as e:
