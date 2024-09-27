@@ -1,0 +1,3 @@
+Scrapy~=2.11.2
+itemadapter~=0.9.0
+m_pyutil~=1.4.0
