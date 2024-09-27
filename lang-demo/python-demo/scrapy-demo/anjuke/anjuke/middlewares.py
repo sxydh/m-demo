@@ -91,7 +91,7 @@ class AnjukeDownloaderMiddleware:
         proxy = os.environ.get('PROXY')
         if proxy:
             logging.debug(f"Using proxy: {proxy}")
-            request.meta['proxy'] = "proxy"
+            request.meta['proxy'] = proxy
 
         return None
 
