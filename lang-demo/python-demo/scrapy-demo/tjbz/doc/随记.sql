@@ -7,5 +7,5 @@ union all
 select t.name, t.code, t.parent_code, p.path || '>' || t.code as path, p.province
 from tjbz t
 join path_cte p on t.parent_code = p.code)
-select *
+select name, code, parent_code, path, province
 from path_cte;
