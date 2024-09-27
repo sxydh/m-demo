@@ -2,6 +2,10 @@
     "manifest_version": 3,
     "name": "Hello World",
     "version": "1.0",
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
     "action": {
         "default_popup": "helloworld.html",
         "default_icon": {
