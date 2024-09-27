@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 
@@ -24,10 +25,12 @@ def geocoder_handler():
 
         response = tencent_map.geocoder(address=address)
         if response.status_code != 200:
+            logging.warning(f"{address} geocoder failed, status_code: {response.status_code}")
             continue
         result = response.json()
         status = result.get("status")
         if status != 0:
+            logging.warning(f"{address} geocoder failed, status: {status}")
             continue
         location = result.get("result").get("location")
         lng = location.get("lng")
