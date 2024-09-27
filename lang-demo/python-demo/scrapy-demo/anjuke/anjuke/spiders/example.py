@@ -37,7 +37,13 @@ class ExampleSpider(scrapy.Spider):
             city_item["name"] = city.css("::text").get().strip()
             city_item["url"] = response.urljoin(city.css("::attr(href)").get())
 
-            if len(todo_cities) > 0 and city_item["name"] not in todo_cities:
+            do_flag = True
+            for todo_city in todo_cities:
+                do_flag = False
+                if city_item["name"] in todo_city or todo_city in city_item["name"]:
+                    do_flag = True
+                    break
+            if not do_flag:
                 continue
 
             yield city_item
