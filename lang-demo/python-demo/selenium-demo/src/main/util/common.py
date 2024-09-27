@@ -91,8 +91,7 @@ def try_save_sqlite(f: str, sql: str, params: list) -> int:
             except Exception as e:
                 if 'database is locked' in str(e):
                     continue
-                logging.warning(e)
-                return 0
+                raise e
 
 
 def select_sqlite(f: str, sql: str, params: list = None) -> list:
