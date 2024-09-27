@@ -117,4 +117,4 @@ class AnjukeDownloaderMiddleware:
         spider.logger.info("Spider opened: %s" % spider.name)
 
     def spider_closed(self, spider):
-        self.conn.close()
+        pass
