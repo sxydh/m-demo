@@ -11,6 +11,7 @@ class AnjukeItem(scrapy.Item):
 
 
 class CityItem(scrapy.Item):
+    id = scrapy.Field
     uid = scrapy.Field()
     province = scrapy.Field()
     name = scrapy.Field()
@@ -23,6 +24,7 @@ class CityItem(scrapy.Item):
 
 
 class NewHouseItem(scrapy.Item):
+    id = scrapy.Field()
     uid = scrapy.Field()
     province = scrapy.Field()
     city = scrapy.Field()
