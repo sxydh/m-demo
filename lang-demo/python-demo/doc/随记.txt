@@ -78,7 +78,7 @@
                     前置条件
                         Windows 11
                         m-pyutil
-                    开始
+                    开始（ https://blog.csdn.net/yifengchaoran/article/details/113447773 ）
                         pip install --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple setuptools wheel
                         pip install --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple twine
                             安装 twine 软件，用于上传分发文件。
