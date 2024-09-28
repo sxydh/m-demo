@@ -24,7 +24,7 @@
                             })
                         }
                     ).catch(e => {
-                        // TODO NOTHING
+                        // NOTHING
                     });
                 }
             });
