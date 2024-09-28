@@ -1,5 +1,6 @@
 import json
 import logging
+import os.path
 import threading
 import time
 import uuid
@@ -45,7 +46,7 @@ class QcwyApp(threading.Thread):
         self.cli = Cli(undetected=True,
                        images_disabled=True,
                        headless=False,
-                       unpacked_extensions=['./tmp/blockres-demo'])
+                       unpacked_extensions=[f'{os.path.abspath(__file__)}/tmp/blockres-demo'])
 
     def init_db(self):
         create(sql='create table if not exists qcwy_queue(id integer primary key autoincrement, uid text not null unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)',
