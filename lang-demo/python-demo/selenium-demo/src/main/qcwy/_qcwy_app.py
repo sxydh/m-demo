@@ -1,5 +1,6 @@
 import json
 import logging
+import socket
 import threading
 import time
 import uuid
@@ -104,6 +105,12 @@ class QcwyApp(threading.Thread):
         t.start()
 
     def extension_server_handler(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            result = s.connect_ex(('127.0.0.1', 8080))
+            if result == 0:
+                logging.warning(f'{threading.get_ident()}: port 8080 is already in use')
+                return
+
         Server(post_handler=self.post_handler).start()
 
     def post_handler(self, handler: MyHTTPRequestHandler):
