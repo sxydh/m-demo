@@ -121,31 +121,31 @@ class QcwyApp(threading.Thread):
         url = path_query_params.get('url')
         if not url or len(url) == 0:
             logging.warning(f'url is empty: {path}')
-            return
-        url = url[0]
-        if 'https://we.51job.com/api/job/search-pc' in url and '&function=' in url:
-            parse_url = urlparse(url)
-            url_query_params = parse_qs(parse_url.query)
-            content_length = int(handler.headers['Content-Length'])
-            raw = handler.rfile.read(content_length).decode('utf-8')
-            try:
-                json.loads(raw)
-            except JSONDecodeError as _:
-                return
+        else:
+            url = url[0]
+            if 'https://we.51job.com/api/job/search-pc' in url and '&function=' in url:
+                parse_url = urlparse(url)
+                url_query_params = parse_qs(parse_url.query)
+                content_length = int(handler.headers['Content-Length'])
+                raw = handler.rfile.read(content_length).decode('utf-8')
+                try:
+                    json.loads(raw)
+                except JSONDecodeError as _:
+                    return
 
-            job_area = url_query_params.get('jobArea')[0]
-            fun_type = url_query_params.get('function')[0]
-            work_year = url_query_params.get('workYear')[0]
-            degree = url_query_params.get('degree')[0]
-            company_size = url_query_params.get('companySize')[0]
-            page_num = url_query_params.get('pageNum')[0]
-            url = self.build_url(job_area, fun_type, work_year, degree, company_size)
-            try:
-                save(sql='insert into qcwy_job(uid, queue_uid, raw) select ?, t.uid, ? from qcwy_queue t where t.uid = ?',
-                     params=[f'{url}&pageNum={page_num}', raw, url],
-                     f=self.db_file)
-            except IntegrityError as _:
-                logging.warning(f'job uid already exists: {url}')
+                job_area = url_query_params.get('jobArea')[0]
+                fun_type = url_query_params.get('function')[0]
+                work_year = url_query_params.get('workYear')[0]
+                degree = url_query_params.get('degree')[0]
+                company_size = url_query_params.get('companySize')[0]
+                page_num = url_query_params.get('pageNum')[0]
+                url = self.build_url(job_area, fun_type, work_year, degree, company_size)
+                try:
+                    save(sql='insert into qcwy_job(uid, queue_uid, raw) select ?, t.uid, ? from qcwy_queue t where t.uid = ?',
+                         params=[f'{url}&pageNum={page_num}', raw, url],
+                         f=self.db_file)
+                except IntegrityError as _:
+                    logging.warning(f'job uid already exists: {url}')
 
         handler.send_response(200)
         handler.end_headers()
