@@ -4,3 +4,4 @@ s.onload = function () {
     this.remove();
 };
 (document.head || document.documentElement).appendChild(s);
+console.log('have injected "injected.js"', new Date().toLocaleTimeString());

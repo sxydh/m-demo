@@ -1,31 +1,36 @@
-// https://stackoverflow.com/questions/8939467/chrome-extension-to-read-http-response
 (function () {
-    var XHR = XMLHttpRequest.prototype;
+    console.log('ready to override XMLHttpRequest', new Date().toLocaleTimeString());
 
-    var open = XHR.open;
-    var send = XHR.send;
-    var setRequestHeader = XHR.setRequestHeader;
+    const originalXMLHttpRequest = window.XMLHttpRequest;
 
-    XHR.open = function (method, url) {
-        this._method = method;
-        this._url = url;
-        this._requestHeaders = {};
-        return open.apply(this, arguments);
-    };
+    function newXMLHttpRequest() {
+        const xhr = new originalXMLHttpRequest();
 
-    XHR.setRequestHeader = function (header, value) {
-        this._requestHeaders[header] = value;
-        return setRequestHeader.apply(this, arguments);
-    };
+        const originalOpen = xhr.open;
+        xhr.open = function (method, url) {
+            return originalOpen.apply(xhr, arguments);
+        };
 
-    XHR.send = function (body) {
-        console.log(`url = ${this._url}`);
-        console.log(`body = ${body}`);
-        this.addEventListener('load', function () {
-            if (this.responseType != 'blob' && this.responseText) {
-                console.log(`response = ${this.responseText}`);
-            }
-        });
-        return send.apply(this, arguments);
-    };
+        const originalSend = xhr.send;
+        xhr.send = function (body) {
+            xhr.addEventListener('load', function () {
+                if (xhr.responseType != 'blob') {
+                    fetch('http://localhost:8080',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                url: xhr.responseURL,
+                                response: xhr.response
+                            })
+                        });
+                }
+            });
+            return originalSend.apply(xhr, arguments);
+        };
+        return xhr;
+    }
+    
+    window.XMLHttpRequest = newXMLHttpRequest;
+
+    console.log('finish to override XMLHttpRequest', new Date().toLocaleTimeString());
 })();
