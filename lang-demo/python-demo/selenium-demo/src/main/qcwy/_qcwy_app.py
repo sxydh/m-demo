@@ -5,7 +5,7 @@ import time
 import uuid
 
 from bs4 import BeautifulSoup
-from m_pyutil.mhttp import Server
+from m_pyutil.mhttp import Server, MyHTTPRequestHandler
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
@@ -111,7 +111,15 @@ class QcwyApp(threading.Thread):
         t.start()
 
     def init_server_handler(self):
-        Server().start()
+        def post_handler(handler: MyHTTPRequestHandler):
+            content_length = int(handler.headers['Content-Length'])
+            post_data = handler.rfile.read(content_length)
+            post_data = json.loads(post_data)
+            print(post_data)
+            handler.send_response(200)
+            handler.end_headers()
+
+        Server(post_handler=post_handler).start()
 
     def run(self):
         while self.run_flag:
