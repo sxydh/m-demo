@@ -20,7 +20,8 @@ class Cli:
                  headless=True,
                  images_disabled=True,
                  arguments=None,
-                 extensions=None):
+                 extensions=None,
+                 unpacked_extensions: list = None):
         options = Options()
         if arguments is not None:
             for arg in arguments:
@@ -28,6 +29,9 @@ class Cli:
         if extensions is not None:
             for ext in extensions:
                 options.add_extension(ext)
+        if unpacked_extensions:
+            for ext in unpacked_extensions:
+                options.add_argument(f'--load-extension={ext}')
         if undetected:
             if proxy:
                 options.add_argument(f'--proxy-server={proxy}')
