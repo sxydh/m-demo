@@ -15,18 +15,17 @@
         xhr.send = function (body) {
             xhr.addEventListener('load', function () {
                 if (xhr.responseType != 'blob') {
-                    try {
-                        fetch('http://localhost:8080',
-                            {
-                                method: 'POST',
-                                body: JSON.stringify({
-                                    url: xhr.responseURL,
-                                    response: xhr.response
-                                })
-                            });
-                    } catch (e) {
+                    fetch('http://localhost:8080',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                url: xhr.responseURL,
+                                response: xhr.response
+                            })
+                        }
+                    ).catch(e => {
                         // TODO NOTHING
-                    }
+                    });
                 }
             });
             return originalSend.apply(xhr, arguments);
