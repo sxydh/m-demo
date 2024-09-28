@@ -44,7 +44,8 @@ class QcwyApp(threading.Thread):
     def init_cli(self):
         self.cli = Cli(undetected=True,
                        images_disabled=True,
-                       headless=False)
+                       headless=False,
+                       unpacked_extensions=['./tmp/blockres-demo'])
 
     def init_db(self):
         create(sql='create table if not exists qcwy_queue(id integer primary key autoincrement, uid text not null unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)',
@@ -177,6 +178,6 @@ class QcwyApp(threading.Thread):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)
-    for _ in range(5):
+    for _ in range(1):
         time.sleep(2)
         QcwyApp().start()
