@@ -187,6 +187,7 @@ class QcwyApp(threading.Thread):
                     if retry > 20:
                         self.run_flag = False
                         break
+                    retry = 0
                     continue
 
                 if page < pages:
