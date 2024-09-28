@@ -83,7 +83,7 @@
                         pip install --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple twine
                             安装 twine 软件，用于上传分发文件。
                             
-                        rmdir dist /s /q
+                        rmdir build dist m_pyutil.egg-info /s /q
                         python setup.py sdist bdist_wheel
                             sdist ：源代码分发（ Source Distribution ），创建一个包含项目源代码的压缩包。
                             bdist_wheel ：二进制分发（ Binary Distribution Wheel ），创建一个 whl 二进制包文件，可以被快速安装。
