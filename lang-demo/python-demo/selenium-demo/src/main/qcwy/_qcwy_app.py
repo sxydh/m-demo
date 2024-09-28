@@ -88,7 +88,7 @@ class QcwyApp(threading.Thread):
                                      params=[url, job_area, fun_type[1], work_year[1], degree[1], company_size[1]],
                                      f=self.db_file)
                             except IntegrityError as _:
-                                logging.warning(f'queue uid already exists: {url}')
+                                pass
                             time.sleep(1)
 
     def build_url(self, job_area: str, fun_type: str, work_year: str, degree: str, company_size: str) -> str:
