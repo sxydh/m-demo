@@ -13,6 +13,7 @@ from src.main.util.common import get_sqlite_connection, read_rows, try_save_sqli
 
 
 class JobItem:
+    id = None
     uid = None
     name = None
     salary = None
