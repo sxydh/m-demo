@@ -52,7 +52,7 @@ class QcwyApp(threading.Thread):
     def init_db(self):
         create(sql='create table if not exists qcwy_queue(id integer primary key autoincrement, uid text not null unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)',
                f=self.db_file)
-        create(sql='create table if not exists qcwy_job(id integer primary key autoincrement, uid text not null unique, raw text, remark text)',
+        create(sql='create table if not exists qcwy_job(id integer primary key autoincrement, uid text not null unique, queue_id text, raw text, remark text)',
                f=self.db_file)
 
     def init_console_handler(self):
@@ -127,9 +127,10 @@ class QcwyApp(threading.Thread):
             work_year = url_query_params.get('workYear')[0]
             degree = url_query_params.get('degree')[0]
             company_size = url_query_params.get('companySize')[0]
+            page_num = url_query_params.get('pageNum')[0]
             url = self.build_url(job_area, fun_type, work_year, degree, company_size)
-            save(sql='insert into qcwy_job(uid, raw) select t.uid, ? from qcwy_queue t where t.uid = ?',
-                 params=[raw, url],
+            save(sql='insert into qcwy_job(uid, queue_id, raw) select ?, t.uid, ? from qcwy_queue t where t.uid = ?',
+                 params=[f'{url}&pageNum={page_num}', raw, url],
                  f=self.db_file)
 
         handler.send_response(200)
