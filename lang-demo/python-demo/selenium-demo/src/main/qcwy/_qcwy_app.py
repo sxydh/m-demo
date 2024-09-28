@@ -111,7 +111,10 @@ class QcwyApp(threading.Thread):
         parse_path = urlparse(path)
         path_query_params = parse_qs(parse_path.query)
 
-        url = path_query_params.get('url')[0]
+        url = path_query_params.get('url')
+        if len(url) == 0:
+            logging.warning(f'url is empty: {path}')
+        url = url[0]
         if 'https://we.51job.com/api/job/search-pc' in url and '&function=' in url:
             parse_url = urlparse(url)
             url_query_params = parse_qs(parse_url.query)
