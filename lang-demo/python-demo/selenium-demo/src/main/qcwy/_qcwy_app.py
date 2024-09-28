@@ -168,6 +168,7 @@ class QcwyApp(threading.Thread):
             time.sleep(1)
             self.cli.get(url)
             page = 1
+            retry = 0
             while True:
                 items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
                 pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
@@ -182,6 +183,10 @@ class QcwyApp(threading.Thread):
                 if len(items) == 0:
                     self.cli.get(url)
                     page = 1
+                    retry += 1
+                    if retry > 20:
+                        self.run_flag = False
+                        break
                     continue
 
                 if page < pages:
