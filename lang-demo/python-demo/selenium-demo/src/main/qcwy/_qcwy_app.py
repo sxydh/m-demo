@@ -53,7 +53,7 @@ class QcwyApp(threading.Thread):
     def init_db(self):
         create(sql='create table if not exists qcwy_queue(id integer primary key autoincrement, uid text not null unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)',
                f=self.db_file)
-        create(sql='create table if not exists qcwy_job(id integer primary key autoincrement, uid text not null unique, queue_id text, raw text, remark text)',
+        create(sql='create table if not exists qcwy_job(id integer primary key autoincrement, uid text not null unique, queue_uid text, raw text, remark text)',
                f=self.db_file)
 
     def init_console_handler(self):
@@ -141,7 +141,7 @@ class QcwyApp(threading.Thread):
             page_num = url_query_params.get('pageNum')[0]
             url = self.build_url(job_area, fun_type, work_year, degree, company_size)
             try:
-                save(sql='insert into qcwy_job(uid, queue_id, raw) select ?, t.uid, ? from qcwy_queue t where t.uid = ?',
+                save(sql='insert into qcwy_job(uid, queue_uid, raw) select ?, t.uid, ? from qcwy_queue t where t.uid = ?',
                      params=[f'{url}&pageNum={page_num}', raw, url],
                      f=self.db_file)
             except IntegrityError as _:
