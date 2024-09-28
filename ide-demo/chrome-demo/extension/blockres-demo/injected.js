@@ -15,21 +15,25 @@
         xhr.send = function (body) {
             xhr.addEventListener('load', function () {
                 if (xhr.responseType != 'blob') {
-                    fetch('http://localhost:8080',
-                        {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                url: xhr.responseURL,
-                                response: xhr.response
-                            })
-                        });
+                    try {
+                        fetch('http://localhost:8080',
+                            {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    url: xhr.responseURL,
+                                    response: xhr.response
+                                })
+                            });
+                    } catch (e) {
+                        // TODO NOTHING
+                    }
                 }
             });
             return originalSend.apply(xhr, arguments);
         };
         return xhr;
     }
-    
+
     window.XMLHttpRequest = newXMLHttpRequest;
 
     console.log('finish to override XMLHttpRequest', new Date().toLocaleTimeString());
