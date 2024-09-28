@@ -15,7 +15,7 @@
         xhr.send = function (body) {
             xhr.addEventListener('load', function () {
                 if (xhr.responseType !== 'blob') {
-                    fetch(`http://localhost:8080/?${encodeURI(xhr.responseURL)}`,
+                    fetch(`http://localhost:8080/?url=${encodeURI(xhr.responseURL)}`,
                         {
                             method: 'POST',
                             body: xhr.response
