@@ -5,6 +5,7 @@ import time
 import uuid
 
 from bs4 import BeautifulSoup
+from m_pyutil.mhttp import Server
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
@@ -52,6 +53,12 @@ class QcwyApp(threading.Thread):
         self.init_db_handler()
         self.init_console_handler()
         self.init_queue()
+        self.init_server()
+
+    def init_cli(self):
+        self.cli = Cli(undetected=True,
+                       images_disabled=True,
+                       headless=False)
 
     def init_db(self):
         with get_sqlite_connection(self.db_file) as conn:
@@ -98,10 +105,12 @@ class QcwyApp(threading.Thread):
                                             'insert into qcwy_queue(uid, job_area, fun_type, work_year, degree, company_size) values(?, ?, ?, ?, ?, ?)',
                                             [url, job_area, fun_type[1], work_year[1], degree[1], company_size[1]])
 
-    def init_cli(self):
-        self.cli = Cli(undetected=True,
-                       images_disabled=True,
-                       headless=False)
+    def init_server(self):
+        t = threading.Thread(target=self.init_server_handler())
+        t.start()
+
+    def init_server_handler(self):
+        Server().start()
 
     def run(self):
         while self.run_flag:
