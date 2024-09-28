@@ -92,10 +92,10 @@ class QcwyApp(threading.Thread):
     def build_url(self, job_area: str, fun_type: str, work_year: str, degree: str, company_size: str) -> str:
         url = self.start_url
         url += f'&jobArea={job_area}'
-        url += f'&function={fun_type[0]}'
-        url += f'&workYear={work_year[0]}'
-        url += f'&degree={degree[0]}'
-        url += f'&companySize={company_size[0]}'
+        url += f'&function={fun_type}'
+        url += f'&workYear={work_year}'
+        url += f'&degree={degree}'
+        url += f'&companySize={company_size}'
         return url
 
     def init_extension_server(self):
