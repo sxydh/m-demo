@@ -112,7 +112,7 @@ class QcwyApp(threading.Thread):
 
         url = post_data.get('url')
         if 'search-pc' in url:
-            body = post_data.get('body')
+            body = post_data.get('response')
 
             parse_url = urlparse(url)
             query_params = parse_qs(parse_url.query)
