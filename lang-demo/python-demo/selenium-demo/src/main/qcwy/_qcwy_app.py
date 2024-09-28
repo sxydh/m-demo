@@ -184,10 +184,9 @@ class QcwyApp(threading.Thread):
                     self.cli.get(url)
                     page = 1
                     retry += 1
-                    if retry > 20:
+                    if retry > 30:
                         self.run_flag = False
                         break
-                    retry = 0
                     continue
 
                 if page < pages:
