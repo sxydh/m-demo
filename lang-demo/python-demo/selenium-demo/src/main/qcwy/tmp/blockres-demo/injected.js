@@ -18,12 +18,9 @@
                     fetch(`http://localhost:8080/?${encodeURI(xhr.responseURL)}`,
                         {
                             method: 'POST',
-                            body: JSON.stringify({
-                                url: xhr.responseURL,
-                                response: xhr.response
-                            })
+                            body: xhr.response
                         }
-                    ).catch(e => {
+                    ).catch(() => {
                         // NOTHING
                     });
                 }
