@@ -99,7 +99,7 @@ class QcwyApp(threading.Thread):
         return url
 
     def init_extension_server(self):
-        t = threading.Thread(target=self.extension_server_handler())
+        t = threading.Thread(target=self.extension_server_handler)
         t.start()
 
     def extension_server_handler(self):
