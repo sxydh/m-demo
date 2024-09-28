@@ -3,34 +3,20 @@ import logging
 import threading
 import time
 import uuid
+from sqlite3 import IntegrityError
+from urllib.parse import urlparse, parse_qs
 
-from bs4 import BeautifulSoup
 from m_pyutil.mhttp import Server, MyHTTPRequestHandler
+from m_pyutil.msqlite import create, save, select_one
+from m_pyutil.mtmp import read_rows
 from selenium.webdriver.common.by import By
 
 from src.main.util.cli import Cli
-from src.main.util.common import get_sqlite_connection, read_rows, try_save_sqlite, select_one_sqlite
 
 
 class JobItem:
     id = None
     uid = None
-    name = None
-    salary = None
-    address = None
-    company_name = None
-    company_size = None
-    fun_type = None
-    work_year = None
-    degree = None
-    job_id = None
-    job_time = None
-    job_tag = None
-    job_url = None
-    job_list_url = None
-    job_page = None
-    job_pages = None
-    company_tag = None
     raw = None
     remark = None
 
@@ -51,10 +37,9 @@ class QcwyApp(threading.Thread):
         super().__init__(group, target, name, args, kwargs, daemon=daemon)
         self.init_cli()
         self.init_db()
-        self.init_db_handler()
         self.init_console_handler()
         self.init_queue()
-        self.init_server()
+        self.init_extension_server()
 
     def init_cli(self):
         self.cli = Cli(undetected=True,
@@ -62,23 +47,28 @@ class QcwyApp(threading.Thread):
                        headless=False)
 
     def init_db(self):
-        with get_sqlite_connection(self.db_file) as conn:
-            conn.execute('create table if not exists qcwy_queue(id integer primary key autoincrement, uid text unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)')
-            conn.execute('create table if not exists qcwy_job(id integer primary key autoincrement, uid text, name text, salary text, address text, company_name text, company_size text, fun_type text, work_year text, degree text, job_id text, job_time text, job_tag text, job_url text, job_list_url text, job_page text, job_pages text, company_tag text, raw text, remark text)')
-
-    def init_db_handler(self):
-        t = threading.Thread(target=self.db_handler)
-        t.start()
+        create(sql='create table if not exists qcwy_queue(id integer primary key autoincrement, uid text not null unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)',
+               f=self.db_file)
+        create(sql='create table if not exists qcwy_job(id integer primary key autoincrement, uid text not null unique, raw text, remark text)',
+               f=self.db_file)
 
     def init_console_handler(self):
         t = threading.Thread(target=self.console_handler)
         t.start()
 
+    def console_handler(self):
+        while True:
+            cmd = input('Please input >>> ')
+            if cmd == 'stop':
+                logging.warning(f'>>> Ready to stop {threading.get_ident()}')
+                self.run_flag = False
+                break
+
     def init_queue(self):
-        t = threading.Thread(target=self.init_queue_handler)
+        t = threading.Thread(target=self.queue_handler)
         t.start()
 
-    def init_queue_handler(self):
+    def queue_handler(self):
         self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
         for job_area in self.job_areas:
             for fun_type in self.fun_types:
@@ -88,57 +78,70 @@ class QcwyApp(threading.Thread):
                             if not self.run_flag:
                                 return
 
-                            url = self.start_url
-                            url += f'&jobArea={job_area}'
-                            url += f'&function={fun_type[0]}'
-                            url += f'&workYear={work_year[0]}'
-                            url += f'&degree={degree[0]}'
-                            url += f'&companySize={company_size[0]}'
-
+                            url = self.build_url(job_area, fun_type[0], work_year[0], degree[0], company_size[0])
+                            try:
+                                save(sql='insert into qcwy_queue(uid, job_area, fun_type, work_year, degree, company_size) values(?, ?, ?, ?, ?, ?)',
+                                     params=[url, job_area, fun_type[1], work_year[1], degree[1], company_size[1]],
+                                     f=self.db_file)
+                            except IntegrityError as _:
+                                logging.warning(f'queue uid already exists: {url}')
                             time.sleep(1)
 
-                            exists = select_one_sqlite(self.db_file,
-                                                       'select 1 from qcwy_queue where uid = ?',
-                                                       [url])
-                            if exists:
-                                continue
-                            try_save_sqlite(self.db_file,
-                                            'insert into qcwy_queue(uid, job_area, fun_type, work_year, degree, company_size) values(?, ?, ?, ?, ?, ?)',
-                                            [url, job_area, fun_type[1], work_year[1], degree[1], company_size[1]])
+    def build_url(self, job_area: str, fun_type: str, work_year: str, degree: str, company_size: str) -> str:
+        url = self.start_url
+        url += f'&jobArea={job_area}'
+        url += f'&function={fun_type[0]}'
+        url += f'&workYear={work_year[0]}'
+        url += f'&degree={degree[0]}'
+        url += f'&companySize={company_size[0]}'
+        return url
 
-    def init_server(self):
-        t = threading.Thread(target=self.init_server_handler())
+    def init_extension_server(self):
+        t = threading.Thread(target=self.extension_server_handler())
         t.start()
 
-    def init_server_handler(self):
-        def post_handler(handler: MyHTTPRequestHandler):
-            content_length = int(handler.headers['Content-Length'])
-            post_data = handler.rfile.read(content_length)
-            post_data = json.loads(post_data)
-            print(post_data)
-            handler.send_response(200)
-            handler.end_headers()
+    def extension_server_handler(self):
+        Server(post_handler=self.post_handler).start()
 
-        Server(post_handler=post_handler).start()
+    def post_handler(self, handler: MyHTTPRequestHandler):
+        content_length = int(handler.headers['Content-Length'])
+        post_data = handler.rfile.read(content_length)
+        post_data = json.loads(post_data)
+
+        url = post_data.get('url')
+        if 'search-pc' in url:
+            body = post_data.get('body')
+
+            parse_url = urlparse(url)
+            query_params = parse_qs(parse_url.query)
+            job_area = query_params.get('jobArea')[0]
+            fun_type = query_params.get('function')[0]
+            work_year = query_params.get('workYear')[0]
+            degree = query_params.get('degree')[0]
+            company_size = query_params.get('companySize')[0]
+            url = self.build_url(job_area, fun_type, work_year, degree, company_size)
+
+            save(sql='insert into qcwy_job(uid, raw) select t.uid, ? from qcwy_queue t where t.uid = ?',
+                 params=[body, url],
+                 f=self.db_file)
+
+        handler.send_response(200)
+        handler.end_headers()
 
     def run(self):
         while self.run_flag:
             uid_owner = str(uuid.uuid4())
-            updated = try_save_sqlite(self.db_file,
-                                      'update qcwy_queue set uid_owner = ? where id = (select t2.id from qcwy_queue t2 where t2.uid_owner is null limit 1)',
-                                      [uid_owner])
+            updated = save(sql='update qcwy_queue set uid_owner = ? where id = (select t.id from qcwy_queue t where t.uid_owner is null limit 1)',
+                           params=[uid_owner],
+                           f=self.db_file)
             if updated == 0:
                 time.sleep(1)
                 continue
 
-            popped = select_one_sqlite(self.db_file,
-                                       'select uid, job_area, fun_type, work_year, degree, company_size from qcwy_queue where uid_owner = ?',
-                                       [uid_owner])
+            popped = select_one(sql='select uid from qcwy_queue where uid_owner = ?',
+                                params=[uid_owner],
+                                f=self.db_file)
             url = popped[0]
-            fun_type = popped[2]
-            work_year = popped[3]
-            degree = popped[4]
-            company_size = popped[5]
 
             self.cli.get(url)
             page = 1
@@ -147,22 +150,17 @@ class QcwyApp(threading.Thread):
                 pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
                 pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
                 next_btn = self.cli.find_element_d(by=By.CSS_SELECTOR, value='.pageation .btn-next', timeout=0, count=1, raise_e=False)
+
                 verification = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
                 if verification:
                     self.cli.click_and_move_by_x_offset(verification, 400)
                     continue
+
                 if len(items) == 0:
                     self.cli.get(url)
                     page = 1
                     continue
 
-                self.parse_job_item(fun_type=fun_type,
-                                    work_year=work_year,
-                                    degree=degree,
-                                    company_size=company_size,
-                                    job_list_url=url,
-                                    pages=pages,
-                                    items=items)
                 if page < pages:
                     self.cli.click(next_btn)
                     page += 1
@@ -175,71 +173,6 @@ class QcwyApp(threading.Thread):
 
     def close(self):
         self.cli.quit()
-
-    def parse_job_item(self, *, fun_type, work_year, degree, company_size, job_list_url, pages: int, items: list):
-        for item in items:
-            job_item = JobItem()
-            job_item.fun_type = fun_type
-            job_item.work_year = work_year
-            job_item.degree = degree
-            job_item.company_size = company_size
-            job_item.job_list_url = job_list_url
-            job_item.job_pages = pages
-
-            if 'joblist-item' in item.get_attribute('class'):
-                job_item.raw = item.get_attribute('innerHTML')
-            self.save_job_item(job_item)
-
-    def save_job_item(self, job_item: JobItem):
-        try_save_sqlite(self.db_file,
-                        'insert into qcwy_job(uid, name, salary, address, company_name, company_size, fun_type, work_year, degree, job_id, job_time, job_tag, job_url, job_list_url, job_page, job_pages, company_tag, raw, remark) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                        [str(uuid.uuid4()), job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.company_size, job_item.fun_type, job_item.work_year, job_item.degree, job_item.job_id, job_item.job_time, job_item.job_tag, job_item.job_url, job_item.job_list_url, job_item.job_page, job_item.job_pages, job_item.company_tag, job_item.raw, job_item.remark])
-
-    def parse_text_helper(self, src, selector, is_multi=False, sep='###'):
-        elements = src.select(selector)
-        if len(elements) == 0:
-            return None
-        if not is_multi:
-            return elements[0].text.strip()
-        return sep.join([e.text.strip() for e in elements])
-
-    def db_handler(self):
-        while self.run_flag:
-            row = select_one_sqlite(self.db_file,
-                                    'select uid, raw from qcwy_job where raw is not null and name is null limit 1')
-            if not row:
-                time.sleep(1)
-                continue
-
-            uid = row[0]
-            raw = row[1]
-
-            job_item = JobItem()
-            job_item.uid = uid
-            soup = BeautifulSoup(raw, 'html.parser')
-            sensors_data = soup.select_one('.sensors_exposure')['sensorsdata']
-            sensors_data = json.loads(sensors_data)
-            job_item.name = self.parse_text_helper(soup, '.jname')
-            job_item.salary = self.parse_text_helper(soup, '.sal')
-            job_item.address = sensors_data.get('jobArea')
-            job_item.company_name = self.parse_text_helper(soup, '.cname')
-            job_item.job_id = sensors_data.get('jobId')
-            job_item.job_time = sensors_data.get('jobTime')
-            job_item.job_tag = self.parse_text_helper(soup, '.tags .tag', is_multi=True)
-            job_item.job_page = sensors_data.get('pageNum')
-            job_item.company_tag = self.parse_text_helper(soup, 'span.dc', is_multi=True)
-
-            try_save_sqlite(self.db_file,
-                            'update qcwy_job set name=?, salary=?, address=?, company_name=?, job_id=?, job_time=?, job_tag=?, job_page=?, company_tag=? where uid=?',
-                            [job_item.name, job_item.salary, job_item.address, job_item.company_name, job_item.job_id, job_item.job_time, job_item.job_tag, job_item.job_page, job_item.company_tag, job_item.uid])
-
-    def console_handler(self):
-        while True:
-            cmd = input('Please input >>> ')
-            if cmd == 'stop':
-                logging.warning(f'>>> Ready to stop {threading.get_ident()}')
-                self.run_flag = False
-                break
 
 
 if __name__ == '__main__':
