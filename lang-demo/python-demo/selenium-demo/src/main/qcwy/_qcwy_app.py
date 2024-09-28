@@ -3,6 +3,7 @@ import logging
 import threading
 import time
 import uuid
+from json import JSONDecodeError
 from os.path import abspath, dirname
 from sqlite3 import IntegrityError
 from urllib.parse import urlparse, parse_qs
@@ -106,25 +107,29 @@ class QcwyApp(threading.Thread):
         Server(post_handler=self.post_handler).start()
 
     def post_handler(self, handler: MyHTTPRequestHandler):
-        content_length = int(handler.headers['Content-Length'])
-        post_data = handler.rfile.read(content_length)
-        post_data = json.loads(post_data)
+        path = handler.path
+        parse_path = urlparse(path)
+        path_query_params = parse_qs(parse_path.query)
 
-        url = post_data.get('url')
-        if 'search-pc' in url:
-            body = post_data.get('response')
-
+        url = path_query_params.get('url')[0]
+        if 'https://we.51job.com/api/job/search-pc' in url and '&function=' in url:
             parse_url = urlparse(url)
-            query_params = parse_qs(parse_url.query)
-            job_area = query_params.get('jobArea')[0]
-            fun_type = query_params.get('function')[0]
-            work_year = query_params.get('workYear')[0]
-            degree = query_params.get('degree')[0]
-            company_size = query_params.get('companySize')[0]
-            url = self.build_url(job_area, fun_type, work_year, degree, company_size)
+            url_query_params = parse_qs(parse_url.query)
+            content_length = int(handler.headers['Content-Length'])
+            raw = handler.rfile.read(content_length).decode('utf-8')
+            try:
+                json.loads(raw)
+            except JSONDecodeError as _:
+                return
 
+            job_area = url_query_params.get('jobArea')[0]
+            fun_type = url_query_params.get('function')[0]
+            work_year = url_query_params.get('workYear')[0]
+            degree = url_query_params.get('degree')[0]
+            company_size = url_query_params.get('companySize')[0]
+            url = self.build_url(job_area, fun_type, work_year, degree, company_size)
             save(sql='insert into qcwy_job(uid, raw) select t.uid, ? from qcwy_queue t where t.uid = ?',
-                 params=[body, url],
+                 params=[raw, url],
                  f=self.db_file)
 
         handler.send_response(200)
