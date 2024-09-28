@@ -185,6 +185,7 @@ class QcwyApp(threading.Thread):
                     continue
 
                 if page < pages:
+                    time.sleep(1)
                     self.cli.click(next_btn)
                     page += 1
                     continue
