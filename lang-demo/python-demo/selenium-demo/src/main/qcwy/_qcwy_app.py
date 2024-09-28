@@ -158,6 +158,7 @@ class QcwyApp(threading.Thread):
                                 f=self.db_file)
             url = popped[0]
 
+            time.sleep(1)
             self.cli.get(url)
             page = 1
             while True:
