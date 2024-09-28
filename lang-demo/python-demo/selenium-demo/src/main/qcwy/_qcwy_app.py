@@ -151,7 +151,11 @@ class QcwyApp(threading.Thread):
         handler.end_headers()
 
     def run(self):
-        while self.run_flag:
+        while True:
+            if not self.run_flag:
+                self.close()
+                return
+
             uid_owner = str(uuid.uuid4())
             updated = save(sql='update qcwy_queue set uid_owner = ? where id = (select t.id from qcwy_queue t where t.uid_owner is null limit 1)',
                            params=[uid_owner],
@@ -195,10 +199,6 @@ class QcwyApp(threading.Thread):
                     page += 1
                     continue
                 break
-
-            if not self.run_flag:
-                self.close()
-                return
 
     def close(self):
         self.cli.quit()
