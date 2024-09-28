@@ -112,7 +112,7 @@ class QcwyApp(threading.Thread):
         path_query_params = parse_qs(parse_path.query)
 
         url = path_query_params.get('url')
-        if len(url) == 0:
+        if not url or len(url) == 0:
             logging.warning(f'url is empty: {path}')
             return
         url = url[0]
