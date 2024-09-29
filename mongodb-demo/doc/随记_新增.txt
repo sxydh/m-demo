@@ -1,0 +1,6 @@
+开始
+    use db_demo
+        切换数据库为 db_demo ，如果不存在则创建。
+        
+    db.user.insertOne({name: "John", age: 30, city: "New York"});
+        新增集合 user 的文档，如果集合 user 不存在则创建。
