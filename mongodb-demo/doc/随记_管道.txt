@@ -1,0 +1,51 @@
+概述
+    聚合管道允许以流水线的方式处理数据
+    聚合管道可以由多个阶段组成，例如匹配阶段、分组阶段、投影阶段、排序阶段等。
+开始
+    use qcwy
+        切换数据库为 qcwy ，如果不存在则创建。
+        
+    db.qcwy_job.aggregate([
+        {
+            $match: {
+                "raw.resultbody.job.totalCount": {$gt: 0}
+            }
+        }
+    ]);
+        查询集合 qcwy_job 的文档，匹配条件为 raw.resultbody.job.totalCount 大于 0 。
+
+    db.qcwy_job.aggregate([
+        {
+            $group: {
+                _id: "$raw.resultbody.job.totalCount",
+                count: {$sum: 1}
+            }
+        }
+    ]);
+        查询集合 qcwy_job 的文档，聚合字段为 raw.resultbody.job.totalCount ，聚合函数为 count() 计数。
+        
+    db.qcwy_job.aggregate([
+        {
+            $project: {
+                "request_id": "$raw.resultbody.job.requestId",
+                "totoal_count": "$raw.resultbody.job.totalCount"
+            }
+        }
+    ]);
+        查询集合 qcwy_job 的文档，投影方式为 request_id = raw.resultbody.job.requestId ， totoal_count = raw.resultbody.job.totalCount 。
+        
+    db.qcwy_job.aggregate([
+        {
+            $sort: {
+                "raw.resultbody.job.totalCount": 1
+            }
+        }
+    ]);
+        查询集合 qcwy_job 的文档，排序字段为 raw.resultbody.job.totalCount 升序。
+        
+    db.qcwy_job.aggregate([
+        {
+            $unwind: "$raw.resultbody.job.items"
+        }
+    ]);
+        查询集合 qcwy_job 的文档，解构 raw.resultbody.job.items ，即将数组 raw.resultbody.job.items 中的每个元素各自构成一个单独的文档。
