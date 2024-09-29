@@ -49,3 +49,33 @@
         }
     ]);
         查询集合 qcwy_job 的文档，解构 raw.resultbody.job.items ，即将数组 raw.resultbody.job.items 中的每个元素各自构成一个单独的文档。
+        
+    db.qcwy_job.aggregate([
+        {
+            $project: {
+                "item": "$raw.resultbody.job.items"
+            }
+        },
+        {
+            $unwind: "$item"
+        },
+        {
+            $project: {
+                "name": "$item.jobName",
+                "area": "$item.jobAreaString",
+                "salary": "$item.provideSalaryString",
+                "work_year": "$item.workYearString",
+                "degree": "$item.degreeString"
+            }
+        },
+        {
+            $sort: {
+                "salary": -1
+            }
+        }
+    ]);
+        查询集合 qcwy_job 的文档
+        提取每个文档内的 items 数组
+        解构数组 items 得到平铺后的文档
+        投影 item 中的 name, area, work_year, degree 属性。
+        降序排列 salary
