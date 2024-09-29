@@ -1,0 +1,13 @@
+开始
+    use db_demo
+        切换数据库为 db_demo ，如果不存在则创建。
+        
+    db.user.deleteOne({name: "John"});
+        删除集合 user 的文档，条件为 name = "John" 。
+        
+    db.user.drop();
+        删除集合 user
+        
+    db.dropDatabase();
+        删除数据库 db_demo
+        
