@@ -1,0 +1,35 @@
+开始
+    use db_demo
+        切换数据库为 db_demo ，如果不存在则创建。
+        
+    db.user.find({});
+        查询集合 user 的所有文档
+        
+    db.user.find({age: {$gte: 18}});
+        查询集合 user 的文档，条件为 age >= 18 。
+        
+    db.user.find({}, {name: 1, _id: 0});
+        查询集合 user 的文档，返回字段 name ，不返回字段 _id 。
+        
+    db.user.find({}).sort({age: -1});
+        查询集合 user 的文档，排序字段为 age 降序。
+        
+    db.user.find({}).limit(5);
+        查询集合 user 的文档，结果数量限制 5 。
+        
+    db.user.find({}).skip(5).limit(5);
+        查询集合 user 的文档，结果偏移量 5 。
+        
+    db.user.find({name: /John/i});
+        查询集合 user 的文档，条件为 name 包含 John ，忽略大小写。
+        
+    db.user.aggregate([
+        {$match: {age: {$gte: 18}}},
+        {$group: {_id: {city: "$city"}, count_18: {$sum: 1}, sum_18: {$sum: "$age"}}},
+        {$sort: {count_18: -1, sum_1: 1}}
+    ]);
+        聚合集合 user 的文档
+        聚合条件为 age >= 18
+        聚合字段为 city
+        聚合函数为 count() 计数， sum() 累加。
+        排序字段为 count_18 降序， sum_18 升序。
