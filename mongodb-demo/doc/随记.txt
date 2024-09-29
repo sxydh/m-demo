@@ -1,10 +1,10 @@
 概念
     Database ：数据库。
-    Collection ：数据库表 / 集合。
-    Field ：字段 / 域。
+    Collection ：集合（即数据库表）。
+    Field ：域（即字段）。
     Primary Key ：主键， MongoDB 默认将 _id 字段设置为主键。
     Index ：索引。
-    Document ：数据记录行 / 文档。
+    Document ：文档（即数据表的行）。
 组件
     MongoDB Shard Server ：即 mongos ，用于分片集群中的查询路由。
         mongos 所承担的主要功能有：查询路由、分片集群的全局视图、错误处理。
@@ -14,6 +14,12 @@
         在生产环境通常设置多个 Config Server ，防止单点数据丢失。
     Shard Server ：存储实际的数据块。
         在生产环境 Shard Server 可由多个服务器节点组成，形成一个副本集（ Replica Set ），防止单点故障。
+开始
+    查询
+        use db_demo
+            切换数据库为 db_demo ，如果不存在则创建。
+        db.user.find({});
+            查询 user 
 环境
     MongoDB 5.0.23
         单机
