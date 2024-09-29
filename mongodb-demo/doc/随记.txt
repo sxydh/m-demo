@@ -14,6 +14,8 @@
         在生产环境通常设置多个 Config Server ，防止单点数据丢失。
     Shard Server ：存储实际的数据块。
         在生产环境 Shard Server 可由多个服务器节点组成，形成一个副本集（ Replica Set ），防止单点故障。
+其它
+    MongoDB 的语法和 JavaScript 语法基本一致
 环境
     MongoDB 5.0.23
         单机
