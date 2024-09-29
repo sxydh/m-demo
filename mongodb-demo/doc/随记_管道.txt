@@ -63,7 +63,13 @@
             $project: {
                 "name": "$item.jobName",
                 "area": "$item.jobAreaString",
-                "salary": "$item.provideSalaryString",
+                "salary": {
+                    $replaceAll: {
+                        input: "$item.provideSalaryString",
+                        find: "千",
+                        replacement: "000"
+                    }
+                },
                 "work_year": "$item.workYearString",
                 "degree": "$item.degreeString"
             }
