@@ -1,0 +1,9 @@
+开始
+    use db_demo
+        切换数据库为 db_demo ，如果不存在则创建。
+        
+    db.user.updateOne(
+        {name: "John"},
+        {$set: {age: 30}}
+    )
+        更新集合 user 的文档，将 name = "John" 的文档的 age 设置为 30 。
