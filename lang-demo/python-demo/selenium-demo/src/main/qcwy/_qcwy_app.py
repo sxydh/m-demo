@@ -40,6 +40,7 @@ class QcwyApp(threading.Thread):
 
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, *, daemon=None):
         super().__init__(group, target, name, args, kwargs, daemon=daemon)
+        self.name = str(uuid.uuid4())
         self.init_cli()
         self.init_db()
         self.init_console_handler()
@@ -49,11 +50,13 @@ class QcwyApp(threading.Thread):
     def init_cli(self):
         dynamic_ip = DynamicIP(api_key=os.environ.get('JULIANGIP_API_KEY'))
         ips = dynamic_ip.get_ips(trade_no=os.environ.get('JULIANGIP_TRADE_NO'))
+        proxy = f'http://{ips[0]}'
+        logging.warning(f'{self.name} Proxy: {proxy}')
         self.cli = Cli(undetected=True,
                        images_disabled=True,
                        headless=False,
                        unpacked_extensions=[f'{dirname(abspath(__file__))}/tmp/blockres-demo'],
-                       proxy=ips[0])
+                       proxy=proxy)
 
     def init_db(self):
         create(sql='create table if not exists qcwy_queue(id integer primary key autoincrement, uid text not null unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)',
