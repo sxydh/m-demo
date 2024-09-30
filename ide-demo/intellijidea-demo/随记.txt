@@ -11,6 +11,8 @@ File
                         AutoCloseable used without 'try'-with-resources
                 Python
                     Method is not declared static
+                Security
+                    Link with unencrypted protocol
                 SQL
                     SQL dialect detection
                     No data sources configured
