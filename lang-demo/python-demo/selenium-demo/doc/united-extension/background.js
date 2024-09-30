@@ -1,5 +1,9 @@
 setInterval(() => {
-    fetch('http://localhost:8080/proxy_config')
+    fetch(
+        `http://localhost:8080/?url=proxy_config`,
+        {
+            method: 'POST'
+        })
         .then(res => {
             if (!res.ok) {
                 console.debug(res.url, res.status, res.statusText);
