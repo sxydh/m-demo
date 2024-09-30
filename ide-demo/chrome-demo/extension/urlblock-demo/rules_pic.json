@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "https://*.douyinpic.com/*",
+            "resourceTypes": [
+                "image",
+                "media",
+                "object",
+                "main_frame",
+                "sub_frame",
+                "stylesheet",
+                "script",
+                "font",
+                "xmlhttprequest",
+                "ping",
+                "websocket",
+                "other"
+            ]
+        }
+    }
+]
