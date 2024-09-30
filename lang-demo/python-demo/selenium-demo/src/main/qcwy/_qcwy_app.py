@@ -47,15 +47,10 @@ class QcwyApp(threading.Thread):
         self.init_extension_server()
 
     def init_cli(self):
-        dynamic_ip = DynamicIP(api_key=os.environ.get('JULIANGIP_API_KEY'))
-        ips = dynamic_ip.get_ips(trade_no=os.environ.get('JULIANGIP_TRADE_NO'))
-        proxy = f'http://{ips[0]}'
-        logging.warning(f'{self.name} with proxy: {proxy}')
         self.cli = Cli(undetected=True,
                        images_disabled=True,
                        headless=False,
-                       unpacked_extensions=[f'{dirname(abspath(__file__))}/tmp/blockres-demo'],
-                       proxy=proxy)
+                       unpacked_extensions=[f'{dirname(abspath(__file__))}/tmp/blockres-demo'])
 
     def init_db(self):
         create(sql='create table if not exists qcwy_queue(id integer primary key autoincrement, uid text not null unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)',
@@ -213,6 +208,6 @@ class QcwyApp(threading.Thread):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)
-    for _ in range(5):
+    for _ in range(1):
         time.sleep(2)
         QcwyApp().start()
