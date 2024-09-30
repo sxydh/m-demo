@@ -133,8 +133,8 @@ class QcwyApp(threading.Thread):
 
         handler.send_response(200)
         handler.send_header('Content-type', 'application/json')
-        handler.wfile.write(json.dumps(res_body).encode('utf-8'))
         handler.end_headers()
+        handler.wfile.write(json.dumps(res_body).encode('utf-8'))
 
     def post_handle_proxy_config(self) -> dict:
         dynamic_ip = DynamicIP(api_key=os.environ.get('JULIANGIP_API_KEY'))
