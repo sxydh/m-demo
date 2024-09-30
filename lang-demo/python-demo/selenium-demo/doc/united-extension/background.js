@@ -35,6 +35,7 @@ setInterval(() => {
                     },
                     function () { }
                 );
+                console.debug('chrome.proxy.settings.set', config);
             }
         })
         .catch(() => {
