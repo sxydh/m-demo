@@ -1,9 +1,11 @@
 {
-    "manifest_version": 3,
+    "manifest_version": 2,
     "name": "United Extension",
     "version": "1.0",
     "permissions": [
         "proxy",
+        "webRequest",
+        "webRequestAuthProvider",
         "activeTab",
         "scripting"
     ],

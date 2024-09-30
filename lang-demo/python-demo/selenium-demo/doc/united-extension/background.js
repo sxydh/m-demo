@@ -15,6 +15,8 @@ setInterval(() => {
             console.debug('proxy_config', data);
             let host = data.host;
             let port = data.port;
+            let username = data.username;
+            let password = data.password;
             if (host && port) {
                 // https://developer.chrome.com/docs/extensions/reference/api/proxy?hl=zh-cn#description
                 const config = {
@@ -34,6 +36,20 @@ setInterval(() => {
                         scope: 'regular'
                     },
                     function () { }
+                );
+                chrome.webRequest.onAuthRequired.addListener(
+                    function () {
+                        return {
+                            authCredentials: {
+                                username: username,
+                                password: password
+                            }
+                        };
+                    },
+                    {
+                        urls: ["<all_urls>"]
+                    },
+                    ['blocking']
                 );
                 console.debug('chrome.proxy.settings.set', config);
             }
