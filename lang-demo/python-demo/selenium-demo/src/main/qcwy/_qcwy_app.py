@@ -224,7 +224,7 @@ class QcwyApp(threading.Thread):
                     self.cli.get(url)
                     page = 1
                     retry += 1
-                    if retry > 30:
+                    if retry > 60:
                         self.run_flag = False
                         break
                     continue
@@ -242,6 +242,6 @@ class QcwyApp(threading.Thread):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)
-    for idx, _ in enumerate(range(1)):
+    for idx, _ in enumerate(range(5)):
         time.sleep(2)
         QcwyApp(name=f'qcwy_app_{idx}').start()
