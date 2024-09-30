@@ -1,21 +1,19 @@
 import json
 import logging
-import os
 import socket
 import threading
 import time
 import uuid
 from json import JSONDecodeError
-from os.path import abspath, dirname
 from sqlite3 import IntegrityError
 from urllib.parse import urlparse, parse_qs
 
 from m_pyutil.mhttp import Server, MyHTTPRequestHandler
-from m_pyutil.mjuliangip import DynamicIP
 from m_pyutil.msqlite import create, save, select_one
 from m_pyutil.mtmp import read_rows
 from selenium.webdriver.common.by import By
 
+import definitions
 from src.main.util.cli import Cli
 
 
@@ -50,7 +48,7 @@ class QcwyApp(threading.Thread):
         self.cli = Cli(undetected=True,
                        images_disabled=True,
                        headless=False,
-                       unpacked_extensions=[f'{dirname(abspath(__file__))}/tmp/blockres-demo'])
+                       unpacked_extensions=[f'{definitions.ROOT_DIR}/doc/united-extension'])
 
     def init_db(self):
         create(sql='create table if not exists qcwy_queue(id integer primary key autoincrement, uid text not null unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)',
