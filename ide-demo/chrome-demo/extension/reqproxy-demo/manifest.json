@@ -3,8 +3,7 @@
     "name": "Request Proxy Demo",
     "version": "1.0",
     "permissions": [
-        "activeTab",
-        "scripting"
+        "proxy"
     ],
     "action": {
         "default_popup": "helloworld.html",
