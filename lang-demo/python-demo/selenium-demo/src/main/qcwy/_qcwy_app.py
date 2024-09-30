@@ -40,7 +40,6 @@ class QcwyApp(threading.Thread):
 
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, *, daemon=None):
         super().__init__(group, target, name, args, kwargs, daemon=daemon)
-        self.name = str(uuid.uuid4())
         self.init_cli()
         self.init_db()
         self.init_console_handler()
