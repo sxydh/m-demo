@@ -9,6 +9,7 @@ from json import JSONDecodeError
 from sqlite3 import IntegrityError
 from urllib.parse import urlparse, parse_qs
 
+from m_pyutil.mdate import nowt
 from m_pyutil.mhttp import Server, MyHTTPRequestHandler
 from m_pyutil.mjuliangip import DynamicIP
 from m_pyutil.msqlite import create, save, select_one
@@ -140,7 +141,7 @@ class QcwyApp(threading.Thread):
         dynamic_ip = DynamicIP(api_key=os.environ.get('JULIANGIP_API_KEY'))
         ips = dynamic_ip.get_ips(trade_no=os.environ.get('JULIANGIP_TRADE_NO'))
         if len(ips) == 0:
-            logging.warning(f'{self.name}: no ip available')
+            logging.warning(f'{self.name}: no ip available, {nowt()}')
             return {}
         ip = ips[0]
         split = ip.split('@')
