@@ -1,4 +1,39 @@
-chrome.runtime.onInstalled.addListener(() => {
-    // 在插件界面上右键打开控制台查看输出
-    console.log('chrome.runtime.onInstalled.addListener');
-});
+setInterval(() => {
+    fetch('http://localhost:8080/proxy_config')
+        .then(res => {
+            if (!res.ok) {
+                console.debug(res.url, res.status, res.statusText);
+                return Promise.reject();
+            }
+            return res.json();
+        })
+        .then(data => {
+            console.debug('proxy_config', data);
+            let host = data.host;
+            let port = data.port;
+            if (host && port) {
+                // https://developer.chrome.com/docs/extensions/reference/api/proxy?hl=zh-cn#description
+                const config = {
+                    mode: 'fixed_servers',
+                    rules: {
+                        singleProxy: {
+                            scheme: 'http',
+                            host: host,
+                            port: port
+                        },
+                        bypassList: ['localhost']
+                    }
+                };
+                chrome.proxy.settings.set(
+                    {
+                        value: config,
+                        scope: 'regular'
+                    },
+                    function () { }
+                );
+            }
+        })
+        .catch(() => {
+            // NOTHING
+        });
+}, 2000);
