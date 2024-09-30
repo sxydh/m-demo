@@ -1,5 +1,5 @@
 (function () {
-    console.log('ready to override XMLHttpRequest', new Date().toLocaleTimeString());
+    console.debug('ready to override XMLHttpRequest', new Date().toLocaleTimeString());
 
     const originalXMLHttpRequest = window.XMLHttpRequest;
 
@@ -37,5 +37,5 @@
 
     window.XMLHttpRequest = newXMLHttpRequest;
 
-    console.log('finish to override XMLHttpRequest', new Date().toLocaleTimeString());
+    console.debug('finish to override XMLHttpRequest', new Date().toLocaleTimeString());
 })();
