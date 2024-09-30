@@ -30,8 +30,7 @@ class Cli:
             for ext in extensions:
                 options.add_extension(ext)
         if unpacked_extensions:
-            for ext in unpacked_extensions:
-                options.add_argument(f'--load-extension={ext}')
+            options.add_argument(f'--load-extension={",".join(unpacked_extensions)}')
         if undetected:
             if proxy:
                 options.add_argument(f'--proxy-server={proxy}')
