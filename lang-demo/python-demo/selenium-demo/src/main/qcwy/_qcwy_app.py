@@ -143,15 +143,17 @@ class QcwyApp(threading.Thread):
             logging.warning(f'{self.name}: no ip available')
             return {}
         ip = ips[0]
-        split = ip.split(',')
-        host_port = split[0]
+        split = ip.split('@')
+
+        user_pwd = split[0]
+        user_pwd = user_pwd.split(':')
+        user = user_pwd[0]
+        pwd = user_pwd[1]
+
+        host_port = split[1]
         host_port = host_port.split(':')
         host = host_port[0]
         port = int(host_port[1])
-        time_user_pwd = split[1]
-        time_user_pwd = time_user_pwd.split(':')
-        user = time_user_pwd[1]
-        pwd = time_user_pwd[2]
         return {
             'host': host,
             'port': port,
