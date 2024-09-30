@@ -50,7 +50,7 @@ class QcwyApp(threading.Thread):
         dynamic_ip = DynamicIP(api_key=os.environ.get('JULIANGIP_API_KEY'))
         ips = dynamic_ip.get_ips(trade_no=os.environ.get('JULIANGIP_TRADE_NO'))
         proxy = f'http://{ips[0]}'
-        logging.warning(f'{self.name} Proxy: {proxy}')
+        logging.warning(f'{self.name} with proxy: {proxy}')
         self.cli = Cli(undetected=True,
                        images_disabled=True,
                        headless=False,
