@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import socket
 import threading
 import time
@@ -9,6 +10,7 @@ from sqlite3 import IntegrityError
 from urllib.parse import urlparse, parse_qs
 
 from m_pyutil.mhttp import Server, MyHTTPRequestHandler
+from m_pyutil.mjuliangip import DynamicIP
 from m_pyutil.msqlite import create, save, select_one
 from m_pyutil.mtmp import read_rows
 from selenium.webdriver.common.by import By
@@ -64,7 +66,7 @@ class QcwyApp(threading.Thread):
         while True:
             cmd = input('Please input >>> ')
             if cmd == 'stop':
-                logging.warning(f'>>> Ready to stop {threading.get_ident()}')
+                logging.warning(f'>>> Ready to stop {self.name}')
                 self.run_flag = False
                 return
 
@@ -108,7 +110,7 @@ class QcwyApp(threading.Thread):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             result = s.connect_ex(('127.0.0.1', 8080))
             if result == 0:
-                logging.warning(f'{threading.get_ident()}: port 8080 is already in use')
+                logging.warning(f'{self.name}: port 8080 is already in use')
                 return
 
         Server(post_handler=self.post_handler).start()
@@ -118,37 +120,68 @@ class QcwyApp(threading.Thread):
         parse_path = urlparse(path)
         path_query_params = parse_qs(parse_path.query)
 
-        url = path_query_params.get('url')
-        if not url or len(url) == 0:
-            logging.warning(f'url is empty: {path}')
+        res_body = {}
+        param_url = path_query_params.get('url')
+        if not param_url or len(param_url) == 0:
+            logging.warning(f'param url is empty: {path}')
         else:
-            url = url[0]
-            if 'https://we.51job.com/api/job/search-pc' in url and '&function=' in url:
-                parse_url = urlparse(url)
-                url_query_params = parse_qs(parse_url.query)
-                content_length = int(handler.headers['Content-Length'])
-                raw = handler.rfile.read(content_length).decode('utf-8')
-                try:
-                    json.loads(raw)
-                except JSONDecodeError as _:
-                    return
-
-                job_area = url_query_params.get('jobArea')[0]
-                fun_type = url_query_params.get('function')[0]
-                work_year = url_query_params.get('workYear')[0]
-                degree = url_query_params.get('degree')[0]
-                company_size = url_query_params.get('companySize')[0]
-                page_num = url_query_params.get('pageNum')[0]
-                url = self.build_url(job_area, fun_type, work_year, degree, company_size)
-                try:
-                    save(sql='insert into qcwy_job(uid, queue_uid, raw) select ?, t.uid, ? from qcwy_queue t where t.uid = ?',
-                         params=[f'{url}&pageNum={page_num}', raw, url],
-                         f=self.db_file)
-                except IntegrityError as _:
-                    logging.warning(f'job uid already exists: {url}')
+            param_url = param_url[0]
+            if 'proxy_config' in param_url:
+                res_body = self.post_handle_proxy_config()
+            elif 'https://we.51job.com/api/job/search-pc' in param_url and '&function=' in param_url:
+                res_body = self.post_handle_job(param_url, handler)
 
         handler.send_response(200)
+        handler.send_header('Content-type', 'application/json')
+        handler.wfile.write(json.dumps(res_body).encode('utf-8'))
         handler.end_headers()
+
+    def post_handle_proxy_config(self) -> dict:
+        dynamic_ip = DynamicIP(api_key=os.environ.get('JULIANGIP_API_KEY'))
+        ips = dynamic_ip.get_ips(trade_no=os.environ.get('JULIANGIP_TRADE_NO'))
+        if len(ips) == 0:
+            logging.warning(f'{self.name}: no ip available')
+            return {}
+        ip = ips[0]
+        split = ip.split(',')
+        host_port = split[0]
+        host_port = host_port.split(':')
+        host = host_port[0]
+        port = int(host_port[1])
+        time_user_pwd = split[1]
+        time_user_pwd = time_user_pwd.split(':')
+        user = time_user_pwd[1]
+        pwd = time_user_pwd[2]
+        return {
+            'host': host,
+            'port': port,
+            'username': user,
+            'password': pwd}
+
+    def post_handle_job(self, url: str, handler: MyHTTPRequestHandler) -> dict:
+        parse_url = urlparse(url)
+        url_query_params = parse_qs(parse_url.query)
+        content_length = int(handler.headers['Content-Length'])
+        raw = handler.rfile.read(content_length).decode('utf-8')
+        try:
+            json.loads(raw)
+        except JSONDecodeError as _:
+            return {}
+
+        job_area = url_query_params.get('jobArea')[0]
+        fun_type = url_query_params.get('function')[0]
+        work_year = url_query_params.get('workYear')[0]
+        degree = url_query_params.get('degree')[0]
+        company_size = url_query_params.get('companySize')[0]
+        page_num = url_query_params.get('pageNum')[0]
+        url = self.build_url(job_area, fun_type, work_year, degree, company_size)
+        try:
+            save(sql='insert into qcwy_job(uid, queue_uid, raw) select ?, t.uid, ? from qcwy_queue t where t.uid = ?',
+                 params=[f'{url}&pageNum={page_num}', raw, url],
+                 f=self.db_file)
+        except IntegrityError as _:
+            logging.warning(f'job uid already exists: {url}')
+        return {}
 
     def run(self):
         while True:
