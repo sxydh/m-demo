@@ -66,7 +66,7 @@ class QcwyApp(threading.Thread):
             if cmd == 'stop':
                 logging.warning(f'>>> Ready to stop {threading.get_ident()}')
                 self.run_flag = False
-                break
+                return
 
     def init_queue(self):
         t = threading.Thread(target=self.queue_handler)
