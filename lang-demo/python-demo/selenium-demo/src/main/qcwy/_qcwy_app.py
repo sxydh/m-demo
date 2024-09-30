@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import socket
 import threading
 import time
@@ -10,6 +11,7 @@ from sqlite3 import IntegrityError
 from urllib.parse import urlparse, parse_qs
 
 from m_pyutil.mhttp import Server, MyHTTPRequestHandler
+from m_pyutil.mjuliangip import DynamicIP
 from m_pyutil.msqlite import create, save, select_one
 from m_pyutil.mtmp import read_rows
 from selenium.webdriver.common.by import By
@@ -45,10 +47,13 @@ class QcwyApp(threading.Thread):
         self.init_extension_server()
 
     def init_cli(self):
+        dynamic_ip = DynamicIP(api_key=os.environ.get('JULIANGIP_API_KEY'))
+        ips = dynamic_ip.get_ips(trade_no=os.environ.get('JULIANGIP_TRADE_NO'))
         self.cli = Cli(undetected=True,
                        images_disabled=True,
                        headless=False,
-                       unpacked_extensions=[f'{dirname(abspath(__file__))}/tmp/blockres-demo'])
+                       unpacked_extensions=[f'{dirname(abspath(__file__))}/tmp/blockres-demo'],
+                       proxy=ips[0])
 
     def init_db(self):
         create(sql='create table if not exists qcwy_queue(id integer primary key autoincrement, uid text not null unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)',
