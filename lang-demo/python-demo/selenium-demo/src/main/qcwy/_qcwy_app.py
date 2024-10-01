@@ -9,14 +9,11 @@ from json import JSONDecodeError
 from sqlite3 import IntegrityError
 from urllib.parse import urlparse, parse_qs
 
-from m_pyutil.mdate import nowt
 from m_pyutil.mhttp import Server, MyHTTPRequestHandler
-from m_pyutil.mjuliangip import DynamicIP
 from m_pyutil.msqlite import create, save, select_one
 from m_pyutil.mtmp import read_rows
 from selenium.webdriver.common.by import By
 
-import definitions
 from src.main.util.cli import Cli
 
 
@@ -51,7 +48,7 @@ class QcwyApp(threading.Thread):
         self.cli = Cli(undetected=True,
                        images_disabled=True,
                        headless=False,
-                       unpacked_extensions=[f'{definitions.ROOT_DIR}/doc/united-extension'])
+                       proxy=os.environ.get('KDL_PROXY'))
 
     def init_db(self):
         create(sql='create table if not exists qcwy_queue(id integer primary key autoincrement, uid text not null unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)',
@@ -138,28 +135,7 @@ class QcwyApp(threading.Thread):
         handler.wfile.write(json.dumps(res_body).encode('utf-8'))
 
     def post_handle_proxy_config(self) -> dict:
-        dynamic_ip = DynamicIP(api_key=os.environ.get('JULIANGIP_API_KEY'))
-        ips = dynamic_ip.get_ips(trade_no=os.environ.get('JULIANGIP_TRADE_NO'))
-        if len(ips) == 0:
-            logging.warning(f'{self.name}: no ip available, {nowt()}')
-            return {}
-        ip = ips[0]
-        split = ip.split('@')
-
-        user_pwd = split[0]
-        user_pwd = user_pwd.split(':')
-        user = user_pwd[0]
-        pwd = user_pwd[1]
-
-        host_port = split[1]
-        host_port = host_port.split(':')
-        host = host_port[0]
-        port = int(host_port[1])
-        return {
-            'host': host,
-            'port': port,
-            'username': user,
-            'password': pwd}
+        return {}
 
     def post_handle_job(self, url: str, handler: MyHTTPRequestHandler) -> dict:
         parse_url = urlparse(url)
