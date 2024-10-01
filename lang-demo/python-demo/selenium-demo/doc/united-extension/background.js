@@ -38,18 +38,18 @@ setInterval(() => {
                     function () { }
                 );
                 chrome.webRequest.onAuthRequired.addListener(
-                    function () {
-                        return {
+                    function (details, callbackFn) {
+                        callbackFn({
                             authCredentials: {
                                 username: username,
                                 password: password
                             }
-                        };
+                        });
                     },
                     {
                         urls: ["<all_urls>"]
                     },
-                    ['blocking']
+                    ['asyncBlocking']
                 );
                 console.debug('chrome.proxy.settings.set', config);
             }
