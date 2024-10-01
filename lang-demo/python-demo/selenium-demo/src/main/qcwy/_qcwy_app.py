@@ -163,12 +163,13 @@ class QcwyApp(threading.Thread):
         company_size = url_query_params.get('companySize')[0]
         page_num = url_query_params.get('pageNum')[0]
         url = self.build_url(job_area, fun_type, work_year, degree, company_size)
+        uid = f'{url}&pageNum={page_num}'
         try:
             save(sql='insert into qcwy_job(uid, queue_uid, raw) values(?, ?, ?)',
-                 params=[f'{url}&pageNum={page_num}', url, raw],
+                 params=[uid, url, raw],
                  f=self.db_file)
         except IntegrityError as _:
-            logging.warning(f'job queue_uid already exists: {self.name}, {url}')
+            logging.warning(f'job uid already exists: {self.name}, {uid}')
         return {}
 
     def run(self):
