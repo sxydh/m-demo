@@ -178,7 +178,7 @@ class QcwyApp(threading.Thread):
                 return
 
             uid_owner = str(uuid.uuid4())
-            updated = save(sql='update qcwy_queue set uid_owner = ? where id = (select t.id from qcwy_queue t where t.uid_owner is null limit 1)',
+            updated = save(sql='update qcwy_queue set uid_owner = ? where id = (select t.id from qcwy_queue t where t.uid_owner is null order by t.id limit 1)',
                            params=[uid_owner],
                            f=self.db_file)
             if updated == 0:
