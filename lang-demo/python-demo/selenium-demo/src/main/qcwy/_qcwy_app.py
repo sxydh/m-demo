@@ -82,27 +82,23 @@ class QcwyApp(threading.Thread):
         self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
         for job_area in self.job_areas:
             for fun_type in self.fun_types:
-                for work_year in self.work_years:
-                    for degree in self.degrees:
-                        for company_size in self.company_sizes:
-                            if not self.run_flag:
-                                return
+                for company_size in self.company_sizes:
+                    if not self.run_flag:
+                        return
 
-                            url = self.build_url(job_area, fun_type[0], work_year[0], degree[0], company_size[0])
-                            try:
-                                save(sql='insert into qcwy_queue(uid, job_area, fun_type, work_year, degree, company_size) values(?, ?, ?, ?, ?, ?)',
-                                     params=[url, job_area, fun_type[1], work_year[1], degree[1], company_size[1]],
-                                     f=self.db_file)
-                            except IntegrityError as _:
-                                continue
-                            time.sleep(1)
+                    url = self.build_url(job_area, fun_type[0], company_size[0])
+                    try:
+                        save(sql='insert into qcwy_queue(uid, job_area, fun_type, company_size) values(?, ?, ?, ?)',
+                             params=[url, job_area, fun_type[1], company_size[1]],
+                             f=self.db_file)
+                    except IntegrityError as _:
+                        continue
+                    time.sleep(1)
 
-    def build_url(self, job_area: str, fun_type: str, work_year: str, degree: str, company_size: str) -> str:
+    def build_url(self, job_area: str, fun_type: str, company_size: str) -> str:
         url = self.start_url
         url += f'&jobArea={job_area}'
         url += f'&function={fun_type}'
-        url += f'&workYear={work_year}'
-        url += f'&degree={degree}'
         url += f'&companySize={company_size}'
         return url
 
@@ -161,11 +157,9 @@ class QcwyApp(threading.Thread):
 
         job_area = url_query_params.get('jobArea')[0]
         fun_type = url_query_params.get('function')[0]
-        work_year = url_query_params.get('workYear')[0]
-        degree = url_query_params.get('degree')[0]
         company_size = url_query_params.get('companySize')[0]
         page_num = url_query_params.get('pageNum')[0]
-        url = self.build_url(job_area, fun_type, work_year, degree, company_size)
+        url = self.build_url(job_area, fun_type, company_size)
         uid = f'{url}&pageNum={page_num}'
         try:
             save(sql='insert into qcwy_job(uid, queue_uid, raw) values(?, ?, ?)',
