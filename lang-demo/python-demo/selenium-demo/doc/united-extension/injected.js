@@ -14,19 +14,34 @@
         const originalSend = xhr.send;
         xhr.send = function (body) {
             xhr.addEventListener('load', function () {
-                if (xhr.responseType !== 'blob') {
-                    let isFiltered = !xhr.responseURL.includes('https://we.51job.com/api/job/search-pc');
-                    isFiltered = isFiltered || !xhr.responseURL.includes('&function=');
-                    if (!isFiltered) {
+                if (xhr.responseType === 'blob') {
+                    return;
+                }
+                // 前程无忧
+                let isQcwy = !xhr.responseURL.includes('https://we.51job.com/api/job/search-pc');
+                isQcwy = isQcwy || !xhr.responseURL.includes('&function=');
+                if (!isQcwy) {
+                    try {
+                        let resJson = JSON.parse(xhr.response);
+                        let status = resJson.status;
+                        if (status !== '1') {
+                            return;
+                        }
+                        let totalCount = resJson.resultbody.job.totalCount;
+                        if (totalCount >= 1000 && !xhr.responseURL.includes('&companySize=')) {
+                            return;
+                        }
                         fetch(
                             `http://localhost:8080/?url=${encodeURIComponent(xhr.responseURL)}`,
                             {
                                 method: 'POST',
-                                body: xhr.response
+                                body: resJson
                             }
                         ).catch(() => {
                             // NOTHING
                         });
+                    } catch (e) {
+                        // NOTHING
                     }
                 }
             });
