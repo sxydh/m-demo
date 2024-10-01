@@ -13,6 +13,7 @@ let interval = setInterval(() => {
         })
         .then(data => {
             console.debug('proxy_config', data);
+            clearInterval(interval);
             let host = data.host;
             let port = data.port;
             let username = data.username;
