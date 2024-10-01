@@ -59,7 +59,8 @@ class QcwyApp(threading.Thread):
                f=self.db_file)
 
     def init_console_handler(self):
-        t = threading.Thread(target=self.console_handler)
+        t = threading.Thread(name=f'{self.name}_console_handler',
+                             target=self.console_handler)
         t.start()
 
     def console_handler(self):
@@ -73,7 +74,8 @@ class QcwyApp(threading.Thread):
                 QcwyApp(name=f'qcwy_app_{nowt()}').start()
 
     def init_queue(self):
-        t = threading.Thread(target=self.queue_handler)
+        t = threading.Thread(name=f'{self.name}_queue_handler',
+                             target=self.queue_handler)
         t.start()
 
     def queue_handler(self):
@@ -105,7 +107,8 @@ class QcwyApp(threading.Thread):
         return url
 
     def init_extension_server(self):
-        t = threading.Thread(target=self.extension_server_handler)
+        t = threading.Thread(name=f'{self.name}_extension_server_handler',
+                             target=self.extension_server_handler)
         t.start()
 
     def extension_server_handler(self):
