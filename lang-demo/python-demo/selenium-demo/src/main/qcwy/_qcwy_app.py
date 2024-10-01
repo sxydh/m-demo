@@ -5,8 +5,8 @@ import socket
 import threading
 import time
 import uuid
-from json import JSONDecodeError
 from sqlite3 import IntegrityError
+from typing import Any
 from urllib.parse import urlparse, parse_qs
 
 from m_pyutil.mdate import nowt
@@ -82,24 +82,22 @@ class QcwyApp(threading.Thread):
         self.fun_types = [f.split(',') for f in read_rows('fun_type.csv')]
         for job_area in self.job_areas:
             for fun_type in self.fun_types:
-                for company_size in self.company_sizes:
-                    if not self.run_flag:
-                        return
+                if not self.run_flag:
+                    return
 
-                    url = self.build_url(job_area, fun_type[0], company_size[0])
-                    try:
-                        save(sql='insert into qcwy_queue(uid, job_area, fun_type, company_size) values(?, ?, ?, ?)',
-                             params=[url, job_area, fun_type[1], company_size[1]],
-                             f=self.db_file)
-                    except IntegrityError as _:
-                        continue
-                    time.sleep(1)
+                url = self.build_url(job_area, fun_type[0])
+                try:
+                    save(sql='insert into qcwy_queue(uid, job_area, fun_type) values(?, ?, ?)',
+                         params=[url, job_area, fun_type[1]],
+                         f=self.db_file)
+                except IntegrityError as _:
+                    continue
+                time.sleep(1)
 
-    def build_url(self, job_area: str, fun_type: str, company_size: str) -> str:
+    def build_url(self, job_area: str, fun_type: str) -> str:
         url = self.start_url
         url += f'&jobArea={job_area}'
         url += f'&function={fun_type}'
-        url += f'&companySize={company_size}'
         return url
 
     def init_extension_server(self):
@@ -150,17 +148,15 @@ class QcwyApp(threading.Thread):
         url_query_params = parse_qs(parse_url.query)
         content_length = int(handler.headers['Content-Length'])
         raw = handler.rfile.read(content_length).decode('utf-8')
-        try:
-            json.loads(raw)
-        except JSONDecodeError as _:
-            return {}
 
         job_area = url_query_params.get('jobArea')[0]
         fun_type = url_query_params.get('function')[0]
         company_size = url_query_params.get('companySize')[0]
         page_num = url_query_params.get('pageNum')[0]
-        url = self.build_url(job_area, fun_type, company_size)
-        uid = f'{url}&pageNum={page_num}'
+        url = self.build_url(job_area, fun_type)
+        uid = url
+        uid = f'&companySize={company_size}' if company_size else uid
+        uid = f'&pageNum={page_num}' if page_num else uid
         try:
             save(sql='insert into qcwy_job(uid, queue_uid, raw) values(?, ?, ?)',
                  params=[uid, url, raw],
@@ -182,42 +178,52 @@ class QcwyApp(threading.Thread):
             if updated == 0:
                 time.sleep(1)
                 continue
-
             popped = select_one(sql='select uid from qcwy_queue where uid_owner = ?',
                                 params=[uid_owner],
                                 f=self.db_file)
+
             url = popped[0]
-
-            time.sleep(1)
             self.cli.get(url)
-            page = 1
-            retry = 0
-            while True:
-                items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=10, raise_e=False)
-                pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
-                pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
-                next_btn = self.cli.find_element_d(by=By.CSS_SELECTOR, value='.pageation .btn-next', timeout=0, count=1, raise_e=False)
+            pages, next_btn = self.request_retry_handler()
+            if pages == 1:
+                continue
+            if pages < 50:
+                self.request_page_handler(pages, next_btn)
+                continue
+            for company_size in self.company_sizes:
+                self.cli.get(f'{url}&companySize={company_size}')
+                pages, next_btn = self.request_retry_handler()
+                self.request_page_handler(pages, next_btn)
 
-                verification = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
-                if verification:
-                    self.cli.click_and_move_by_x_offset(verification, 400)
-                    continue
+    def request_retry_handler(self) -> tuple:
+        retries = 0
+        while True:
+            items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=10, raise_e=False)
+            pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
+            pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
+            next_btn = self.cli.find_element_d(by=By.CSS_SELECTOR, value='.pageation .btn-next', timeout=0, count=1, raise_e=False)
 
-                if len(items) == 0:
-                    self.cli.get(url)
-                    page = 1
-                    retry += 1
-                    if retry > 60:
-                        self.run_flag = False
-                        break
-                    continue
+            verification = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
+            if verification:
+                self.cli.click_and_move_by_x_offset(verification, 400)
+                continue
 
-                if page < pages:
-                    time.sleep(1)
-                    self.cli.click(next_btn)
-                    page += 1
-                    continue
-                break
+            if len(items) == 0:
+                self.cli.refresh()
+                retries += 1
+                if retries > 60:
+                    self.run_flag = False
+                    break
+                continue
+            break
+
+        time.sleep(1.5)
+        return pages, next_btn
+
+    def request_page_handler(self, pages: int, next_btn: Any):
+        for _ in range(pages - 1):
+            self.cli.click(next_btn)
+            self.request_retry_handler()
 
     def close(self):
         self.cli.quit()
