@@ -14,6 +14,7 @@ from m_pyutil.msqlite import create, save, select_one
 from m_pyutil.mtmp import read_rows
 from selenium.webdriver.common.by import By
 
+import definitions
 from src.main.util.cli import Cli
 
 
@@ -48,7 +49,8 @@ class QcwyApp(threading.Thread):
         self.cli = Cli(undetected=True,
                        images_disabled=True,
                        headless=False,
-                       proxy=os.environ.get('KDL_PROXY'))
+                       proxy=os.environ.get('KDL_PROXY'),
+                       unpacked_extensions=[f'{definitions.ROOT_DIR}/doc/united-extension'])
 
     def init_db(self):
         create(sql='create table if not exists qcwy_queue(id integer primary key autoincrement, uid text not null unique, job_area text, fun_type text, work_year text, degree text, company_size text, uid_owner text)',
