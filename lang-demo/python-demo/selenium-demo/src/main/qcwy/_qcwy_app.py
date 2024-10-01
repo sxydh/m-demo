@@ -196,7 +196,7 @@ class QcwyApp(threading.Thread):
             page = 1
             retry = 0
             while True:
-                items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=5, raise_e=False)
+                items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=10, raise_e=False)
                 pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
                 pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
                 next_btn = self.cli.find_element_d(by=By.CSS_SELECTOR, value='.pageation .btn-next', timeout=0, count=1, raise_e=False)
@@ -227,7 +227,8 @@ class QcwyApp(threading.Thread):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.WARN)
+    logging.basicConfig(format='%(asctime)s [%(threadName)s] %(levelname)s %(funcName)s - %(message)s',
+                        level=logging.WARNING)
     for _ in range(1):
         time.sleep(2)
         QcwyApp(name=f'qcwy_app_{nowt()}').start()
