@@ -66,7 +66,7 @@ class QcwyApp(threading.Thread):
         while True:
             cmd = input('Please input >>> ')
             if cmd == 'stop':
-                logging.warning(f'>>> Ready to stop {self.name}')
+                logging.warning(f'ready to stop: {self.name}')
                 self.run_flag = False
                 return
             if cmd == 'add':
@@ -112,7 +112,7 @@ class QcwyApp(threading.Thread):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             result = s.connect_ex(('127.0.0.1', 8080))
             if result == 0:
-                logging.warning(f'{self.name}: port 8080 is already in use')
+                logging.warning(f'port 8080 is already in use: {self.name}')
                 return
 
         Server(post_handler=self.post_handler).start()
@@ -125,7 +125,7 @@ class QcwyApp(threading.Thread):
         res_body = {}
         param_url = path_query_params.get('url')
         if not param_url or len(param_url) == 0:
-            logging.warning(f'param url is empty: {path}')
+            logging.warning(f'param url is empty: {self.name}, {path}')
         else:
             param_url = param_url[0]
             if 'proxy_config' in param_url:
@@ -168,7 +168,7 @@ class QcwyApp(threading.Thread):
                  params=[f'{url}&pageNum={page_num}', raw, url],
                  f=self.db_file)
         except IntegrityError as _:
-            logging.warning(f'job queue_uid already exists: {url}')
+            logging.warning(f'job queue_uid already exists: {self.name}, {url}')
         return {}
 
     def run(self):
