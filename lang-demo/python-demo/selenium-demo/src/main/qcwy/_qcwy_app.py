@@ -136,7 +136,12 @@ class QcwyApp(threading.Thread):
         handler.wfile.write(json.dumps(res_body).encode('utf-8'))
 
     def post_handle_proxy_config(self) -> dict:
-        return {}
+        return {
+            'host': os.environ.get('KDL_HOST'),
+            'port': int(os.environ.get('KDL_PORT')),
+            'username': os.environ.get('KDL_USERNAME'),
+            'password': os.environ.get('KDL_PASSWORD')
+        }
 
     def post_handle_job(self, url: str, handler: MyHTTPRequestHandler) -> dict:
         parse_url = urlparse(url)
