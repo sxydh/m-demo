@@ -127,7 +127,7 @@ class QcwyApp(threading.Thread):
             param_url = param_url[0]
             if 'proxy_config' in param_url:
                 res_body = self.post_handle_proxy_config()
-            elif 'https://we.51job.com/api/job/search-pc' in param_url and '&function=' in param_url:
+            elif 'https://we.51job.com/api/job/search-pc' in param_url:
                 res_body = self.post_handle_job(param_url, handler)
 
         handler.send_response(200)
@@ -151,12 +151,14 @@ class QcwyApp(threading.Thread):
 
         job_area = url_query_params.get('jobArea')[0]
         fun_type = url_query_params.get('function')[0]
-        company_size = url_query_params.get('companySize')[0]
-        page_num = url_query_params.get('pageNum')[0]
+        company_size = url_query_params.get('companySize')
+        company_size = company_size[0] if company_size else None
+        page_num = url_query_params.get('pageNum')
+        page_num = page_num[0] if page_num else None
         url = self.build_url(job_area, fun_type)
         uid = url
-        uid = f'&companySize={company_size}' if company_size else uid
-        uid = f'&pageNum={page_num}' if page_num else uid
+        uid = f'{uid}&companySize={company_size}' if company_size else uid
+        uid = f'{uid}&pageNum={page_num}' if page_num else uid
         try:
             save(sql='insert into qcwy_job(uid, queue_uid, raw) values(?, ?, ?)',
                  params=[uid, url, raw],
