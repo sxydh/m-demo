@@ -9,6 +9,7 @@ from json import JSONDecodeError
 from sqlite3 import IntegrityError
 from urllib.parse import urlparse, parse_qs
 
+from m_pyutil.mdate import nowt
 from m_pyutil.mhttp import Server, MyHTTPRequestHandler
 from m_pyutil.msqlite import create, save, select_one
 from m_pyutil.mtmp import read_rows
@@ -68,6 +69,8 @@ class QcwyApp(threading.Thread):
                 logging.warning(f'>>> Ready to stop {self.name}')
                 self.run_flag = False
                 return
+            if cmd == 'add':
+                QcwyApp(name=f'qcwy_app_{nowt()}').start()
 
     def init_queue(self):
         t = threading.Thread(target=self.queue_handler)
@@ -224,6 +227,6 @@ class QcwyApp(threading.Thread):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)
-    for idx, _ in enumerate(range(5)):
+    for _ in range(1):
         time.sleep(2)
-        QcwyApp(name=f'qcwy_app_{idx}').start()
+        QcwyApp(name=f'qcwy_app_{nowt()}').start()
