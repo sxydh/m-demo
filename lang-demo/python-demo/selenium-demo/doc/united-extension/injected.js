@@ -35,7 +35,7 @@
                             `http://localhost:8080/?url=${encodeURIComponent(location.href)}`,
                             {
                                 method: 'POST',
-                                body: resJson
+                                body: JSON.stringify(resJson)
                             }
                         ).catch(() => {
                             // NOTHING
