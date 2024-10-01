@@ -110,6 +110,9 @@ class Cli:
             moved_y_offset += delta_y_offset
         pyautogui.mouseUp()
 
+    def refresh(self):
+        self.driver.refresh()
+
     def close(self):
         self.driver.close()
 
