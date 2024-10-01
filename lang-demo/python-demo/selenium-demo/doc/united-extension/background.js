@@ -51,7 +51,6 @@ let interval = setInterval(() => {
                     ['asyncBlocking']
                 );
                 console.debug('chrome.proxy.settings.set', config);
-                clearInterval(interval);
             }
         })
         .catch(e => {
