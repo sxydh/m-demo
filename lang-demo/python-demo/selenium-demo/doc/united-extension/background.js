@@ -27,7 +27,7 @@ let interval = setInterval(() => {
                             host: host,
                             port: port
                         },
-                        bypassList: ['localhost']
+                        bypassList: ['localhost', '*.51jobcdn.*', '*.alicdn.*']
                     }
                 };
                 chrome.proxy.settings.set(
