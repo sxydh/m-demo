@@ -28,11 +28,11 @@
                             return;
                         }
                         let totalCount = resJson.resultbody.job.totalCount;
-                        if (totalCount >= 1000 && !location.href.includes('&companySize=')) {
+                        if (totalCount >= 1000) {
                             return;
                         }
                         fetch(
-                            `http://localhost:8080/?url=${encodeURIComponent(location.href)}`,
+                            `http://localhost:8080/?url=${encodeURIComponent(xhr.responseURL)}`,
                             {
                                 method: 'POST',
                                 body: JSON.stringify(resJson)
