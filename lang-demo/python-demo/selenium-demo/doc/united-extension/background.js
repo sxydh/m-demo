@@ -1,4 +1,4 @@
-setInterval(() => {
+let interval = setInterval(() => {
     fetch(
         `http://localhost:8080/?url=proxy_config`,
         {
@@ -18,7 +18,6 @@ setInterval(() => {
             let username = data.username;
             let password = data.password;
             if (host && port) {
-                // https://developer.chrome.com/docs/extensions/reference/api/proxy?hl=zh-cn#description
                 const config = {
                     mode: 'fixed_servers',
                     rules: {
@@ -52,6 +51,7 @@ setInterval(() => {
                     ['asyncBlocking']
                 );
                 console.debug('chrome.proxy.settings.set', config);
+                clearInterval(interval);
             }
         })
         .catch(e => {
