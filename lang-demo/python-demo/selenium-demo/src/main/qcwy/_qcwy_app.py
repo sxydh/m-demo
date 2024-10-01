@@ -186,14 +186,14 @@ class QcwyApp(threading.Thread):
             self.cli.get(url)
             pages, next_btn = self.request_retry_handler()
             if pages == 1:
-                continue
-            if pages < 50:
+                pass
+            elif pages < 50:
                 self.request_page_handler(pages, next_btn)
-                continue
-            for company_size in self.company_sizes:
-                self.cli.get(f'{url}&companySize={company_size}')
-                pages, next_btn = self.request_retry_handler()
-                self.request_page_handler(pages, next_btn)
+            else:
+                for company_size in self.company_sizes:
+                    self.cli.get(f'{url}&companySize={company_size}')
+                    pages, next_btn = self.request_retry_handler()
+                    self.request_page_handler(pages, next_btn)
 
     def request_retry_handler(self) -> tuple:
         retries = 0
