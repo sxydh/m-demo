@@ -49,7 +49,6 @@ class QcwyApp(threading.Thread):
         self.cli = Cli(undetected=True,
                        images_disabled=True,
                        headless=False,
-                       proxy=os.environ.get('KDL_PROXY'),
                        unpacked_extensions=[f'{definitions.ROOT_DIR}/doc/united-extension'])
 
     def init_db(self):
@@ -161,7 +160,7 @@ class QcwyApp(threading.Thread):
                  params=[f'{url}&pageNum={page_num}', raw, url],
                  f=self.db_file)
         except IntegrityError as _:
-            logging.warning(f'job uid already exists: {url}')
+            logging.warning(f'job queue_uid already exists: {url}')
         return {}
 
     def run(self):
