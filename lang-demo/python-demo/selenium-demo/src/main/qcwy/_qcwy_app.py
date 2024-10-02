@@ -150,12 +150,6 @@ class QcwyApp(threading.Thread):
         content_length = int(handler.headers['Content-Length'])
         raw = handler.rfile.read(content_length).decode('utf-8')
 
-        try:
-            json.loads(raw)
-        except Exception as _:
-            logging.warning(f'raw is not json: {self.name}, {url}, {raw}')
-            return {}
-
         job_area = url_query_params.get('jobArea')[0]
         fun_type = url_query_params.get('function')[0]
         company_size = url_query_params.get('companySize')
@@ -166,6 +160,12 @@ class QcwyApp(threading.Thread):
         uid = url
         uid = f'{uid}&companySize={company_size}' if company_size else uid
         uid = f'{uid}&pageNum={page_num}' if page_num else uid
+
+        try:
+            json.loads(raw)
+        except Exception as _:
+            logging.warning(f'raw is not json: {self.name}, {url}')
+
         try:
             save(sql='insert into qcwy_job(uid, queue_uid, raw) values(?, ?, ?)',
                  params=[uid, url, raw],
