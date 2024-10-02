@@ -227,7 +227,7 @@ class QcwyApp(threading.Thread):
     def request_page_handler(self, pages: int, next_btn: Any):
         while True:
             self.cli.click(next_btn)
-            _, active, next_btn = self.request_retry_handler()
+            _, active, next_btn = self.request_retry_handler(max_retries=180)
             if active == pages:
                 break
 
