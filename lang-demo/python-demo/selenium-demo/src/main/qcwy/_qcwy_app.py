@@ -32,7 +32,7 @@ class QcwyApp(threading.Thread):
     cli = None
 
     start_url = 'https://we.51job.com/pc/search?searchType=2&sortType=1'
-    job_areas = ['090200']
+    job_areas = ['060000']
     fun_types = []
     work_years = [('02', '1-3年'), ('03', '3-5年'), ('04', '5-10年'), ('05', '10年以上'), ('06', '无需经验')]
     degrees = [('01', '初中及以下'), ('02', '高中/中技/中专'), ('03', '大专'), ('04', '本科'), ('05', '硕士'), ('06', '博士'), ('07', '无')]
@@ -186,7 +186,7 @@ class QcwyApp(threading.Thread):
 
             url = popped[0]
             self.cli.get(url)
-            pages, next_btn = self.request_retry_handler()
+            pages, _, next_btn = self.request_retry_handler()
             if not pages or pages == 1:
                 continue
             if pages < 50:
@@ -194,7 +194,7 @@ class QcwyApp(threading.Thread):
                 continue
             for (company_size, _) in self.company_sizes:
                 self.cli.get(f'{url}&companySize={company_size}')
-                pages, next_btn = self.request_retry_handler()
+                pages, _, next_btn = self.request_retry_handler()
                 self.request_page_handler(pages, next_btn)
 
     def request_retry_handler(self) -> tuple:
@@ -203,6 +203,8 @@ class QcwyApp(threading.Thread):
             items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=10, raise_e=False)
             pages = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .number', timeout=0, count=1, raise_e=False)
             pages = int(pages[-1].get_attribute('innerText').strip()) if len(pages) > 0 else 0
+            active = self.cli.find_element_d(by=By.CSS_SELECTOR, value='.pageation .el-pager .active', timeout=0, count=1, raise_e=False)
+            active = int(active.get_attribute('innerText').strip()) if active else None
             next_btn = self.cli.find_element_d(by=By.CSS_SELECTOR, value='.pageation .btn-next', timeout=0, count=1, raise_e=False)
 
             verification = self.cli.find_element_d(by=By.CSS_SELECTOR, value='#nc_1_n1z', timeout=0, count=1, raise_e=False)
@@ -220,12 +222,14 @@ class QcwyApp(threading.Thread):
             break
 
         time.sleep(1.5)
-        return pages, next_btn
+        return pages, active, next_btn
 
     def request_page_handler(self, pages: int, next_btn: Any):
-        for _ in range(pages - 1):
+        while True:
             self.cli.click(next_btn)
-            _, next_btn = self.request_retry_handler()
+            _, active, next_btn = self.request_retry_handler()
+            if active == pages:
+                break
 
     def close(self):
         self.cli.quit()
