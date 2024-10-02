@@ -5,6 +5,6 @@ if __name__ == '__main__':
                          database='qcwy')
     mongo_cli.import_sqlite(f='qcwy.db',
                             table='qcwy_job',
-                            sql='select raw from qcwy_job order by id',
+                            sql='select uid, queue_uid, raw from qcwy_job order by id',
                             collection='qcwy_job')
     mongo_cli.close()
