@@ -167,8 +167,8 @@ class QcwyApp(threading.Thread):
             logging.warning(f'raw is not json: {self.name}, {uid}')
 
         try:
-            save(sql='insert into qcwy_job(uid, queue_uid, raw) values(?, ?, ?)',
-                 params=[uid, url, raw],
+            save(sql='insert into qcwy_job(uid, queue_uid, raw, remark) values(?, ?, ?, ?)',
+                 params=[uid, url, raw, 'raw is not json'],
                  f=self.db_file)
         except IntegrityError as _:
             logging.warning(f'job uid already exists: {self.name}, {uid}')
