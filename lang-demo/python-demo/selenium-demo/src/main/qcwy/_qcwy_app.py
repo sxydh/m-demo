@@ -154,6 +154,7 @@ class QcwyApp(threading.Thread):
             json.loads(raw)
         except Exception as _:
             logging.warning(f'raw is not json: {self.name}, {url}, {raw}')
+            return {}
 
         job_area = url_query_params.get('jobArea')[0]
         fun_type = url_query_params.get('function')[0]
