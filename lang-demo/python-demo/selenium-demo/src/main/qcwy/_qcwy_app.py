@@ -197,7 +197,7 @@ class QcwyApp(threading.Thread):
                 pages, _, next_btn = self.request_retry_handler()
                 self.request_page_handler(pages, next_btn)
 
-    def request_retry_handler(self) -> tuple:
+    def request_retry_handler(self, max_retries: int = 60) -> tuple:
         retries = 0
         while True:
             items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=10, raise_e=False)
@@ -215,7 +215,7 @@ class QcwyApp(threading.Thread):
             if len(items) == 0:
                 self.cli.refresh()
                 retries += 1
-                if retries > 60:
+                if retries > max_retries:
                     self.run_flag = False
                     break
                 continue
