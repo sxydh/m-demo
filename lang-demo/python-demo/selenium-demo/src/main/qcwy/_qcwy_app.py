@@ -5,6 +5,7 @@ import socket
 import threading
 import time
 import uuid
+from json import JSONDecodeError
 from sqlite3 import IntegrityError
 from typing import Any
 from urllib.parse import urlparse, parse_qs
@@ -26,6 +27,7 @@ class JobItem:
     remark = None
 
 
+# noinspection PyBroadException
 class QcwyApp(threading.Thread):
     run_flag = True
     db_file = 'qcwy.db'
@@ -143,12 +145,10 @@ class QcwyApp(threading.Thread):
             'password': os.environ.get('KDL_PASSWORD')
         }
 
-    # noinspection PyBroadException
     def post_handle_job(self, url: str, handler: MyHTTPRequestHandler) -> dict:
         parse_url = urlparse(url)
         url_query_params = parse_qs(parse_url.query)
         content_length = int(handler.headers['Content-Length'])
-        raw = handler.rfile.read(content_length).decode('utf-8')
 
         job_area = url_query_params.get('jobArea')[0]
         fun_type = url_query_params.get('function')[0]
@@ -161,14 +161,21 @@ class QcwyApp(threading.Thread):
         uid = f'{uid}&companySize={company_size}' if company_size else uid
         uid = f'{uid}&pageNum={page_num}' if page_num else uid
 
+        raw = None
+        remark = None
         try:
+            raw = handler.rfile.read(content_length).decode('utf-8')
             json.loads(raw)
-        except Exception as _:
+        except UnicodeDecodeError as _:
+            logging.warning(f'raw can not be decoded: {self.name}, {uid}')
+            remark = 'UnicodeDecodeError'
+        except JSONDecodeError as _:
             logging.warning(f'raw is not json: {self.name}, {uid}')
+            remark = 'JSONDecodeError'
 
         try:
             save(sql='insert into qcwy_job(uid, queue_uid, raw, remark) values(?, ?, ?, ?)',
-                 params=[uid, url, raw, 'raw is not json'],
+                 params=[uid, url, raw, remark],
                  f=self.db_file)
         except IntegrityError as _:
             logging.warning(f'job uid already exists: {self.name}, {uid}')
@@ -204,7 +211,7 @@ class QcwyApp(threading.Thread):
                 pages, _, next_btn = self.request_retry_handler()
                 self.request_page_handler(pages, next_btn)
 
-    def request_retry_handler(self, max_retries: int = 60) -> tuple:
+    def request_retry_handler(self, max_retries: int = 60, ret_sleep: int = 1.5) -> tuple:
         retries = 0
         while True:
             items = self.cli.find_elements_d(by=By.CSS_SELECTOR, value='.joblist-item,.j_nolist', timeout=1, count=10, raise_e=False)
@@ -228,15 +235,19 @@ class QcwyApp(threading.Thread):
                 continue
             break
 
-        time.sleep(1.5)
+        time.sleep(ret_sleep)
         return pages, active, next_btn
 
     def request_page_handler(self, pages: int, next_btn: Any):
         while True:
-            self.cli.click(next_btn)
-            _, active, next_btn = self.request_retry_handler(max_retries=180)
-            if active == pages:
-                break
+            try:
+                _, _, next_btn = self.request_retry_handler(max_retries=180, ret_sleep=0)
+                self.cli.click(next_btn)
+                _, active, _ = self.request_retry_handler(max_retries=180)
+                if active == pages:
+                    break
+            except Exception as _:
+                logging.warning(f'next_btn click failed: {self.name}')
 
     def close(self):
         self.cli.quit()
