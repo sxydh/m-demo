@@ -32,7 +32,7 @@ class QcwyApp(threading.Thread):
     cli = None
 
     start_url = 'https://we.51job.com/pc/search?searchType=2&sortType=1'
-    job_areas = ['060000']
+    job_areas = ['090200']
     fun_types = []
     work_years = [('02', '1-3年'), ('03', '3-5年'), ('04', '5-10年'), ('05', '10年以上'), ('06', '无需经验')]
     degrees = [('01', '初中及以下'), ('02', '高中/中技/中专'), ('03', '大专'), ('04', '本科'), ('05', '硕士'), ('06', '博士'), ('07', '无')]
