@@ -13,7 +13,38 @@ db.qcwy_job.find({}).forEach(e => {
     );
 });
 
-// qcwy_job 按职能统计数量
+// qcwy_job 查询职位列表
+db.qcwy_job.aggregate(
+    {
+        $unwind: '$raw.resultbody.job.items'
+    },
+    {
+        $project: {
+            uid: '$uid',
+            queue_uid: '$queue_uid',
+            item: '$raw.resultbody.job.items'
+        }
+    },
+    {
+        $project: {
+            uid: 1,
+            queue_uid: 1,
+            item: 1,
+            company: '$item.companyName',
+            job_name: '$item.jobName',
+            job_work_year: '$item.workYearString',
+            job_salary_min: '$item.jobSalaryMin',
+            job_salary_max: '$item.jobSalaryMax'
+        }
+    },
+    {
+        $sort: {
+            job_salary_min: 1
+        }
+    }
+);
+
+// qcwy_job 统计职位数量（职能维度）
 db.qcwy_job.aggregate(
     {
         $project: {
