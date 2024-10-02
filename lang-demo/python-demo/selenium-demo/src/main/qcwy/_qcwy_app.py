@@ -7,7 +7,6 @@ import time
 import uuid
 from json import JSONDecodeError
 from sqlite3 import IntegrityError
-from typing import Any
 from urllib.parse import urlparse, parse_qs
 
 from m_pyutil.mdate import nowt
@@ -200,16 +199,16 @@ class QcwyApp(threading.Thread):
 
             url = popped[0]
             self.cli.get(url)
-            pages, _, next_btn = self.request_retry_handler()
+            pages, _, _ = self.request_retry_handler()
             if pages == 0 or pages == 1:
                 continue
             if pages < 50:
-                self.request_page_handler(pages, next_btn)
+                self.request_page_handler(pages)
                 continue
             for (company_size, _) in self.company_sizes:
                 self.cli.get(f'{url}&companySize={company_size}')
-                pages, _, next_btn = self.request_retry_handler()
-                self.request_page_handler(pages, next_btn)
+                pages, _, _ = self.request_retry_handler()
+                self.request_page_handler(pages)
 
     def request_retry_handler(self, max_retries: int = 60, ret_sleep: int = 1.5) -> tuple:
         retries = 0
@@ -238,7 +237,7 @@ class QcwyApp(threading.Thread):
         time.sleep(ret_sleep)
         return pages, active, next_btn
 
-    def request_page_handler(self, pages: int, next_btn: Any):
+    def request_page_handler(self, pages: int):
         while True:
             try:
                 _, _, next_btn = self.request_retry_handler(max_retries=180, ret_sleep=0)
