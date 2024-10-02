@@ -164,7 +164,7 @@ class QcwyApp(threading.Thread):
         try:
             json.loads(raw)
         except Exception as _:
-            logging.warning(f'raw is not json: {self.name}, {url}')
+            logging.warning(f'raw is not json: {self.name}, {uid}')
 
         try:
             save(sql='insert into qcwy_job(uid, queue_uid, raw) values(?, ?, ?)',
