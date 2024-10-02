@@ -76,6 +76,12 @@ db.qcwy_job.aggregate(
         }
     },
     {
+        $project: {
+            _id: '$_id.queue_uid',
+            total_count: '$total_count'
+        }
+    },
+    {
         $sort: {
             total_count: -1
         }
