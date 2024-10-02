@@ -194,7 +194,7 @@ class QcwyApp(threading.Thread):
             url = popped[0]
             self.cli.get(url)
             pages, _, next_btn = self.request_retry_handler()
-            if not pages or pages == 1:
+            if pages == 0 or pages == 1:
                 continue
             if pages < 50:
                 self.request_page_handler(pages, next_btn)
