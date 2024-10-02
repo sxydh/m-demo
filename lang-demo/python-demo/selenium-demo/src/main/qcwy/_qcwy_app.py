@@ -143,11 +143,17 @@ class QcwyApp(threading.Thread):
             'password': os.environ.get('KDL_PASSWORD')
         }
 
+    # noinspection PyBroadException
     def post_handle_job(self, url: str, handler: MyHTTPRequestHandler) -> dict:
         parse_url = urlparse(url)
         url_query_params = parse_qs(parse_url.query)
         content_length = int(handler.headers['Content-Length'])
         raw = handler.rfile.read(content_length).decode('utf-8')
+
+        try:
+            json.loads(raw)
+        except Exception as _:
+            logging.warning(f'raw is not json: {self.name}, {url}, {raw}')
 
         job_area = url_query_params.get('jobArea')[0]
         fun_type = url_query_params.get('function')[0]
