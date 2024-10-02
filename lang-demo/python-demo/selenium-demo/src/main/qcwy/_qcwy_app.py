@@ -207,7 +207,7 @@ class QcwyApp(threading.Thread):
                 continue
             for (company_size, _) in self.company_sizes:
                 self.cli.get(f'{url}&companySize={company_size}')
-                pages, _, _ = self.request_retry_handler()
+                pages, _, _ = self.request_retry_handler(ret_sleep=0)
                 self.request_page_handler(pages)
 
     def request_retry_handler(self, max_retries: int = 60, ret_sleep: int = 1.5) -> tuple:
