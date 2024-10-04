@@ -8,3 +8,6 @@
                     
         Shift + Esc
             打开任务管理器，可用于查看内存占用。
+    启动参数
+        https://peter.sh/experiments/chromium-command-line-switches/#borealis-launch-options
+        https://www.chromium.org/developers/how-tos/run-chromium-with-flags/
