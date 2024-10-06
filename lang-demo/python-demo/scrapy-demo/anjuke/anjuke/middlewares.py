@@ -88,7 +88,7 @@ class AnjukeDownloaderMiddleware:
         logging.debug(f"Using user agent: {request.headers['User-Agent']}")
         proxy = os.environ.get('PROXY')
         if proxy:
-            logging.warning(f"Using proxy: {proxy}")
+            logging.warning(f"using proxy: {proxy}")
             request.meta['proxy'] = proxy
 
         return None
