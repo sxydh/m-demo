@@ -37,7 +37,7 @@ class ExampleSpider(scrapy.Spider):
 
         # 页面异常重试
         if len(trs) == 0 and meta_parent.get("url"):
-            logging.warning(f"none data page: {meta_parent.get("url")} <=> {response.url}")
+            logging.warning(f"none data page: meta_parent.url={meta_parent.get("url")} <=> response.url={response.url}")
             yield scrapy.Request(url=meta_parent.get("url"), callback=self.parse, meta={"meta_parent": meta_parent}, dont_filter=True)
             return
 
