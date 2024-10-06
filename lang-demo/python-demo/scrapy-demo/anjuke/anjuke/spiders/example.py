@@ -18,8 +18,8 @@ city_rlock = threading.RLock()
 city_handled = False
 
 
-# noinspection DuplicatedCode
 class ExampleSpider(scrapy.Spider):
+
     name = "example"
     allowed_domains = []
     start_urls = ["https://www.anjuke.com/sy-city.html?from=HomePage_City"]
