@@ -5,7 +5,7 @@ import time
 from m_pyutil.msqlite import select_one, save
 from m_pyutil.mtencent_map import TencentMap
 
-DB_FILE = "anjuke.db"
+from anjuke.pipelines import DB_FILE
 
 
 def geocoder_handler():
