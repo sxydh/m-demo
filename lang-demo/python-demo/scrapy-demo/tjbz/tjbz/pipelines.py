@@ -2,27 +2,26 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-from util.common import get_sqlite_connection
-
+from m_pyutil.msqlite import create, save
 
 # useful for handling different item types with a single interface
 
 
+DB_FILE = "tjbz.db"
+
+
 class TjbzPipeline:
 
-    def __init__(self):
-        self.conn = None
-
     def open_spider(self, spider):
-        self.conn = get_sqlite_connection()
-        self.conn.execute("create table if not exists tjbz(code text, name text, parent_code text, url text, level, remark text)")
-        self.conn.execute("delete from tjbz where 1 = 1")
-        self.conn.commit()
+        create(sql="create table if not exists tjbz(id integer primary key autoincrement, code text, name text, parent_code text, url text, level, remark text)",
+               f=DB_FILE)
+        save(sql="delete from tjbz where 1 = 1",
+             f=DB_FILE)
 
     def process_item(self, item, spider):
-        self.conn.execute("insert into tjbz(code, name, parent_code, url, level, remark) values (?, ?, ?, ?, ?, ?)",
-                          (item["code"], item["name"], item.get("parent_code", None), item.get("url", None), item["level"], item.get("remark", None)))
-        self.conn.commit()
+        save(sql="insert into tjbz(code, name, parent_code, url, level, remark) values (?, ?, ?, ?, ?, ?)",
+             params=[item.get("code"), item.get("name"), item.get("parent_code"), item.get("url"), item.get("level"), item.get("remark")],
+             f=DB_FILE)
 
     def close_spider(self, spider):
-        self.conn.close()
+        pass
