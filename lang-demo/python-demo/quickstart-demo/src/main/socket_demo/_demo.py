@@ -6,7 +6,7 @@ import time
 
 def server_init():
     print('server init')
-    socket_server = socket.socket()
+    socket_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
     socket_server.bind(('localhost', 10006))
     socket_server.listen(10)
 
@@ -30,7 +30,7 @@ def server_init():
 
 def client_init():
     print('client init')
-    socket_client = socket.socket()
+    socket_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
     socket_client.connect(('localhost', 10006))
     while True:
         time.sleep(random.randint(1, 10))
