@@ -23,20 +23,18 @@ class ExampleSpider(scrapy.Spider):
 
         trs = response.css(".provincetr td")
         level = 1
-        if len(trs) != 0:
-            pass
-        elif self.max_level > 1:
+        if not trs and self.max_level > 1:
             trs = response.css(".citytr")
             level = 2
-        elif self.max_level > 2:
+        if not trs and self.max_level > 2:
             trs = response.css(".countytr")
             level = 3
-        elif self.max_level > 3:
+        if not trs and self.max_level > 3:
             trs = response.css(".towntr")
             level = 4
 
         # 页面异常重试
-        if len(trs) == 0 and meta_parent.get("url"):
+        if not trs and meta_parent.get("url"):
             logging.warning(f"none data page: meta_parent.url={meta_parent.get("url")} <=> response.url={response.url}")
             yield scrapy.Request(url=meta_parent.get("url"), callback=self.parse, meta={"meta_parent": meta_parent}, dont_filter=True)
             return
