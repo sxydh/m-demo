@@ -44,7 +44,7 @@ class ExampleSpider(scrapy.Spider):
         for tr in trs:
             tds = tr.css("td")
             if len(tds) == 1:
-                logging.warning(f"wrong data page: {meta_parent.get('url')}")
+                logging.warning(f"wrong data page: {meta_parent.get('url')} <=> {response.url}")
                 continue
             item = TjbzItem()
             item["code"] = tds[0].css("::text").get().strip()
