@@ -60,7 +60,7 @@ class ExampleSpider(scrapy.Spider):
                         item["url"] = response.urljoin(alist[0].css("::attr(href)").get())
                 yield item
             except Exception as e:
-                logging.error(f"parse error: {str(e)}")
+                logging.warning(f"parse error: {str(e)}")
 
             if item.get("url") and level < self.max_level:
                 yield scrapy.Request(url=item.get("url"), callback=self.parse, meta={"meta_parent": item})
