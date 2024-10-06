@@ -37,23 +37,28 @@ class ExampleSpider(scrapy.Spider):
 
         # 页面异常重试
         if len(trs) == 0 and meta_parent.get("url"):
-            logging.warning(f"none data page: {meta_parent.get('url')} <=> {response.url}")
+            logging.warning(f"none data page: {meta_parent.get("url")} <=> {response.url}")
             yield scrapy.Request(url=meta_parent.get("url"), callback=self.parse, meta={"meta_parent": meta_parent}, dont_filter=True)
             return
 
         for tr in trs:
             tds = tr.css("td")
-            if len(tds) == 1:
-                logging.warning(f"wrong data page: {meta_parent.get('url')} <=> {response.url}")
-                continue
             item = TjbzItem()
-            item["code"] = tds[0].css("::text").get().strip()
-            item["name"] = tds[-1].css("::text").get().strip()
-            item["parent_code"] = parent_code
-            item["level"] = level
-            alist = tds[0].css("a")
-            if len(alist) > 0:
-                item["url"] = response.urljoin(alist[0].css("::attr(href)").get())
+            if level == 1:
+                alist = tds[0].css("a")
+                href = alist[0].css("::attr(href)").get()
+                item["code"] = href.replace(".html", "")
+                item["name"] = tds[0].css("::text").get().strip()
+                item["url"] = response.urljoin(href)
+                item["level"] = level
+            else:
+                item["code"] = tds[0].css("::text").get().strip()
+                item["name"] = tds[-1].css("::text").get().strip()
+                item["parent_code"] = parent_code
+                item["level"] = level
+                alist = tds[0].css("a")
+                if len(alist) > 0:
+                    item["url"] = response.urljoin(alist[0].css("::attr(href)").get())
             yield item
 
             if item.get("url") and level < self.max_level:
