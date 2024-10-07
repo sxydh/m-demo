@@ -45,6 +45,10 @@
                     yAxis: {
                         type: 'value'
                     },
+                    grid: {
+                        x: 0,
+                        x2: 0
+                    },
                     series: [
                         {
                             name: '红1',
@@ -85,7 +89,7 @@
                 };
 
                 let chartContainer = document.getElementById('container');
-                chartContainer.style.width = `${dates.length * 150}px`;
+                chartContainer.style.width = `${dates.length * 120}px`;
                 let chart = echarts.init(chartContainer);
                 chart.setOption(option);
             })
