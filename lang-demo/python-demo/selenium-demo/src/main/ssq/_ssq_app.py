@@ -24,11 +24,13 @@ class SsqApp(threading.Thread):
         self.cli.get('https://www.zhcw.com/kjxx/ssq/')
 
         max_eds = mdate.nowd()
-        sds = mdate.add_days(max_eds, -60)
-        while True:
+        sds = mdate.add_days(max_eds, -90)
+        flag = True
+        while flag:
             eds = mdate.add_days(sds, 20)
-            if eds > max_eds:
-                break
+            if eds >= max_eds:
+                eds = max_eds
+                flag = False
 
             # 点开自定义查询
             wq_xlk01 = self.cli.query_element_d('.wq-xlk01')
