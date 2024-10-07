@@ -25,9 +25,10 @@ class SsqApp(threading.Thread):
 
         max_eds = mdate.nowd()
         sds = mdate.add_days(max_eds, -60)
-        eds = ''
-        while eds <= max_eds:
+        while True:
             eds = mdate.add_days(sds, 20)
+            if eds <= max_eds:
+                break
 
             # 点开自定义查询
             wq_xlk01 = self.cli.query_element_d('.wq-xlk01')
