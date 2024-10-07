@@ -13,7 +13,7 @@ DB_FILE = 'ssq.db'
 class SsqApp(threading.Thread):
 
     def __init__(self):
-        create(sql=f'create table if not exists t_ssq (id integer primary key autoincrement, n1 text, n2 text, n3 text, n4 text, n5 text, n6 text, n7 text, p text)',
+        create(sql=f'create table if not exists t_ssq (id integer primary key autoincrement, d text, r text, r2 text, r3 text, r4 text, r5 text, r6 text, b text, n text)',
                f=DB_FILE)
         save(sql=f'delete from t_ssq where 1 = 1',
              f=DB_FILE)
@@ -64,7 +64,7 @@ class SsqApp(threading.Thread):
                         params.append(tds[3].get_attribute('innerText').strip())
                         params.append(tds[5].get_attribute('innerText').strip())
 
-                        save(sql='insert into t_ssq(n1, n2, n3, n4, n5, n6, n7, p) values(?, ?, ?, ?, ? ,?, ? ,?)',
+                        save(sql='insert into t_ssq(d, r, r2, r3, r4, r5, r6, b, n) values(?, ?, ?, ?, ?, ? ,?, ? ,?)',
                              params=params,
                              f=DB_FILE)
                     break
