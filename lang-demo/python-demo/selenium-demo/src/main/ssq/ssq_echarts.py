@@ -17,4 +17,4 @@ def get_handler(handler: MyHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    mhttp.Server(get_handler=get_handler)
+    mhttp.Server(get_handler=get_handler).start()
