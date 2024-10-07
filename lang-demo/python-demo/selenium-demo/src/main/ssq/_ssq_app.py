@@ -74,8 +74,9 @@ class SsqApp(threading.Thread):
                     break
                 except Exception as e:
                     logging.error(e)
-
             sds = eds
+
+        self.cli.quit()
 
 
 if __name__ == '__main__':
