@@ -11,7 +11,13 @@
     <script>
         fetch('http://localhost:8080/ssq')
             .then(res => {
-                let data = res.data;
+                if (!res.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return res.json();
+            })
+            .then(res => {
+                let data = res.json();
 
                 let dates = data.map(e => e.d);
                 let lineDatas = [
@@ -76,6 +82,9 @@
 
                 let chartContainer = echarts.init(document.getElementById('container'));
                 chartContainer.setOption(option);
+            })
+            .catch(e => {
+                console.debug('fetch', e);
             });
     </script>
 </body>
