@@ -48,9 +48,10 @@ class SsqApp(threading.Thread):
             end_c.send_keys(eds)
 
             # 点击开始查询
-            time.sleep(random.choice(range(1, 3)))
+            time.sleep(random.choice(range(1, 2)))
             jg_an03_2 = self.cli.query_elements_d('.JG-an03')[2]
             self.cli.click(jg_an03_2)
+            time.sleep(0.5)
 
             # 解析页面
             while True:
