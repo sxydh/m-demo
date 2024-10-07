@@ -69,7 +69,7 @@
                 sudo chown sxydh:sxydh /usr/bin/pip
             验证安装
                 python --version
-    依赖仓库
+    仓库管理
         PyPI
             正式环境
                 https://pypi.org/
@@ -103,8 +103,11 @@
                             
                             验证：
                                 pip install "m_pyutil[mip]==1.9.0"
-    包管理器
+    依赖管理
         pip
+            概述
+                https://pip.pypa.io/en/stable/
+                https://pip.pypa.io/en/stable/cli/pip_install/
             指定源
                 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <包名称>
         Anaconda
