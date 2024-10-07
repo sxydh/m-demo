@@ -9,73 +9,74 @@
     <div id="container" style="height: 100vh"></div>
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     <script>
-        let data = [
-            { d: '2024-09-30', r: 10, r2: 15, r3: 20, r4: 25, r5: 30, r6: 35 },
-        ];
+        fetch('http://localhost:8080/ssq')
+            .then(res => {
+                let data = res.data;
 
-        let dates = data.map(e => e.d);
-        let lineDatas = [
-            data.map(e => e.r),
-            data.map(e => e.r2),
-            data.map(e => e.r3),
-            data.map(e => e.r4),
-            data.map(e => e.r5),
-            data.map(e => e.r6),
-            data.map(e => e.b)
-        ];
+                let dates = data.map(e => e.d);
+                let lineDatas = [
+                    data.map(e => e.r),
+                    data.map(e => e.r2),
+                    data.map(e => e.r3),
+                    data.map(e => e.r4),
+                    data.map(e => e.r5),
+                    data.map(e => e.r6),
+                    data.map(e => e.b)
+                ];
 
-        let option = {
-            tooltip: {
-                trigger: 'axis'
-            },
-            xAxis: {
-                type: 'category',
-                data: dates
-            },
-            yAxis: {
-                type: 'value'
-            },
-            series: [
-                {
-                    name: '红1',
-                    data: lineDatas[0],
-                    type: 'line'
-                },
-                {
-                    name: '红2',
-                    data: lineDatas[1],
-                    type: 'line'
-                },
-                {
-                    name: '红3',
-                    data: lineDatas[2],
-                    type: 'line'
-                },
-                {
-                    name: '红4',
-                    data: lineDatas[3],
-                    type: 'line'
-                },
-                {
-                    name: '红5',
-                    data: lineDatas[4],
-                    type: 'line'
-                },
-                {
-                    name: '红6',
-                    data: lineDatas[5],
-                    type: 'line'
-                },
-                {
-                    name: '蓝',
-                    data: lineDatas[6],
-                    type: 'line'
-                }
-            ]
-        };
+                let option = {
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: dates
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [
+                        {
+                            name: '红1',
+                            data: lineDatas[0],
+                            type: 'line'
+                        },
+                        {
+                            name: '红2',
+                            data: lineDatas[1],
+                            type: 'line'
+                        },
+                        {
+                            name: '红3',
+                            data: lineDatas[2],
+                            type: 'line'
+                        },
+                        {
+                            name: '红4',
+                            data: lineDatas[3],
+                            type: 'line'
+                        },
+                        {
+                            name: '红5',
+                            data: lineDatas[4],
+                            type: 'line'
+                        },
+                        {
+                            name: '红6',
+                            data: lineDatas[5],
+                            type: 'line'
+                        },
+                        {
+                            name: '蓝',
+                            data: lineDatas[6],
+                            type: 'line'
+                        }
+                    ]
+                };
 
-        let chartContainer = echarts.init(document.getElementById('container'));
-        chartContainer.setOption(option);
+                let chartContainer = echarts.init(document.getElementById('container'));
+                chartContainer.setOption(option);
+            });
     </script>
 </body>
 
