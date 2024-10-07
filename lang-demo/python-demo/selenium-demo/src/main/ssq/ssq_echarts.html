@@ -17,7 +17,7 @@
                 return res.json();
             })
             .then(res => {
-                let data = res.json();
+                let data = res;
 
                 let dates = data.map(e => e.d);
                 let lineDatas = [
