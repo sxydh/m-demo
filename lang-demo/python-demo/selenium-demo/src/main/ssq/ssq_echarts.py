@@ -24,7 +24,7 @@ def get_data() -> tuple:
         YaxisData('红6', []),
         YaxisData('蓝1', []),
     ]
-    rows = select(sql='select distinct d, r, r2, r3, r4, r5, r6, b, n from t_ssq order by id desc limit 30',
+    rows = select(sql='select distinct d, r, r2, r3, r4, r5, r6, b, n from t_ssq order by d desc limit 30',
                   f=DB_FILE)
     for row in rows:
         xaxis_data.append(row[0])
