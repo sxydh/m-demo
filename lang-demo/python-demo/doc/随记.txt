@@ -96,10 +96,13 @@
                             上传分发文件到测试环境
                             
                             验证：
-                                pip install -i https://test.pypi.org/simple/ m-pyutil==<version>
+                                pip install -i https://test.pypi.org/simple/ "m_pyutil[mip]==1.9.0"
                                 
                         python -m twine upload dist/*
                             上传分发文件到正式环境
+                            
+                            验证：
+                                pip install "m_pyutil[mip]==1.9.0"
     包管理器
         pip
             指定源
