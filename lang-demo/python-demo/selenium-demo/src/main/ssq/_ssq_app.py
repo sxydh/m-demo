@@ -27,7 +27,7 @@ class SsqApp(threading.Thread):
         sds = mdate.add_days(max_eds, -60)
         while True:
             eds = mdate.add_days(sds, 20)
-            if eds <= max_eds:
+            if eds > max_eds:
                 break
 
             # 点开自定义查询
