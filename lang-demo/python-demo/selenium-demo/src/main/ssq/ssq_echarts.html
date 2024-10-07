@@ -34,6 +34,9 @@
                     tooltip: {
                         trigger: 'axis'
                     },
+                    legend: {
+                        data: ['红1', '红2', '红3', '红4', '红5', '红6', '蓝']
+                    },
                     xAxis: {
                         type: 'category',
                         data: dates
@@ -81,7 +84,7 @@
                 };
 
                 let chartContainer = document.getElementById('container');
-                chartContainer.style.width = `${dates.length * 200}px`;
+                chartContainer.style.width = `${dates.length * 150}px`;
                 let chart = echarts.init(chartContainer);
                 chart.setOption(option);
             })
