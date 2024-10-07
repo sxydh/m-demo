@@ -6,9 +6,90 @@
 </head>
 
 <body>
+    <div>
+        <input id="r" />
+        <input id="r2" />
+        <input id="r3" />
+        <input id="r4" />
+        <input id="r5" />
+        <input id="r6" />
+        <input id="b" />
+        <button onclick="handleClick()">确认</button>
+    </div>
     <div id="container" style="height: 100vh"></div>
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     <script>
+        function buildChart(data) {
+            let dates = data.map(e => e.d);
+            let lineDatas = [
+                data.map(e => e.r),
+                data.map(e => e.r2),
+                data.map(e => e.r3),
+                data.map(e => e.r4),
+                data.map(e => e.r5),
+                data.map(e => e.r6),
+                data.map(e => e.b)
+            ];
+
+            let option = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['红1', '红2', '红3', '红4', '红5', '红6', '蓝'],
+                    selected: {
+                        '蓝': false
+                    },
+                    left: 'left'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: dates
+                },
+                yAxis: {
+                    type: 'value',
+                    interval: 1
+                },
+                grid: {
+                    x: 0,
+                    x2: 0
+                },
+                series: []
+            };
+            option.legend.data.forEach((e, i) => {
+                option.series.push({
+                    name: e,
+                    type: 'line',
+                    data: lineDatas[i],
+                    label: {
+                        show: true
+                    }
+                });
+            });
+
+            let chartContainer = document.getElementById('container');
+            chartContainer.style.width = `${dates.length * 120}px`;
+            let chart = echarts.init(chartContainer);
+            chart.setOption(option);
+        }
+
+        function handleClick() {
+            buildChart([
+                {
+                    d: '0000000',
+                    r: document.getElementById('r').value,
+                    r2: document.getElementById('r2').value,
+                    r3: document.getElementById('r3').value,
+                    r4: document.getElementById('r4').value,
+                    r5: document.getElementById('r5').value,
+                    r6: document.getElementById('r6').value,
+                    b: document.getElementById('b').value,
+                },
+                ...originData
+            ]);
+        }
+
+        let originData;
         fetch('http://localhost:8080/ssq')
             .then(res => {
                 if (!res.ok) {
@@ -16,60 +97,9 @@
                 }
                 return res.json();
             })
-            .then(res => {
-                let data = res;
-
-                let dates = data.map(e => e.d);
-                let lineDatas = [
-                    data.map(e => e.r),
-                    data.map(e => e.r2),
-                    data.map(e => e.r3),
-                    data.map(e => e.r4),
-                    data.map(e => e.r5),
-                    data.map(e => e.r6),
-                    data.map(e => e.b)
-                ];
-
-                let option = {
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        data: ['红1', '红2', '红3', '红4', '红5', '红6', '蓝'],
-                        selected: {
-                            '蓝': false
-                        },
-                        left: 'left'
-                    },
-                    xAxis: {
-                        type: 'category',
-                        data: dates
-                    },
-                    yAxis: {
-                        type: 'value',
-                        interval: 1
-                    },
-                    grid: {
-                        x: 0,
-                        x2: 0
-                    },
-                    series: []
-                };
-                option.legend.data.forEach((e, i) => {
-                    option.series.push({
-                        name: e,
-                        type: 'line',
-                        data: lineDatas[i],
-                        label: {
-                            show: true
-                        }
-                    });
-                });
-
-                let chartContainer = document.getElementById('container');
-                chartContainer.style.width = `${dates.length * 120}px`;
-                let chart = echarts.init(chartContainer);
-                chart.setOption(option);
+            .then(data => {
+                originData = data;
+                buildChart(data);
             })
             .catch(e => {
                 console.debug('fetch', e);
