@@ -50,44 +50,18 @@
                         x: 0,
                         x2: 0
                     },
-                    series: [
-                        {
-                            name: '红1',
-                            data: lineDatas[0],
-                            type: 'line'
-                        },
-                        {
-                            name: '红2',
-                            data: lineDatas[1],
-                            type: 'line'
-                        },
-                        {
-                            name: '红3',
-                            data: lineDatas[2],
-                            type: 'line'
-                        },
-                        {
-                            name: '红4',
-                            data: lineDatas[3],
-                            type: 'line'
-                        },
-                        {
-                            name: '红5',
-                            data: lineDatas[4],
-                            type: 'line'
-                        },
-                        {
-                            name: '红6',
-                            data: lineDatas[5],
-                            type: 'line'
-                        },
-                        {
-                            name: '蓝',
-                            data: lineDatas[6],
-                            type: 'line'
-                        }
-                    ]
+                    series: []
                 };
+                option.legend.data.forEach((e, i) => {
+                    option.series.push({
+                        name: e,
+                        type: 'line',
+                        data: lineDatas[i],
+                        label: {
+                            show: true
+                        }
+                    });
+                });
 
                 let chartContainer = document.getElementById('container');
                 chartContainer.style.width = `${dates.length * 120}px`;
