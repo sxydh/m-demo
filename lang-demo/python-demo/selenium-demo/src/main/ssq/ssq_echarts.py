@@ -13,7 +13,7 @@ def get_handler(handler: MyHTTPRequestHandler):
     handler.send_response(200)
     handler.send_header('Content-type', 'application/json')
     handler.end_headers()
-    handler.wfile.write(json.dumps(rows).encode('utf-8'))
+    handler.wfile.write(json.dumps({'data': rows}).encode('utf-8'))
 
 
 if __name__ == '__main__':
