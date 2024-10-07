@@ -1,76 +1,78 @@
-import datetime
-from time import sleep
+import logging
+import random
+import threading
+import time
 
-from selenium.webdriver.common.by import By
+from m_pyutil import mdate
+from m_pyutil.msqlite import create, save
+from m_pyutil.selenium.mchrome import UcChromeCli
 
-from src.main.util.cli import Cli
-from src.main.util.common import add_days, append_e, get_sqlite_connection
-
-
-def start():
-    cli = Cli(headless=False, images_disabled=True)
-    cli.get('https://www.zhcw.com/kjxx/ssq/')
-
-    max_eds = datetime.datetime.now()
-    sds = max_eds + datetime.timedelta(days=-30)
-    max_eds = max_eds.strftime('%Y-%m-%d')
-    sds = sds.strftime('%Y-%m-%d')
-    eds = ''
-    while eds <= max_eds:
-        eds = add_days(sds, 20)
-
-        # 自定义查询
-        wq_xlk01 = cli.find_element_d(by=By.CLASS_NAME, value='wq-xlk01')
-        cli.click(wq_xlk01)
-        cx_tj = cli.find_element_d(by=By.CLASS_NAME, value='cx-tj')
-        div_2 = cli.find_elements(src=cx_tj, by=By.TAG_NAME, value='div')[2]
-        cli.click(div_2)
-
-        # 按日期查询
-        start_c = cli.find_element_d(by=By.ID, value='startC')
-        end_c = cli.find_element_d(by=By.ID, value='endC')
-        start_c.clear()
-        end_c.clear()
-        start_c.send_keys(sds)
-        end_c.send_keys(eds)
-
-        # 开始查询
-        jg_an03_2 = cli.find_elements_d(by=By.CLASS_NAME, value='JG-an03')[2]
-        cli.click(jg_an03_2)
-
-        # 解析结果
-        while True:
-            try:
-                sleep(0.5)
-                tbody = cli.find_element_d(by=By.TAG_NAME, value='tbody')
-                trs = cli.find_elements(src=tbody, by=By.TAG_NAME, value='tr')
-                for tr in trs:
-                    tds = cli.find_elements(src=tr, by=By.TAG_NAME, value='td')
-                    r = f'\'{tds[0].get_attribute('innerText')}\', '
-                    spans = cli.find_elements(src=tds[2], by=By.TAG_NAME, value='span')
-                    for span in spans:
-                        r += f'\'{span.get_attribute('innerText')}\', '
-                    r += f'\'{tds[3].get_attribute('innerText')}\', '
-                    r += f'\'{tds[5].get_attribute('innerText')}\''
-
-                    with get_sqlite_connection() as conn:
-                        conn.execute(f'insert into t_ssq values ({r})')
-
-                break
-            except Exception as e:
-                append_e(str(e))
-
-        sds = eds
-
-        sleep(2)
+DB_FILE = 'ssq.db'
 
 
-def init():
-    with get_sqlite_connection() as conn:
-        conn.execute(f'create table if not exists t_ssq (id text, n1 text, n2 text, n3 text, n4 text, n5 text, n6 text, n7 text, p text)')
-        conn.execute(f'delete from t_ssq')
+class SsqApp(threading.Thread):
+
+    def __init__(self):
+        create(sql=f'create table if not exists t_ssq (id integer primary key autoincrement, n1 text, n2 text, n3 text, n4 text, n5 text, n6 text, n7 text, p text)',
+               f=DB_FILE)
+        save(sql=f'delete from t_ssq where 1 = 1',
+             f=DB_FILE)
+        self.cli = UcChromeCli()
+        super().__init__()
+
+    def run(self):
+        self.cli.get('https://www.zhcw.com/kjxx/ssq/')
+
+        max_eds = mdate.nowd()
+        sds = mdate.add_days(max_eds, -60)
+        eds = ''
+        while eds <= max_eds:
+            eds = mdate.add_days(sds, 20)
+
+            # 点开自定义查询
+            wq_xlk01 = self.cli.query_element_d('.wq-xlk01')
+            self.cli.click(wq_xlk01)
+            cx_tj = self.cli.query_element_d(value='.cx-tj')
+            div_2 = self.cli.query_elements(src=cx_tj, value='div')[2]
+            self.cli.click(div_2)
+
+            # 点开按日期查询
+            start_c = self.cli.query_element_d('#startC')
+            end_c = self.cli.query_element_d('#endC')
+            start_c.clear()
+            end_c.clear()
+            start_c.send_keys(sds)
+            end_c.send_keys(eds)
+
+            # 点击开始查询
+            time.sleep(random.choice(range(1, 3)))
+            jg_an03_2 = self.cli.query_elements_d('.JG-an03')[2]
+            self.cli.click(jg_an03_2)
+
+            # 解析页面
+            while True:
+                try:
+                    tbody = self.cli.query_element_d('tbody')
+                    trs = self.cli.query_elements(src=tbody, value='tr')
+                    for tr in trs:
+                        params = []
+                        tds = self.cli.query_elements(src=tr, value='td')
+                        params.append(tds[0].get_attribute('innerText').strip())
+                        spans = self.cli.query_elements(src=tds[2], value='span')
+                        for span in spans:
+                            params.append(span.get_attribute('innerText').strip())
+                        params.append(tds[3].get_attribute('innerText').strip())
+                        params.append(tds[5].get_attribute('innerText').strip())
+
+                        save(sql='insert into t_ssq(n1, n2, n3, n4, n5, n6, n7, p) values(?, ?, ?, ?, ? ,?, ? ,?)',
+                             params=params,
+                             f=DB_FILE)
+                    break
+                except Exception as e:
+                    logging.error(e)
+
+            sds = eds
 
 
 if __name__ == '__main__':
-    init()
-    start()
+    SsqApp().start()
