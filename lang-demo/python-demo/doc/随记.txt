@@ -109,7 +109,7 @@
                 https://pip.pypa.io/en/stable/
                 https://pip.pypa.io/en/stable/cli/pip_install/
             开始
-                pip install -r requirement.txt
+                pip install -r requirements.txt
                     -r ： requirements file 。
                     
                     安装文件内指定的依赖列表
