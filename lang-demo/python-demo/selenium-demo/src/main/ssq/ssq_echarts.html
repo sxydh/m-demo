@@ -80,8 +80,10 @@
                     ]
                 };
 
-                let chartContainer = echarts.init(document.getElementById('container'));
-                chartContainer.setOption(option);
+                let chartContainer = document.getElementById('container');
+                chartContainer.style.width = `${dates.length * 200}px`;
+                let chart = echarts.init(chartContainer);
+                chart.setOption(option);
             })
             .catch(e => {
                 console.debug('fetch', e);
