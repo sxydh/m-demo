@@ -96,20 +96,26 @@
                             上传分发文件到测试环境
                             
                             验证：
-                                pip install -i https://test.pypi.org/simple/ "m_pyutil[mip]==1.9.0"
+                                pip install -i https://test.pypi.org/simple/ "m-pyutil[mip]==1.9.0"
                                 
                         python -m twine upload dist/*
                             上传分发文件到正式环境
                             
                             验证：
-                                pip install "m_pyutil[mip]==1.9.0"
+                                pip install "m-pyutil[mip]==1.9.0"
     依赖管理
         pip
             概述
                 https://pip.pypa.io/en/stable/
                 https://pip.pypa.io/en/stable/cli/pip_install/
-            指定源
+            开始
+                pip install -r requirement.txt
+                    -r ： requirements file 。
+                    
+                    安装文件内指定的依赖列表
+                    
                 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <包名称>
+                    指定源
         Anaconda
     虚拟环境
         venv
