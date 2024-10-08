@@ -4,6 +4,7 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from m_pyutil import mtmp
 
 # 不要删除
 salt = b'20240626'
@@ -24,38 +25,30 @@ def encrypt(password):
     key = get_key(password)
     cipher_suite = Fernet(key)
 
-    text: str
-    with open('tmp/decrypt.txt', mode='r+', encoding='utf-8') as dfile:
-        text = dfile.read()
+    decrypt_text = mtmp.read('decrypt.txt')
+    encrypt_text = cipher_suite.encrypt(decrypt_text.encode())
+    print('Encrypted: ', encrypt_text)
 
-        cipher_text = cipher_suite.encrypt(text.encode())
-        print('Encrypted: ', cipher_text)
+    mtmp.truncate('encrypt.txt')
+    mtmp.append('encrypt.txt', encrypt_text.decode())
 
-        with open('tmp/encrypt.txt', mode='w', encoding='utf-8') as efile:
-            efile.write(cipher_text.decode())
-
-        dfile.truncate(0)
+    mtmp.truncate('decrypt.txt')
 
 
 def decrypt(password):
     key = get_key(password)
     cipher_suite = Fernet(key)
 
-    cipher_text: str
-    with open('tmp/encrypt.txt') as efile:
-        cipher_text = efile.read()
-
-    text = cipher_suite.decrypt(cipher_text).decode()
-    print('Decrypted: ', text)
+    cipher_text = mtmp.read('encrypt.txt')
+    decrypt_text = cipher_suite.decrypt(cipher_text).decode()
+    print('Decrypted: ', decrypt_text)
 
 
 if __name__ == '__main__':
-    epwd = input('Enter your encrypt password: ')
+    encrypt_pwd = input('Enter your encrypt password: ')
+    if len(encrypt_pwd) != 0:
+        encrypt(encrypt_pwd)
 
-    if len(epwd) != 0:
-        encrypt(epwd)
-
-    dpwd = input('Enter your decrypt password: ')
-
-    if len(dpwd) != 0:
-        decrypt(dpwd)
+    decrypt_pwd = input('Enter your decrypt password: ')
+    if len(decrypt_pwd) != 0:
+        decrypt(decrypt_pwd)
