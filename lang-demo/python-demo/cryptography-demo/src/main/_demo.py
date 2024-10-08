@@ -30,7 +30,7 @@ def encrypt(password):
     print('Encrypted: ', encrypt_text)
 
     mtmp.truncate('encrypt.txt')
-    mtmp.append('encrypt.txt', encrypt_text.decode())
+    mtmp.append(encrypt_text.decode(), 'encrypt.txt')
 
     mtmp.truncate('decrypt.txt')
 
