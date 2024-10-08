@@ -18,3 +18,9 @@ File
                     No data sources configured
         Plugins
             Maven Helper
+        Build, Execution, Deployment
+            Build Tools
+                Maven
+                    Runner
+                        VM Options
+                            -Dfile.encoding=GBK
