@@ -49,3 +49,9 @@
                 master ：远程仓库的分支。
             git push origin <local_branch>:<remote_branch>
                 origin ：远程仓库的名称。
+    clean
+        清理
+            git clean -dfX
+                -d ：删除目录。
+                -f ：强制删除。
+                -X ：删除所有未跟踪文件，但保留目录。
