@@ -13,8 +13,15 @@
                     安装
                         npm install <package_name> --registry=https://registry.npmmirror.com
                             安装包到当前项目的 node_modules 文件夹中
+                        npm install <package_name> --save
+                            安装包到当前项目的 node_modules 文件夹中，并更新包到 package.json 文件中的 dependencies 配置项。
+                        npm install <package_name> --save-dev
+                            安装包到当前项目的 node_modules 文件夹中，并更新包到 package.json 文件中的 devDependencies 配置项，开发依赖配置项在正式打包时会忽略掉。
                         npm install -g <package_name>
                             安装包到当前用户的 node_modules 文件夹中
+                    卸载
+                        npm uninstall <package_name>
+                        npm uninstall -g <package_name>
                 config
                     列表
                         npm config list
