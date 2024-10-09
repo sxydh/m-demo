@@ -5,6 +5,11 @@
                 npm 是 Node.js 的默认包管理器
             开始
                 install
+                    列表
+                        npm list
+                            查看当前项目已安装的包
+                        npm list -g
+                            查看当前用户已安装的包
                     安装
                         npm install <package_name> --registry=https://registry.npmmirror.com
                             安装包到当前项目的 node_modules 文件夹中
