@@ -19,6 +19,7 @@
                             安装包到当前项目的 node_modules 文件夹中，并更新包到 package.json 文件中的 devDependencies 配置项，开发依赖配置项在正式打包时会忽略掉。
                         npm install -g <package_name>
                             安装包到当前用户的 node_modules 文件夹中
+                                Windows = C:/Users/<current_user>/AppData/Roaming/npm/node_modules
                     卸载
                         npm uninstall <package_name>
                         npm uninstall -g <package_name>
