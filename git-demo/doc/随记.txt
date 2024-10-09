@@ -1,36 +1,4 @@
 开始
-    branch
-        列表
-            git branch -a
-        新建
-            git branch <branch_name>
-        切换
-            git checkout <target_branch_name>
-    remote
-        添加
-            git remote add origin https://github.com/sxydh/sshtunnel.git
-                add ：表明要添加远程仓库。
-                origin ：远程仓库的默认名称。
-        删除
-            git remote remove origin
-                remove ：表明要删除远程仓库。
-                origin ：远程仓库的默认名称。
-    push
-        推送
-            git push --set-upstream origin master
-                --set-upstream ：用于设置本地分支与远程分支的上游关系。
-                origin ：远程仓库的名称。
-                master ：远程仓库的分支。
-            git push origin <local_branch>:<remote_branch>
-                origin ：远程仓库的名称。
-    stage
-        列表
-            git diff --staged
-    stash
-        列表
-            git stash list
-        检出
-            git stash pop
     config
         添加
             git config --global user.name "sxydh"
@@ -49,3 +17,35 @@
                         更新
                             [credential]
                             	helper = store
+    remote
+        添加
+            git remote add origin https://github.com/sxydh/sshtunnel.git
+                add ：表明要添加远程仓库。
+                origin ：远程仓库的默认名称。
+        删除
+            git remote remove origin
+                remove ：表明要删除远程仓库。
+                origin ：远程仓库的默认名称。
+    branch
+        列表
+            git branch -a
+        新建
+            git branch <branch_name>
+        切换
+            git checkout <target_branch_name>
+    stage
+        列表
+            git diff --staged
+    stash
+        列表
+            git stash list
+        检出
+            git stash pop
+    push
+        推送
+            git push --set-upstream origin master
+                --set-upstream ：用于设置本地分支与远程分支的上游关系。
+                origin ：远程仓库的名称。
+                master ：远程仓库的分支。
+            git push origin <local_branch>:<remote_branch>
+                origin ：远程仓库的名称。
