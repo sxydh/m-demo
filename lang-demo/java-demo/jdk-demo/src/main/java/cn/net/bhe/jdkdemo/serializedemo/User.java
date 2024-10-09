@@ -11,6 +11,9 @@ public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    public User() {
+    }
+
     private String name;
     private Integer age;
 
