@@ -18,9 +18,8 @@ public class _JdbcApp {
             preparedStatement.setFetchSize(Integer.MIN_VALUE);
             long start = System.currentTimeMillis();
             ResultSet resultSet = preparedStatement.executeQuery();
-            RsUtils.RsIt rsIt = RsUtils.getRsIt(resultSet);
             int size = 0;
-            while (rsIt.hasNext()) {
+            while (RsUtils.getRsIt(resultSet).hasNext()) {
                 size++;
             }
             System.out.println("size = " + size + ", mills = " + (System.currentTimeMillis() - start));
