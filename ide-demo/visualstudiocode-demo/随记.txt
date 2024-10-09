@@ -1,18 +1,21 @@
-File
-    Preferences
-        Settings
-            User
-                Text Editor
-                    Detect Indentation
-                        取消勾选，否则在打开文件时，缩进会被调整。
-                    Trim Auto Whitespace
-                        取消勾选，否则空白行的空格会被清除。
-                Extensions
-                    TypeScript
-                        JavaScript > Format: Semicolons
-                            定义格式化分号行为
-        Keyboard Shortcuts
-            Search Editor: Select All Matches
-                Ctrl + Shift + L
-            Expand Line Selection
-                Ctrl + L
+开始
+    File
+        Preferences
+            Settings
+                User
+                    Text Editor
+                        Detect Indentation
+                            取消勾选，否则在打开文件时，缩进会被调整。
+                        Trim Auto Whitespace
+                            取消勾选，否则空白行的空格会被清除。
+                    Extensions
+                        TypeScript
+                            JavaScript > Format: Semicolons
+                                定义格式化分号行为
+            Keyboard Shortcuts
+                Search Editor: Select All Matches
+                    Ctrl + Shift + L
+                Expand Line Selection
+                    Ctrl + L
+    View
+        Terminal
