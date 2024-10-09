@@ -11,11 +11,14 @@
                     Extensions
                         TypeScript
                             JavaScript > Format: Semicolons
-                                定义格式化分号行为
+                                定义格式化时分号的行为
             Keyboard Shortcuts
                 Search Editor: Select All Matches
                     Ctrl + Shift + L
                 Expand Line Selection
                     Ctrl + L
     View
+        Command Palette...
+            Terminal: Select Default Profile
+                定义终端的默认类型
         Terminal
