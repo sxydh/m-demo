@@ -17,6 +17,8 @@
                         npm config get registry
                     修改
                         npm config set registry https://registry.npm.taobao.org
+                    删除
+                        npm config delete registry
         pnpm
             概述
                 pnpm 目标是成为 npm 空间和时间上更优的替代品
