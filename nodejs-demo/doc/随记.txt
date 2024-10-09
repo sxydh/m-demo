@@ -21,6 +21,9 @@
                         npm config set https-proxy http://127.0.0.1:7890
                     删除
                         npm config delete registry
+                cache
+                    清理
+                        npm cache clean --force
         pnpm
             概述
                 pnpm 目标是成为 npm 空间和时间上更优的替代品
