@@ -1,0 +1,11 @@
+开始
+    HKEY_CLASSES_ROOT
+        Directory
+            background
+                shell
+                    Open In MyTerminal
+                        @="Open In MyTerminal"
+                        "Icon"="C:\\Windows\\system32\\cmd.exe"
+                        
+                            command
+                                @="cmd.exe /s /k pushd \"%V\""
