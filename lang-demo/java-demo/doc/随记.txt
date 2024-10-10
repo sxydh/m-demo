@@ -1,4 +1,4 @@
-常用命令
+开始
     JDK >= 11
         java
             https://docs.oracle.com/en/java/javase/17/docs/specs/man/java.html
