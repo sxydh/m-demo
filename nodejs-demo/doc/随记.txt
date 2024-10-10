@@ -36,6 +36,10 @@
             cache
                 清理
                     npm cache clean --force
+            npx
+                概述
+                    npx 是 npm 附带的命令行工具，用于执行 npm 上注册的包，而无需先将包安装到本地环境。
+                    npx 运行一个包时，如果发现包在本地未安装，则会自动临时安装并运行。
     pnpm
         概述
             pnpm 目标是成为 npm 空间和时间上更优的替代品
