@@ -1,0 +1,2 @@
+概述
+    TypeScript 是在 JavaScript 的基础上附加了强类型特性
