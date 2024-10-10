@@ -1,4 +1,4 @@
-常用命令
+开始
     netstat
         netstat -an | findstr "<target_port>"
             查看端口占用
