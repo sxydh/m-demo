@@ -1,5 +1,6 @@
 import { chromium } from 'playwright';
 
+// http://www.site-digger.com/html/weibo/2022/0810/881.html
 (async () => {
     const browser = await chromium.launch({
         headless: false
