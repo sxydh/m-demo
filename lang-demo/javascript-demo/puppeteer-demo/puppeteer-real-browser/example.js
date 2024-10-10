@@ -8,7 +8,9 @@ async function test() {
         args: [],
         customConfig: {},
         turnstile: true,
-        connectOption: {},
+        connectOption: {
+            defaultViewport: null
+        },
         disableXvfb: false,
         ignoreAllFlags: false
     });
