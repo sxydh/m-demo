@@ -39,7 +39,7 @@
                 sudo chown sxydh:sxydh /usr/bin/pip
             验证安装
                 python --version
-    仓库管理
+    软件仓库
         PyPI
             正式环境
                 https://pypi.org/
@@ -73,19 +73,27 @@
                             
                             验证：
                                 pip install "m-pyutil[mip]==1.9.0"
-    依赖管理
+    软件管理
         Pip
             概述
                 https://pip.pypa.io/en/stable/
                 https://pip.pypa.io/en/stable/cli/pip_install/
             开始
-                pip install -r requirements.txt
-                    -r ： requirements file 。
-                    
-                    安装文件内指定的依赖列表
-                    
-                pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <包名称>
-                    从指定源安装
+                install
+                    列表
+                        pip list
+                        
+                    安装
+                        pip install -r requirements.txt
+                            -r ： requirements file 。
+                            
+                            安装文件内指定的依赖列表
+                            
+                        pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <包名称>
+                            从指定源安装
+                            
+                    卸载
+                        pip uninstall <package_name>
         Anaconda
         
     虚拟环境
