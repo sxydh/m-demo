@@ -6,3 +6,9 @@
     
 环境
     npm install playwright
+        安装 playwright
+        
+    npx playwright install
+        安装 playwright 依赖的默认浏览器
+            https://playwright.dev/docs/browsers
+                安装包路径 = %USERPROFILE%\AppData\Local\ms-playwright
