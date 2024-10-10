@@ -1,6 +1,9 @@
 概述
     Python 是解释型语言
     Python 是动态强类型语言
+问题
+    ModuleNotFoundError: No module named 'distutils'
+        pip install setuptools
 环境
     Python 3.10.4
         Windows 11
