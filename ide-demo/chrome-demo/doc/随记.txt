@@ -1,5 +1,5 @@
 开始
-    快捷键
+    快捷按键
         F12
             打开开发者工具
             
@@ -11,3 +11,6 @@
     启动参数
         https://peter.sh/experiments/chromium-command-line-switches/#borealis-launch-options
         https://www.chromium.org/developers/how-tos/run-chromium-with-flags/
+    开发工具
+        Network
+            Import HAR file...
