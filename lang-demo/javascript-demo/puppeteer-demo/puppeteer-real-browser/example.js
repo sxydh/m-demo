@@ -5,7 +5,7 @@ async function test() {
 
     const { browser, page } = await connect({
         headless: false,
-        args: [],
+        args: ["--start-maximized"],
         customConfig: {},
         turnstile: true,
         connectOption: {
