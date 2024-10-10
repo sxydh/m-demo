@@ -3,6 +3,9 @@
     
     https://typestrong.org/ts-node/docs/
     
+开始
+    ts-node example.ts
+    
 环境
     npm install -g typescript
     npm install -g ts-node
