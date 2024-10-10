@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "tslib": "^2.7.0"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
