@@ -1,50 +1,20 @@
 概述
-    Python是解释型语言
-    Python是动态强类型语言
-基础
-    数据类型 
-        数字（Number）：int，float，complex（复数），bool。
-        字符串（String）
-        列表（List）
-        元组（Tuple）
-        集合（Set）
-        字典（Dictionary）
-        参见python-demo/src/main
-    流程控制
-        参见python-demo/src/main
-    函数 
-        参见python-demo/src/main
-    异常
-        参见python-demo/src/main
-    模块
-        参见python-demo/src/main
-    包 
-        参见python-demo/src/main
-    类
-        参见python-demo/src/main
-    对象
-        参见python-demo/src/main
-    继承 
-        参见python-demo/src/main
-    多态
-        参见python-demo/src/main
-进阶
-    多线程
-        参见python-demo/src/main
+    Python 是解释型语言
+    Python 是动态强类型语言
 环境
     Python 3.10.4
         Windows 11
             安装软件
                 略
             环境变量
-                更新或追加（如果没有的话）
+                追加或更新
                     PYTHON_HOME
                         C:\Users\Administrator\AppData\Local\Programs\Python\Python312
                     PATH
                         %PYTHON_HOME%
                         %PYTHON_HOME%\Scripts
         Ubuntu 20.04.6 LTS
-            前置依赖
+            前置条件
                 sudo apt update
                 sudo apt-get install -y gcc make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev
             准备文件
@@ -104,7 +74,7 @@
                             验证：
                                 pip install "m-pyutil[mip]==1.9.0"
     依赖管理
-        pip
+        Pip
             概述
                 https://pip.pypa.io/en/stable/
                 https://pip.pypa.io/en/stable/cli/pip_install/
@@ -117,11 +87,7 @@
                 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <包名称>
                     从指定源安装
         Anaconda
+        
     虚拟环境
         venv
         virtualenv
-    开发工具
-        PyCharm
-            生成依赖清单
-                Tools
-                    Sync python requirements
