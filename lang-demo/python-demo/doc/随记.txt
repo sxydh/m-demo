@@ -89,7 +89,7 @@
                             
                             安装文件内指定的依赖列表
                             
-                        pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <包名称>
+                        pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <package_name>
                             从指定源安装
                             
                     卸载
