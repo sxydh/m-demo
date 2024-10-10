@@ -1,0 +1,4 @@
+概述
+    Playwright 是一个由 Microsoft 开发的用于浏览器测试和网页抓取的开源自动化库
+    Playwright 于 2020 年 1 月 31 日推出
+    Playwright 提供了使用单个 API 在 Chromium 、 Firefox 和 WebKit 中自动执行浏览器任务的能力。
