@@ -1,0 +1,9 @@
+概述
+    ts-node 是 TypeScript 的执行引擎，其本质是将 TypeScript 在运行时编译为 JavaScript 并运行。
+    
+    https://typestrong.org/ts-node/docs/
+    
+环境
+    npm install -g typescript
+    npm install -g ts-node
+    npm install -D tslib @types/node
