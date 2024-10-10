@@ -101,4 +101,11 @@
         
     虚拟环境
         venv
+            概述
+                venv 是基于当前 Python 环境创建的虚拟环境，拥有独立的程序包安装目录。
+            开始
+                python -m venv <venv_name>
+                cd <venv_name>/Scripts
+                activate
+                
         virtualenv
