@@ -14,6 +14,7 @@ import { connect } from 'puppeteer-real-browser';
         disableXvfb: false,
         ignoreAllFlags: false
     });
+    // https://www.browserscan.net/bot-detection
     await page.goto('https://chatgpt.com/');
 
 })();
