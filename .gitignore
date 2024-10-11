@@ -1,7 +1,11 @@
 ### User ###
-*.drawio.bkp
+tmp
+
 log
 logs
 *.log
-tmp
+
+.idea
+
 ~$*
+*.drawio.bkp
