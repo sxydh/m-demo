@@ -1,7 +1,7 @@
 
 import { connect } from 'puppeteer-real-browser';
 
-async function test() {
+(async () => {
 
     const { browser, page } = await connect({
         headless: false,
@@ -16,6 +16,4 @@ async function test() {
     });
     await page.goto('https://chatgpt.com/');
 
-}
-
-test();
+})();
