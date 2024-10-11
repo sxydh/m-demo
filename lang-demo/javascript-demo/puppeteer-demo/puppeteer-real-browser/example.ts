@@ -1,5 +1,5 @@
 
-const { connect } = require("puppeteer-real-browser");
+import { connect } from 'puppeteer-real-browser';
 
 async function test() {
 
