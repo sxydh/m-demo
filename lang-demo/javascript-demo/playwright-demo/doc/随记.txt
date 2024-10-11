@@ -12,4 +12,5 @@
     npx playwright install --save
         安装 playwright 依赖的默认浏览器
             https://playwright.dev/docs/browsers
-                安装包路径 = %USERPROFILE%\AppData\Local\ms-playwright
+            
+            浏览器路径 = %USERPROFILE%\AppData\Local\ms-playwright
