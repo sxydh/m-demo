@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "ES2017", // 必需
-        "module": "commonjs", // 必需
+        "module": "CommonJS", // 必需
         "esModuleInterop": true // 推荐
     }
 }
