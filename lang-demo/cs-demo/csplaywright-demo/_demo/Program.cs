@@ -1,26 +1,32 @@
 ﻿using Microsoft.Playwright;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace _demo
 {
     internal class Program
     {
-        async static void Main(string[] args)
+        static void Main(string[] args)
         {
-            using (var playwright = await Playwright.CreateAsync())
+            Task.Run(async () =>
             {
-                var launchOptions = new BrowserTypeLaunchOptions
+                using (var playwright = await Playwright.CreateAsync())
                 {
-                    Headless = false
-                };
-                var browser = await playwright.Chromium.LaunchAsync(launchOptions);
-                var page = await browser.NewPageAsync();
+                    var launchOptions = new BrowserTypeLaunchOptions
+                    {
+                        Headless = false,
+                        ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe"
+                    };
+                    var browser = await playwright.Chromium.LaunchAsync(launchOptions);
+                    var page = await browser.NewPageAsync();
 
-                await page.GotoAsync("https://www.baidu.com");
+                    await page.GotoAsync("https://www.baidu.com");
 
-                await Task.Delay(5000);
-                await browser.CloseAsync();
-            }
+                    await Task.Delay(5000);
+                    await browser.CloseAsync();
+                }
+            }).Wait();
         }
+
     }
 }
