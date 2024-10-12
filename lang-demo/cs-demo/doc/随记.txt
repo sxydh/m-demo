@@ -1,32 +1,42 @@
 概述
     C# 是静态类型语言
     C# 编译后产生 exe 文件，由 CLR 执行，与 Java 类似。
-基础
-    变量
-        参见代码
-    数据类型
-        参见代码
-    运算符
-        参见代码
-    流程控制
-        参见代码
-    封装
-        参见代码
-    结构体
-        参加代码
-    枚举
-        参加代码
-    类
-        参加代码
-    继承
-        参加代码
-    接口
-        参见代码
-    多态
-        参见代码
-    异常
-        参加代码
-    命名空间
-        参加代码
-    IO
-        参加代码
+环境
+    软件仓库
+        NuGet
+            测试环境
+                https://int.nugettest.org/
+            正式环境
+                https://www.nuget.org/
+                    类库
+                        .NET Framework
+                            https://learn.microsoft.com/zh-cn/nuget/quickstart/create-and-publish-a-package-using-visual-studio-net-framework
+                                前置条件
+                                    https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+                                        属性
+                                            安全
+                                                解除锁定
+                                        添加到环境变量
+                                创建项目
+                                    类库
+                                        .NET Framework
+                                生成项目
+                                    Release
+                                生成清单
+                                    nuget spec <csproj_file>
+                                        <proj_name>.nuspec
+                                            更新
+                                                authors
+                                                projectUrl
+                                                ...
+                                打包项目
+                                    前置条件
+                                        m-netutil.csproj
+                                            更新
+                                                <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+                                    开始
+                                        nuget pack
+                                发布软件
+                                    nuget push <nupkg_name> <api_key> -Source https://api.nuget.org/v3/index.json
+    软件管理
+        NuGet
