@@ -1,6 +1,6 @@
 概述
     C# 是静态类型语言
-    C# 编译后产生 exe 文件，由 CLR 执行，与 Java 类似。
+    C# 编译后产生 exe 文件（ Windows 平台下 ），由 CLR 执行，与 Java 类似。
 环境
     软件仓库
         NuGet
