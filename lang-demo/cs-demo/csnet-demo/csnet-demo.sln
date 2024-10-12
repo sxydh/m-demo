@@ -13,7 +13,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ip_demo", "ip_demo\ip_demo.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "http_client_demo", "http_client_demo\http_client_demo.csproj", "{0C5BB4DC-A2F4-4455-AAE1-AC732EDAA6AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssh_demo", "ssh_demo\ssh_demo.csproj", "{F62BA248-3A94-443D-9D79-BC8DD9DCB480}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ssh_demo", "ssh_demo\ssh_demo.csproj", "{F62BA248-3A94-443D-9D79-BC8DD9DCB480}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "http_listener_demo", "http_listener_demo\http_listener_demo.csproj", "{22B1A9C8-8A79-4D40-B640-77C7ABED09E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{F62BA248-3A94-443D-9D79-BC8DD9DCB480}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F62BA248-3A94-443D-9D79-BC8DD9DCB480}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F62BA248-3A94-443D-9D79-BC8DD9DCB480}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22B1A9C8-8A79-4D40-B640-77C7ABED09E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22B1A9C8-8A79-4D40-B640-77C7ABED09E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22B1A9C8-8A79-4D40-B640-77C7ABED09E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22B1A9C8-8A79-4D40-B640-77C7ABED09E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
