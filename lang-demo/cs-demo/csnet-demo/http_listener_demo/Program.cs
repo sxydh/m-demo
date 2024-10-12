@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -72,6 +73,13 @@ namespace http_listener_demo
         {
             try
             {
+                string indexPath = Path.Combine(directoryPath, "index.html");
+                if (File.Exists(indexPath))
+                {
+                    ProcessFile(context, indexPath);
+                    return;
+                }
+
                 var subDirectories = Directory.GetDirectories(directoryPath);
                 var subFiles = Directory.GetFiles(directoryPath);
 
@@ -81,12 +89,12 @@ namespace http_listener_demo
                     foreach (var subDir in subDirectories)
                     {
                         var subDirName = Path.GetFileName(subDir);
-                        writer.WriteLine($"<li><a href=\"{HttpUtility.UrlEncode(subDirName)}/\">{subDirName}/</a></li>", System.Text.Encoding.UTF8);
+                        writer.WriteLine($"<li><a href=\"{HttpUtility.UrlEncode(subDirName)}/\">{subDirName}/</a></li>", Encoding.UTF8);
                     }
                     foreach (var subFile in subFiles)
                     {
                         var subFileName = Path.GetFileName(subFile);
-                        writer.WriteLine($"<li><a href=\"{HttpUtility.UrlEncode(subFileName)}\">{subFileName}</a></li>", System.Text.Encoding.UTF8);
+                        writer.WriteLine($"<li><a href=\"{HttpUtility.UrlEncode(subFileName)}\">{subFileName}</a></li>", Encoding.UTF8);
                     }
                     writer.WriteLine("</ul></body></html>");
                 }
