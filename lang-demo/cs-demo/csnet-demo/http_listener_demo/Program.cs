@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace http_listener_demo
 {
@@ -50,6 +51,7 @@ namespace http_listener_demo
         {
             string requestPath = context.Request.Url.AbsolutePath.TrimStart('/');
             string targetPath = Path.Combine(_rootDirectory, requestPath);
+            targetPath = HttpUtility.UrlDecode(targetPath);
 
             if (string.IsNullOrWhiteSpace(requestPath) || Directory.Exists(targetPath))
             {
@@ -75,20 +77,20 @@ namespace http_listener_demo
 
                 using (var writer = new StreamWriter(context.Response.OutputStream))
                 {
-                    writer.WriteLine("<html><body><ul>");
+                    writer.WriteLine("<html><head><meta charset=\"UTF-8\"></head><body><ul>");
                     foreach (var subDir in subDirectories)
                     {
                         var subDirName = Path.GetFileName(subDir);
-                        writer.WriteLine($"<li><a href=\"{subDirName}/\">{subDirName}/</a></li>");
+                        writer.WriteLine($"<li><a href=\"{HttpUtility.UrlEncode(subDirName)}/\">{subDirName}/</a></li>", System.Text.Encoding.UTF8);
                     }
                     foreach (var subFile in subFiles)
                     {
                         var subFileName = Path.GetFileName(subFile);
-                        writer.WriteLine($"<li><a href=\"{subFileName}\">{subFileName}</a></li>");
+                        writer.WriteLine($"<li><a href=\"{HttpUtility.UrlEncode(subFileName)}\">{subFileName}</a></li>", System.Text.Encoding.UTF8);
                     }
                     writer.WriteLine("</ul></body></html>");
                 }
-                context.Response.ContentType = "text/html";
+                context.Response.ContentType = "text/html; charset=UTF-8";
                 context.Response.StatusCode = (int)HttpStatusCode.OK;
             }
             catch (Exception)
@@ -148,8 +150,8 @@ namespace http_listener_demo
                 case ".epub": return "application/epub+zip";
                 case ".gz": return "application/gzip";
                 case ".gif": return "image/gif";
-                case ".htm": return "text/html";
-                case ".html": return "text/html";
+                case ".htm": return "text/html; charset=UTF-8";
+                case ".html": return "text/html; charset=UTF-8";
                 case ".ico": return "image/vnd.microsoft.icon";
                 case ".ics": return "text/calendar";
                 case ".jar": return "application/java-archive";
