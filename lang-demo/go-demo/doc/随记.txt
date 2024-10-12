@@ -1,9 +1,16 @@
-环境
-    代理
-        set http_proxy=socks5://127.0.0.1:10808
-        set https_proxy=socks5://127.0.0.1:10808
-    模块
-        引入
-            go get <target_package>
+开始
+    get
+        安装
+            go get <package_name>
+                网络代理
+                    set http_proxy=socks5://127.0.0.1:10808
+                    set https_proxy=socks5://127.0.0.1:10808
+        列表
+            go list ...
+                查看当前目录及其子目录的包
+            go list all
+                查看全局安装的包
+    mod
         清理
             go mod tidy
+环境
