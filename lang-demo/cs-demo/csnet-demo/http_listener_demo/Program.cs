@@ -11,7 +11,7 @@ namespace http_listener_demo
         static void Main()
         {
             SimpleHttpServer server = new SimpleHttpServer(8080);
-            server.Start();
+            server.Start().Wait();
             server.Stop();
         }
 
@@ -25,7 +25,7 @@ namespace http_listener_demo
         public SimpleHttpServer(int port)
         {
             _listener = new HttpListener();
-            _listener.Prefixes.Add($"http://localhost:{port}");
+            _listener.Prefixes.Add($"http://localhost:{port}/");
         }
 
         public Task Start()
@@ -204,8 +204,8 @@ namespace http_listener_demo
                 case ".3gp": return "video/3gpp";
                 case ".3g2": return "video/3gpp2";
                 case ".7z": return "application/x-7z-compressed";
+                default: return "application/octet-stream";
             }
-            throw new ArgumentException($"Can not get content type of {path}");
         }
 
     }
