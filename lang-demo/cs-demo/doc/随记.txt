@@ -28,6 +28,7 @@
                                             更新
                                                 authors
                                                 projectUrl
+                                                description
                                                 ...
                                 打包项目
                                     前置条件
