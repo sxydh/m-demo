@@ -8,19 +8,11 @@ namespace http_listener_demo
     internal class Program
     {
 
-        private static readonly string baseUrl = "http://localhost:5000/";
-
         static void Main()
         {
-            string prefix = "http://localhost:8080/";
-            string rootDirectory = @"D:\Code\1-My\m-demo\lang-demo\cs-demo\csnet-demo\http_listener_demo"; // 修改为你的静态文件路径
-
-            SimpleHttpServer server = new SimpleHttpServer(prefix, rootDirectory);
+            SimpleHttpServer server = new SimpleHttpServer(8080);
             server.Start();
-
             server.Stop();
-
-            Task.Delay(500000).Wait();
         }
 
     }
