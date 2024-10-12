@@ -37,6 +37,6 @@
                                     开始
                                         nuget pack
                                 发布软件
-                                    nuget push <nupkg_name> <api_key> -Source https://api.nuget.org/v3/index.json
+                                    nuget push <nupkg_file> <api_key> -Source https://api.nuget.org/v3/index.json
     软件管理
         NuGet
