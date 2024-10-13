@@ -17,3 +17,4 @@
         https://ffmpeg.org/download.html#build-windows
             https://www.gyan.dev/ffmpeg/builds/
                 https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z
+                    添加到环境变量
