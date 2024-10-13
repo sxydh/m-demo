@@ -1,0 +1,19 @@
+概述
+    https://github.com/FFmpeg/FFmpeg?tab=readme-ov-file
+    
+    FFmpeg 是开源的具有音视频录制、格式转换、串流等功能的软件。
+    
+开始
+    ffmpeg
+        https://www.ffmpeg.org/ffmpeg.html#Synopsis
+            ffmpeg -i input.wmv -c:v libx264 -c:a aac output.mp4
+                格式转换
+                
+    ffplay
+        https://www.ffmpeg.org/ffplay.html#toc-Synopsis
+        
+环境
+    Windows
+        https://ffmpeg.org/download.html#build-windows
+            https://www.gyan.dev/ffmpeg/builds/
+                https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z
