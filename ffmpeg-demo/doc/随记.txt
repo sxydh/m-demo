@@ -3,11 +3,43 @@
     
     FFmpeg 是开源的具有音视频录制、格式转换、串流等功能的软件。
     
+术语
+    编码格式
+        概述
+            编码格式定义了如何编码和解码音视频
+        分类
+            H.264
+            H.265
+            AAC
+            MP3
+    存储格式
+        概述
+            存储格式定义了如何将音视频等数据流封装在文件中
+            存储文件中包含有编码格式等信息
+        分类
+            MP4
+            MKV
+            WMV
+    
 开始
     ffmpeg
         https://www.ffmpeg.org/ffmpeg.html#Synopsis
             ffmpeg -i input.wmv -c:v libx264 -c:a aac output.mp4
-                格式转换
+                -i ：指定输入文件。
+                -c:v ：指定视频编码格式。
+                -c:a ：指定音频编码格式。
+                
+                将输入文件按照文件内包含的编码格式进行解码，然后按给定的编码格式进行编码，最后保存为指定的存储格式。
+                
+            ffmpeg -i input.mp4 -codec: copy -start_number 0 -hls_time 10 -hls_list_size 0 -f hls output.m3u8
+                -i ：指定输入文件。
+                -codec: copy ：复制音视频流，不进行转码，保持原始质量。
+                -start_number ：指定视频文件片段的起始名称。
+                -hls_time ：指定视频文件片段的时长。
+                -hls_list_size 0 ：指定 M3U8 播放列表包含所有的视频文件片段。
+                -f ：指定输出格式。
+                
+                将输入文件分割成多个 TS 文件片段，并生成 M3U8 播放列表，该列表可以在网页上进行播放。
                 
     ffplay
         https://www.ffmpeg.org/ffplay.html#toc-Synopsis
