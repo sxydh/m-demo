@@ -21,3 +21,16 @@
                 Snippets
                     New snippet
                         脚本相当于在 console 中执行
+                        
+问题
+    Status Code: 403 Forbidden
+        环境
+            Windows
+            Chrome
+            Snippet
+        复现
+            fetch
+                "credentials": "omit"
+        解决
+            fetch
+                "credentials": "include"
