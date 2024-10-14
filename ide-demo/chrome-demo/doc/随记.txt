@@ -20,3 +20,4 @@
             Page Workspace >>
                 Snippets
                     New snippet
+                        脚本相当于在 console 中执行
