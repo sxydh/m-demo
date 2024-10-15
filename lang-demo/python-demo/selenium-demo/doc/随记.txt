@@ -1,11 +1,17 @@
-经验
-    点击前确保元素可见
-        有可能需要滚动
-        有可能被其它元素覆盖
-        有可能窗口太小导致元素被设计到折叠菜单内部
-    点击前确保元素是最新的
-    
-    如果页面有变动，例如页内翻页，切记之前的元素都已失效，需要重新查找。
+问题
+    Stale Element Reference Exception
+        环境
+            Windows
+            Chrome
+            Python
+        复现
+            selenium.webdriver.common.action_chains.ActionChains.click
+        解决
+            点击时当前的页面已过时，需要重新获取元素。
+            点击时确保元素可见
+                有可能需要滚动
+                有可能被其它元素覆盖
+                有可能窗口太小导致元素被设计到折叠菜单内部
     
 环境
     Chrome Driver
