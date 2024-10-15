@@ -1,5 +1,8 @@
 分类
-    英国
+    Qatar
+        Al Jazeera
+            https://www.aljazeera.com/
+    United Kingdom
         BBC News
             https://www.bbc.com/news
         Financial Times
@@ -8,7 +11,7 @@
             https://www.reuters.com/
         The Guardian
             https://www.theguardian.com/
-    美国
+    United States
         Associated Press News
             https://apnews.com/
         Bloomberg
@@ -19,6 +22,3 @@
             https://www.npr.org/
         The New York Times
             https://www.nytimes.com/international/
-    卡塔尔
-        Al Jazeera
-            https://www.aljazeera.com/
