@@ -1,0 +1,24 @@
+分类
+    英国
+        BBC News
+            https://www.bbc.com/news
+        Financial Times
+            https://www.ft.com/
+        Reuters
+            https://www.reuters.com/
+        The Guardian
+            https://www.theguardian.com/
+    美国
+        Associated Press News
+            https://apnews.com/
+        Bloomberg
+            https://www.bloomberg.com/
+        CNN
+            https://edition.cnn.com/
+        NPR
+            https://www.npr.org/
+        The New York Times
+            https://www.nytimes.com/international/
+    卡塔尔
+        Al Jazeera
+            https://www.aljazeera.com/
