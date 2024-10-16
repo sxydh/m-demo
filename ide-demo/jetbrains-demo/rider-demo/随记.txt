@@ -1,0 +1,8 @@
+File
+    Settings
+        Editor
+            Inspection Settings
+                Inspection Severity
+                    Other Languages
+                        Proofreading
+                            Typo

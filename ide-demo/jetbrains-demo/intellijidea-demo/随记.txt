@@ -16,9 +16,6 @@ File
                 SQL
                     SQL dialect detection
                     No data sources configured
-                Other Languages
-                    Proofreading
-                        Typo
         Plugins
             Maven Helper
         Build, Execution, Deployment
