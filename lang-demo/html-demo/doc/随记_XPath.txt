@@ -1,0 +1,23 @@
+开始
+    https://www.w3schools.com/xml/xpath_syntax.asp
+        Selecting Nodes
+            nodename
+                Selects all nodes with the name "nodename"
+            /
+                Selects from the root node
+            //
+                Selects nodes in the document from the current node that match the selection no matter where they are
+            .
+                Selects the current node
+            ..
+                Selects the parent of the current node
+            @
+                Selects attributes
+        Predicates
+            /bookstore/book[1]
+                Selects the first book element that is the child of the bookstore element
+            /bookstore/book[last()]
+                Selects the last book element that is the child of the bookstore element
+            /bookstore/book[contains(text(), "35")]
+                selects all book elements that are children of the bookstore element and contain the text "35" anywhere within their text content
+                
