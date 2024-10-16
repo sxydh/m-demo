@@ -3,6 +3,9 @@ File
         Editor
             Inspection Settings
                 Inspection Severity
+                    C#
+                        Constraints Violations
+                            Inconsistent Naming
                     Other Languages
                         Proofreading
                             Typo
