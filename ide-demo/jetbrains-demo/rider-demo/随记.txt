@@ -6,6 +6,8 @@ File
                     C#
                         Constraints Violations
                             Inconsistent Naming
+                        Potential Code Quality Issues
+                            Auto-property accessor is never used
                     Other Languages
                         Proofreading
                             Typo
