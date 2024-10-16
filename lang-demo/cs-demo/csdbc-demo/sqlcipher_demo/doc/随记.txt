@@ -1,11 +1,20 @@
 问题
     Exception: Library e_sqlcipher not found
+        环境
+            控制台应用
+                .NET Framework
         复现
-            环境
-                控制台应用
-                    .NET Framework
-            步骤
-                建立连接
+            建立连接
         解决
             xcopy <proj_path>/packages/SQLitePCLRaw.lib.e_sqlcipher.2.1.8/runtimes/win-x64 <proj_path>/bin/Debug/runtimes/win-x64 /E /I
             xcopy <proj_path>/packages/SQLitePCLRaw.lib.e_sqlcipher.2.1.8/runtimes/win-x86 <proj_path>/bin/Debug/runtimes/win-x86 /E /I
+            
+    System.Exception: You need to call SQLitePCL.raw.SetProvider().  If you are using a bundle package, this is done by calling SQLitePCL.Batteries.Init().
+        环境
+            控制台应用
+                .NET Framework
+        复现
+            打开连接
+        解决
+            SQLitePCL.Batteries.Init();
+                显示初始化
