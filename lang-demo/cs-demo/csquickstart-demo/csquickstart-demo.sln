@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "io_demo", "io_demo\io_demo.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "concurrent_demo", "concurrent_demo\concurrent_demo.csproj", "{40582953-CC13-430B-B6AF-09A3392DFA89}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "delegate_demo", "delegate_demo\delegate_demo.csproj", "{BCA02F4D-0115-4F06-87CA-DB8700EF8109}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{40582953-CC13-430B-B6AF-09A3392DFA89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40582953-CC13-430B-B6AF-09A3392DFA89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40582953-CC13-430B-B6AF-09A3392DFA89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCA02F4D-0115-4F06-87CA-DB8700EF8109}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCA02F4D-0115-4F06-87CA-DB8700EF8109}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCA02F4D-0115-4F06-87CA-DB8700EF8109}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCA02F4D-0115-4F06-87CA-DB8700EF8109}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
