@@ -2,7 +2,8 @@
     docker run -d \
         -p 6379:6379 \
         --name redis-demo \
-        redis
+        -e REDIS_PASSWORD=123 \
+        redis --requirepass 123
 
     docker ps
     docker rm -f redis-demo
