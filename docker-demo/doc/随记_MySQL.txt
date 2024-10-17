@@ -1,0 +1,9 @@
+开始
+    docker run -d \
+        -p 3306:3306 \
+        --name mysql-demo \
+        -e MYSQL_ROOT_PASSWORD=123 
+        mysql
+
+    docker ps
+    docker rm -f mysql-demo
