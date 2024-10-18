@@ -169,18 +169,21 @@
             若当前资源不足，系统会销毁优先级低的进程并回收资源。
 环境
     Android Studio
-        SDK
-            配置 
-                Settings
-                    Languages & Frameworks
-                        Android SDK
-            ADB
-                前置条件
-                    Windows 11
-                配置系统环境变量 path
-                    追加
-                        <Android SDK Location>\platform-tools
-                设备列表
-                    adb devices
-                进入设备
+        File
+            Settings
+                Languages & Frameworks
+                    Android SDK
+    ADB
+        前置条件
+            Windows 11
+                环境变量
+                    ANDROID_HOME
+                        C:\Users\Administrator\AppData\Local\Android\Sdk
+                    Path
+                        更新或追加
+                            %ANDROID_HOME%\platform-tools
+        开始
+            设备列表
+                adb devices
                     adb -s <device_id> shell
+                        进入设备
