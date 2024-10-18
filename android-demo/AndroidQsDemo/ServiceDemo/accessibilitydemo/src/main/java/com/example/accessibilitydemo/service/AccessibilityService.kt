@@ -2,7 +2,9 @@ package com.example.accessibilitydemo.service
 
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import java.lang.reflect.Modifier
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 class AccessibilityService : android.accessibilityservice.AccessibilityService() {
@@ -14,7 +16,10 @@ class AccessibilityService : android.accessibilityservice.AccessibilityService()
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         Log.d(TAG, "onAccessibilityEvent: ${EVENT_TYPES[event.eventType]}, ${event.packageName}")
-        Log.w(TAG, "event.text: ${event.text}, node.text: ${rootInActiveWindow.text}")
+
+        if (event.text.isNotEmpty()) {
+            Log.w(TAG, "event.text: ${event.text}")
+        }
     }
 
     override fun onInterrupt() {
