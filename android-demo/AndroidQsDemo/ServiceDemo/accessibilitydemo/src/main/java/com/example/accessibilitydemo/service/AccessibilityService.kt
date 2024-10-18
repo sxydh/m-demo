@@ -2,9 +2,7 @@ package com.example.accessibilitydemo.service
 
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
 import java.lang.reflect.Modifier
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 class AccessibilityService : android.accessibilityservice.AccessibilityService() {
