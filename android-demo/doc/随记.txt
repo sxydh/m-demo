@@ -190,9 +190,11 @@
                             进入设备
                             
             logcat
-                日志
+                列表
                     adb -s <device_id> logcat *:E > logcat.txt
+                        日志列表
                     
             shell
-                包名列表
+                列表
                     adb shell pm list packages
+                        包名列表
