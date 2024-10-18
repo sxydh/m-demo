@@ -192,3 +192,7 @@
             logcat
                 日志
                     adb -s <device_id> logcat *:E > logcat.txt
+                    
+            shell
+                包名列表
+                    adb shell pm list packages
