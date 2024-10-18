@@ -195,6 +195,13 @@
                         日志列表
                     
             shell
-                列表
-                    adb shell pm list packages
-                        包名列表
+                pm
+                    Package Manager
+                        列表
+                            pm list packages
+                                包名列表
+                am
+                    Activity Manager
+                        启动
+                            am start -n com.android.settings/.Settings
+                                -n ：组件名称。
