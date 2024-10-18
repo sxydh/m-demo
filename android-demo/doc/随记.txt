@@ -183,7 +183,12 @@
                         更新或追加
                             %ANDROID_HOME%\platform-tools
         开始
-            设备列表
-                adb devices
-                    adb -s <device_id> shell
-                        进入设备
+            devices
+                列表
+                    adb devices
+                        adb -s <device_id> shell
+                            进入设备
+                            
+            logcat
+                日志
+                    adb -s <device_id> logcat > logcat.txt
