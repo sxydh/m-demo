@@ -191,4 +191,4 @@
                             
             logcat
                 日志
-                    adb -s <device_id> logcat > logcat.txt
+                    adb -s <device_id> logcat *:E > logcat.txt
