@@ -14,6 +14,10 @@ class AccessibilityService : android.accessibilityservice.AccessibilityService()
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         Log.d(TAG, "onAccessibilityEvent: ${EVENT_TYPES[event.eventType]}, ${event.packageName}")
+
+        if (event.text.isNotEmpty()) {
+            Log.w(TAG, "${event.text}")
+        }
     }
 
     override fun onInterrupt() {
