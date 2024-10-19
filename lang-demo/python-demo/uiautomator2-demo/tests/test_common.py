@@ -3,7 +3,7 @@ from unittest import TestCase
 from Common import App
 
 
-class TestCommon(TestCase):
+class TestApp(TestCase):
 
     def setUp(self):
         self.app = App()
