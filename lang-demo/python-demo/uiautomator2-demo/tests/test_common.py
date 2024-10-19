@@ -48,5 +48,11 @@ class TestSelector(TestCase):
     def setUp(self):
         self.selector = Selector()
 
+    def test_exits(self):
+        self.selector.exits()
+
+    def test_wait(self):
+        self.selector.wait()
+
     def test_text(self):
         self.selector.text()

@@ -84,7 +84,18 @@ class Selector:
     def __init__(self):
         self.d = u2.connect()
 
+    def exits(self):
+        self.d.app_start("com.android.settings")
+        b = self.d(text="无障碍").exists(timeout=2.0)
+        print(b)
+
+    def wait(self):
+        self.d.app_start("com.android.settings")
+        b = self.d(text="无障碍").wait(timeout=2.0)
+        print(b)
+
     def text(self):
         self.d.app_start("com.android.settings")
-        info = self.d(textContains="系统").info
-        print(info)
+        target = self.d(text="无障碍")
+        if target.exists(timeout=3.0):
+            print(target.info)
