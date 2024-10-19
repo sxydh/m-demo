@@ -11,7 +11,7 @@ class TestCommon(TestCase):
     def test_app_start(self):
         self.common.app_start()
 
-    def app_wait(self):
+    def test_app_wait(self):
         self.common.app_wait()
 
     def test_app_stop(self):
