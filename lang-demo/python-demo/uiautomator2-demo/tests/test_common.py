@@ -38,3 +38,6 @@ class TestGesture(TestCase):
 
     def test_click(self):
         self.gesture.click()
+
+    def test_swipe(self):
+        self.gesture.swipe()

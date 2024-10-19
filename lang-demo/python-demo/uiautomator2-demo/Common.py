@@ -74,3 +74,6 @@ class Gesture:
 
     def click(self):
         self.d.click(100, 100)
+
+    def swipe(self):
+        self.d.swipe(300, 100, 100, 100, steps=1)
