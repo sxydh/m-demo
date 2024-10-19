@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from _quickstart.quickstart_app import App, Session, Gesture, Selector
+from _quickstart.common import App, Session, Gesture, Selector
 
 
 class TestApp(TestCase):
