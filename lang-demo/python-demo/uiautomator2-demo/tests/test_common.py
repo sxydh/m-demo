@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from Common import App, Session
+from Common import App, Session, Gesture
 
 
 class TestApp(TestCase):
@@ -29,3 +29,12 @@ class TestSession(TestCase):
 
     def test_session(self):
         self.session.session()
+
+
+class TestGesture(TestCase):
+
+    def setUp(self):
+        self.gesture = Gesture()
+
+    def test_click(self):
+        self.gesture.click()

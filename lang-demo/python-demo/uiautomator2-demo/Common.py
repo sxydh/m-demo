@@ -65,3 +65,12 @@ class Session:
         except Exception as e:
             # 应用奔溃时得到异常
             print(e)
+
+
+class Gesture:
+
+    def __init__(self):
+        self.d = u2.connect()
+
+    def click(self):
+        self.d.click(100, 100)
