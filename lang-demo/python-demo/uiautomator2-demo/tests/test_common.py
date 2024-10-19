@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from Common import App, Session, Gesture, Selector
+from common import App, Session, Gesture, Selector
 
 
 class TestApp(TestCase):
