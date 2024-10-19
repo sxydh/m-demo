@@ -1,3 +1,5 @@
+import time
+
 import uiautomator2 as u2
 
 
@@ -13,3 +15,5 @@ class DouYinApp:
 
 if __name__ == '__main__':
     DouYinApp()
+
+    time.sleep(9999999)
