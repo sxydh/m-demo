@@ -56,3 +56,6 @@ class TestSelector(TestCase):
 
     def test_text(self):
         self.selector.text()
+
+    def test_class_name(self):
+        self.selector.class_name()
