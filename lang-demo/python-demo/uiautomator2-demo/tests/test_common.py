@@ -20,3 +20,6 @@ class TestCommon(TestCase):
 
     def test_current(self):
         self.common.app_current()
+
+    def test_session(self):
+        self.common.session()

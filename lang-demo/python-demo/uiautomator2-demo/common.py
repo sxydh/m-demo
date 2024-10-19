@@ -45,3 +45,17 @@ class Common:
         """
 
         print(self.d.app_current())
+
+    def session(self):
+        """
+        创建会话，会话可以用于启动应用，监测应用，停止应用等。
+
+        :return:
+        """
+
+        try:
+            with self.d.session("com.android.settings") as sess:
+                print(sess.app_current())
+        except Exception as e:
+            # 应用奔溃时得到异常
+            print(e)
