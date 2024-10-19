@@ -1,0 +1,4 @@
+概述
+    https://github.com/openatx/uiautomator2
+
+    uiautomator2 基于 UI Automator 实现
