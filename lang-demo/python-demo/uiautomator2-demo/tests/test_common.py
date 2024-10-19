@@ -6,4 +6,4 @@ from common import Common
 class TestCommon(TestCase):
 
     def test_current(self):
-        Common().current()
+        Common().app_current()
