@@ -1,7 +1,7 @@
 import uiautomator2 as u2
 
 
-class Common:
+class App:
 
     def __init__(self):
         self.d = u2.connect()
