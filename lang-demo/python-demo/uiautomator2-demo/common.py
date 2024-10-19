@@ -17,12 +17,16 @@ class Common:
 
     def app_wait(self):
         """
-        启动应用并等待运行
+        等待应用运行
 
         :return:
         """
 
-        self.d.app_wait("com.android.settings", timeout=10.0)
+        pkg = "com.android.settings"
+        self.d.app_start(pkg)
+        pid = self.d.app_wait(pkg, timeout=10.0)
+        if pid:
+            print(pid)
 
     def app_stop(self):
         """
