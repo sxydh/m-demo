@@ -105,3 +105,9 @@ class Selector:
         target = self.d(className="android.widget.TextView")
         if target.exists(timeout=3.0):
             print(target.info)
+
+    def click(self):
+        self.d.app_start("com.android.settings")
+        target = self.d(text="无障碍")
+        if target.exists(timeout=3.0):
+            target.click()

@@ -59,3 +59,6 @@ class TestSelector(TestCase):
 
     def test_class_name(self):
         self.selector.class_name()
+
+    def test_click(self):
+        self.selector.click()
