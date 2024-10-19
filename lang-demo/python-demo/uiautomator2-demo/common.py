@@ -22,7 +22,7 @@ class Common:
         :return:
         """
 
-        self.d.app_wait("com.android.settings")
+        self.d.app_wait("com.android.settings", timeout=10.0)
 
     def app_stop(self):
         """
