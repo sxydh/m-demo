@@ -1,0 +1,17 @@
+概述
+    https://apktool.org/
+
+开始
+    
+    
+环境
+    Windows
+        https://apktool.org/docs/install
+            前置条件
+                Java 11
+            准备文件
+                C:\Users\Administrator\AppData\Local\Apktool
+                    apktool_2.10.0.jar
+                        https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.10.0.jar
+                    apktool.bat
+                        https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/windows/apktool.bat
