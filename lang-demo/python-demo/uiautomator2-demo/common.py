@@ -15,6 +15,15 @@ class Common:
 
         self.d.app_start("com.android.settings")
 
+    def app_stop(self):
+        """
+        停止应用
+
+        :return:
+        """
+
+        self.d.app_stop("com.android.settings")
+
     def app_current(self):
         """
         获取当前包名

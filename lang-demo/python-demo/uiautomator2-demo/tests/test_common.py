@@ -11,5 +11,9 @@ class TestCommon(TestCase):
     def test_app_start(self):
         self.common.app_start()
 
+    def test_app_stop(self):
+        self.common.app_start()
+        self.common.app_stop()
+
     def test_current(self):
         self.common.app_current()
