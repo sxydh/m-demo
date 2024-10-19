@@ -1,4 +1,5 @@
 import uiautomator2 as u2
+from m_pyutil import mtmp
 
 
 class App:
@@ -111,3 +112,10 @@ class Selector:
         target = self.d(text="无障碍")
         if target.exists(timeout=3.0):
             target.click()
+
+    def dump_hierarchy(self):
+        pkg = "com.android.settings"
+        self.d.app_start(pkg)
+        self.d.app_wait(pkg, timeout=2.0)
+        elements = self.d.dump_hierarchy()
+        mtmp.append(elements)
