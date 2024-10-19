@@ -2,7 +2,7 @@
     https://apktool.org/
 
 开始
-    
+    apktool d <apk_name> -o output
     
 环境
     Windows
