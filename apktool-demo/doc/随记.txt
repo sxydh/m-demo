@@ -2,7 +2,9 @@
     https://apktool.org/
 
 开始
-    apktool d <apk_name> -o output
+    d
+        apktool d <apk_name> -o output
+            反编译 apk 文件
     
 环境
     Windows
