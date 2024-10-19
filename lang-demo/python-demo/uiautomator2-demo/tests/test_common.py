@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from Common import App
+from Common import App, Session
 
 
 class TestApp(TestCase):
@@ -21,5 +21,11 @@ class TestApp(TestCase):
     def test_current(self):
         self.app.app_current()
 
+
+class TestSession(TestCase):
+
+    def setUp(self):
+        self.session = Session()
+
     def test_session(self):
-        self.app.session()
+        self.session.session()

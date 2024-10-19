@@ -46,6 +46,12 @@ class App:
 
         print(self.d.app_current())
 
+
+class Session:
+
+    def __init__(self):
+        self.d = u2.connect()
+
     def session(self):
         """
         创建会话，会话可以用于启动应用，监测应用，停止应用等。
