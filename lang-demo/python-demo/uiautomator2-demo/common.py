@@ -15,6 +15,15 @@ class Common:
 
         self.d.app_start("com.android.settings")
 
+    def app_wait(self):
+        """
+        启动应用并等待运行
+
+        :return:
+        """
+
+        self.d.app_wait("com.android.settings")
+
     def app_stop(self):
         """
         停止应用
