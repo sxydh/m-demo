@@ -14,6 +14,6 @@ class DouYinApp:
 
 
 if __name__ == '__main__':
-    DouYinApp()
+    DouYinApp().start()
 
     time.sleep(9999999)
