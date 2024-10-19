@@ -77,3 +77,14 @@ class Gesture:
 
     def swipe(self):
         self.d.swipe(300, 100, 100, 100, steps=1)
+
+
+class Selector:
+
+    def __init__(self):
+        self.d = u2.connect()
+
+    def text(self):
+        self.d.app_start("com.android.settings")
+        info = self.d(textContains="系统").info
+        print(info)

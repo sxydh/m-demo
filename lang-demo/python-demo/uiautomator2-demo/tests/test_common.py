@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from Common import App, Session, Gesture
+from Common import App, Session, Gesture, Selector
 
 
 class TestApp(TestCase):
@@ -41,3 +41,12 @@ class TestGesture(TestCase):
 
     def test_swipe(self):
         self.gesture.swipe()
+
+
+class TestSelector(TestCase):
+
+    def setUp(self):
+        self.selector = Selector()
+
+    def test_text(self):
+        self.selector.text()
