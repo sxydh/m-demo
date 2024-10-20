@@ -194,6 +194,10 @@
                     adb -s <device_id> logcat *:E > logcat.txt
                         日志列表
                     
+            push
+                上传
+                    adb push <local_file> <remote_location>
+                    
             shell
                 am
                     Activity Manager
