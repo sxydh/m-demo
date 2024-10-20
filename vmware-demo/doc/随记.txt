@@ -3,7 +3,20 @@ VMware Workstation
         编辑
             虚拟网络编辑器
                 VMnet8
-                    
+                    概述
+                        VMnet8 使用 NAT （ Network Address Translation ，网络地址转换）技术，可以让虚拟机通过主机的 IP 地址访问外部网络。主机充当一个网关，将虚拟机的流量转发到外部网络。
+                        NAT 与主机在一个子网中，但是 NAT 自己会创建另外一个子网，每台虚拟机的 IP 都在 NAT 创建的这个子网中。
+                    开始
+                        NAT 设置
+                            网关 IP
+                                概述
+                                    NAT 子网的网关 IP 地址，网关 IP 在子网网段内，一般是子网第一个可用地址。
+                        子网 IP
+                            概述
+                                NAT 子网网段的起始 IP 地址
+                        子网掩码
+                            概述
+                                NAT 子网的子网掩码
     环境
         https://support.broadcom.com/
             Software
