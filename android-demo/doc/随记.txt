@@ -198,6 +198,10 @@
                 上传
                     adb push <local_file> <remote_location>
                     
+            reboot
+                重启
+                    adb reboot
+                    
             shell
                 am
                     Activity Manager
