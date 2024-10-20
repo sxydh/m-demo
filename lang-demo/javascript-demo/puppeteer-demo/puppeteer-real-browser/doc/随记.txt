@@ -2,3 +2,4 @@
     https://github.com/zfcsoftware/puppeteer-real-browser
     
     puppeteer-real-browser 核心是使用 https://github.com/rebrowser/rebrowser-puppeteer-core 连接到已启动的浏览器
+        反机器人检测参考 https://github.com/rebrowser/rebrowser-bot-detector
