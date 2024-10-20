@@ -17,6 +17,46 @@ VMware Workstation
                         子网掩码
                             概述
                                 NAT 子网的子网掩码
+                                
+    问题
+        具有固定 IP 和网关地址的虚拟机迁移后无法连接到外部网络
+            环境
+                Windows 11
+                VMware Workstation
+                Ubuntu 20.04.6 LTS
+            复现
+                迁移虚拟机
+            解决
+                VMware Workstation
+                    编辑
+                        虚拟网络编辑器
+                            VMnet8
+                                NAT 设置
+                                    网关 IP
+                                        更新为虚拟机内设置的网关地址
+                            子网 IP 
+                                更新为虚拟机内设置的子网
+                            子网掩码
+                                更新为虚拟机内设置的子网掩码
+                window 11
+                    设置
+                        网络和 Internet
+                            高级网络设置
+                                VMware Virtual Ethernet Adapter for VMnet8
+                                    更多适配器选项
+                                        编辑
+                                            Internet 协议版本 4 (TCP/IPv4)
+                                                IP 地址
+                                                    NAT 子网中的可用地址，且不要与 NAT 网关 IP 冲突。
+                                                子网掩码
+                                                    NAT 子网的子网掩码
+                                                默认网关
+                                                    不填
+                                                首选 DNS 服务器
+                                                    8.8.8.8
+                                                备用 DNS 服务器
+                                                    114.114.114.114
+                    
     环境
         https://support.broadcom.com/
             Software
