@@ -51,6 +51,9 @@ android {
 
 dependencies {
 
+    // https://mvnrepository.com/artifact/net.zetetic/android-database-sqlcipher
+    implementation(libs.android.database.sqlcipher)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
