@@ -25,11 +25,17 @@
                                 生成清单
                                     nuget spec <csproj_file>
                                         <proj_name>.nuspec
-                                            更新
-                                                authors
-                                                projectUrl
-                                                description
-                                                ...
+                                            追加或更新
+                                                <metadata>
+                                                    ...
+                                                    authors
+                                                    projectUrl
+                                                    description
+                                                    ...
+                                                    <readme>doc\README.md</readme>
+                                                <files>
+                                                    <file src="..\README.md" target="doc\"/>
+                                                </files>
                                 打包项目
                                     前置条件
                                         m-netutil.csproj
