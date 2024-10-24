@@ -14,3 +14,5 @@ https://learn.microsoft.com/en-us/windows/win32/api/
                     https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexa
                 SetWindowPos
                     https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos
+                UnhookWindowsHookEx
+                    https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-unhookwindowshookex
