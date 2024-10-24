@@ -1,4 +1,12 @@
 开始
+    chcp
+        chcp 65001 > nul
+            设置 UTF-8 编码
+        
     netstat
         netstat -an | findstr "<target_port>"
             查看端口占用
+            
+    pause
+        pause
+            暂停当前处理
