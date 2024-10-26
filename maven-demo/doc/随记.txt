@@ -1,14 +1,26 @@
+开始
+    mvn
+        mvn --encrypt-password <password>
+            密码加密
+            
+            验证
+                settings.xml
+                    追加或更新
+                        {<encrypt_password>}
+
 环境
     离线模式
         settings.xml
-            <mirrors>
-                // 都注释掉
-            </mirrors>
+            追加或更新
+                <mirrors>
+                    // 都注释掉
+                </mirrors>
         pom.xml
-            <repositories>
-                <repository>
-                    <id>anyId</id>
-                    <name>anyName</name>
-                    <url>file://C:\Users\Administrator\.m2\repository</url>
-                </repository>
-            </repositories>
+            追加或更新
+                <repositories>
+                    <repository>
+                        <id>anyId</id>
+                        <name>anyName</name>
+                        <url>file://C:\Users\Administrator\.m2\repository</url>
+                    </repository>
+                </repositories>
