@@ -52,6 +52,11 @@
                 master ：远程仓库的分支。
             git push origin <local_branch>:<remote_branch>
                 origin ：远程仓库的名称。
+    revert
+        还原
+            git revert <commit_hash>
+                还原指定 commit 的修改，并新建一个提交。
+                如果指定 commit 的修改在后续的历史提交中，也产生了修改，不建议使用该命令，因为会产生冲突。
     clean
         清理
             git clean -dfX
