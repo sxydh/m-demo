@@ -55,8 +55,17 @@
     revert
         还原
             git revert <commit_hash>
-                还原指定 commit 的修改，并新建一个提交。
+                还原指定 commit 的修改，并将还原后的内容新建一个提交。
                 如果指定 commit 的修改在后续的历史提交中，也产生了修改，不建议使用该命令，因为会产生冲突。
+                
+    reset
+        回退
+            git reset <commit_hash>
+                回退到指定的 commit 版本
+                默认是 mixed 模式，只会改变 index 的状态，不会改变现有 working tree 的内容。
+                    即 index 已经回退到指定的 commit 版本，但是该版本之后的 commit 的改动会以未提交的形式保留在 working tree 中。
+                    执行该命令后，可以丢弃未提交的内容，此时 working tree 就可以回退到指定的 commit 版本。
+                
     clean
         清理
             git clean -dfX
