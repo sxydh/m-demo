@@ -1,0 +1,10 @@
+概述
+    MVVM （ Model-View-ViewModel ）是软件架构模式，旨在分离应用程序的用户界面和业务逻辑。
+        Model
+            负责应用程序的数据和业务逻辑处理
+        View
+            负责显示数据和用户界面元素
+        ViewModel
+            负责 Model 和 View 之间的交互
+            ViewModel 处理 UI 逻辑，维护 UI 状态，并通过数据绑定将数据提供给 View 。
+            
