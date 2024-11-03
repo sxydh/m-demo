@@ -1,4 +1,13 @@
 开始
+    File
+        Settings
+            Languages & Frameworks
+                Android SDK
+                    C:\Users\Administrator\AppData\Local\Android\Sdk
+                    
+                        C:\Users\Administrator\AppData\Local\Android\Sdk\system-images\android-32\google_apis_playstore\x86_64
+                            镜像下载路径
+                            
     Help
         Edit Custom VM Options...
             追加或更新
