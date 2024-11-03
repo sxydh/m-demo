@@ -173,6 +173,11 @@
             Settings
                 Languages & Frameworks
                     Android SDK
+                        C:\Users\Administrator\AppData\Local\Android\Sdk
+                        
+                            C:\Users\Administrator\AppData\Local\Android\Sdk\system-images\android-32\google_apis_playstore\x86_64
+                                镜像下载路径
+                                
     ADB
         前置条件
             Windows 11
