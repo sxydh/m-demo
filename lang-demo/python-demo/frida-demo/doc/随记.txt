@@ -3,9 +3,11 @@
 
 环境
     前置条件
-        PyCharm
-        Android 9
-            雷电模拟器 9.0.79.2(64)
+        服务端
+            Android 9
+                雷电模拟器 9.0.79.2(64)
+        客户端
+            PyCharm
         
     准备文件
         https://github.com/frida/frida/releases
@@ -27,3 +29,6 @@
     
     启动客户端
         frida -U -l demo.js -f com.ss.android.ugc.aweme
+            -U ：连接到 USB 设备。
+            -l ：加载脚本文件。
+            -f ：启动目标文件（应用）。
