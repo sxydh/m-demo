@@ -1,0 +1,11 @@
+概述
+    https://github.com/skylot/jadx
+    
+环境
+    准备文件
+        https://github.com/skylot/jadx/releases
+            https://github.com/skylot/jadx/releases/download/v1.5.0/jadx-1.5.0.zip
+        
+    启动应用
+        jadx-1.5.0\bin\jadx-gui.bat
+            可以直接拖放 apk 文件
