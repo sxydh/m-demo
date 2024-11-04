@@ -3,7 +3,8 @@
 
 开始
     -
-        frida --help
+        frida -h
+            查看帮助文档
         
     frida-ps
         frida-ps -U
