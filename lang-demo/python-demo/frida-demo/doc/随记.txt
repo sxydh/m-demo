@@ -1,6 +1,16 @@
 概述
     https://github.com/frida/frida
 
+开始
+    -
+        frida --help
+        
+    frida-ps
+        frida-ps -U
+            -U ：连接到 USB 设备。
+            
+            查看当前进程列表
+
 环境
     前置条件
         服务端
