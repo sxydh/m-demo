@@ -1,39 +1,38 @@
 开始
     devices
-        列表
+        设备列表
             adb devices
-                adb -s <device_id> shell
-                    进入设备
                     
     logcat
-        列表
+        日志列表
             adb -s <device_id> logcat *:E > logcat.txt
                 日志列表
             
     push
-        上传
+        上传文件
             adb push <local_file> <remote_location>
             
     reboot
-        重启
+        重启设备
             adb reboot
             
     shell
-        am
-            Activity Manager
-                启动
-                    am start -n com.android.settings/.Settings
-                        -n ：组件名称。
-        getprop
-            Get Property
-                查看
-                    getprop ro.product.cpu.abi
-                        处理器架构
-        pm
-            Package Manager
-                列表
-                    pm list packages
-                        包名列表
+        进入设备
+            am start -n com.android.settings/.Settings
+                am ： Activity Manager 。
+                -n ：组件名称。
+                
+                启动应用
+
+            getprop ro.product.cpu.abi
+                getprop ： Get Property 。
+                
+                查看处理器架构
+                            
+            pm list packages
+                pm ： Package Manager 。
+                    
+                查看应用包名列表
                         
 环境
     Windows 11
