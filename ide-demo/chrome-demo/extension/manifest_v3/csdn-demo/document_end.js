@@ -26,3 +26,5 @@ document.head.appendChild(style);
 window.addEventListener("copy", event => {
     event.stopImmediatePropagation();
 }, true);
+let signins = document.querySelectorAll(".signin");
+signins.forEach(e => e.remove());
