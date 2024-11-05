@@ -24,7 +24,7 @@
             ],
             "run_at": "document_start",
             "js": [
-                "content.js"
+                "document_start.js"
             ]
         },
         {
@@ -33,7 +33,7 @@
             ],
             "run_at": "document_end",
             "js": [
-                "content.js"
+                "document_end.js"
             ]
         }
     ]

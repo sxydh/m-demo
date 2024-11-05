@@ -10,7 +10,7 @@ let hide = document.querySelector(".hide-article-box.hide-article-pos.text-cente
 if (hide) {
     hide.remove();
 }
-const style = document.createElement('style');
+let style = document.createElement("style");
 style.innerHTML = `
     #article_content {
         overflow: auto !important;
@@ -21,3 +21,8 @@ style.innerHTML = `
     }
 `;
 document.head.appendChild(style);
+
+/* 可以复制 */
+window.addEventListener("copy", event => {
+    event.stopImmediatePropagation();
+}, true);
