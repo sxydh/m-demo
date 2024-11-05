@@ -11,6 +11,10 @@
         上传文件
             adb push <local_file> <remote_location>
             
+    pull
+        下载文件
+            adb pull <android_path> <local_path>
+            
     reboot
         重启设备
             adb reboot
@@ -37,8 +41,11 @@
                     查看应用包名列表
                     
                 dumpsys activity top
-                    查看当前界面的 Activity
-                        
+                    查看当前界面 Activity ，包含栈结构等信息。
+                    
+                uiautomator dump /sdcard/dump.xml
+                    保存当前界面内容到指定 xml 文件
+                    
 环境
     Windows 11
         环境变量
