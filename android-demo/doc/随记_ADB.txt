@@ -35,6 +35,9 @@
                     pm ： Package Manager 。
                         
                     查看应用包名列表
+                    
+                dumpsys activity top
+                    查看当前界面的 Activity
                         
 环境
     Windows 11
