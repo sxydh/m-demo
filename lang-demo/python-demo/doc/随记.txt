@@ -104,6 +104,14 @@
                             
                     卸载包
                         pip uninstall <package_name>
+            
+                config
+                    配置列表
+                        pip config list            
+            
+                    设置配置
+                        pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+            
         Anaconda
         
     虚拟环境
