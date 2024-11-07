@@ -29,6 +29,9 @@
                     -n ：组件名称。
                     
                     启动应用
+                    
+                am monitor
+                    监控应用，可用于查看 Activity 的启动。
                 
                 getprop ro.product.cpu.abi
                     getprop ： Get Property 。
