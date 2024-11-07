@@ -1,11 +1,16 @@
 /* 去除登录 */
+let rm = () => {
+    let logins = document.querySelectorAll(".passport-login-container");
+    logins.forEach(e => e.remove());
+    console.debug(`try to remove ".passport-login-container"`);
+};
+rm();
 let count = 0;
 let si = setInterval(() => {
     if (count > 50) {
         clearInterval(si);
     }
-    let logins = document.querySelectorAll(".passport-login-container");
-    logins.forEach(e => e.remove());
+    rm();
     count++;
 }, 100);
 
