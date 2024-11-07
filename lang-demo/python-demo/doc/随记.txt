@@ -90,10 +90,10 @@
                 https://pip.pypa.io/en/stable/cli/pip_install/
             开始
                 install
-                    列表
+                    包列表
                         pip list
                         
-                    安装
+                    安装包
                         pip install -r requirements.txt
                             -r ： requirements file 。
                             
@@ -102,7 +102,7 @@
                         pip install -i https://pypi.tuna.tsinghua.edu.cn/simple <package_name>
                             从指定源安装
                             
-                    卸载
+                    卸载包
                         pip uninstall <package_name>
         Anaconda
         
