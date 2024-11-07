@@ -1,6 +1,13 @@
 /* 去除登录 */
-let logins = document.querySelectorAll(".passport-login-container");
-logins.forEach(e => e.remove());
+let count = 0;
+let si = setInterval(() => {
+    if (count > 50) {
+        clearInterval(si);
+    }
+    let logins = document.querySelectorAll(".passport-login-container");
+    logins.forEach(e => e.remove());
+    count++;
+}, 100);
 
 /* 去除关注 */
 /* 可以选择 */
