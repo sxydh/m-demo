@@ -1,8 +1,6 @@
 /* 去除登录 */
-let login = document.querySelector(".passport-login-container");
-if (login) {
-    login.remove();
-}
+let logins = document.querySelectorAll(".passport-login-container");
+logins.forEach(e => e.remove());
 
 /* 去除关注 */
 /* 可以选择 */
