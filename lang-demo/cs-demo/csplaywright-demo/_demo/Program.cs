@@ -27,6 +27,12 @@ namespace _demo
                         var type = irequest.GetType();
                         Console.WriteLine($"Request: {type}");
                     };
+                    await page.RouteAsync("**/*", async route =>
+                    {
+                        var type = route.GetType();
+                        Console.WriteLine($"RouteAsync: {type}");
+                        await route.ContinueAsync();
+                    });
                     page.Response += (_, iresponse) =>
                     {
                         var type = iresponse.GetType();
