@@ -65,9 +65,14 @@
                 SDK
                     > 30
             配对设备
-                adb pair <device_ip>:<device_port> <pair_code>
-                    可以在开发者选项的无线调试查看地址信息
-                adb connect <device_ip>
-                    如果提示由于目标计算机积极拒绝，无法连接，可以尝试以下命令：
-                        adb kill-server
-                    或者重启 Windows 后重试。
+                adb pair <device_ip>:<device_pair_port> <pair_code>
+                adb connect <device_ip>:<device_port>
+                
+                    device_pair_port
+                        开发者选项 -> 无线调试 -> 使用配对码配对设备
+                    
+                    device_port
+                        开发者选项 -> 无线调试 -> IP 地址和端口
+                        
+                    注意配对和连接的端口是不一样的
+                    怪异问题可以重启 Windows 后重试
