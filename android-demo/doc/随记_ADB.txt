@@ -57,3 +57,13 @@
             Path
                 更新或追加
                     %ANDROID_HOME%\platform-tools
+        无线调试
+            前置条件
+                Android
+                    > 11
+                SDK
+                    > 30
+            配对设备
+                adb pair <device_ip>:<device_port>
+                    可以在开发者选项的无线调试查看地址信息
+                adb connect <device_ip>
