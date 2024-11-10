@@ -10,6 +10,15 @@ namespace _demo
         {
             Task.Run(async () =>
             {
+                /* 浏览器初始化 */
+                // https://playwright.dev/dotnet/docs/browsers
+                // 如果 ExecutablePath 显示指定了浏览器则可以不用初始化
+                // var exitCode = Microsoft.Playwright.Program.Main(new[] { "install" });
+                // if (exitCode != 0)
+                // {
+                //     throw new Exception($"Playwright exited with code {exitCode}");
+                // }
+
                 using (var playwright = await Playwright.CreateAsync())
                 {
                     var launchOptions = new BrowserTypeLaunchOptions
@@ -54,6 +63,7 @@ namespace _demo
                         Console.WriteLine($"Close: {type}");
                     };
 
+                    /* 打开目标页面 */
                     await page.GotoAsync("https://www.baidu.com");
 
                     await Task.Delay(5000);
