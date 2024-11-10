@@ -12,6 +12,7 @@ namespace _demo
             {
                 /* 浏览器初始化 */
                 // https://playwright.dev/dotnet/docs/browsers
+                // C:\Users\Administrator\AppData\Local\ms-playwright
                 // 如果 ExecutablePath 显示指定了浏览器则可以不用初始化
                 // var exitCode = Microsoft.Playwright.Program.Main(new[] { "install" });
                 // if (exitCode != 0)
