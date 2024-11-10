@@ -65,7 +65,7 @@
                 SDK
                     > 30
             配对设备
-                adb pair <device_ip>:<device_port>
+                adb pair <device_ip>:<device_port> <pair_code>
                     可以在开发者选项的无线调试查看地址信息
                 adb connect <device_ip>
                     如果提示由于目标计算机积极拒绝，无法连接，可以尝试以下命令：
