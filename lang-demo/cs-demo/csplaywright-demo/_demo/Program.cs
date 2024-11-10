@@ -66,6 +66,36 @@ namespace _demo
 
                     /* 打开目标页面 */
                     await page.GotoAsync("https://www.baidu.com");
+                    await page.WaitForLoadStateAsync();
+
+                    /* 选择器 xpath */
+                    // https://playwright.dev/dotnet/docs/locators#locate-by-css-or-xpath
+                    // https://www.w3schools.com/xml/xpath_syntax.asp
+
+                    // 从根元素开始查找
+                    var divLocator = page.Locator("xpath=//div");
+                    var divCount = await divLocator.CountAsync();
+                    Console.WriteLine($"root divCount: {divCount}");
+
+                    // 从当前元素开始查找
+                    var firstDivLocator = divLocator.First.Locator("xpath=//div");
+                    var firstDivCount = await firstDivLocator.CountAsync();
+                    Console.WriteLine($"firstDiv divCount: {firstDivCount}");
+
+                    // 指定属性
+                    var navLocator = page.Locator("xpath=//div[@id='s-top-left']");
+                    var navHtml = await navLocator.InnerHTMLAsync();
+                    Console.WriteLine($"navHtml: {navHtml}");
+
+                    // 属性包含指定值
+                    var newsLocator = page.Locator("xpath=//a[contains(@href, 'http://news.baidu.com')]");
+                    var news = await newsLocator.InnerTextAsync();
+                    Console.WriteLine($"news: {news}");
+
+                    // 指定第几个
+                    var firstInputLocator = page.Locator("xpath=(//input)[1]");
+                    var firstInputValue = await firstInputLocator.GetAttributeAsync("value");
+                    Console.WriteLine($"firstInputValue: {firstInputValue}");
 
                     await Task.Delay(5000);
                     await browser.CloseAsync();
