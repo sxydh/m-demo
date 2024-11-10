@@ -67,3 +67,6 @@
                 adb pair <device_ip>:<device_port>
                     可以在开发者选项的无线调试查看地址信息
                 adb connect <device_ip>
+                    如果提示由于目标计算机积极拒绝，无法连接，可以尝试以下命令：
+                        adb kill-server
+                    或者重启 Windows 后重试。
