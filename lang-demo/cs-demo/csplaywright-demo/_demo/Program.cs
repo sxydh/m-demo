@@ -92,10 +92,20 @@ namespace _demo
                     var news = await newsLocator.InnerTextAsync();
                     Console.WriteLine($"news: {news}");
 
+                    // 内容包含指定值
+                    var haoLocator = page.Locator("xpath=//a[contains(text(), 'hao123')]");
+                    var haoText = await haoLocator.InnerTextAsync();
+                    Console.WriteLine($"hao: {haoText}");
+
                     // 指定第几个
                     var firstInputLocator = page.Locator("xpath=(//input)[1]");
                     var firstInputValue = await firstInputLocator.GetAttributeAsync("value");
                     Console.WriteLine($"firstInputValue: {firstInputValue}");
+
+                    /* 交互 click */
+                    // 注意目标元素不在最前面是无法点击的
+                    var settingsLocator = page.Locator("xpath=//span[@id='s-usersetting-top']");
+                    await settingsLocator.ClickAsync();
 
                     await Task.Delay(5000);
                     await browser.CloseAsync();
