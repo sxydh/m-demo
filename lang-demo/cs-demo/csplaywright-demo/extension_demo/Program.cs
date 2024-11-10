@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Playwright;
 
 namespace extension_demo
@@ -13,7 +15,9 @@ namespace extension_demo
                 {
                     /* 配置插件 */
                     // https://playwright.dev/docs/chrome-extensions
-                    const string extensionPath = @"D:\Code\1-My\m-demo\ide-demo\chrome-demo\extension\manifest_v3\helloworld-demo";
+                    var workingDir = Directory.GetCurrentDirectory();
+                    var projectDir = Directory.GetParent(workingDir)?.Parent?.FullName;
+                    var extensionPath = Path.Combine(projectDir ?? throw new ArgumentException(), @"Extensions\helloworld-demo");
                     var launchOptions = new BrowserTypeLaunchPersistentContextOptions
                     {
                         Headless = false,
