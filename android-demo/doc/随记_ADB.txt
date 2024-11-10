@@ -57,6 +57,7 @@
             Path
                 更新或追加
                     %ANDROID_HOME%\platform-tools
+                    
         无线调试
             前置条件
                 Android
