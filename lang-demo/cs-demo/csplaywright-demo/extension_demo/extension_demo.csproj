@@ -83,6 +83,16 @@
       <None Include="App.config" />
       <None Include="packages.config" />
     </ItemGroup>
+    <ItemGroup>
+      <Content Include="Extensions\helloworld-demo\background.js" />
+      <Content Include="Extensions\helloworld-demo\content.js" />
+      <Content Include="Extensions\helloworld-demo\helloworld.html" />
+      <Content Include="Extensions\helloworld-demo\helloworld.js" />
+      <Content Include="Extensions\helloworld-demo\images\icon128.png" />
+      <Content Include="Extensions\helloworld-demo\images\icon16.png" />
+      <Content Include="Extensions\helloworld-demo\images\icon48.png" />
+      <Content Include="Extensions\helloworld-demo\manifest.json" />
+    </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <Import Project="..\packages\Microsoft.Playwright.1.48.0\build\Microsoft.Playwright.targets" Condition="Exists('..\packages\Microsoft.Playwright.1.48.0\build\Microsoft.Playwright.targets')" />
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
