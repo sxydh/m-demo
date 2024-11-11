@@ -45,7 +45,7 @@ let adRm = () => {
     let selector = "iframe";
     let all = document.querySelectorAll(selector);
     all.forEach(e => e.remove());
-    console.debug(`try to remove ${JSON.stringify(selector)}`);
+    console.debug(`try to remove ad`);
 };
 adRm();
 let adSi = setInterval(() => {
