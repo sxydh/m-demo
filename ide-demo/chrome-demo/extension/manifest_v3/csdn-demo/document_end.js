@@ -1,17 +1,17 @@
 /* 去除登录 */
-let rm = () => {
+let plcRm = () => {
     let logins = document.querySelectorAll(".passport-login-container");
     logins.forEach(e => e.remove());
     console.debug(`try to remove ".passport-login-container"`);
 };
-rm();
-let count = 0;
-let si = setInterval(() => {
-    if (count > 50) {
-        clearInterval(si);
+plcRm();
+let plcSiCount = 0;
+let plcSi = setInterval(() => {
+    if (plcSiCount > 50) {
+        clearInterval(plcSi);
     }
-    rm();
-    count++;
+    plcRm();
+    plcSiCount++;
 }, 100);
 
 /* 去除关注 */
@@ -38,3 +38,19 @@ window.addEventListener("copy", event => {
 }, true);
 let signins = document.querySelectorAll(".signin");
 signins.forEach(e => e.remove());
+
+/* 去除广告 */
+let adRm = () => {
+    let logins = document.querySelectorAll(".toolbar-advert");
+    logins.forEach(e => e.remove());
+    console.debug(`try to remove ".toolbar-advert"`);
+};
+adRm();
+let adSiCount = 0;
+let adSi = setInterval(() => {
+    if (adSiCount > 50) {
+        clearInterval(adSi);
+    }
+    adRm();
+    adSiCount++;
+}, 100);
