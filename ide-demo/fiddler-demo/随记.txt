@@ -1,0 +1,8 @@
+开始
+    Tools
+        Options
+            HTTPS
+            Connections
+                Allow remote computers to connect
+            Gateway
+                Manual Proxy Configuration
