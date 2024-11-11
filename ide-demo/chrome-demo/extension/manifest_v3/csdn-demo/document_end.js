@@ -1,20 +1,3 @@
-/* 去除登录 */
-let plcRm = () => {
-    let selector = ".passport-login-container,.passport-login-tip-container";
-    let all = document.querySelectorAll(selector);
-    all.forEach(e => e.remove());
-    console.debug(`try to remove ${JSON.stringify(selector)}`);
-};
-plcRm();
-let plcSiCount = 0;
-let plcSi = setInterval(() => {
-    if (plcSiCount > 50) {
-        clearInterval(plcSi);
-    }
-    plcRm();
-    plcSiCount++;
-}, 100);
-
 /* 去除关注 */
 /* 可以选择 */
 let hide = document.querySelector(".hide-article-box.hide-article-pos.text-center");
@@ -42,7 +25,7 @@ signins.forEach(e => e.remove());
 
 /* 去除广告 */
 let adRm = () => {
-    let selector = "iframe";
+    let selector = "iframe, body > .passport-login-container, body > .passport-login-tip-container";
     let all = document.querySelectorAll(selector);
     all.forEach(e => e.remove());
     console.debug(`try to remove ad`);
