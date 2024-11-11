@@ -48,11 +48,6 @@ let adRm = () => {
     console.debug(`try to remove ${JSON.stringify(selector)}`);
 };
 adRm();
-let adSiCount = 0;
 let adSi = setInterval(() => {
-    if (adSiCount > 50) {
-        clearInterval(adSi);
-    }
     adRm();
-    adSiCount++;
 }, 50);
