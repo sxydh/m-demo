@@ -4,7 +4,8 @@
     "version": "1.0",
     "permissions": [
         "activeTab",
-        "scripting"
+        "scripting",
+        "declarativeNetRequest"
     ],
     "action": {
         "default_popup": "helloworld.html",
@@ -13,6 +14,18 @@
             "48": "images/icon48.png",
             "128": "images/icon128.png"
         }
+    },
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "declarative_net_request": {
+        "rule_resources": [
+            {
+                "id": "pagead",
+                "enabled": true,
+                "path": "rules_pagead.json"
+            }
+        ]
     },
     "background": {
         "service_worker": "background.js"
