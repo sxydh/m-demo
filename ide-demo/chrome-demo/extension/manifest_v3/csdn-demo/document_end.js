@@ -1,9 +1,10 @@
 /* 去除关注 */
-/* 可以选择 */
 let hide = document.querySelector(".hide-article-box.hide-article-pos.text-center");
 if (hide) {
     hide.remove();
 }
+
+/* 可以选择 */
 let style = document.createElement("style");
 style.innerHTML = `
     #article_content {
