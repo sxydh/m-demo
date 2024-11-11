@@ -1,8 +1,9 @@
 /* 去除登录 */
 let plcRm = () => {
-    let logins = document.querySelectorAll(".passport-login-container");
+    let selector = ".passport-login-container,.passport-login-tip-container";
+    let logins = document.querySelectorAll(selector);
     logins.forEach(e => e.remove());
-    console.debug(`try to remove ".passport-login-container"`);
+    console.debug(`try to remove ${JSON.stringify(selector)}`);
 };
 plcRm();
 let plcSiCount = 0;
@@ -41,9 +42,10 @@ signins.forEach(e => e.remove());
 
 /* 去除广告 */
 let adRm = () => {
-    let logins = document.querySelectorAll(".toolbar-advert");
+    let selector = ".toolbar-advert";
+    let logins = document.querySelectorAll(selector);
     logins.forEach(e => e.remove());
-    console.debug(`try to remove ".toolbar-advert"`);
+    console.debug(`try to remove ${JSON.stringify(selector)}`);
 };
 adRm();
 let adSiCount = 0;
