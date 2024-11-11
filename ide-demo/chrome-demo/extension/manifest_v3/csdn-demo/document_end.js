@@ -1,8 +1,8 @@
 /* 去除登录 */
 let plcRm = () => {
     let selector = ".passport-login-container,.passport-login-tip-container";
-    let logins = document.querySelectorAll(selector);
-    logins.forEach(e => e.remove());
+    let all = document.querySelectorAll(selector);
+    all.forEach(e => e.remove());
     console.debug(`try to remove ${JSON.stringify(selector)}`);
 };
 plcRm();
@@ -42,9 +42,9 @@ signins.forEach(e => e.remove());
 
 /* 去除广告 */
 let adRm = () => {
-    let selector = ".toolbar-advert";
-    let logins = document.querySelectorAll(selector);
-    logins.forEach(e => e.remove());
+    let selector = "iframe";
+    let all = document.querySelectorAll(selector);
+    all.forEach(e => e.remove());
     console.debug(`try to remove ${JSON.stringify(selector)}`);
 };
 adRm();
@@ -55,4 +55,4 @@ let adSi = setInterval(() => {
     }
     adRm();
     adSiCount++;
-}, 100);
+}, 50);
