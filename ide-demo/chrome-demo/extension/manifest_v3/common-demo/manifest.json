@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "CSDN Demo",
+    "name": "Common Demo",
     "version": "1.0",
     "permissions": [
         "activeTab",
