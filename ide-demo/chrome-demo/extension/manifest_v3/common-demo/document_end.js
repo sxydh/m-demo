@@ -61,9 +61,10 @@ if (location.href.includes(".csdn.")) {
 if (location.href.includes(".caishi.")) {
     let style = document.createElement("style");
     style.innerHTML = `
+        /* 可以选中 */
         p {
-            cursor: unset !important;
-            user-select: unset !important;
+            cursor: text !important;
+            user-select: text !important;
         }`;
     document.head.appendChild(style);
 }
