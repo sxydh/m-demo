@@ -24,18 +24,6 @@ if (location.href.includes(".csdn.")) {
     }, true);
     let signins = document.querySelectorAll(".signin");
     signins.forEach(e => e.remove());
-
-    /* 去除广告 */
-    let adRm = () => {
-        let selector = "#recommendAdBox, #footerRightAds, iframe, body > .passport-login-container, body > .passport-login-tip-container";
-        let all = document.querySelectorAll(selector);
-        all.forEach(e => e.remove());
-        console.debug(`try to remove ad`);
-    };
-    adRm();
-    let adSi = setInterval(() => {
-        adRm();
-    }, 50);
 }
 
 /* 才士题库 */
