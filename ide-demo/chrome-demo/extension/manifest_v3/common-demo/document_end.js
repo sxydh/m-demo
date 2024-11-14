@@ -3,7 +3,18 @@ if (location.href.includes(".csdn.")) {
     let style = document.createElement("style");
     style.innerHTML = `
         /* 左侧广告 */
-        #footerRightAds, #asideWriteGuide, aside > .box-shadow {
+        #footerRightAds, #asideWriteGuide {
+            display: none !important;
+        }
+        aside > .box-shadow {
+            display: none !important;
+        }
+            
+        /* 右侧广告 */
+        #recommendAdBox {
+            display: none !important;
+        }
+        #rightAside .programmer1Box {
             display: none !important;
         }
     
@@ -29,6 +40,14 @@ if (location.href.includes(".csdn.")) {
         }
         #article_content {
             overflow: auto !important;
+        }
+            
+        /* 屏蔽工具栏 */
+        .csdn-side-toolbar {
+            display: none !important;
+        }
+        .tool-active-list {
+            display: none !important;
         }`;
     document.head.appendChild(style);
 
