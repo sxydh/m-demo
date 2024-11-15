@@ -27,8 +27,7 @@ if (location.href.includes(".csdn.")) {
         }
             
         /* 其它广告 */
-        #articleSearchTip,
-        #article_content {
+        #articleSearchTip {
             display: none !important;
         }
         .csdn-side-toolbar,
@@ -41,7 +40,8 @@ if (location.href.includes(".csdn.")) {
         }
     
         /* 选择文字 */
-        p, pre * {
+        p, 
+        span {
             user-select: text !important;
         }
         `;
