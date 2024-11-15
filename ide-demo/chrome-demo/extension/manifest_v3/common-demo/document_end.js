@@ -1,6 +1,7 @@
 /* CSDN */
 if (location.href.includes(".csdn.")) {
     let style = document.createElement("style");
+    style.id = "common-demo-csdn";
     style.innerHTML = `
         /* 顶部广告 */
         .toolbar-advert,
@@ -57,6 +58,7 @@ if (location.href.includes(".csdn.")) {
 /* 才士题库 */
 if (location.href.includes(".caishi.")) {
     let style = document.createElement("style");
+    style.id = "common-demo-caishi";
     style.innerHTML = `
         /* 可以选中 */
         p,
@@ -70,6 +72,7 @@ if (location.href.includes(".caishi.")) {
 /* 百度文库 */
 if (location.href.includes("//baike.")) {
     let style = document.createElement("style");
+    style.id = "common-demo-baike";
     style.innerHTML = `
         /* 右侧广告 */
         .unionAd_InMop {
@@ -77,6 +80,19 @@ if (location.href.includes("//baike.")) {
         }
         /* 底部广告 */
         #J-bottom-recommend-wrapper {
+            display: none !important;
+        }
+        `;
+    document.head.appendChild(style);
+}
+
+/* 华为社区 */
+if (location.href.includes("//.huaweicloud.")) {
+    let style = document.createElement("style");
+    style.id = "common-demo-huaweicloud";
+    style.innerHTML = `
+        /* 其它广告 */
+        .cloud-host-dialoge {
             display: none !important;
         }
         `;
