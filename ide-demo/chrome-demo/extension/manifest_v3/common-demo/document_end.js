@@ -68,7 +68,6 @@ if (location.href.includes(".caishi.")) {
 
 /* 百度文库 */
 if (location.href.includes("//baike.")) {
-    console.log(1111111111)
     let style = document.createElement("style");
     style.innerHTML = `
         /* 右侧广告 */
