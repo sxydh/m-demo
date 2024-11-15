@@ -59,7 +59,8 @@ if (location.href.includes(".caishi.")) {
     let style = document.createElement("style");
     style.innerHTML = `
         /* 可以选中 */
-        p {
+        p,
+        .stem.pointer {
             cursor: text !important;
             user-select: text !important;
         }`;
