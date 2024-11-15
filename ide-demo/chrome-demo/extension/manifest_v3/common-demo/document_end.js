@@ -2,8 +2,15 @@
 if (location.href.includes(".csdn.")) {
     let style = document.createElement("style");
     style.innerHTML = `
+        /* 顶部广告 */
+        .toolbar-advert,
+        .ad-wrap {
+            display: none !important;
+        }
+    
         /* 左侧广告 */
-        #footerRightAds, #asideWriteGuide {
+        #footerRightAds,
+        #asideWriteGuide {
             display: none !important;
         }
         aside > .box-shadow {
@@ -11,44 +18,33 @@ if (location.href.includes(".csdn.")) {
         }
             
         /* 右侧广告 */
-        #recommendAdBox {
+        #recommendAdBox,
+        #kp_box_www_swiper {
             display: none !important;
         }
         #rightAside .programmer1Box {
             display: none !important;
         }
-    
-        /* 屏蔽登录 */
-        .passport-login-container, .passport-login-tip-container {
-            display: none !important;
-        }
-        .signin {
-            display: none !important;
-        }
-        
-        /* 可以选中 */
-        p, pre * {
-            user-select: text !important;
-        }
-        #articleSearchTip {
-            display: none !important;
-        }
             
-        /* 屏蔽关注 */
+        /* 其它广告 */
+        #articleSearchTip,
+        #article_content {
+            display: none !important;
+        }
+        .csdn-side-toolbar,
+        .tool-active-list,
+        .passport-login-container,
+        .passport-login-tip-container,
+        .signin,
         .hide-article-box.hide-article-pos.text-center {
             display: none !important;
         }
-        #article_content {
-            overflow: auto !important;
+    
+        /* 选择文字 */
+        p, pre * {
+            user-select: text !important;
         }
-            
-        /* 屏蔽工具栏 */
-        .csdn-side-toolbar {
-            display: none !important;
-        }
-        .tool-active-list {
-            display: none !important;
-        }`;
+        `;
     document.head.appendChild(style);
 
     /* 可以复制 */
