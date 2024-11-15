@@ -41,7 +41,8 @@ if (location.href.includes(".csdn.")) {
     
         /* 选择文字 */
         p, 
-        span {
+        span,
+        pre * {
             user-select: text !important;
         }
         `;
