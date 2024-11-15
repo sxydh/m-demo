@@ -60,7 +60,7 @@ if (location.href.includes(".caishi.")) {
     style.innerHTML = `
         /* 可以选中 */
         p,
-        .stem.pointer {
+        div {
             cursor: text !important;
             user-select: text !important;
         }`;
