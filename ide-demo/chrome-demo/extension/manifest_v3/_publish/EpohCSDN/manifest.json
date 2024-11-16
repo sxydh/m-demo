@@ -4,7 +4,8 @@
     "version": "1.0",
     "permissions": [
         "activeTab",
-        "scripting"
+        "scripting",
+        "declarativeNetRequest"
     ],
     "icons": {
         "16": "images/icon16.png",
@@ -42,5 +43,17 @@
                 "document_end.js"
             ]
         }
-    ]
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "declarative_net_request": {
+        "rule_resources": [
+            {
+                "id": "csdn",
+                "enabled": true,
+                "path": "rules_csdn.json"
+            }
+        ]
+    }
 }
