@@ -1,2 +1,5 @@
 概述
     https://developer.chrome.com/docs/extensions/get-started?hl=zh-cn
+        开发文档
+    https://chrome.google.com/webstore/devconsole
+        开发者信息中心
