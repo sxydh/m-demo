@@ -1,6 +1,7 @@
 /* CSDN */
 if (location.href.includes(".csdn.")) {
     let style = document.createElement("style");
+    style.id = "epoh-csdn";
     style.innerHTML = `
         /* 顶部广告 */
         .toolbar-advert,
