@@ -3,7 +3,6 @@
     "name": "EpohCSDN",
     "version": "1.0",
     "permissions": [
-        "activeTab",
         "scripting",
         "declarativeNetRequest"
     ],
