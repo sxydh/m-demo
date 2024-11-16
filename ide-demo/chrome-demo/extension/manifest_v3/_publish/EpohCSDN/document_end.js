@@ -1,8 +1,6 @@
-/* CSDN */
-if (location.href.includes(".csdn.")) {
-    let style = document.createElement("style");
-    style.id = "epoh-csdn";
-    style.innerHTML = `
+let style = document.createElement("style");
+style.id = "epoh-csdn";
+style.innerHTML = `
         /* 顶部广告 */
         .toolbar-advert,
         .ad-wrap {
@@ -47,10 +45,9 @@ if (location.href.includes(".csdn.")) {
             user-select: text !important;
         }
         `;
-    document.head.appendChild(style);
+document.head.appendChild(style);
 
-    /* 可以复制 */
-    window.addEventListener("copy", event => {
-        event.stopImmediatePropagation();
-    }, true);
-}
+/* 可以复制 */
+window.addEventListener("copy", event => {
+    event.stopImmediatePropagation();
+}, true);
