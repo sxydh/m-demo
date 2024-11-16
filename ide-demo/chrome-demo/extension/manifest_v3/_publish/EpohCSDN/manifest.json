@@ -2,10 +2,7 @@
     "manifest_version": 3,
     "name": "EpohCSDN",
     "version": "1.0",
-    "permissions": [
-        "scripting",
-        "declarativeNetRequest"
-    ],
+    "permissions": [],
     "icons": {
         "16": "images/icon16.png",
         "32": "images/icon32.png",
@@ -19,9 +16,6 @@
             "64": "images/icon64.png",
             "128": "images/icon128.png"
         }
-    },
-    "background": {
-        "service_worker": "background.js"
     },
     "content_scripts": [
         {
@@ -42,17 +36,5 @@
                 "document_end.js"
             ]
         }
-    ],
-    "host_permissions": [
-        "<all_urls>"
-    ],
-    "declarative_net_request": {
-        "rule_resources": [
-            {
-                "id": "csdn",
-                "enabled": true,
-                "path": "rules_csdn.json"
-            }
-        ]
-    }
+    ]
 }
