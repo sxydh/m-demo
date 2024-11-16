@@ -12,8 +12,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://www.csdn.net/*",
-                "https://blog.csdn.net/*"
+                "*://*.csdn.net/*"
             ],
             "run_at": "document_end",
             "js": [
