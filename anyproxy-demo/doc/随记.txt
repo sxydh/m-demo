@@ -1,0 +1,5 @@
+环境
+    安装服务
+        npm install -g anyproxy
+    启动服务
+        anyproxy
