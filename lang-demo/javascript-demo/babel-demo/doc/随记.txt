@@ -1,0 +1,10 @@
+概述
+    https://babeljs.io/docs/
+    
+开始
+    ./node_modules/.bin/babel src --out-dir lib
+        编译 src 目录下的 js 文件到 lib 目录
+    
+环境
+    安装依赖
+        npm install --save-dev @babel/core @babel/cli @babel/preset-env
