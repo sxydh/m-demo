@@ -18,7 +18,7 @@ import {chromium} from 'playwright';
         const postData = request.postData();
         await route.continue({headers, postData});
     });
-    await page.route('**/*.js', async (route, request) => {
+    await page.route('**/*.js', async (route, _) => {
         const response = await route.fetch();
         let body = await response.text();
         body = 'console.log("injected script", Date.now());' + body;
