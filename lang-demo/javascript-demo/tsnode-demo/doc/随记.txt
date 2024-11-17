@@ -1,8 +1,8 @@
 概述
-    ts-node 是 TypeScript 的执行引擎，其本质是将 TypeScript 在运行时编译为 JavaScript 并运行。
-    
     https://typestrong.org/ts-node/docs/
     https://typestrong.org/ts-node/docs/imports
+    
+    ts-node 是 TypeScript 的执行引擎，其本质是将 TypeScript 在运行时编译为 JavaScript 并运行。
     
 开始
     ts-node example.ts
