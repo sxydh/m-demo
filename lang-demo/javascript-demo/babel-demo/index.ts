@@ -13,7 +13,7 @@ const ast = parser.parse(todoJs);
 
 // https://babeljs.io/docs/babel-traverse
 traverse(ast, {
-    Declaration(path) {
+    "Declaration"(path: any) {
         // https://babeljs.io/docs/babel-types
         const semicolon = types.identifier(';');
         path.insertBefore(semicolon);
