@@ -17,7 +17,10 @@ const injectVariableDeclaration = (node: any) => {
                         const logAst = types.expressionStatement(
                             types.callExpression(
                                 types.memberExpression(types.identifier('console'), types.identifier('log')),
-                                [id]
+                                [
+                                    types.stringLiteral(`[${id.name}]`),
+                                    id
+                                ]
                             ));
                         parent.splice(parent.indexOf(node) + 1, 0, logAst);
                     }
@@ -38,7 +41,10 @@ const injectAssignmentExpression = (node: any) => {
                     const logAst = types.expressionStatement(
                         types.callExpression(
                             types.memberExpression(types.identifier('console'), types.identifier('log')),
-                            [left]
+                            [
+                                types.stringLiteral(`[${left.name}]`),
+                                left
+                            ]
                         ));
                     parent.splice(parent.indexOf(node) + 1, 0, logAst);
                 }
