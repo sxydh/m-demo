@@ -8,14 +8,20 @@ const injectVariableDeclaration = (node: any) => {
     if (node && node.type === 'VariableDeclaration') {
         const declarations = node.declarations;
         if (declarations && declarations.length === 1) {
-            const parent: [any] = node._tnerap;
-            if (parent instanceof Array) {
-                const logAst = types.expressionStatement(
-                    types.callExpression(
-                        types.memberExpression(types.identifier('console'), types.identifier('log')),
-                        [declarations[0].id]
-                    ));
-                parent.splice(parent.indexOf(node) + 1, 0, logAst);
+            const declaration = declarations[0];
+            if (declaration) {
+                const id = declaration.id;
+                if (id && id.type === 'Identifier') {
+                    const parent: [any] = node._tnerap;
+                    if (parent instanceof Array) {
+                        const logAst = types.expressionStatement(
+                            types.callExpression(
+                                types.memberExpression(types.identifier('console'), types.identifier('log')),
+                                [id]
+                            ));
+                        parent.splice(parent.indexOf(node) + 1, 0, logAst);
+                    }
+                }
             }
         }
     }
@@ -25,14 +31,17 @@ const injectAssignmentExpression = (node: any) => {
     if (node && node.type === 'ExpressionStatement') {
         const expression = node.expression;
         if (expression && expression.type === 'AssignmentExpression') {
-            const parent: [any] = node._tnerap;
-            if (parent instanceof Array) {
-                const logAst = types.expressionStatement(
-                    types.callExpression(
-                        types.memberExpression(types.identifier('console'), types.identifier('log')),
-                        [expression.left]
-                    ));
-                parent.splice(parent.indexOf(node) + 1, 0, logAst);
+            const left = expression.left;
+            if (left && left.type === 'Identifier') {
+                const parent: [any] = node._tnerap;
+                if (parent instanceof Array) {
+                    const logAst = types.expressionStatement(
+                        types.callExpression(
+                            types.memberExpression(types.identifier('console'), types.identifier('log')),
+                            [left]
+                        ));
+                    parent.splice(parent.indexOf(node) + 1, 0, logAst);
+                }
             }
         }
     }
