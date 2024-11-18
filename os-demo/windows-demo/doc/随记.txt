@@ -17,3 +17,13 @@
             /f ：目录结构包含文件。
             
             显示目标路径的目录结构
+            
+问题
+    '.' 不是内部或外部命令，也不是可运行的程序
+        环境
+            Win11
+            babel-demo
+        复现
+            ./node_modules/.bin/ts-node index.ts
+        解决
+            .\node_modules\.bin\ts-node index.ts
