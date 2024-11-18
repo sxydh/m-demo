@@ -13,9 +13,9 @@ const ast = parser.parse(todoJs);
 
 // https://babeljs.io/docs/babel-traverse
 traverse(ast, {
-    AssignmentExpression(path) {
+    Declaration(path) {
         // https://babeljs.io/docs/babel-types
-        const semicolon = types.stringLiteral(';');
+        const semicolon = types.identifier(';');
         path.insertBefore(semicolon);
     }
 });
