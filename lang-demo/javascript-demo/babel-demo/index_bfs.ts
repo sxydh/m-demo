@@ -81,4 +81,6 @@ while (stack.length > 0) {
 }
 
 const output = generate(ast);
-console.log(output.code);
+const tmp = path.join(src, 'tmp');
+fs.mkdirSync(tmp, {recursive: true});
+fs.writeFileSync(path.join(tmp, 'todo.js'), output.code);
