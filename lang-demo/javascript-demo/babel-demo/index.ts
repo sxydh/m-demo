@@ -9,7 +9,7 @@ const filePath = path.join(__dirname, 'src', 'todo.js');
 const todoJs: string = fs.readFileSync(filePath, 'utf8');
 
 // https://babeljs.io/docs/babel-parser
-const ast = parser.parse(todoJs);
+const ast = parser.parse(todoJs, {sourceType: 'module'});
 
 // https://babeljs.io/docs/babel-traverse
 // noinspection JSUnusedGlobalSymbols
