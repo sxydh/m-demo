@@ -4,8 +4,8 @@ import * as parser from '@babel/parser';
 import generate from '@babel/generator';
 import * as types from "@babel/types";
 
-const filePath = path.join(__dirname, 'src', 'todo.js');
-const todoJs: string = fs.readFileSync(filePath, 'utf8');
+const src = path.join(__dirname, 'src');
+const todoJs: string = fs.readFileSync(path.join(src, 'todo.js'), 'utf8');
 
 const logAst = types.expressionStatement(
     types.callExpression(
