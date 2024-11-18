@@ -4,7 +4,7 @@ import * as parser from '@babel/parser';
 import generate from '@babel/generator';
 import * as types from "@babel/types";
 
-const filePath = path.join(__dirname, 'src', 'todo.js');
+const filePath = path.join(__dirname, 'src', 'todo2.js');
 const todoJs: string = fs.readFileSync(filePath, 'utf8');
 
 const logAst = types.expressionStatement(
@@ -19,7 +19,9 @@ while (stack.length > 0) {
     const top = stack.pop();
     if (top.type === 'VariableDeclaration') {
         const parent: [any] = top._tnerap;
-        parent.splice(parent.indexOf(top), 0, logAst);
+        if (parent instanceof Array) {
+            parent.splice(parent.indexOf(top), 0, logAst);
+        }
     }
 
     for (const key in top) {
@@ -31,8 +33,10 @@ while (stack.length > 0) {
         } else if (value instanceof Array) {
             for (let i = value.length - 1; i >= 0; i--) {
                 const ele = value[i];
-                ele._tnerap = value;
-                stack.push(ele);
+                if (ele) {
+                    ele._tnerap = value;
+                    stack.push(ele);
+                }
             }
         }
     }
