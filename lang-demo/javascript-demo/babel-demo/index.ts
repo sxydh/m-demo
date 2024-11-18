@@ -12,8 +12,9 @@ const todoJs: string = fs.readFileSync(filePath, 'utf8');
 const ast = parser.parse(todoJs);
 
 // https://babeljs.io/docs/babel-traverse
+// noinspection JSUnusedGlobalSymbols
 traverse(ast, {
-    "Declaration"(path: any) {
+    Declaration(path: any) {
         // https://babeljs.io/docs/babel-types
         const semicolon = types.identifier(';');
         path.insertBefore(semicolon);
