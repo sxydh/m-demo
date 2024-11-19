@@ -86,6 +86,7 @@ const astBFS = (todoJs: string): string => {
     while (stack.length) {
         const top = stack.pop();
         injectVariableDeclaration(top);
+        injectAssignmentExpression(top);
 
         for (const key in top) {
             if (key === '_tnerap') continue;
