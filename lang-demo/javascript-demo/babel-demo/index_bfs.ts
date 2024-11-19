@@ -77,7 +77,7 @@ const injectedAst = (node: any, args: any[], parent: any[]) => {
         types.callExpression(
             types.memberExpression(types.identifier('console'), types.identifier('log')),
             [
-                types.stringLiteral(`[${args.map(e => e.name).join(',')}]`),
+                types.stringLiteral(`[${args.map(e => generate(e).code).join(',')}]`),
                 ...args
             ]
         ));
