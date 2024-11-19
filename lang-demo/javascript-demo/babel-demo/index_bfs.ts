@@ -5,46 +5,13 @@ import generate from '@babel/generator';
 import * as types from "@babel/types";
 
 const injectVariableDeclaration = (node: any) => {
-    if (!node || !node._tnerap || node.type !== 'VariableDeclaration') {
+    if (!node || !node._tnerap || !'VariableDeclaration,ExpressionStatement'.includes(node.type)) {
         return;
     }
-    const stack = [...[...(node.declarations || [])].reverse()];
+    const stack = [];
     const args: any[] = [];
-    while (stack.length) {
-        const top = stack.pop();
-        if (!top) {
-            continue;
-        }
-        if (top.type === 'Identifier') {
-            args.push(top);
-        }
-        stack.push(top.right);
-        stack.push(top.init);
-        // 定位 a 变量
-        // let {a = 1} = null;
-        stack.push(top.left);
-        // 定位 b 变量
-        // let {a: {b}} = {};
-        stack.push(top.value);
-        // 定位 a, b, c 变量
-        // let [a, b, c] = [1, 2, 3];
-        stack.push(...[...(top.elements || [])].reverse());
-        // 定位 a, b, c 变量
-        // let {a, b, c} = {a: 1, b: 2, c: 3};
-        stack.push(...[...(top.properties || [])].reverse());
-        // 定位 a 变量
-        // let a = 1;
-        stack.push(top.id);
-    }
-    injectedAst(node, args, node._tnerap);
-};
-
-const injectAssignmentExpression = (node: any) => {
-    if (!node || !node._tnerap || node.type !== 'ExpressionStatement') {
-        return;
-    }
-    const stack = [node.expression];
-    const args: any[] = [];
+    stack.push(...[...(node.declarations || [])].reverse());
+    stack.push(node.expression);
     while (stack.length) {
         const top = stack.pop();
         if (!top) {
@@ -53,19 +20,15 @@ const injectAssignmentExpression = (node: any) => {
         if (top.type === 'Identifier' || top.type === 'MemberExpression') {
             args.push(top);
         }
-        // 定位 a, b, c 变量
-        // a = b = c = 5;
         stack.push(top.right);
-        // 定位 a 变量
-        // a = 1;
+        stack.push(top.init);
         stack.push(top.left);
-        // 定位 a, b, c 变量
-        // [a, b, c] = [1, 2, 3];
-        stack.push(...[...(top.elements || [])].reverse());
         stack.push(...[...(top.expressions || [])].reverse());
-        // 定位 a 变量
-        // a++;
+        stack.push(...[...(top.elements || [])].reverse());
+        stack.push(...[...(top.properties || [])].reverse());
         stack.push(top.argument);
+        stack.push(top.value);
+        stack.push(top.id);
     }
     injectedAst(node, args, node._tnerap);
 };
@@ -94,7 +57,6 @@ const bfs = () => {
     while (stack.length) {
         const top = stack.pop();
         injectVariableDeclaration(top);
-        injectAssignmentExpression(top);
 
         for (const key in top) {
             if (key === '_tnerap') continue;
