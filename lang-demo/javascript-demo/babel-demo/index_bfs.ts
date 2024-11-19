@@ -49,7 +49,7 @@ const injectAssignmentExpression = (node: any) => {
             continue;
         }
         if (top.left && top.left.type === 'Identifier') {
-            args.push(top);
+            args.push(top.left);
         }
         if (top.right && top.right.type === 'AssignmentExpression') {
             stack.push(top.right);
