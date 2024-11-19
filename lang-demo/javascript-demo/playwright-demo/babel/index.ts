@@ -1,4 +1,5 @@
 import {chromium} from 'playwright';
+import {astBFS} from './ast_bfs';
 
 (async () => {
     const browser = await chromium.launch({
@@ -11,7 +12,7 @@ import {chromium} from 'playwright';
     await page.route('**/*.js', async (route, _) => {
         const response = await route.fetch();
         let body = await response.text();
-        body = 'console.log("injected script", Date.now());' + body;
+        body = astBFS(body);
         await route.fulfill({response, body});
     });
 
