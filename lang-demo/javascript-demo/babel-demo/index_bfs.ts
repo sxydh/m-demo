@@ -49,25 +49,28 @@ const injectVariableDeclaration = (node: any) => {
 };
 
 const injectAssignmentExpression = (node: any) => {
-    if (node && node.type === 'ExpressionStatement') {
-        const expression = node.expression;
-        if (expression && expression.type === 'AssignmentExpression') {
-            const left = expression.left;
-            if (left && left.type === 'Identifier') {
-                const parent: [any] = node._tnerap;
-                if (parent instanceof Array) {
-                    const logAst = types.expressionStatement(
-                        types.callExpression(
-                            types.memberExpression(types.identifier('console'), types.identifier('log')),
-                            [
-                                types.stringLiteral(`[${left.name}]`),
-                                left
-                            ]
-                        ));
-                    parent.splice(parent.indexOf(node) + 1, 0, logAst);
-                }
-            }
-        }
+    if (!node || node.type !== 'ExpressionStatement') {
+        return;
+    }
+    const expression = node.expression;
+    if (!expression || expression.type !== 'AssignmentExpression') {
+        return;
+    }
+    const left = expression.left;
+    if (!left || left.type !== 'Identifier') {
+        return;
+    }
+    const parent: [any] = node._tnerap;
+    if (parent instanceof Array) {
+        const logAst = types.expressionStatement(
+            types.callExpression(
+                types.memberExpression(types.identifier('console'), types.identifier('log')),
+                [
+                    types.stringLiteral(`[${left.name}]`),
+                    left
+                ]
+            ));
+        parent.splice(parent.indexOf(node) + 1, 0, logAst);
     }
 };
 
