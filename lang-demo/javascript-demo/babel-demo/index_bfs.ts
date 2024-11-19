@@ -80,4 +80,5 @@ const astBFS = (todoJs: string): string => {
     return generate(ast).code;
 };
 
-astBFS(fs.readFileSync(path.join(__dirname, 'src', 'todo.js'), 'utf8'));
+const injectedCode = astBFS(fs.readFileSync(path.join(__dirname, 'src', 'todo.js'), 'utf8'));
+console.log(injectedCode);
