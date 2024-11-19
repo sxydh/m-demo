@@ -1,5 +1,5 @@
 import {chromium} from 'playwright';
-import {astBFS} from './ast_bfs';
+import {astBFS} from './util/ast_bfs';
 
 (async () => {
     const browser = await chromium.launch({
