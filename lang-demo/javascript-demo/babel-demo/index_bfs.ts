@@ -62,7 +62,8 @@ const injectAssignmentExpression = (node: any) => {
         // 定位 a, b, c 变量
         // [a, b, c] = [1, 2, 3];
         stack.push(...[...(top.elements || [])].reverse());
-        //
+        // 定位 a 变量
+        // a++;
         stack.push(top.argument);
     }
     injectedAst(node, args, node._tnerap);
