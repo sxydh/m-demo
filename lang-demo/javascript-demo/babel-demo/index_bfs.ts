@@ -36,29 +36,26 @@ const injectAst = (node: any) => {
                 break;
         }
     }
-    injectedAst(node, args, node._tnerap);
+    injectAstDo(node._tnerap, node, args);
 };
 
-const injectedAst = (node: any, args: any[], parent: any[]) => {
-    if (!parent || !parent.length || !args || !args.length) {
+const injectAstDo = (parent: any[], node: any, args: any[]) => {
+    if (!parent || !parent.length || !node || !args || !args.length) {
         return;
     }
     const ast = types.expressionStatement(
         types.callExpression(
             types.memberExpression(types.identifier('console'), types.identifier('log')),
             [
-                types.stringLiteral(`[${args.map(e => generate(e).code).join(',')}]`),
-                ...args
+                types.arrayExpression(args.map(e => types.stringLiteral(generate(e).code))),
+                types.arrayExpression(args)
             ]
         ));
     parent.splice(parent.indexOf(node) + 1, 0, ast);
 };
 
-const bfs = () => {
-    const src = path.join(__dirname, 'src');
-    const todoJs: string = fs.readFileSync(path.join(src, 'todo.js'), 'utf8');
-
-    const ast = parser.parse(todoJs, {sourceType: 'module'});
+const astBFS = (todoJs: string): string => {
+    const ast = parser.parse(todoJs, {sourceType: 'script'});
     const stack: any[] = [ast];
     while (stack.length) {
         const top = stack.pop();
@@ -71,21 +68,16 @@ const bfs = () => {
                 stack.push(value);
             } else if (value instanceof Array) {
                 for (let i = value.length - 1; i >= 0; i--) {
-                    const ele = value[i];
-                    if (!ele) {
+                    if (!value[i]) {
                         continue;
                     }
-                    ele._tnerap = value;
-                    stack.push(ele);
+                    value[i]._tnerap = value;
+                    stack.push(value[i]);
                 }
             }
         }
     }
-
-    const output = generate(ast);
-    const tmp = path.join(src, 'tmp');
-    fs.mkdirSync(tmp, {recursive: true});
-    fs.writeFileSync(path.join(tmp, 'todo.js'), output.code);
+    return generate(ast).code;
 };
 
-bfs();
+astBFS(fs.readFileSync(path.join(__dirname, 'src', 'todo.js'), 'utf8'));
