@@ -56,6 +56,7 @@ const injectAssignmentExpression = (node: any) => {
         }
         stack.push(top.left);
         stack.push(...[...(top.elements || [])].reverse());
+        stack.push(top.argument);
     }
     injectedAst(node, args);
 };
