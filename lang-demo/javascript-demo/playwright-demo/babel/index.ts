@@ -15,7 +15,7 @@ import {astBFS} from './util/ast_bfs';
         body = astBFS(body);
         body = `
             _noitcnuf = (keys, values) => {
-                values = values.map(e => (typeof e === 'string' || typeof e === 'number') ? e : '');
+                values = values.map(e => (typeof e === 'string' || typeof e === 'number') ? e : (typeof e));
                 const result = keys.reduce((obj, key, index) => {
                     obj[key] = values[index];
                     return obj;
