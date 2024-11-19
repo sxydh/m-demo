@@ -7,24 +7,27 @@ import * as types from "@babel/types";
 const injectVariableDeclaration = (node: any) => {
     if (node && node.type === 'VariableDeclaration') {
         const declarations = node.declarations;
-        if (declarations && declarations.length === 1) {
-            const declaration = declarations[0];
-            if (declaration) {
-                const id = declaration.id;
-                if (id && id.type === 'Identifier') {
-                    const parent: [any] = node._tnerap;
-                    if (parent instanceof Array) {
-                        const logAst = types.expressionStatement(
-                            types.callExpression(
-                                types.memberExpression(types.identifier('console'), types.identifier('log')),
-                                [
-                                    types.stringLiteral(`[${id.name}]`),
-                                    id
-                                ]
-                            ));
-                        parent.splice(parent.indexOf(node) + 1, 0, logAst);
+        if (declarations && declarations.length > 0) {
+            const ids = [];
+            for (const declaration of declarations) {
+                if (declaration) {
+                    const id = declaration.id;
+                    if (id && id.type === 'Identifier') {
+                        ids.push(id);
                     }
                 }
+            }
+            const parent: [any] = node._tnerap;
+            if (parent instanceof Array) {
+                const logAst = types.expressionStatement(
+                    types.callExpression(
+                        types.memberExpression(types.identifier('console'), types.identifier('log')),
+                        [
+                            types.stringLiteral(`[${ids.map(e => e.name).join(',')}]`),
+                            ...ids
+                        ]
+                    ));
+                parent.splice(parent.indexOf(node) + 1, 0, logAst);
             }
         }
     }
