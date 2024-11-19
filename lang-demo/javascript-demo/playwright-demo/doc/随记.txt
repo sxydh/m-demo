@@ -9,7 +9,7 @@
         安装 playwright
             https://playwright.dev/docs/intro
         
-    npx playwright install --save
+    npx playwright install
         安装 playwright 依赖的默认浏览器
             https://playwright.dev/docs/browsers
             
