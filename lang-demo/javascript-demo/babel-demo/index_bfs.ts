@@ -18,7 +18,6 @@ const injectVariableDeclaration = (node: any) => {
         if (top.type === 'Identifier') {
             args.push(top);
         }
-        // TODO
         stack.push(top.right);
         stack.push(top.init);
         // 定位 a 变量
