@@ -70,7 +70,7 @@ const injectAssignmentExpression = (node: any) => {
 };
 
 const injectedAst = (node: any, args: any[], parent: any[]) => {
-    if (!parent || !parent.length) {
+    if (!parent || !parent.length || !args || !args.length) {
         return;
     }
     const ast = types.expressionStatement(
