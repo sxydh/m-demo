@@ -5,34 +5,34 @@ import generate from '@babel/generator';
 import * as types from "@babel/types";
 
 const injectVariableDeclaration = (node: any) => {
-    if (!node || node.type !== 'VariableDeclaration' || !node.declarations) {
+    if (!node || node.type !== 'VariableDeclaration') {
         return;
     }
-    const ids = node.declarations.map((e: any) => e.id).filter(Boolean);
+    const stack = [...[...(node.declarations || [])].reverse()];
     const args: any[] = [];
-    for (const id of ids) {
-        switch (id.type) {
-            case 'Identifier':
-                args.push(id);
-                break;
-            case 'ObjectPattern':
-                for (const property of id.properties || []) {
-                    const key = property.key;
-                    if (!key || key.type !== 'Identifier') {
-                        continue;
-                    }
-                    args.push(key);
-                }
-                break;
-            case 'ArrayPattern':
-                for (const element of id.elements || []) {
-                    if (!element || element.type !== 'Identifier') {
-                        continue;
-                    }
-                    args.push(element);
-                }
-                break;
+    while (stack.length) {
+        const top = stack.pop();
+        if (!top) {
+            continue;
         }
+        if (top.type === 'Identifier') {
+            args.push(top);
+        }
+        // 定位 a 变量
+        // let a = 1;
+        stack.push(top.id);
+        // 定位 b 变量
+        // let {a: {b}} = {};
+        stack.push(top.value);
+        // 定位 a 变量
+        // let {a = 1} = null;
+        stack.push(top.left);
+        // 定位 a, b, c 变量
+        // let [a, b, c] = [1, 2, 3];
+        stack.push(...[...(top.elements || [])].reverse());
+        // 定位 a, b, c 变量
+        // let {a, b, c} = {a: 1, b: 2, c: 3};
+        stack.push(...[...(top.properties || [])].reverse());
     }
     injectedAst(node, args);
 };
