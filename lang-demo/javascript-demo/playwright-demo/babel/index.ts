@@ -1,7 +1,10 @@
 import {chromium} from 'playwright';
 import {astBFS} from './util/ast_bfs';
+import {server} from "./util/http_server";
 
 (async () => {
+    server.listen(3000);
+
     const browser = await chromium.launch({
         headless: false,
         executablePath: 'C:/Users/Administrator/AppData/Local/ms-playwright/chromium-1140/chrome-win/chrome.exe'
@@ -24,7 +27,4 @@ import {astBFS} from './util/ast_bfs';
     });
 
     await page.goto('https://www.baidu.com');
-
-    await page.waitForTimeout(50000);
-    await browser.close();
 })();
