@@ -48,8 +48,20 @@ const injectAssignmentExpression = (node: any) => {
         if (!top || top.type !== 'AssignmentExpression') {
             continue;
         }
-        if (top.left && top.left.type === 'Identifier') {
-            args.push(top.left);
+        if (top.left) {
+            switch (top.left.type) {
+                case 'Identifier':
+                    args.push(top.left);
+                    break;
+                case 'ArrayPattern':
+                    for (const element of top.left.elements || []) {
+                        if (!element || element.type !== 'Identifier') {
+                            continue;
+                        }
+                        args.push(element);
+                    }
+                    break;
+            }
         }
         if (top.right && top.right.type === 'AssignmentExpression') {
             stack.push(top.right);
