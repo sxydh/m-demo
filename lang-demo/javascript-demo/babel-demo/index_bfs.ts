@@ -5,30 +5,36 @@ import generate from '@babel/generator';
 import * as types from "@babel/types";
 
 const injectAst = (node: any) => {
-    if (!node || !node._tnerap || !'VariableDeclaration,ExpressionStatement'.includes(node.type)) {
+    if (!node || !node._tnerap || node.type !== 'VariableDeclaration') {
         return;
     }
-    const stack = [];
     const args: any[] = [];
-    stack.push(...[...(node.declarations || [])].reverse());
-    stack.push(node.expression);
-    while (stack.length) {
-        const top = stack.pop();
-        if (!top) {
+    for (const declaration of node.declarations || []) {
+        if (!declaration || declaration.type !== 'VariableDeclarator') {
             continue;
         }
-        if (top.type === 'Identifier' || top.type === 'MemberExpression') {
-            args.push(top);
+        const id = declaration.id || {};
+        switch (id.type) {
+            case 'Identifier':
+                args.push(id);
+                break;
+            case 'ArrayPattern':
+                for (const element of id.elements || []) {
+                    if (!element || element.type !== 'Identifier') {
+                        continue;
+                    }
+                    args.push(element);
+                }
+                break;
+            case 'ObjectPattern':
+                for (const property of id.properties || []) {
+                    if (!property || !property.key || property.key.type !== 'Identifier') {
+                        continue;
+                    }
+                    args.push(property.key);
+                }
+                break;
         }
-        stack.push(top.right);
-        stack.push(top.init);
-        stack.push(top.left);
-        stack.push(...[...(top.expressions || [])].reverse());
-        stack.push(...[...(top.elements || [])].reverse());
-        stack.push(...[...(top.properties || [])].reverse());
-        stack.push(top.argument);
-        stack.push(top.value);
-        stack.push(top.id);
     }
     injectedAst(node, args, node._tnerap);
 };
