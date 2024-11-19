@@ -9,7 +9,7 @@ const injectVariableDeclaration = (node: any) => {
         return;
     }
     const ids = node.declarations.map((e: any) => e.id).filter(Boolean);
-    const args = [];
+    const args: any[] = [];
     for (const id of ids) {
         switch (id.type) {
             case 'Identifier':
@@ -34,9 +34,34 @@ const injectVariableDeclaration = (node: any) => {
                 break;
         }
     }
-    const parent: [any] = node._tnerap;
+    injectedAst(node, args);
+};
+
+const injectAssignmentExpression = (node: any) => {
+    if (!node || node.type !== 'ExpressionStatement') {
+        return;
+    }
+    const stack = [node.expression];
+    const args: any[] = [];
+    while (stack.length) {
+        const top = stack.pop();
+        if (!top || top.type !== 'AssignmentExpression') {
+            continue;
+        }
+        if (top.left && top.left.type === 'Identifier') {
+            args.push(top);
+        }
+        if (top.right && top.right.type === 'AssignmentExpression') {
+            stack.push(top.right);
+        }
+    }
+    injectedAst(node, args);
+};
+
+const injectedAst = (node: any, args: any[]) => {
+    const parent: any[] = node._tnerap;
     if (parent instanceof Array) {
-        const logAst = types.expressionStatement(
+        const ast = types.expressionStatement(
             types.callExpression(
                 types.memberExpression(types.identifier('console'), types.identifier('log')),
                 [
@@ -44,33 +69,7 @@ const injectVariableDeclaration = (node: any) => {
                     ...args
                 ]
             ));
-        parent.splice(parent.indexOf(node) + 1, 0, logAst);
-    }
-};
-
-const injectAssignmentExpression = (node: any) => {
-    if (!node || node.type !== 'ExpressionStatement') {
-        return;
-    }
-    const expression = node.expression;
-    if (!expression || expression.type !== 'AssignmentExpression') {
-        return;
-    }
-    const left = expression.left;
-    if (!left || left.type !== 'Identifier') {
-        return;
-    }
-    const parent: [any] = node._tnerap;
-    if (parent instanceof Array) {
-        const logAst = types.expressionStatement(
-            types.callExpression(
-                types.memberExpression(types.identifier('console'), types.identifier('log')),
-                [
-                    types.stringLiteral(`[${left.name}]`),
-                    left
-                ]
-            ));
-        parent.splice(parent.indexOf(node) + 1, 0, logAst);
+        parent.splice(parent.indexOf(node) + 1, 0, ast);
     }
 };
 
@@ -79,8 +78,8 @@ const bfs = () => {
     const todoJs: string = fs.readFileSync(path.join(src, 'todo.js'), 'utf8');
 
     const ast = parser.parse(todoJs, {sourceType: 'module'});
-    const stack: [any] = [ast];
-    while (stack.length > 0) {
+    const stack: any[] = [ast];
+    while (stack.length) {
         const top = stack.pop();
         injectVariableDeclaration(top);
         injectAssignmentExpression(top);
@@ -93,10 +92,11 @@ const bfs = () => {
             } else if (value instanceof Array) {
                 for (let i = value.length - 1; i >= 0; i--) {
                     const ele = value[i];
-                    if (ele) {
-                        ele._tnerap = value;
-                        stack.push(ele);
+                    if (!ele) {
+                        continue;
                     }
+                    ele._tnerap = value;
+                    stack.push(ele);
                 }
             }
         }
