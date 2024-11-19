@@ -46,7 +46,7 @@ const injectedAst = (node: any, args: any[], parent: any[]) => {
     parent.splice(parent.indexOf(node) + 1, 0, ast);
 };
 
-const astBFS = (todoJs: string): string => {
+export const astBFS = (todoJs: string): string => {
     const ast = parser.parse(todoJs, {sourceType: 'module'});
     const stack: any[] = [ast];
     while (stack.length) {
