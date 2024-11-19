@@ -18,21 +18,24 @@ const injectVariableDeclaration = (node: any) => {
         if (top.type === 'Identifier') {
             args.push(top);
         }
-        // 定位 a 变量
-        // let a = 1;
-        stack.push(top.id);
-        // 定位 b 变量
-        // let {a: {b}} = {};
-        stack.push(top.value);
+        // TODO
+        stack.push(top.right);
+        stack.push(top.init);
         // 定位 a 变量
         // let {a = 1} = null;
         stack.push(top.left);
+        // 定位 b 变量
+        // let {a: {b}} = {};
+        stack.push(top.value);
         // 定位 a, b, c 变量
         // let [a, b, c] = [1, 2, 3];
         stack.push(...[...(top.elements || [])].reverse());
         // 定位 a, b, c 变量
         // let {a, b, c} = {a: 1, b: 2, c: 3};
         stack.push(...[...(top.properties || [])].reverse());
+        // 定位 a 变量
+        // let a = 1;
+        stack.push(top.id);
     }
     injectedAst(node, args, node._tnerap);
 };
