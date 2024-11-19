@@ -4,7 +4,7 @@ import * as parser from '@babel/parser';
 import generate from '@babel/generator';
 import * as types from "@babel/types";
 
-const injectAst = (node: any) => {
+const injectVariableDeclaration = (node: any) => {
     if (!node || !node._tnerap || node.type !== 'VariableDeclaration') {
         return;
     }
@@ -36,10 +36,10 @@ const injectAst = (node: any) => {
                 break;
         }
     }
-    injectAstDo(node._tnerap, node, args);
+    injectDo(node._tnerap, node, args);
 };
 
-const injectAstDo = (parent: any[], node: any, args: any[]) => {
+const injectDo = (parent: any[], node: any, args: any[]) => {
     if (!parent || !parent.length || !node || !args || !args.length) {
         return;
     }
@@ -59,7 +59,7 @@ const astBFS = (todoJs: string): string => {
     const stack: any[] = [ast];
     while (stack.length) {
         const top = stack.pop();
-        injectAst(top);
+        injectVariableDeclaration(top);
 
         for (const key in top) {
             if (key === '_tnerap') continue;
