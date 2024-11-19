@@ -35,7 +35,12 @@ const injectedAst = (node: any, args: any[], parent: any[]) => {
     if (!parent || !parent.length || !args || !args.length) {
         return;
     }
-    const ast = types.expressionStatement(types.callExpression(types.identifier('_noitcnuf'), [...args]));
+    const ast = types.expressionStatement(types.callExpression(
+        types.identifier('_noitcnuf'),
+        [
+            args.map((e: any) => generate(e).code).join(','),
+            ...args
+        ]));
     parent.splice(parent.indexOf(node) + 1, 0, ast);
 };
 
