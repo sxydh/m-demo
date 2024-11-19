@@ -14,9 +14,14 @@ import {astBFS} from './util/ast_bfs';
         let body = await response.text();
         body = astBFS(body);
         body = `
-            _noitcnuf = (...args) => {
+            _noitcnuf = (keys, values) => {
+                values = values.map(e => (typeof e === 'string' || typeof e === 'number') ? e : '');
+                const result = keys.reduce((obj, key, index) => {
+                    obj[key] = values[index];
+                    return obj;
+                }, {});
                 window._reffub = window._reffub || [];
-                window._reffub.push([...args]);
+                window._reffub.push(result);
             };
             ${body}`;
         await route.fulfill({response, body});
