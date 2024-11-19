@@ -74,34 +74,38 @@ const injectAssignmentExpression = (node: any) => {
     }
 };
 
-const src = path.join(__dirname, 'src');
-const todoJs: string = fs.readFileSync(path.join(src, 'todo.js'), 'utf8');
+const bfs = () => {
+    const src = path.join(__dirname, 'src');
+    const todoJs: string = fs.readFileSync(path.join(src, 'todo.js'), 'utf8');
 
-const ast = parser.parse(todoJs, {sourceType: 'module'});
-const stack: [any] = [ast];
-while (stack.length > 0) {
-    const top = stack.pop();
-    injectVariableDeclaration(top);
-    injectAssignmentExpression(top);
+    const ast = parser.parse(todoJs, {sourceType: 'module'});
+    const stack: [any] = [ast];
+    while (stack.length > 0) {
+        const top = stack.pop();
+        injectVariableDeclaration(top);
+        injectAssignmentExpression(top);
 
-    for (const key in top) {
-        if (key === '_tnerap') continue;
-        const value = top[key];
-        if (value instanceof Object && value.hasOwnProperty('type')) {
-            stack.push(value);
-        } else if (value instanceof Array) {
-            for (let i = value.length - 1; i >= 0; i--) {
-                const ele = value[i];
-                if (ele) {
-                    ele._tnerap = value;
-                    stack.push(ele);
+        for (const key in top) {
+            if (key === '_tnerap') continue;
+            const value = top[key];
+            if (value instanceof Object && value.hasOwnProperty('type')) {
+                stack.push(value);
+            } else if (value instanceof Array) {
+                for (let i = value.length - 1; i >= 0; i--) {
+                    const ele = value[i];
+                    if (ele) {
+                        ele._tnerap = value;
+                        stack.push(ele);
+                    }
                 }
             }
         }
     }
-}
 
-const output = generate(ast);
-const tmp = path.join(src, 'tmp');
-fs.mkdirSync(tmp, {recursive: true});
-fs.writeFileSync(path.join(tmp, 'todo.js'), output.code);
+    const output = generate(ast);
+    const tmp = path.join(src, 'tmp');
+    fs.mkdirSync(tmp, {recursive: true});
+    fs.writeFileSync(path.join(tmp, 'todo.js'), output.code);
+};
+
+bfs();
