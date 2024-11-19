@@ -15,13 +15,19 @@ import {astBFS} from './util/ast_bfs';
         body = astBFS(body);
         body = `
             _noitcnuf = (keys, values) => {
-                values = values.map(e => ['boolean', 'string', 'number'].includes(typeof e) ? e : (typeof e));
-                const result = keys.reduce((obj, key, index) => {
-                    obj[key] = values[index];
-                    return obj;
-                }, {});
-                window._reffub = window._reffub || [];
-                window._reffub.push(result);
+                const obj = {};
+                let isPush = false;
+                for (let i = 0; i < keys.length; i++) {
+                    if (!['boolean', 'string', 'number'].includes(typeof values[i])) {
+                        continue;
+                    }
+                    obj[keys[i]] = values[i];
+                    isPush = true;
+                }
+                if (isPush) {
+                    window._reffub = window._reffub || [];
+                    window._reffub.push(obj);
+                }
             };
             ${body}`;
         await route.fulfill({response, body});
