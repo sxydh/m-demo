@@ -5,33 +5,33 @@ import generate from '@babel/generator';
 import * as types from "@babel/types";
 
 const injectVariableDeclaration = (node: any) => {
-    if (!node) {
+    if (!node || node.type !== 'VariableDeclaration' || !node.declarations) {
         return;
     }
-    if (node.type !== 'VariableDeclaration' || !node.declarations) {
-        return;
-    }
-    const ids = [];
-    for (const declaration of node.declarations) {
-        const id = declaration.id;
-        if (!id) {
-            continue;
-        }
-        if (id.type === 'Identifier') {
-            ids.push(id);
-            continue;
-        }
-        if (id.type === 'ObjectPattern' && id.properties) {
-            for (const property of id.properties) {
-                const key = property.key;
-                if (!key) {
-                    continue;
+    const ids = node.declarations.map((e: any) => e.id).filter(Boolean);
+    const args = [];
+    for (const id of ids) {
+        switch (id.type) {
+            case 'Identifier':
+                args.push(id);
+                break;
+            case 'ObjectPattern':
+                for (const property of id.properties || []) {
+                    const key = property.key;
+                    if (!key || key.type !== 'Identifier') {
+                        continue;
+                    }
+                    args.push(key);
                 }
-                if (key.type !== 'Identifier') {
-                    continue;
+                break;
+            case 'ArrayPattern':
+                for (const element of id.elements || []) {
+                    if (!element || element.type !== 'Identifier') {
+                        continue;
+                    }
+                    args.push(element);
                 }
-                ids.push(key);
-            }
+                break;
         }
     }
     const parent: [any] = node._tnerap;
@@ -40,8 +40,8 @@ const injectVariableDeclaration = (node: any) => {
             types.callExpression(
                 types.memberExpression(types.identifier('console'), types.identifier('log')),
                 [
-                    types.stringLiteral(`[${ids.map(e => e.name).join(',')}]`),
-                    ...ids
+                    types.stringLiteral(`[${args.map(e => e.name).join(',')}]`),
+                    ...args
                 ]
             ));
         parent.splice(parent.indexOf(node) + 1, 0, logAst);
