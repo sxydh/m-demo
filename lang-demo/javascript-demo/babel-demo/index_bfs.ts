@@ -5,31 +5,46 @@ import generate from '@babel/generator';
 import * as types from "@babel/types";
 
 const injectVariableDeclaration = (node: any) => {
-    if (node && node.type === 'VariableDeclaration') {
-        const declarations = node.declarations;
-        if (declarations && declarations.length > 0) {
-            const ids = [];
-            for (const declaration of declarations) {
-                if (declaration) {
-                    const id = declaration.id;
-                    if (id && id.type === 'Identifier') {
-                        ids.push(id);
-                    }
+    if (!node) {
+        return;
+    }
+    if (node.type !== 'VariableDeclaration' || !node.declarations) {
+        return;
+    }
+    const ids = [];
+    for (const declaration of node.declarations) {
+        const id = declaration.id;
+        if (!id) {
+            continue;
+        }
+        if (id.type === 'Identifier') {
+            ids.push(id);
+            continue;
+        }
+        if (id.type === 'ObjectPattern' && id.properties) {
+            for (const property of id.properties) {
+                const key = property.key;
+                if (!key) {
+                    continue;
                 }
-            }
-            const parent: [any] = node._tnerap;
-            if (parent instanceof Array) {
-                const logAst = types.expressionStatement(
-                    types.callExpression(
-                        types.memberExpression(types.identifier('console'), types.identifier('log')),
-                        [
-                            types.stringLiteral(`[${ids.map(e => e.name).join(',')}]`),
-                            ...ids
-                        ]
-                    ));
-                parent.splice(parent.indexOf(node) + 1, 0, logAst);
+                if (key.type !== 'Identifier') {
+                    continue;
+                }
+                ids.push(key);
             }
         }
+    }
+    const parent: [any] = node._tnerap;
+    if (parent instanceof Array) {
+        const logAst = types.expressionStatement(
+            types.callExpression(
+                types.memberExpression(types.identifier('console'), types.identifier('log')),
+                [
+                    types.stringLiteral(`[${ids.map(e => e.name).join(',')}]`),
+                    ...ids
+                ]
+            ));
+        parent.splice(parent.indexOf(node) + 1, 0, logAst);
     }
 };
 
