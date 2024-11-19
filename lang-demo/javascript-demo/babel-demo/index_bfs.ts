@@ -39,6 +39,32 @@ const injectVariableDeclaration = (node: any) => {
     injectDo(node._tnerap, node, args);
 };
 
+const injectAssignmentExpression = (node: any) => {
+    if (!node || !node._tnerap || node.type !== 'ExpressionStatement') {
+        return;
+    }
+    const expression = node.expression;
+    if (!expression || !expression.left) {
+        return;
+    }
+    const args: any[] = [];
+    const left = expression.left;
+    switch (left.type) {
+        case 'Identifier':
+            args.push(left);
+            break;
+        case 'ArrayPattern':
+            for (const element of left.elements || []) {
+                if (!element || element.type !== 'Identifier') {
+                    continue;
+                }
+                args.push(element);
+            }
+            break;
+    }
+    injectDo(node._tnerap, node, args);
+};
+
 const injectDo = (parent: any[], node: any, args: any[]) => {
     if (!parent || !parent.length || !node || !args || !args.length) {
         return;
