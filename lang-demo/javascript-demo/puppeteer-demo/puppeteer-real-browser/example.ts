@@ -1,9 +1,8 @@
-
-import { connect } from 'puppeteer-real-browser';
+import {connect} from 'puppeteer-real-browser';
 
 (async () => {
 
-    const { browser, page } = await connect({
+    const {page} = await connect({
         headless: false,
         args: ["--start-maximized"],
         customConfig: {},
