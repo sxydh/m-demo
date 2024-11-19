@@ -13,6 +13,8 @@ import {astBFS} from './util/ast_bfs';
         const response = await route.fetch();
         let body = await response.text();
         body = astBFS(body);
+        // 查询语句
+        // window._reffub.filter(e => Object.values(e).some(ve => `${ve}`.includes('B26EA54B2D816A1D5EAFF6F5901F4F32')));
         body = `
             _noitcnuf = (keys, values) => {
                 const obj = {};
