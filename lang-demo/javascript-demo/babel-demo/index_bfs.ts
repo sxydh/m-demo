@@ -5,7 +5,7 @@ import generate from '@babel/generator';
 import * as types from "@babel/types";
 
 const injectVariableDeclaration = (node: any) => {
-    if (!node || node.type !== 'VariableDeclaration') {
+    if (!node || !node._tnerap || node.type !== 'VariableDeclaration') {
         return;
     }
     const stack = [...[...(node.declarations || [])].reverse()];
@@ -34,11 +34,11 @@ const injectVariableDeclaration = (node: any) => {
         // let {a, b, c} = {a: 1, b: 2, c: 3};
         stack.push(...[...(top.properties || [])].reverse());
     }
-    injectedAst(node, args);
+    injectedAst(node, args, node._tnerap);
 };
 
 const injectAssignmentExpression = (node: any) => {
-    if (!node || node.type !== 'ExpressionStatement') {
+    if (!node || !node._tnerap || node.type !== 'ExpressionStatement') {
         return;
     }
     const stack = [node.expression];
@@ -58,22 +58,22 @@ const injectAssignmentExpression = (node: any) => {
         stack.push(...[...(top.elements || [])].reverse());
         stack.push(top.argument);
     }
-    injectedAst(node, args);
+    injectedAst(node, args, node._tnerap);
 };
 
-const injectedAst = (node: any, args: any[]) => {
-    const parent: any[] = node._tnerap;
-    if (parent instanceof Array) {
-        const ast = types.expressionStatement(
-            types.callExpression(
-                types.memberExpression(types.identifier('console'), types.identifier('log')),
-                [
-                    types.stringLiteral(`[${args.map(e => e.name).join(',')}]`),
-                    ...args
-                ]
-            ));
-        parent.splice(parent.indexOf(node) + 1, 0, ast);
+const injectedAst = (node: any, args: any[], parent: any[]) => {
+    if (!parent || !parent.length) {
+        return;
     }
+    const ast = types.expressionStatement(
+        types.callExpression(
+            types.memberExpression(types.identifier('console'), types.identifier('log')),
+            [
+                types.stringLiteral(`[${args.map(e => e.name).join(',')}]`),
+                ...args
+            ]
+        ));
+    parent.splice(parent.indexOf(node) + 1, 0, ast);
 };
 
 const bfs = () => {
