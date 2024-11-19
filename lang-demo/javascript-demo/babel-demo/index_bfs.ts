@@ -45,27 +45,17 @@ const injectAssignmentExpression = (node: any) => {
     const args: any[] = [];
     while (stack.length) {
         const top = stack.pop();
-        if (!top || top.type !== 'AssignmentExpression') {
+        if (!top) {
             continue;
         }
-        if (top.left) {
-            switch (top.left.type) {
-                case 'Identifier':
-                    args.push(top.left);
-                    break;
-                case 'ArrayPattern':
-                    for (const element of top.left.elements || []) {
-                        if (!element || element.type !== 'Identifier') {
-                            continue;
-                        }
-                        args.push(element);
-                    }
-                    break;
-            }
+        if (top.type === 'Identifier') {
+            args.push(top);
         }
         if (top.right && top.right.type === 'AssignmentExpression') {
             stack.push(top.right);
         }
+        stack.push(top.left);
+        stack.push(...[...(top.elements || [])].reverse());
     }
     injectedAst(node, args);
 };
