@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as parser from '@babel/parser';
 import generate from '@babel/generator';
 import * as types from "@babel/types";
@@ -48,10 +46,7 @@ const injectedAst = (node: any, args: any[], parent: any[]) => {
     parent.splice(parent.indexOf(node) + 1, 0, ast);
 };
 
-const bfs = () => {
-    const src = path.join(__dirname, 'src');
-    const todoJs: string = fs.readFileSync(path.join(src, 'todo.js'), 'utf8');
-
+const astBFS = (todoJs: string): string => {
     const ast = parser.parse(todoJs, {sourceType: 'module'});
     const stack: any[] = [ast];
     while (stack.length) {
@@ -75,11 +70,5 @@ const bfs = () => {
             }
         }
     }
-
-    const output = generate(ast);
-    const tmp = path.join(src, 'tmp');
-    fs.mkdirSync(tmp, {recursive: true});
-    fs.writeFileSync(path.join(tmp, 'todo.js'), output.code);
+    return generate(ast).code;
 };
-
-bfs();
