@@ -47,7 +47,7 @@ const injectedAst = (node: any, args: any[], parent: any[]) => {
 };
 
 export const astBFS = (todoJs: string): string => {
-    const ast = parser.parse(todoJs, {sourceType: 'module'});
+    const ast = parser.parse(todoJs, {sourceType: 'script'});
     const stack: any[] = [ast];
     while (stack.length) {
         const top = stack.pop();
