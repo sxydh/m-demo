@@ -53,15 +53,14 @@ const injectAssignmentExpression = (node: any) => {
         }
         // 定位 a, b, c 变量
         // a = b = c = 5;
-        if (top.right && top.right.type === 'AssignmentExpression') {
-            stack.push(top.right);
-        }
+        stack.push(top.right);
         // 定位 a 变量
         // a = 1;
         stack.push(top.left);
         // 定位 a, b, c 变量
         // [a, b, c] = [1, 2, 3];
         stack.push(...[...(top.elements || [])].reverse());
+        stack.push(...[...(top.expressions || [])].reverse());
         // 定位 a 变量
         // a++;
         stack.push(top.argument);
