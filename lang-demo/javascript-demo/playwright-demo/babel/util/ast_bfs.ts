@@ -69,7 +69,7 @@ const injectDo = (parent: any[], node: any, args: any[]) => {
     }
     const ast = types.expressionStatement(
         types.callExpression(
-            types.memberExpression(types.identifier('console'), types.identifier('log')),
+            types.identifier('_noitcnuf'),
             [
                 types.arrayExpression(args.map(e => types.stringLiteral(generate(e).code))),
                 types.arrayExpression(args)
