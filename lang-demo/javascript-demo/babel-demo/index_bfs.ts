@@ -4,7 +4,7 @@ import * as parser from '@babel/parser';
 import generate from '@babel/generator';
 import * as types from "@babel/types";
 
-const injectVariableDeclaration = (node: any) => {
+const injectAst = (node: any) => {
     if (!node || !node._tnerap || !'VariableDeclaration,ExpressionStatement'.includes(node.type)) {
         return;
     }
@@ -56,7 +56,7 @@ const bfs = () => {
     const stack: any[] = [ast];
     while (stack.length) {
         const top = stack.pop();
-        injectVariableDeclaration(top);
+        injectAst(top);
 
         for (const key in top) {
             if (key === '_tnerap') continue;
