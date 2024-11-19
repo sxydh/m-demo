@@ -12,6 +12,13 @@ import {astBFS} from './util/ast_bfs';
     await page.route('**/*.js', async (route, _) => {
         const response = await route.fetch();
         let body = await response.text();
+        body += `
+            _noitcnuf = (...args) => {
+                const body = JSON.stringify(args);
+                fetch('http://localhost:3000', {
+                    body: body
+                }).catch(e => null);
+            };`;
         body = astBFS(body);
         await route.fulfill({response, body});
     });
