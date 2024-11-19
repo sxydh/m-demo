@@ -1,7 +1,10 @@
 import {chromium} from 'playwright';
 
 (async () => {
-    const browser = await chromium.launch({headless: false});
+    const browser = await chromium.launch({
+        headless: false,
+        executablePath: 'C:/Users/Administrator/AppData/Local/ms-playwright/chromium-1140/chrome-win/chrome.exe'
+    });
     const context = await browser.newContext();
     const page = await context.newPage();
 
