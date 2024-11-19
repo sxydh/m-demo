@@ -2,45 +2,79 @@ import * as parser from '@babel/parser';
 import generate from '@babel/generator';
 import * as types from "@babel/types";
 
-const injectAst = (node: any) => {
-    if (!node || !node._tnerap || !'VariableDeclaration,ExpressionStatement'.includes(node.type)) {
+const injectVariableDeclaration = (node: any) => {
+    if (!node || !node._tnerap || node.type !== 'VariableDeclaration') {
         return;
     }
-    const stack = [];
     const args: any[] = [];
-    stack.push(...[...(node.declarations || [])].reverse());
-    stack.push(node.expression);
-    while (stack.length) {
-        const top = stack.pop();
-        if (!top) {
+    for (const declaration of node.declarations || []) {
+        if (!declaration || declaration.type !== 'VariableDeclarator') {
             continue;
         }
-        if (top.type === 'Identifier' || top.type === 'MemberExpression') {
-            args.push(top);
+        const id = declaration.id || {};
+        switch (id.type) {
+            case 'Identifier':
+                args.push(id);
+                break;
+            case 'ArrayPattern':
+                for (const element of id.elements || []) {
+                    if (!element || element.type !== 'Identifier') {
+                        continue;
+                    }
+                    args.push(element);
+                }
+                break;
+            case 'ObjectPattern':
+                for (const property of id.properties || []) {
+                    if (!property || !property.key || property.key.type !== 'Identifier') {
+                        continue;
+                    }
+                    args.push(property.key);
+                }
+                break;
         }
-        stack.push(top.right);
-        stack.push(top.init);
-        stack.push(top.left);
-        stack.push(...[...(top.expressions || [])].reverse());
-        stack.push(...[...(top.elements || [])].reverse());
-        stack.push(...[...(top.properties || [])].reverse());
-        stack.push(top.argument);
-        stack.push(top.value);
-        stack.push(top.id);
     }
-    injectedAst(node, args, node._tnerap);
+    injectDo(node._tnerap, node, args);
 };
 
-const injectedAst = (node: any, args: any[], parent: any[]) => {
-    if (!parent || !parent.length || !args || !args.length) {
+const injectAssignmentExpression = (node: any) => {
+    if (!node || !node._tnerap || node.type !== 'ExpressionStatement') {
         return;
     }
-    const ast = types.expressionStatement(types.callExpression(
-        types.identifier('_noitcnuf'),
-        [
-            types.arrayExpression(args.map(e => types.stringLiteral(generate(e).code))),
-            types.arrayExpression(args)
-        ]));
+    const expression = node.expression;
+    if (!expression || !expression.left) {
+        return;
+    }
+    const args: any[] = [];
+    const left = expression.left;
+    switch (left.type) {
+        case 'Identifier':
+            args.push(left);
+            break;
+        case 'ArrayPattern':
+            for (const element of left.elements || []) {
+                if (!element || element.type !== 'Identifier') {
+                    continue;
+                }
+                args.push(element);
+            }
+            break;
+    }
+    injectDo(node._tnerap, node, args);
+};
+
+const injectDo = (parent: any[], node: any, args: any[]) => {
+    if (!parent || !parent.length || !node || !args || !args.length) {
+        return;
+    }
+    const ast = types.expressionStatement(
+        types.callExpression(
+            types.memberExpression(types.identifier('console'), types.identifier('log')),
+            [
+                types.arrayExpression(args.map(e => types.stringLiteral(generate(e).code))),
+                types.arrayExpression(args)
+            ]
+        ));
     parent.splice(parent.indexOf(node) + 1, 0, ast);
 };
 
@@ -49,7 +83,8 @@ export const astBFS = (todoJs: string): string => {
     const stack: any[] = [ast];
     while (stack.length) {
         const top = stack.pop();
-        injectAst(top);
+        injectVariableDeclaration(top);
+        injectAssignmentExpression(top);
 
         for (const key in top) {
             if (key === '_tnerap') continue;
@@ -58,12 +93,11 @@ export const astBFS = (todoJs: string): string => {
                 stack.push(value);
             } else if (value instanceof Array) {
                 for (let i = value.length - 1; i >= 0; i--) {
-                    const ele = value[i];
-                    if (!ele) {
+                    if (!value[i]) {
                         continue;
                     }
-                    ele._tnerap = value;
-                    stack.push(ele);
+                    value[i]._tnerap = value;
+                    stack.push(value[i]);
                 }
             }
         }
