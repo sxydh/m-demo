@@ -48,7 +48,7 @@ const injectAssignmentExpression = (node: any) => {
         if (!top) {
             continue;
         }
-        if (top.type === 'Identifier') {
+        if (top.type === 'Identifier' || top.type === 'MemberExpression') {
             args.push(top);
         }
         // 定位 a, b, c 变量
