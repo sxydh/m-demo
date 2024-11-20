@@ -5,9 +5,12 @@ import {astBFS} from './util/ast_bfs';
     // 需要安装浏览器
     // npx playwright install
     const browser = await chromium.launch({
-        headless: false
+        headless: false,
+        args: ['--start-maximized']
     });
-    const context = await browser.newContext();
+    const context = await browser.newContext({
+        viewport: null
+    });
     await context.addInitScript({path: 'stealth.min.js'});
     const page = await context.newPage();
 
