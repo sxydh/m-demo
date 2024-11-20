@@ -57,7 +57,7 @@ const injectAssignmentExpression = (node: any) => {
             while (stack.length) {
                 const top = stack.pop() || {};
                 const object = top.object;
-                const property = object.property;
+                const property = top.property;
                 if (!object || !property) {
                     continue;
                 }
