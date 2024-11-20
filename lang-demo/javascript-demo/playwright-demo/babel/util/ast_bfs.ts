@@ -52,7 +52,26 @@ const injectAssignmentExpression = (node: any) => {
             args.push(left);
             break;
         case 'MemberExpression':
-            args.push(left);
+            let isPush = true;
+            const stack = [left];
+            while (stack.length) {
+                const top = stack.pop() || {};
+                const object = top.object;
+                const property = object.property;
+                if (!object || !property) {
+                    continue;
+                }
+                const includeTypes = ['Identifier', 'MemberExpression'];
+                if (!includeTypes.includes(object.type) || !includeTypes.includes(property.type)) {
+                    isPush = false;
+                    break;
+                }
+                stack.push(object);
+                stack.push(property);
+            }
+            if (isPush) {
+                args.push(left);
+            }
             break;
         case 'ArrayPattern':
             for (const element of left.elements || []) {
@@ -65,25 +84,17 @@ const injectAssignmentExpression = (node: any) => {
     }
     injectDo(node._tnerap, node, args);
 };
-
 const injectDo = (parent: any[], node: any, args: any[]) => {
     if (!parent || !parent.length || !node || !args || !args.length) {
         return;
     }
-    const ast = types.tryStatement(
-        types.blockStatement([
-            types.expressionStatement(
-                types.callExpression(
-                    types.identifier('_noitcnuf'),
-                    [
-                        types.arrayExpression(args.map(e => types.stringLiteral(generate(e).code))),
-                        types.arrayExpression(args)
-                    ]))
-        ]),
-        types.catchClause(
-            types.identifier('e'),
-            types.blockStatement([]))
-    );
+    const ast = types.expressionStatement(
+        types.callExpression(
+            types.identifier('_noitcnuf'),
+            [
+                types.arrayExpression(args.map(e => types.stringLiteral(generate(e).code))),
+                types.arrayExpression(args)
+            ]));
     parent.splice(parent.indexOf(node) + 1, 0, ast);
 };
 
