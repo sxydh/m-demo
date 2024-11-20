@@ -6,7 +6,7 @@ import {astBFS} from './util/ast_bfs';
         headless: false
     });
     const context = await browser.newContext();
-    await context.addInitScript({ path: 'stealth.min.js' });
+    await context.addInitScript({path: 'stealth.min.js'});
     const page = await context.newPage();
 
     await page.route('**/*.js', async (route, _) => {
