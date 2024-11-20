@@ -18,7 +18,7 @@ import {astBFS} from './util/ast_bfs';
         // 查询语句
         // window._reffub.filter(e => Object.values(e).some(ve => `${ve}`.includes('')));
         body = `
-            _noitcnuf = (keys, values, source) => {
+            _noitcnuf = (keys, values) => {
                 const obj = {};
                 let isPush = false;
                 for (let i = 0; i < keys.length; i++) {
