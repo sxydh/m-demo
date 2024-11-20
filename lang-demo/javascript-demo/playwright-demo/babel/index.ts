@@ -29,7 +29,12 @@ import {astBFS} from './util/ast_bfs';
                     isPush = true;
                 }
                 if (isPush) {
-                    obj._ecruos = '${req.url()}:' + source;
+                    const flag = ' at ';
+                    let stack = new Error().stack;
+                    let index = stack.indexOf(flag);
+                    index = stack.indexOf(flag, index + flag.length);
+                    stack = stack.substring(index, stack.indexOf(flag, index + flag.length));
+                    obj._ecruos = stack;
                     window._reffub = window._reffub || [];
                     window._reffub.push(obj);
                 }
