@@ -95,7 +95,8 @@ const injectDo = (parent: any[], node: any, args: any[]) => {
                     types.identifier('_noitcnuf'),
                     [
                         types.arrayExpression(args.map(e => types.stringLiteral(generate(e).code))),
-                        types.arrayExpression(args)
+                        types.arrayExpression(args),
+                        types.stringLiteral('-1')
                     ]))
         ]),
         types.catchClause(
@@ -106,7 +107,7 @@ const injectDo = (parent: any[], node: any, args: any[]) => {
 };
 
 export const astBFS = (todoJs: string): string => {
-    const ast = parser.parse(todoJs, {sourceType: 'script'});
+    const ast = parser.parse(generate(parser.parse(todoJs, {sourceType: 'module'})).code, {sourceType: 'module'});
     const stack: any[] = [ast];
     while (stack.length) {
         const top = stack.pop();
