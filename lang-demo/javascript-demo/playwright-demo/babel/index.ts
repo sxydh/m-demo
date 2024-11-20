@@ -2,6 +2,8 @@ import {chromium} from 'playwright';
 import {astBFS} from './util/ast_bfs';
 
 (async () => {
+    // 需要安装浏览器
+    // npx playwright install
     const browser = await chromium.launch({
         headless: false
     });
