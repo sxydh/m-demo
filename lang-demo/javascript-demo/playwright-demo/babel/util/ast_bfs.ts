@@ -95,8 +95,7 @@ const injectDo = (parent: any[], node: any, args: any[]) => {
                     types.identifier('_noitcnuf'),
                     [
                         types.arrayExpression(args.map(e => types.stringLiteral(generate(e).code))),
-                        types.arrayExpression(args),
-                        types.numericLiteral(1)
+                        types.arrayExpression(args)
                     ]))
         ]),
         types.catchClause(
