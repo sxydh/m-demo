@@ -1,4 +1,5 @@
 import * as parser from '@babel/parser';
+import {ParseResult} from '@babel/parser';
 import generate from '@babel/generator';
 import * as types from "@babel/types";
 
@@ -96,7 +97,7 @@ const injectDo = (parent: any[], node: any, args: any[]) => {
                     [
                         types.arrayExpression(args.map(e => types.stringLiteral(generate(e).code))),
                         types.arrayExpression(args),
-                        types.stringLiteral('-1')
+                        types.numericLiteral(-1)
                     ]))
         ]),
         types.catchClause(
@@ -104,6 +105,36 @@ const injectDo = (parent: any[], node: any, args: any[]) => {
             types.blockStatement([]))
     );
     parent.splice(parent.indexOf(node) + 1, 0, ast);
+};
+
+const updateLine = (ast: ParseResult<any>) => {
+    const stack: any[] = [ast];
+    while (stack.length) {
+        const top = stack.pop();
+        if (top.type === 'CallExpression' &&
+            top.callee &&
+            top.callee.type === 'Identifier' &&
+            top.callee.name === '_noitcnuf') {
+            const line = top.arguments[1].elements[0].loc.start.line;
+            top.arguments[2].value = line;
+            top.arguments[2].raw = `'${line}'`;
+        }
+
+        for (const key in top) {
+            if (key === '_tnerap') continue;
+            const value = top[key];
+            if (value instanceof Object && value.hasOwnProperty('type')) {
+                stack.push(value);
+            } else if (value instanceof Array) {
+                for (let i = value.length - 1; i >= 0; i--) {
+                    if (!value[i]) {
+                        continue;
+                    }
+                    stack.push(value[i]);
+                }
+            }
+        }
+    }
 };
 
 export const astBFS = (todoJs: string): string => {
@@ -130,5 +161,6 @@ export const astBFS = (todoJs: string): string => {
             }
         }
     }
+    updateLine(ast);
     return generate(ast).code;
 };
