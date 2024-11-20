@@ -88,13 +88,20 @@ const injectDo = (parent: any[], node: any, args: any[]) => {
     if (!parent || !parent.length || !node || !args || !args.length) {
         return;
     }
-    const ast = types.expressionStatement(
-        types.callExpression(
-            types.identifier('_noitcnuf'),
-            [
-                types.arrayExpression(args.map(e => types.stringLiteral(generate(e).code))),
-                types.arrayExpression(args)
-            ]));
+    const ast = types.tryStatement(
+        types.blockStatement([
+            types.expressionStatement(
+                types.callExpression(
+                    types.identifier('_noitcnuf'),
+                    [
+                        types.arrayExpression(args.map(e => types.stringLiteral(generate(e).code))),
+                        types.arrayExpression(args)
+                    ]))
+        ]),
+        types.catchClause(
+            types.identifier('e'),
+            types.blockStatement([]))
+    );
     parent.splice(parent.indexOf(node) + 1, 0, ast);
 };
 
