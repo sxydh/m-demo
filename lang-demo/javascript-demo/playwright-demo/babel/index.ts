@@ -11,7 +11,7 @@ import {astBFS} from './util/ast_bfs';
     await context.addInitScript({path: 'stealth.min.js'});
     const page = await context.newPage();
 
-    await page.route('**/*.js', async (route, _) => {
+    await page.route('**/*.js', async (route, req) => {
         const response = await route.fetch();
         let body = await response.text();
         body = astBFS(body);
@@ -29,7 +29,7 @@ import {astBFS} from './util/ast_bfs';
                     isPush = true;
                 }
                 if (isPush) {
-                    obj._ecruos = source;
+                    obj._ecruos = '${req.url()}';
                     window._reffub = window._reffub || [];
                     window._reffub.push(obj);
                 }
