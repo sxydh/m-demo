@@ -3,10 +3,10 @@ import {astBFS} from './util/ast_bfs';
 
 (async () => {
     const browser = await chromium.launch({
-        headless: false,
-        executablePath: 'C:/Users/Administrator/AppData/Local/ms-playwright/chromium-1140/chrome-win/chrome.exe'
+        headless: false
     });
     const context = await browser.newContext();
+    await context.addInitScript({ path: 'stealth.min.js' });
     const page = await context.newPage();
 
     await page.route('**/*.js', async (route, _) => {
@@ -35,5 +35,5 @@ import {astBFS} from './util/ast_bfs';
         await route.fulfill({response, body});
     });
 
-    await page.goto('https://www.baidu.com');
+    await page.goto('https://www.jd.com/');
 })();
