@@ -51,6 +51,9 @@ const injectAssignmentExpression = (node: any) => {
         case 'Identifier':
             args.push(left);
             break;
+        case 'MemberExpression':
+            args.push(left);
+            break;
         case 'ArrayPattern':
             for (const element of left.elements || []) {
                 if (!element || element.type !== 'Identifier') {
