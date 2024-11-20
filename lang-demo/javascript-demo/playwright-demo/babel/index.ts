@@ -19,7 +19,12 @@ import {astBFS} from './util/ast_bfs';
         let body = await response.text();
         body = astBFS(body);
         // 查询语句
-        // window._reffub.filter(e => Object.values(e).some(ve => `${ve}`.includes('')));
+        // window._hcraes = (text) => {
+        //     window._reffub.filter(e => Object.values(e).some(ve => `${ve}`.includes(text))).forEach(e => {
+        //         console.log(e);
+        //         console.log(e._ecruos);
+        //     });
+        // };
         body = `
             _noitcnuf = (keys, values) => {
                 const obj = {};
