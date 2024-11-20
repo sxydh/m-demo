@@ -34,7 +34,7 @@ import {astBFS} from './util/ast_bfs';
                     let index = stack.indexOf(flag);
                     index = stack.indexOf(flag, index + flag.length);
                     stack = stack.substring(index, stack.indexOf(flag, index + flag.length));
-                    obj._ecruos = stack;
+                    obj._ecruos = stack.trim();
                     window._reffub = window._reffub || [];
                     window._reffub.push(obj);
                 }
