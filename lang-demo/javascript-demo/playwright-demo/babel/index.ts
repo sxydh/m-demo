@@ -14,9 +14,47 @@ import {astBFS} from './util/ast_bfs';
     await context.addInitScript({path: 'stealth.min.js'});
     const page = await context.newPage();
 
-    await page.route('**/*.js', async (route, _) => {
-        const response = await route.fetch();
-        let body = await response.text();
+    await page.route('**/*.js', async (route, req) => {
+        const url = req.url();
+        const headers = await req.allHeaders();
+        if (headers.xcontinue) {
+            await route.continue();
+            return;
+        }
+
+        const fetchRes: {
+            status: number,
+            headers: { [key: string]: string; },
+            body: string
+        } = await page.evaluate(
+            async (url: string) => {
+                return fetch(url, {
+                    'headers': {
+                        'xcontinue': 'y'
+                    },
+                    'credentials': 'include'
+                }).then(async (res: Response) => {
+                    const status = res.status;
+                    const headers = {};
+                    res.headers.forEach((v, k) => {
+                        headers[k] = v;
+                    });
+                    const body = await res.text();
+                    return {
+                        status,
+                        headers,
+                        body
+                    };
+                }).catch(_ => null);
+            },
+            url);
+
+        if (!fetchRes || fetchRes.status !== 200) {
+            await route.continue();
+            return;
+        }
+
+        let body = fetchRes.body;
         body = astBFS(body);
         // 查询语句
         // window._hcraes = (text) => {
@@ -48,7 +86,12 @@ import {astBFS} from './util/ast_bfs';
                 }
             };
             ${body}`;
-        await route.fulfill({response, body});
+        await route.fulfill({
+            body,
+            contentType: fetchRes.headers['content-type'],
+            headers: fetchRes.headers,
+            status: fetchRes.status,
+        });
     });
 
     await page.goto('https://www.jd.com/');
