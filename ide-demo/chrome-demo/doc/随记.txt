@@ -24,7 +24,7 @@
                         
                         选择 Override 文件保存的位置
                             
-                    修改本地文件后，需要 Ctrl + S 保存，并重新应用 Override content 才会生效。
+                    修改本地文件后，需要 Ctrl + S 保存，并刷新才会生效。
                             
             Page Workspace >>
                 Snippets
