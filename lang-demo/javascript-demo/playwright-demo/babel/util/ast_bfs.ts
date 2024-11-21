@@ -106,7 +106,7 @@ const injectDo = (parent: any[], node: any, args: any[]) => {
 };
 
 export const astBFS = (todoJs: string): string => {
-    const ast = parser.parse(todoJs, {sourceType: 'unambiguous'});
+    const ast = parser.parse(todoJs, {sourceType: 'script'});
     const stack: any[] = [ast];
     while (stack.length) {
         const top = stack.pop();
