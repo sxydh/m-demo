@@ -1,8 +1,8 @@
-﻿using PlaywrightExtraSharp.Models;
-using PlaywrightExtraSharp.Plugins.ExtraStealth;
-using PlaywrightExtraSharp;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Playwright;
+using PlaywrightExtraSharp;
+using PlaywrightExtraSharp.Models;
+using PlaywrightExtraSharp.Plugins.ExtraStealth;
 
 namespace extra_sharp_demo
 {
@@ -18,10 +18,15 @@ namespace extra_sharp_demo
                     await playwrightExtra
                     .Install()
                     .Use(new StealthExtraPlugin())
-                    .LaunchAsync(new BrowserTypeLaunchOptions()
-                    {
-                        Headless = false
-                    });
+                    .LaunchAsync(new BrowserTypeLaunchOptions
+                        {
+                            Headless = false,
+                            Args = new[] { "--start-maximized" }
+                        },
+                        contextOptions: new BrowserNewContextOptions
+                        {
+                            ViewportSize = ViewportSize.NoViewport
+                        });
                     var page = await playwrightExtra.NewPageAsync(options: null);
 
                     await page.GotoAsync("https://www.browserscan.net/bot-detection");
