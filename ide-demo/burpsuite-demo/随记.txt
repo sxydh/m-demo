@@ -1,2 +1,40 @@
 概述
     https://portswigger.net/burp/pro/features
+    
+环境
+    前置条件
+        Windows 11
+        JDK 17
+    安装软件
+        https://portswigger.net/burp/releases/professional-community-2022-11-4
+            软件本体
+        https://github.com/Tcilay-xi/backup/blob/main/BurpLoaderKeygen/BurpLoaderKeygen.jar
+            注册机
+                拷贝到软件根目录
+    激活软件
+        C:\Users\Administrator\AppData\Local\BurpSuitePro\jre\bin\java.exe ^
+            --add-opens=java.base/java.lang=ALL-UNNAMED ^
+            --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED ^
+            --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED ^
+            --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED ^
+            -javaagent:BurpLoaderKeygen.jar ^
+            -jar C:\Users\Administrator\AppData\Local\BurpSuitePro\burpsuite_pro.jar
+            
+                1 - 启动软件本体
+                3 - 选择手动激活
+                4 - 复制 request 到注册机
+                6 - 激活成功
+                7 - 添加启动参数到 BurpSuitePro.vmoptions
+                    --add-opens=java.desktop/javax.swing=ALL-UNNAMED
+                    --add-opens=java.base/java.lang=ALL-UNNAMED
+                    --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED
+                    --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED
+                    --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED
+                    -javaagent:BurpLoaderKeygen.jar
+                    -Xmx2048m
+            
+        C:\Users\Administrator\AppData\Local\BurpSuitePro\jre\bin\java.exe ^
+            -jar C:\Users\Administrator\AppData\Local\BurpSuitePro\BurpLoaderKeygen.jar
+            
+                2 - 复制 License 到软件本体 Enter License key
+                5 - 复制 Activation Response 到软件本体
