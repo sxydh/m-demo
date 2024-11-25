@@ -41,9 +41,6 @@
     <Reference Include="Microsoft.Playwright, Version=1.39.0.0, Culture=neutral, PublicKeyToken=db12f80f85d8ba23, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Playwright.1.39.0\lib\netstandard2.0\Microsoft.Playwright.dll</HintPath>
     </Reference>
-    <Reference Include="PlaywrightExtraSharp, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PlaywrightExtraSharp.1.0.7\lib\netstandard2.0\PlaywrightExtraSharp.dll</HintPath>
-    </Reference>
     <Reference Include="RestSharp, Version=110.2.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.110.2.0\lib\net471\RestSharp.dll</HintPath>
     </Reference>
