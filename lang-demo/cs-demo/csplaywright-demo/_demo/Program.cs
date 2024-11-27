@@ -41,7 +41,7 @@ namespace _demo
                     {
                         
                         // 注意 page.EvaluateAsync 只有等页面加载后才能执行
-                        // 注意 route.FetchAsync() 不会使用系统代理
+                        // 注意 route.FetchAsync 不会使用系统代理
                         
                         var type = route.GetType();
                         Console.WriteLine($"RouteAsync: {type}");
