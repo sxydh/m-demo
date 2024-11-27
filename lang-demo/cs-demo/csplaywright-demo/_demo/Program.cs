@@ -39,7 +39,10 @@ namespace _demo
                     };
                     await page.RouteAsync("**/*", async route =>
                     {
-                        // 注意路由内只有等 page 初始化完成后才能使用 EvaluateAsync 执行脚本
+                        
+                        // 注意 page.EvaluateAsync 只有等页面加载后才能执行
+                        // 注意 route.FetchAsync() 不会使用系统代理
+                        
                         var type = route.GetType();
                         Console.WriteLine($"RouteAsync: {type}");
                         await route.ContinueAsync();
