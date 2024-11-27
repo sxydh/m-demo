@@ -6,7 +6,7 @@ namespace _demo
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             Task.Run(async () =>
             {
