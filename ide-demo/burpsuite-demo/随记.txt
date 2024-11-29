@@ -1,6 +1,22 @@
 概述
     https://portswigger.net/burp/pro/features
     
+开始
+    Proxy
+        Intercept
+            Intercept is off
+            Intercept is on
+            
+                拦截请求
+                
+        HTTP history
+            网络日志
+            
+    Settings
+        Network
+            Connections
+                SOCKS5 proxy
+    
 环境
     前置条件
         Windows 11
