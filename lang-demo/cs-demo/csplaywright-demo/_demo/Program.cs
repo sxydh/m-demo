@@ -25,10 +25,21 @@ namespace _demo
                     var launchOptions = new BrowserTypeLaunchOptions
                     {
                         Headless = false,
-                        ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe"
+                        Args = new[] { "--start-maximized", "--auto-open-devtools-for-tabs" },
+                        ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe",
+                        Proxy = new Proxy
+                        {
+                            Server = "http://127.0.0.1:7890",
+                        }
                     };
                     var browser = await playwright.Chromium.LaunchAsync(launchOptions);
-                    var page = await browser.NewPageAsync();
+                    var context = await browser.NewContextAsync(new BrowserNewContextOptions
+                    {
+                        ViewportSize = ViewportSize.NoViewport,
+                        // 使用中间人代理时建议忽略 HTTPS 错误
+                        IgnoreHTTPSErrors = true
+                    });
+                    var page = await context.NewPageAsync();
 
                     /* 生命周期回调 */
                     // 从上到下优先顺序
@@ -39,13 +50,36 @@ namespace _demo
                     };
                     await page.RouteAsync("**/*", async route =>
                     {
-                        
-                        // 注意 page.EvaluateAsync 只有等页面加载后才能执行
-                        // 注意 route.FetchAsync 不会使用系统代理
-                        
                         var type = route.GetType();
                         Console.WriteLine($"RouteAsync: {type}");
                         await route.ContinueAsync();
+                    });
+                    await page.RouteAsync("https://www.baidu.com/", async route =>
+                    {
+                        try
+                        {
+                            // 注意
+                            // - page.EvaluateAsync 只有等页面加载后才能执行
+                            // - route.FetchAsync 不会使用系统代理
+                            // - route.FetchAsync 页面网络无日志
+
+                            var headers = route.Request.Headers;
+                            headers["demo"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                            var res = await route.FetchAsync(new RouteFetchOptions
+                            {
+                                Headers = headers,
+                                Timeout = 9000
+                            });
+                            var text = await res.TextAsync();
+                            await route.FulfillAsync(new RouteFulfillOptions
+                            {
+                                Body = text
+                            });
+                        }
+                        catch (Exception)
+                        {
+                            await route.ContinueAsync();
+                        }
                     });
                     page.Response += (_, iresponse) =>
                     {
@@ -69,8 +103,9 @@ namespace _demo
                     };
 
                     /* 打开目标页面 */
-                    await page.GotoAsync("https://www.baidu.com");
-                    await page.WaitForLoadStateAsync();
+                    await page.GotoAsync("https://www.baidu.com/", new PageGotoOptions { Timeout = 10000 });
+                    await page.WaitForLoadStateAsync(LoadState.Load, new PageWaitForLoadStateOptions { Timeout = 10000 });
+                    await Task.Delay(3000);
 
                     /* 选择器 xpath */
                     // https://playwright.dev/dotnet/docs/locators#locate-by-css-or-xpath
