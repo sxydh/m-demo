@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Playwright;
 
@@ -145,6 +146,18 @@ namespace _demo
                     // 注意目标元素不在最前面是无法点击的
                     var settingsLocator = page.Locator("xpath=//span[@id='s-usersetting-top']");
                     await settingsLocator.ClickAsync();
+
+                    /* 脚本 evaluate */
+                    var evalRet = await page.EvaluateAsync<byte[]>(@"(async () => {
+                            const res = await fetch('https://www.baidu.com/favicon.ico');
+                            if (!res.ok) {
+                                return null;
+                            }
+                            const arrayBuffer = await res.arrayBuffer();
+                            return Array.from(new Uint8Array(arrayBuffer));
+                        })();");
+                    File.WriteAllBytes(Path.Combine(Directory.GetCurrentDirectory(), $"tmp_{DateTime.Now:yyyyMMddhhmmss}.ico"), evalRet);
+                    Console.WriteLine($"evalRet: {evalRet}");
 
                     await Task.Delay(5000);
                     await browser.CloseAsync();
