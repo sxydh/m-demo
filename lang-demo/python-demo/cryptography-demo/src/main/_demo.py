@@ -40,8 +40,9 @@ def decrypt(password):
     cipher_suite = Fernet(key)
 
     cipher_text = mtmp.read('encrypt.txt')
-    decrypt_text = cipher_suite.decrypt(cipher_text).decode()
-    print('Decrypted: ', decrypt_text)
+    for line in cipher_text.split("\n"):
+        decrypt_text = cipher_suite.decrypt(line).decode()
+        print('Decrypted: ', decrypt_text)
 
 
 if __name__ == '__main__':
