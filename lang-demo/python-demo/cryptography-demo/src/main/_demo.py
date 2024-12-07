@@ -41,6 +41,8 @@ def decrypt(password):
 
     cipher_text = mtmp.read('encrypt.txt')
     for line in cipher_text.split("\n"):
+        if line.strip() == '':
+            continue
         decrypt_text = cipher_suite.decrypt(line).decode()
         print('Decrypted: ', decrypt_text)
 
