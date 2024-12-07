@@ -75,7 +75,8 @@ if (location.href.includes("//baike.")) {
     style.id = "common-demo-baike";
     style.innerHTML = `
         /* 右侧广告 */
-        [class*="unionAd_"] {
+        [class*="unionAd_"],
+        [class*="slideAdBox_"] {
             display: none !important;
         }
         /* 底部广告 */
