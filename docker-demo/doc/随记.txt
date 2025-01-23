@@ -113,6 +113,15 @@ Docker Compose
     概述
         Docker Compose 是用于定义和运行多个 Docker 的工具
         Docker Compose 使用 YAML 文件（通常命名为 docker-compose.yml ）来配置多个容器服务，这些服务可以是 Web 服务器、数据库、缓存等。
+    开始
+        列表
+            docker-compose ps
+        新建
+            docker-compose up
+        重启
+            docker-compose restart
+        删除
+            docker-compose down
 环境
     APT 方式（ https://yeasy.gitbook.io/docker_practice/ ）
         前置条件
@@ -153,7 +162,8 @@ Docker Compose
             
             sudo mkdir -p /etc/systemd/system/docker.service.d
             sudo vim /etc/systemd/system/docker.service.d/http-proxy.conf
-                以上步骤是可选的
+            
+                该步骤是可选的
                 配置 docker 使用 socks5 代理：
                     追加或更新
                         [Service]
