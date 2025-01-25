@@ -8,50 +8,5 @@
                 https://int.nugettest.org/
             正式环境
                 https://www.nuget.org/
-                    类库
-                        .NET Framework
-                            https://learn.microsoft.com/zh-cn/nuget/quickstart/create-and-publish-a-package-using-visual-studio-net-framework
-                                前置条件
-                                    https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-                                        属性
-                                            安全
-                                                解除锁定
-                                        添加到环境变量
-                                创建项目
-                                    类库
-                                        .NET Framework 4.7.2
-                                生成项目
-                                    Release
-                                生成清单
-                                    nuget spec <csproj_file>
-                                        <proj_name>.nuspec
-                                            追加或更新
-                                                <metadata>
-                                                    ...
-                                                    authors
-                                                    projectUrl
-                                                    description
-                                                    ...
-                                                    <readme>doc\README.md</readme>
-                                                <files>
-                                                    <file src="..\README.md" target="doc\"/>
-                                                </files>
-                                打包项目
-                                    前置条件
-                                        m-netutil.csproj
-                                            更新
-                                                <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
-                                    开始
-                                        nuget pack
-                                发布软件
-                                    nuget push <nupkg_file> <api_key> -Source https://api.nuget.org/v3/index.json
-                                删除软件
-                                    Manage Packages
-                                        Published Packages
-                                            Package ID
-                                                Status
-                                                    Listing
-                                                        List in search results.
-                                                            取消勾选
     软件管理
         NuGet

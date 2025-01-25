@@ -55,34 +55,6 @@
                 https://pypi.org/
             测试环境
                 https://test.pypi.org/
-                    前置条件
-                        Windows 11
-                        m-pyutil
-                    开始（ https://blog.csdn.net/yifengchaoran/article/details/113447773 ）
-                        pip install --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple setuptools wheel
-                        pip install --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple twine
-                            安装 twine 软件，用于上传分发文件。
-                            
-                        rmdir build dist m_pyutil.egg-info /s /q
-                        python setup.py sdist bdist_wheel
-                            sdist ：源代码分发（ Source Distribution ），创建一个包含项目源代码的压缩包。
-                            bdist_wheel ：二进制分发（ Binary Distribution Wheel ），创建一个 whl 二进制包文件，可以被快速安装。
-                            
-                                此时可以通过 pip install <file_name.whl> 来安装使用二进制分法包文件
-                                
-                        python -m twine upload --repository testpypi dist/*
-                            -m ：以模块的方式运行后面的命令，模块运行方式允许你执行一个模块中的主函数。
-                            
-                            上传分发文件到测试环境
-                            
-                            验证：
-                                pip install -i https://test.pypi.org/simple/ "m-pyutil[mip]==1.9.0"
-                                
-                        python -m twine upload dist/*
-                            上传分发文件到正式环境
-                            
-                            验证：
-                                pip install "m-pyutil[mip]==1.9.0"
     软件管理
         Pip
             概述
