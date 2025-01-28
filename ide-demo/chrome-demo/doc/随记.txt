@@ -35,6 +35,12 @@
                     New snippet
                         脚本相当于在 console 中执行
                         
+    调试接口
+        http://127.0.0.1:9222/json/list
+            获取标签页列表
+        http://127.0.0.1:9222/json/new
+            新建标签页
+                        
 问题
     Status Code: 403 Forbidden
         环境
