@@ -10,8 +10,12 @@
             打开任务管理器，可用于查看内存占用。
             
     启动参数
-        https://peter.sh/experiments/chromium-command-line-switches/#borealis-launch-options
-        https://www.chromium.org/developers/how-tos/run-chromium-with-flags/
+        概述
+            https://peter.sh/experiments/chromium-command-line-switches/#borealis-launch-options
+            https://www.chromium.org/developers/how-tos/run-chromium-with-flags/
+        开始
+            "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222
+                注意：需要关闭当前所有浏览器实例。
         
     开发工具
         Network
