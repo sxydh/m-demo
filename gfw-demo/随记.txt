@@ -9,6 +9,7 @@
     Gmail    
         tiamo8804@gmail.com
             gAAAAABnmd3oQNFpsQOGzshsaqEZvAwx31Rt3buX7fuFbXCJpVfYygn_18jWJf64y4x8SgpUi8nc0pkFhRBw4cnKsNBzD61IDw==
+                注意：需要把浏览器语言切换为美区。
         
     https://in.mesl.cloud/
         gAAAAABnlHl-gbCSmv82Jor8QIIvQp_hlq0x3OPig8XttgVLbWMRncyTOjNxuA-i0v-4auwsmjIT_Bq_t2ypXF2gWMz_hJAhJYhhJF7grGUaLyQfR8J7ldY=
