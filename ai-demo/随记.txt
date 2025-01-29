@@ -3,3 +3,7 @@
         https://copilot.microsoft.com/onboarding
     Poe
         https://poe.com/login
+    ChatGPT
+        https://chatgpt.com/
+            gAAAAABnmekmQGtdggEjhzUEUdWcf1XsYoyhno8ga_cMM4YchVbMXheWJEzI8evD0uK3A8TNp8xrB-kWdVj1LuDYC396CKESrW2j6gtaJDZe4I_3LxPp8RY=
+            gAAAAABnmek0RCrxYQjDXhhFlbaz1_8kKQgwDOL2ucjo1EKH55gMnosjZOR_up62ySLEDl5TtBjv0eDn-okelPeX482RS3mGHg==
