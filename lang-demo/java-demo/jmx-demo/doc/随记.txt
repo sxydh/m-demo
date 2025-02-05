@@ -1,9 +1,11 @@
+概述
+    JMX （ Java Management Extensions ）用于监控应用程序
 环境
-    远程监控
-        前置条件
-            远程主机
-                openjdk 11.0.23 2024-04-16
-        准备文件（远程主机）
+    前置条件
+        远程主机
+            openjdk 11.0.23 2024-04-16
+    准备文件
+        远程主机
             vim <your_path>/jmx.access
                 追加
                     user_demo readwrite
@@ -11,7 +13,8 @@
                 追加
                     user_demo 123
             chmod 600 <your_path>/jmx.password
-        启动应用（远程主机）
+    启动应用
+        远程主机
             java \
                  -Dcom.sun.management.jmxremote.port=1991 \
                  -Dcom.sun.management.jmxremote.authenticate=true \
@@ -23,18 +26,20 @@
                  -Xmx16m \
                  -Xss16m \
                  -jar <app_jar_file>
-                    应用启动之后，可以通过 VisualVM 以 Remote 方式连接，此时可以查看 JVM 监控信息。
-                    要查看 GC 信息，需要 VisualVM 额外安装 Visual GC 插件，并且需要执行以下操作之后，才能远程访问 GC 信息。
-                        准备文件（远程主机）
-                            vim <your_path>/tools.policy
-                                追加
-                                    grant codebase "jrt:/jdk.jstatd" {
-                                       permission java.security.AllPermission;
-                                    };
-                                    grant codebase "jrt:/jdk.internal.jvmstat" {
-                                       permission java.security.AllPermission;
-                                    };
-                        启动服务（远程主机）
-                            jstatd \
-                                 -J-Djava.security.policy=<your_path>/tools.policy \
-                                 -J-Djava.rmi.server.hostname=<remote_ip>
+        本地主机
+            远程应用启动之后，本地主机可以通过 VisualVM 以 Remote 方式连接，此时可以查看 JVM 监控信息。
+            要查看 GC 信息，需要 VisualVM 额外安装 Visual GC 插件，并且前置以下操作：
+                远程主机
+                    准备文件
+                        vim <your_path>/tools.policy
+                            追加
+                                grant codebase "jrt:/jdk.jstatd" {
+                                   permission java.security.AllPermission;
+                                };
+                                grant codebase "jrt:/jdk.internal.jvmstat" {
+                                   permission java.security.AllPermission;
+                                };
+                    启动服务
+                        jstatd \
+                             -J-Djava.security.policy=<your_path>/tools.policy \
+                             -J-Djava.rmi.server.hostname=<remote_ip>
