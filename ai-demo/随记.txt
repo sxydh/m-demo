@@ -1,4 +1,8 @@
 开始
+    Gemini
+        https://gemini.google.com/app
+            gAAAAABnmeXoLydaAxiwfo149RFPAnOKaQgj68w7NPSUUmbH8A6eL2HXtY6ERCs0HK0pHdRqs3KHzCkXHOrlbwC1vzU1qthobZ9mgq4xWiEyeR8sLnqUn6E=
+            
     Co Pilot
         https://copilot.microsoft.com/onboarding
     Poe
