@@ -1,5 +1,4 @@
-反序列化
-    概述
-        反序列化用于读取保存在文件的字节码，并构造目标实例。
-        反序列化构造目标实例时并不会调用目标类的构造函数，而是调用父类中 non-serializable 类的无参构造函数，一般情况下是 Object 的无参构造函数。
-            java.io.ObjectInputStream#readOrdinaryObject
+概述
+    反序列化用于读取保存在文件的字节码，并构造目标实例。
+    反序列化构造目标实例时并不会调用目标类的构造函数，而是调用父类中 non-serializable 类的无参构造函数，一般情况下是 Object 的无参构造函数。
+        java.io.ObjectInputStream#readOrdinaryObject
