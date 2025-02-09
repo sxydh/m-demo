@@ -1,0 +1,2 @@
+概述
+    JNA （ Java Native Access ）是用于访问本地共享库的开源框架
