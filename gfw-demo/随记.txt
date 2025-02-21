@@ -34,3 +34,9 @@
             
                 https://hstock.org/en
                     成品号
+                    
+    Reddit
+        https://www.reddit.com/
+            gAAAAABnuDjWN6hAnBCc7m6txVbE4PGiokcwVgd-rs6dqoHLOnFF-5ycUxpSRUVyyFcOb3x8O_PgaFiRKhAwV8H3KMHdEmbYetv1hDnbWSopZc3rtRBnXUc=
+                gAAAAABnuDj4hkRzsMuIvHerNXTBJciOhWyIZe4_b9PMScXf31_W7L7CYY1M7yj3WIyiHCwnPaJPP2xkhAwf5MAIP1czzs1i0w==
+            gAAAAABnuDkTa4xORlngDMsSicchRBu47guGLq-xZAuSAEz5bNSS2AHMKbfh6YD6-91toNRC7STQSopbYalnOLc7o5PKIynpew==
