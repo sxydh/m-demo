@@ -15,6 +15,10 @@
         pause
             暂停当前处理
             
+    set
+        set PATH=%PATH%;C:\your\path
+            修改临时环境变量
+            
     tree
         tree <path> [/f]
             path ：要显示目录结构的文件夹。
