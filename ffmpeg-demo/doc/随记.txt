@@ -24,12 +24,14 @@
 开始
     ffmpeg
         https://www.ffmpeg.org/ffmpeg.html#Synopsis
+        
             ffmpeg -i input.wmv -c:v libx264 -c:a aac output.mp4
                 -i ：指定输入文件。
                 -c:v ：指定视频编码格式。
                 -c:a ：指定音频编码格式。
                 
-                将输入文件按照文件内包含的编码格式进行解码，然后按给定的编码格式进行编码，最后保存为指定的存储格式。
+                转码视频
+                    将输入文件按照文件内包含的编码格式进行解码，然后按给定的编码格式进行编码，最后保存为指定的存储格式。
                 
             ffmpeg -i input.mp4 -codec: copy -start_number 0 -hls_time 10 -hls_list_size 0 -f hls output.m3u8
                 -i ：指定输入文件。
@@ -39,7 +41,15 @@
                 -hls_list_size 0 ：指定 M3U8 播放列表包含所有的视频文件片段。
                 -f ：指定输出格式。
                 
-                将输入文件分割成多个 TS 文件片段，并生成 M3U8 清单文件，清单文件包含有视频列表信息，可以用于在网页上进行流媒体播放。
+                分割视频
+                    将输入文件分割成多个 TS 文件片段，并生成 M3U8 清单文件，清单文件包含有视频列表信息，可以用于在网页上进行流媒体播放。
+                    
+            ffmpeg -i input.mp4 -q:a 0 -map a output.mp3
+                -i ：指定输入文件。
+                -q:a 0 ：设置音频质量（ 0 是最高）。
+                -map a ：选择音频流。
+                
+                提取音频
                 
     ffplay
         https://www.ffmpeg.org/ffplay.html#toc-Synopsis
