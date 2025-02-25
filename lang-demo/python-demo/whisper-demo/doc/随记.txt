@@ -1,0 +1,2 @@
+开始
+    pip install git+https://github.com/openai/whisper.git
