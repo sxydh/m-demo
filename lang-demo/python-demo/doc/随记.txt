@@ -23,6 +23,7 @@
                     PATH
                         %PYTHON_HOME%
                         %PYTHON_HOME%\Scripts
+                        
         Ubuntu 20.04.6 LTS
             前置条件
                 sudo apt update
@@ -49,12 +50,14 @@
                 sudo chown sxydh:sxydh /usr/bin/pip
             验证安装
                 python --version
+                
     软件仓库
         PyPI
             正式环境
                 https://pypi.org/
             测试环境
                 https://test.pypi.org/
+                
     软件管理
         Pip
             概述
