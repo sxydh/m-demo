@@ -13,4 +13,5 @@
     开始
         PyTorch
             2.6.0 && Windows && Pip && Python && CUDA 11.8
-                pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+                python.exe -m pip install --upgrade pip setuptools wheel
+                pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
