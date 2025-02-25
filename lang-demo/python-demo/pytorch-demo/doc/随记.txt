@@ -1,0 +1,18 @@
+概述
+    https://pytorch.org/get-started/locally/
+环境
+    前置条件
+        Conda
+            conda create -n n_pytorch
+        CUDA Version
+            NVIDIA 控制面板
+                系统信息
+                    组件
+                        NVCUDA64.DLL
+                            产品名称
+        CUDA Toolkit
+            CUDA Toolkit Version = CUDA Version
+    开始
+        PyTorch
+            2.6.0 && Windows && Pip && Python && CUDA 11.8
+                pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
