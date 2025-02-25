@@ -84,8 +84,30 @@
                     设置配置
                         pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
             
-        Anaconda
-        
+        Conda
+            概述
+                https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html
+            开始
+                env
+                    conda env list
+                        查询虚拟环境
+            
+                create
+                    conda create -n <name>
+                        创建虚拟环境
+                        
+                activate
+                    conda activate <name>
+                        进入虚拟环境
+                        
+                deactivate
+                    conda deactivate
+                        退出虚拟环境
+                        
+                remove
+                    conda remove -n <name> --all
+                        删除虚拟环境
+                    
     虚拟环境
         venv
             概述
