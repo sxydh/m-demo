@@ -83,7 +83,16 @@
             
                     设置配置
                         pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-            
+                    
+    环境管理
+        venv
+            概述
+                venv 是基于当前 Python 环境创建的虚拟环境，拥有独立的程序包安装目录。
+            开始
+                python -m venv <venv_name>
+                cd <venv_name>/Scripts
+                activate
+                
         Conda
             概述
                 https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html
@@ -107,19 +116,3 @@
                 remove
                     conda remove -n <name> --all
                         删除虚拟环境
-                    
-    虚拟环境
-        venv
-            概述
-                venv 是基于当前 Python 环境创建的虚拟环境，拥有独立的程序包安装目录。
-            开始
-                python -m venv <venv_name>
-                cd <venv_name>/Scripts
-                activate
-                
-        virtualenv
-        
-    版本并存
-        文件并存
-            概述
-                主机可以安装多个版本的软件，然后通过环境变量切换。
