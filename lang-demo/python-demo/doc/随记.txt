@@ -82,10 +82,13 @@
             
                 config
                     配置列表
-                        pip config list            
+                        pip config list
             
                     设置配置
                         pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+                        
+                    重置配置
+                        pip config unset global.index-url
                     
     环境管理
         venv
