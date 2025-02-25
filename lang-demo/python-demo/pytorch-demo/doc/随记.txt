@@ -2,8 +2,6 @@
     https://pytorch.org/get-started/locally/
 环境
     前置条件
-        Conda
-            conda create -n n_pytorch
         CUDA Version
             NVIDIA 控制面板
                 系统信息
