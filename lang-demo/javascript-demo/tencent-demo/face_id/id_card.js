@@ -17,6 +17,12 @@
         });
     });
 
+    let idCardStr = await new Promise(resolve => {
+        rl.question("input id card list: \n", (answer) => {
+            resolve(answer);
+        });
+    });
+
     const tencentcloud = require("tencentcloud-sdk-nodejs-faceid");
     const client = new tencentcloud.faceid.v20180301.Client({
         credential: {
@@ -32,15 +38,9 @@
         },
     });
 
-    let idCardStr = await new Promise(resolve => {
-        rl.question("input id card list: \n", (answer) => {
-            resolve(answer);
-        });
-    });
-
     idCardStr.split("\n").forEach(idCard => {
         let idCardSplit = idCard.split(",");
-        const params = {
+        let params = {
             IdCard: idCardSplit[0],
             Name: idCardSplit[1]
         };
