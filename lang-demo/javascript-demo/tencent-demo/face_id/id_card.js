@@ -55,6 +55,7 @@
         };
         let res = await client.IdCardVerification(params);
         console.log(res);
+        if (res.Result === "0") return;
 
         new Promise(resolve => {
             setTimeout(resolve, 20);
