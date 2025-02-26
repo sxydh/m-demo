@@ -34,8 +34,12 @@
 
     const fs = require("fs");
     const path = require("path");
-    let idCardStr = await new Promise(resolve => {
+    let idCardStr = await new Promise((resolve, reject) => {
         fs.readFile(path.join(__dirname, "id_card.txt"), "utf8", (err, data) => {
+            if (err) {
+                reject(err);
+                return;
+            }
             resolve(data);
         });
     });
