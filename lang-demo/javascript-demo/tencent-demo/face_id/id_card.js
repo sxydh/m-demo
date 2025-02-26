@@ -31,16 +31,28 @@
             },
         },
     });
-    const params = {
-        IdCard: "533423419847364573",
-        Name: "张三"
-    };
-    client.IdCardVerification(params).then(
-        data => {
-            console.log(data);
-        },
-        error => {
-            console.error(error);
-        }
-    );
+
+    const fs = require("fs");
+    const path = require("path");
+    let idCardStr = await new Promise(resolve => {
+        fs.readFile(path.join(__dirname, "id_card.txt"), "utf8", (err, data) => {
+            resolve(data);
+        });
+    });
+
+    idCardStr.split("\n").forEach(idCard => {
+        let idCardSplit = idCard.split(",");
+        const params = {
+            IdCard: idCardSplit[0],
+            Name: idCardSplit[1]
+        };
+        client.IdCardVerification(params).then(
+            data => {
+                console.log(data);
+            },
+            error => {
+                console.error(error);
+            }
+        );
+    });
 })();
