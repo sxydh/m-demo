@@ -17,9 +17,17 @@
         });
     });
 
+    console.log("input id card list: ");
+
     let idCardStr = await new Promise(resolve => {
-        rl.question("input id card list: \n", (answer) => {
-            resolve(answer);
+        let lines;
+        rl.on("line", line => {
+            if (line.trim() === "") {
+                resolve(lines);
+                return;
+            }
+
+            lines += line;
         });
     });
 
