@@ -18,18 +18,19 @@
     });
 
     console.log("input id card list: ");
-    let idCardStr = await new Promise(resolve => {
-        let lines = "";
+    let idCardList = await new Promise(resolve => {
+        let lines = [];
         rl.on("line", line => {
             if (line.trim() === "") {
                 resolve(lines);
                 return;
             }
 
-            lines += line;
+            lines.push(line);
         });
     });
 
+    // https://console.cloud.tencent.com/api/explorer?Product=faceid&Version=2018-03-01&Action=IdCardOCRVerification
     const tencentcloud = require("tencentcloud-sdk-nodejs-faceid");
     const client = new tencentcloud.faceid.v20180301.Client({
         credential: {
@@ -45,23 +46,18 @@
         },
     });
 
-    idCardStr.split("\n").forEach(idCard => {
+    for (let i = 0; i < idCardList.length; i++) {
+        let idCard = idCardList[i];
         let idCardSplit = idCard.split(",");
         let params = {
             IdCard: idCardSplit[0],
             Name: idCardSplit[1]
         };
-        client.IdCardVerification(params).then(
-            data => {
-                console.log(data);
-            },
-            error => {
-                console.error(error);
-            }
-        );
+        let res = await client.IdCardVerification(params);
+        console.log(res);
 
         new Promise(resolve => {
             setTimeout(resolve, 20);
         });
-    });
+    }
 })();
