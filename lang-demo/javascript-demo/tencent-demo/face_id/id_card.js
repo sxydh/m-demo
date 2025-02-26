@@ -31,7 +31,11 @@
             },
         },
     });
-    client.IdCardVerification({}).then(
+    const params = {
+        IdCard: "533423419847364573",
+        Name: "张三"
+    };
+    client.IdCardVerification(params).then(
         data => {
             console.log(data);
         },
