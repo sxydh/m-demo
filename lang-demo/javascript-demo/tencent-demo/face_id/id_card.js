@@ -6,13 +6,13 @@
     });
 
     let secretId = await new Promise(resolve => {
-        rl.question("input secretId: ", (answer) => {
+        rl.question("input secretId: \n", (answer) => {
             resolve(answer);
         });
     });
 
     let secretKey = await new Promise(resolve => {
-        rl.question("input secretKey: ", (answer) => {
+        rl.question("input secretKey: \n", (answer) => {
             resolve(answer);
         });
     });
@@ -33,7 +33,7 @@
     });
 
     let idCardStr = await new Promise(resolve => {
-        rl.question("input id card list: ", (answer) => {
+        rl.question("input id card list: \n", (answer) => {
             resolve(answer);
         });
     });
