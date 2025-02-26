@@ -19,7 +19,7 @@
 
     console.log("input id card list: ");
     let idCardStr = await new Promise(resolve => {
-        let lines;
+        let lines = "";
         rl.on("line", line => {
             if (line.trim() === "") {
                 resolve(lines);
