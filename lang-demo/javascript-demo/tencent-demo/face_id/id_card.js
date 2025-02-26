@@ -8,14 +8,12 @@
     let secretId = await new Promise(resolve => {
         rl.question("input secretId: ", (answer) => {
             resolve(answer);
-            rl.close();
         });
     });
 
     let secretKey = await new Promise(resolve => {
         rl.question("input secretKey: ", (answer) => {
             resolve(answer);
-            rl.close();
         });
     });
 
