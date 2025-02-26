@@ -54,8 +54,11 @@
             Name: idCardSplit[1]
         };
         let res = await client.IdCardVerification(params);
-        console.log(res);
-        if (res.Result === "0") return;
+        console.debug(res);
+        if (res.Result === "0") {
+            console.log(params);
+            return;
+        }
 
         new Promise(resolve => {
             setTimeout(resolve, 20);
