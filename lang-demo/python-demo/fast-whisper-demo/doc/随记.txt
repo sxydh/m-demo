@@ -1,0 +1,7 @@
+环境
+    前置条件
+        Python
+            3.12.0
+        PyTorch
+    开始
+        pip install faster-whisper
