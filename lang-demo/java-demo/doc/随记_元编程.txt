@@ -1,0 +1,22 @@
+概述
+    元编程（ Metaprogramming ）是指程序可以修改自身的结构和行为
+加载期
+    ClassLoader
+    Instrumentation
+        premain
+    Javassist
+        ClassPool
+    ASM
+        ClassFileTransformer
+运行期
+    Reflection
+    Javassist
+        ClassPool
+    Instrumentation
+        agentmain
+    ASM
+        ClassFileTransformer
+    ByteBuddy
+    CGLIB
+    AspectJ
+    
