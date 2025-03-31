@@ -1,4 +1,4 @@
 开始
-    pkg index.js -t node*-win-x64 -o output/index.exe
+    pkg .
 环境
     npm install -g pkg

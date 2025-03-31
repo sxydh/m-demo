@@ -12,8 +12,11 @@
   "pkg": {
     "scripts": "*.js",
     "targets": [
-      "node*-linux-arm64"
+      "node*-win-x64"
     ],
     "outputPath": "dist"
+  },
+  "bin": {
+    "index_exe": "index.js"
   }
 }
