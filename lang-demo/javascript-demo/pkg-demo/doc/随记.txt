@@ -1,2 +1,2 @@
 开始
-    pkg index.js -t node14-win-x64 -o output/index.exe
+    pkg index.js -t node*-win-x64 -o output/index.exe
