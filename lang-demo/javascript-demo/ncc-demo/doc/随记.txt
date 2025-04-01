@@ -1,0 +1,6 @@
+概述
+    https://github.com/vercel/ncc
+开始
+    ncc build index.js -o dist
+环境
+    npm i -g @vercel/ncc
