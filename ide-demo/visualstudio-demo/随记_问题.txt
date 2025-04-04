@@ -1,0 +1,7 @@
+开始
+    描述
+        无法加载 DLL“SQLite.Interop.dll”: 找不到指定的模块。
+    复现
+        Any CPU 运行程序
+    解决
+        x64 运行程序
