@@ -61,6 +61,7 @@
             insert.run(ele.openTime, frontSplit[0], frontSplit[1], frontSplit[2], frontSplit[3], frontSplit[4], frontSplit[5], ele.seqBackWinningNum);
         }
         insert.finalize();
+        console.log("保存完毕");
     });
     db.close();
 
