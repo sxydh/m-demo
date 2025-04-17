@@ -8,6 +8,7 @@
   },
   "private": true,
   "dependencies": {
-    "playwright": "^1.51.1"
+    "playwright": "^1.51.1",
+    "sqlite3": "^5.1.7"
   }
 }
