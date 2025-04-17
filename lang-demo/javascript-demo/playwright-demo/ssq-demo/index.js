@@ -57,8 +57,8 @@
         const insert = db.prepare("INSERT INTO t_ssq (d, r, r2, r3, r4, r5, r6, b) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         for (let i = 0; i < list.length; i++) {
             const ele = list[i];
-            const frontSplit = ele.frontWinningNum.split(" ");
-            insert.run(ele.openTime, frontSplit[0], frontSplit[1], frontSplit[2], frontSplit[3], frontSplit[4], frontSplit[5], ele.backWinningNum);
+            const frontSplit = ele.seqFrontWinningNum.split(" ");
+            insert.run(ele.openTime, frontSplit[0], frontSplit[1], frontSplit[2], frontSplit[3], frontSplit[4], frontSplit[5], ele.seqBackWinningNum);
         }
         insert.finalize();
     });
