@@ -1,5 +1,9 @@
 // noinspection JSUnresolvedReference,JSUnusedGlobalSymbols
 
+const initServer = async () => {
+
+};
+
 const initData = async () => {
     const {chromium} = require("playwright");
     const browser = await chromium.launch({headless: true});
@@ -64,5 +68,6 @@ const initData = async () => {
 };
 
 (async () => {
+    await initServer();
     await initData();
 })();
