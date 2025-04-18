@@ -1,6 +1,6 @@
 // noinspection JSUnresolvedReference,JSUnusedGlobalSymbols
 
-(async () => {
+const initData = async () => {
     const {chromium} = require("playwright");
     const browser = await chromium.launch({headless: true});
     const context = await browser.newContext();
@@ -48,21 +48,20 @@
         pageNum++;
     }
 
-    const sqlite3 = require("sqlite3").verbose();
-    const db = new sqlite3.Database("./index.db");
-    db.serialize(() => {
-        db.run("DROP TABLE t_ssq");
-        db.run("CREATE TABLE IF NOT EXISTS t_ssq (id INTEGER PRIMARY KEY AUTOINCREMENT, d TEXT, r TEXT, r2 TEXT, r3 TEXT, r4 TEXT, r5 TEXT, r6 TEXT, b TEXT)");
+    const db = require("better-sqlite3")("index.db", {});
+    db.exec("DROP TABLE t_ssq");
+    db.run("CREATE TABLE IF NOT EXISTS t_ssq (id INTEGER PRIMARY KEY AUTOINCREMENT, d TEXT, r TEXT, r2 TEXT, r3 TEXT, r4 TEXT, r5 TEXT, r6 TEXT, b TEXT)");
 
-        const insert = db.prepare("INSERT INTO t_ssq (d, r, r2, r3, r4, r5, r6, b) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        for (let i = 0; i < list.length; i++) {
-            const ele = list[i];
-            const frontSplit = ele.seqFrontWinningNum.split(" ");
-            insert.run(ele.openTime, frontSplit[0], frontSplit[1], frontSplit[2], frontSplit[3], frontSplit[4], frontSplit[5], ele.seqBackWinningNum);
-        }
-        insert.finalize();
-    });
-    db.close();
+    const insert = db.prepare("INSERT INTO t_ssq (d, r, r2, r3, r4, r5, r6, b) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    for (let i = 0; i < list.length; i++) {
+        const ele = list[i];
+        const frontSplit = ele.seqFrontWinningNum.split(" ");
+        insert.run(ele.openTime, frontSplit[0], frontSplit[1], frontSplit[2], frontSplit[3], frontSplit[4], frontSplit[5], ele.seqBackWinningNum);
+    }
 
     await browser.close();
+};
+
+(async () => {
+    await initData();
 })();
