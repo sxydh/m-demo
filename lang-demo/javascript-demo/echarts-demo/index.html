@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>echarts-demo</title>
+    <script src="./echarts.min.js"></script>
+</head>
+
+<body>
+<div>
+    <div id="container"></div>
+</div>
+<script>
+    fetch("http://localhost:58/ssq").then(res => {
+        if (!res.ok) {
+            throw new Error("Network response was not ok");
+        }
+        return res.json();
+    }).then(data => {
+        buildChart(data);
+    }).catch(e => {
+        console.error(e);
+    });
+
+    function buildChart(dataList) {
+        const groupList = [];
+        const xDataList = [];
+        const yDataList = [];
+
+        for (let i = 0; i < dataList.length; i++) {
+            const data = dataList[i];
+            const dataKeys = Object.keys(data);
+
+            if (i === 0 && data[dataKeys[0]] === "-1") {
+                groupList.push(...dataKeys.map(dataKey => data[dataKey]).slice(1));
+                continue;
+            }
+
+            xDataList.push(data[dataKeys[0]]);
+            for (let j = 1; j < dataKeys.length; j++) {
+                yDataList[j] = yDataList[j] || [];
+                yDataList[j].push({
+                    name: groupList[j],
+                    type: "line",
+                    data: data[dataKeys[j]],
+                    label: {
+                        show: true
+                    }
+                });
+            }
+        }
+
+        const option = {
+            tooltip: {
+                trigger: "axis"
+            },
+            legend: {
+                data: groupList,
+                left: "left"
+            },
+            xAxis: {
+                type: "category",
+                data: xDataList
+            },
+            yAxis: {
+                type: "value",
+                interval: 1
+            },
+            grid: {
+                x: 0,
+                x2: 0
+            },
+            series: yDataList
+        };
+
+        let chartContainer = document.getElementById("container");
+        chartContainer.style.width = `${xDataList.length * 120}px`;
+        let chart = echarts.init(chartContainer);
+        chart.setOption(option);
+    }
+</script>
+</body>
+
+</html>
