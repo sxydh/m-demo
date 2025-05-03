@@ -1,7 +1,38 @@
 // noinspection JSUnresolvedReference,JSUnusedGlobalSymbols
 
 const initServer = async () => {
+    const http = require("http");
+    const server = http.createServer((req, res) => {
+        const {method} = req;
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        if (method === "GET") {
+            res.writeHead(200);
+            res.end("Hello World!");
+        } else if (method === "POST") {
+            let body = "";
+            req.on("data", chunk => {
+                body += chunk.toString();
+            });
+            req.on("end", () => {
+                try {
+                    const data = JSON.parse(body);
+                    res.writeHead(200);
+                    res.end("{}");
+                } catch (err) {
+                    res.writeHead(400);
+                    res.end();
+                }
+            });
+        } else {
+            res.writeHead(405);
+            res.end();
+        }
+    });
 
+    const PORT = 3000;
+    server.listen(PORT, () => {
+        console.log(`http://localhost:${PORT}`);
+    });
 };
 
 const initData = async () => {
