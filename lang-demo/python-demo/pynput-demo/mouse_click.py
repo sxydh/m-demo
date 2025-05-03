@@ -1,6 +1,6 @@
 from pynput import mouse
 
-def on_click(x, y, button, pressed):
+def on_click(x, y, _, pressed):
     if pressed:
         print(f"鼠标点击位置: ({x}, {y})")
 
