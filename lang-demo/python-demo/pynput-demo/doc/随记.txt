@@ -1,0 +1,5 @@
+环境
+    前置条件
+        python --version <= 3.12
+    开始
+        pip install pynput
