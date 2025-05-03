@@ -6,6 +6,10 @@
         gAAAAABnmeXoLydaAxiwfo149RFPAnOKaQgj68w7NPSUUmbH8A6eL2HXtY6ERCs0HK0pHdRqs3KHzCkXHOrlbwC1vzU1qthobZ9mgq4xWiEyeR8sLnqUn6E=
             gAAAAABnmd3oQNFpsQOGzshsaqEZvAwx31Rt3buX7fuFbXCJpVfYygn_18jWJf64y4x8SgpUi8nc0pkFhRBw4cnKsNBzD61IDw==
                 注意：需要把浏览器语言切换为美区。
+                
+    Google
+        gAAAAABoFf-rB7vnTkS7IxW0C48aCl3nNi4dNC16J2xIwfU0WUnvJin2t5zmyGG0YvGCrYZsnglAvrm7zYyF2jyouS-WINCNc6dxjuNcJUhQB_NH9UqnYOM=
+            gAAAAABoFf97KgLTq4rv1VncUSBo3mdjHZw9v_dxGC9DOMhsL_Loypf-YtJEb7qJAnGQpxtync3DQQJKNtQAK930ieS8TyyGqP3eqmj9-4nnOHEslBTmQGs=
          
     Reddit
         https://www.reddit.com/
