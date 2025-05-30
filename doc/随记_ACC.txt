@@ -23,6 +23,10 @@
         gAAAAABoOT4JiXcBupZwkp1affrImrbhp9XVeCjbm4Krbpj6FmWLlaKEIdrirfssuzliiX6IF3ikHp5ghQQG2xS4R0TullQrrw==
         gAAAAABoOT4JvQHbRr2ebcL_jiJjzdKL-wwKZgiuppV2nDSU7LdiDlmyYUclAHpqib80mOWEXYPvWihfz5-60B1Mi8DRGytKdQ==
          
+    OpenAI
+        gAAAAABnmeXoLydaAxiwfo149RFPAnOKaQgj68w7NPSUUmbH8A6eL2HXtY6ERCs0HK0pHdRqs3KHzCkXHOrlbwC1vzU1qthobZ9mgq4xWiEyeR8sLnqUn6E=
+            gAAAAABoOVj2IbxuGxay83nec84ciPRNJlzkyhzFgvc0VnMQAgiKVrEdSFOltaXTE-MlrdfpPM5ZpptLKScSEGHnmLoOzFu9Iw==
+         
     Reddit
         https://www.reddit.com/
             gAAAAABnuDjWN6hAnBCc7m6txVbE4PGiokcwVgd-rs6dqoHLOnFF-5ycUxpSRUVyyFcOb3x8O_PgaFiRKhAwV8H3KMHdEmbYetv1hDnbWSopZc3rtRBnXUc=
