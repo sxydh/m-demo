@@ -7,11 +7,11 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from m_pyutil import mtmp
 
 # 不要删除
-salt = b'20240626'
+salt: bytes = b'20240626'
 
 
-def get_key(pwd):
-    kdf = PBKDF2HMAC(
+def get_key(pwd: str) -> bytes:
+    kdf: PBKDF2HMAC = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
@@ -21,37 +21,47 @@ def get_key(pwd):
     return urlsafe_b64encode(kdf.derive(pwd.encode()))
 
 
-def encrypt(password):
-    key = get_key(password)
-    cipher_suite = Fernet(key)
+def encrypt(decryption_text: str, password: str) -> str | None:
+    decryption_text = decryption_text.strip()
+    if decryption_text == '':
+        return None
 
-    decrypt_text = mtmp.read('decrypt.txt')
-    encrypt_text = cipher_suite.encrypt(decrypt_text.encode())
-    print('Encrypted: ', encrypt_text)
+    key: bytes = get_key(password)
+    cipher_suite: Fernet = Fernet(key)
 
-    mtmp.truncate('encrypt.txt')
-    mtmp.append(encrypt_text.decode(), 'encrypt.txt')
-
-    mtmp.truncate('decrypt.txt')
+    return cipher_suite.encrypt(decryption_text.encode()).decode()
 
 
-def decrypt(password):
-    key = get_key(password)
-    cipher_suite = Fernet(key)
+def decrypt(encryption_text: str, password: str) -> str | None:
+    encryption_text = encryption_text.strip()
+    if encryption_text == '':
+        return
 
-    cipher_text = mtmp.read('encrypt.txt')
-    for line in cipher_text.split("\n"):
-        if line.strip() == '':
-            continue
-        decrypt_text = cipher_suite.decrypt(line).decode()
-        print('Decrypted: ', decrypt_text)
+    key: bytes = get_key(password)
+    cipher_suite: Fernet = Fernet(key)
+
+    return cipher_suite.decrypt(encryption_text).decode()
+
+
+def start():
+    encryption_pwd: str = input('Enter encryption password: ')
+    if len(encryption_pwd) != 0:
+        mtmp.truncate('encryption.txt')
+        decryption_text = mtmp.read('decryption.txt')
+        mtmp.truncate('decryption.txt')
+        for line in decryption_text.split('\n'):
+            encryption_text: str = encrypt(line, encryption_pwd)
+            print('Encryption: ', encryption_text)
+            mtmp.append(encryption_text, 'encryption.txt')
+
+    decryption_pwd = input('Enter decryption password: ')
+    if len(decryption_pwd) != 0:
+        mtmp.truncate('decryption.txt')
+        encryption_text: str = mtmp.read('encryption.txt')
+        for line in encryption_text.split('\n'):
+            decryption_text: str = decrypt(line, decryption_pwd)
+            print('Decryption: ', decryption_text)
 
 
 if __name__ == '__main__':
-    encrypt_pwd = input('Enter your encrypt password: ')
-    if len(encrypt_pwd) != 0:
-        encrypt(encrypt_pwd)
-
-    decrypt_pwd = input('Enter your decrypt password: ')
-    if len(decrypt_pwd) != 0:
-        decrypt(decrypt_pwd)
+    start()
