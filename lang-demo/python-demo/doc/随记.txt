@@ -59,6 +59,10 @@
                 https://test.pypi.org/
                 
     软件管理
+        Uv
+            概述
+                https://github.com/astral-sh/uv
+                
         Pip
             概述
                 https://pip.pypa.io/en/stable/
