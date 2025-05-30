@@ -59,7 +59,7 @@ def start():
     if len(decryption_pwd) != 0:
         mtmp.truncate('decryption.txt')
         encryption_text: str = mtmp.read('encryption.txt')
-        print('Decryption')
+        print('Decryption: ')
         for line in encryption_text.split('\n'):
             decryption_text: str = decrypt(line, decryption_pwd)
             print(decryption_text)
