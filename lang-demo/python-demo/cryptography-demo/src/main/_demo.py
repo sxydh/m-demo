@@ -52,8 +52,9 @@ def start():
         print('Encryption: ')
         for line in decryption_text.split('\n'):
             encryption_text: str = encrypt(line, encryption_pwd)
-            print(encryption_text)
-            mtmp.append(encryption_text, 'encryption.txt')
+            if encryption_text is not None:
+                print(encryption_text)
+                mtmp.append(encryption_text, 'encryption.txt')
 
     decryption_pwd = input('Enter decryption password: ')
     if len(decryption_pwd) != 0:
@@ -62,7 +63,8 @@ def start():
         print('Decryption: ')
         for line in encryption_text.split('\n'):
             decryption_text: str = decrypt(line, decryption_pwd)
-            print(decryption_text)
+            if decryption_text is not None:
+                print(decryption_text)
 
 
 if __name__ == '__main__':
