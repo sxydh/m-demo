@@ -63,7 +63,7 @@
             概述
                 https://github.com/astral-sh/uv
             环境
-                pip install uv
+                powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
                 
         Pip
             概述
