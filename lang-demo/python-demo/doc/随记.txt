@@ -62,6 +62,8 @@
         Uv
             概述
                 https://github.com/astral-sh/uv
+            环境
+                pip install uv
                 
         Pip
             概述
