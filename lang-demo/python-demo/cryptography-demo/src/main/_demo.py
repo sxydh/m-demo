@@ -49,18 +49,20 @@ def start():
         mtmp.truncate('encryption.txt')
         decryption_text = mtmp.read('decryption.txt')
         mtmp.truncate('decryption.txt')
+        print('Encryption: ')
         for line in decryption_text.split('\n'):
             encryption_text: str = encrypt(line, encryption_pwd)
-            print('Encryption: ', encryption_text)
+            print(encryption_text)
             mtmp.append(encryption_text, 'encryption.txt')
 
     decryption_pwd = input('Enter decryption password: ')
     if len(decryption_pwd) != 0:
         mtmp.truncate('decryption.txt')
         encryption_text: str = mtmp.read('encryption.txt')
+        print('Decryption')
         for line in encryption_text.split('\n'):
             decryption_text: str = decrypt(line, decryption_pwd)
-            print('Decryption: ', decryption_text)
+            print(decryption_text)
 
 
 if __name__ == '__main__':
