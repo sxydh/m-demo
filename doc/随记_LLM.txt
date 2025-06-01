@@ -1,12 +1,13 @@
 开始
-    Gemini
-        https://gemini.google.com/app
-            
+    ChatGPT
+        https://chatgpt.com/
+
     Co Pilot
         https://copilot.microsoft.com/onboarding
+
+    Gemini
+        https://gemini.google.com/app
         
     Poe
         https://poe.com/login
         
-    ChatGPT
-        https://chatgpt.com/
