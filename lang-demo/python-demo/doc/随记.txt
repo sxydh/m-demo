@@ -92,6 +92,7 @@
             
                     设置配置
                         pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+                        pip config set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org"
                         
                     重置配置
                         pip config unset global.index-url
