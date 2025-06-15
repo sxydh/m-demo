@@ -4,12 +4,12 @@
 <head>
     <meta charset="utf-8">
     <title>echarts-demo</title>
-    <script src="./echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 </head>
 
 <body>
 <div>
-    <div id="container"></div>
+    <div id="container" style="height: 100vh"></div>
 </div>
 <script>
     fetch("http://localhost:58/ssq").then(res => {
@@ -32,22 +32,18 @@
             const data = dataList[i];
             const dataKeys = Object.keys(data);
 
-            if (i === 0 && data[dataKeys[0]] === "-1") {
-                groupList.push(...dataKeys.map(dataKey => data[dataKey]).slice(1));
-                continue;
+            if (i === 0) {
+                groupList.push(...dataKeys.slice(1));
             }
 
             xDataList.push(data[dataKeys[0]]);
-            for (let j = 1; j < dataKeys.length; j++) {
-                yDataList[j] = yDataList[j] || [];
-                yDataList[j].push({
-                    name: groupList[j],
-                    type: "line",
-                    data: data[dataKeys[j]],
-                    label: {
-                        show: true
-                    }
-                });
+            for (let j = 0, k = 1; k < dataKeys.length; j++, k++) {
+                yDataList[j] = yDataList[j] || {};
+                yDataList[j].name = groupList[j];
+                yDataList[j].type = "line";
+                yDataList[j].label = {show: true};
+                yDataList[j].data = (yDataList[j].data || []);
+                yDataList[j].data.push(data[dataKeys[k]]);
             }
         }
 

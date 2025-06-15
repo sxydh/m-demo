@@ -3,35 +3,24 @@
 const initServer = async () => {
     const http = require("http");
     const server = http.createServer((req, res) => {
-        const {method} = req;
+        const {url} = req;
         res.setHeader("Content-Type", "application/json; charset=utf-8");
-        if (method === "GET") {
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        if (url === "/ssq") {
+            const db = require("better-sqlite3")("index.db", {});
+            db.pragma("journal_mode = WAL");
+            const list = db.prepare("select d '日期', r '红1', r2 '红2', r3 '红3', r4 '红4', r5 '红5', r6 '红6', b '蓝' from t_ssq order by id limit 30").all();
             res.writeHead(200);
-            res.end("Hello World!");
-        } else if (method === "POST") {
-            let body = "";
-            req.on("data", chunk => {
-                body += chunk.toString();
-            });
-            req.on("end", () => {
-                try {
-                    const data = JSON.parse(body);
-                    res.writeHead(200);
-                    res.end("{}");
-                } catch (err) {
-                    res.writeHead(400);
-                    res.end();
-                }
-            });
+            res.end(JSON.stringify(list));
         } else {
             res.writeHead(405);
             res.end();
         }
     });
 
-    const PORT = 3000;
+    const PORT = 58;
     server.listen(PORT, () => {
-        console.log(`http://localhost:${PORT}`);
+        console.debug(`http://localhost:${PORT}`);
     });
 };
 
