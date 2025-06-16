@@ -8,12 +8,12 @@
                     追加或更新
                         {<encrypt_password>}
                         
-        deploy
-            mvn deploy -e -X
-                -e ：显示详细错误信息。
-                -X ：启用调试输出。
-                
-                部署项目
+    deploy
+        mvn deploy -e -X
+            -e ：显示详细错误信息。
+            -X ：启用调试输出。
+            
+            部署项目
                 
 环境
     离线模式
