@@ -1,23 +1,13 @@
-开始
-    HKEY_CLASSES_ROOT
-        Directory
-            background
-                shell
-                    Open In MyTerminal
-                        默认
-                            类型
-                                REG_SZ
-                            数据
-                                Open In MyTerminal
-                        Icon
-                            类型
-                                REG_SZ
-                            数据
-                                C:\Windows\system32\cmd.exe
-
-                        command
-                            默认
-                                类型
-                                    REG_SZ
-                                数据
-                                    "cmd.exe /s /k pushd \"%V\""
+问题
+    右键没有命令行窗口菜单
+        环境
+            Windows 11 企业版 LTSC
+        复现
+            右键
+        解决
+            Windows Registry Editor Version 5.00
+            [HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\background\shell\OpenInMyTerminal]
+            @="Open In MyTerminal"
+            "Icon"="cmd.exe"
+            [HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\background\shell\OpenInMyTerminal\command]
+            @="cmd.exe /s /k pushd \"%V\""
