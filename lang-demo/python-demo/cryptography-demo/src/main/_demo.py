@@ -37,12 +37,13 @@ def decrypt(encryption_text: str, password: str) -> str | None:
     if encryption_text == '':
         return None
 
+    # noinspection PyBroadException
     try:
         key: bytes = get_key(password)
         cipher_suite: Fernet = Fernet(key)
 
         return cipher_suite.decrypt(encryption_text).decode()
-    except InvalidToken:
+    except:
         return encryption_text
 
 
