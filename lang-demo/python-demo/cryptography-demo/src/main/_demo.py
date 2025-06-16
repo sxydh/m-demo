@@ -1,6 +1,6 @@
 from base64 import urlsafe_b64encode
 
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -37,10 +37,13 @@ def decrypt(encryption_text: str, password: str) -> str | None:
     if encryption_text == '':
         return None
 
-    key: bytes = get_key(password)
-    cipher_suite: Fernet = Fernet(key)
+    try:
+        key: bytes = get_key(password)
+        cipher_suite: Fernet = Fernet(key)
 
-    return cipher_suite.decrypt(encryption_text).decode()
+        return cipher_suite.decrypt(encryption_text).decode()
+    except InvalidToken:
+        return encryption_text
 
 
 def start():
