@@ -4,8 +4,20 @@
             background
                 shell
                     Open In MyTerminal
-                        @="Open In MyTerminal"
-                        "Icon"="C:\\Windows\\system32\\cmd.exe"
-                        
-                            command
-                                @="cmd.exe /s /k pushd \"%V\""
+                        默认
+                            类型
+                                REG_SZ
+                            数据
+                                Open In MyTerminal
+                        Icon
+                            类型
+                                REG_SZ
+                            数据
+                                C:\Windows\system32\cmd.exe
+
+                        command
+                            默认
+                                类型
+                                    REG_SZ
+                                数据
+                                    "cmd.exe /s /k pushd \"%V\""
