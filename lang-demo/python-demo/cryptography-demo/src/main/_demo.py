@@ -35,7 +35,7 @@ def encrypt(decryption_text: str, password: str) -> str | None:
 def decrypt(encryption_text: str, password: str) -> str | None:
     encryption_text = encryption_text.strip()
     if encryption_text == '':
-        return
+        return None
 
     key: bytes = get_key(password)
     cipher_suite: Fernet = Fernet(key)
