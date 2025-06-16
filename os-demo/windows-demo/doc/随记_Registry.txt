@@ -11,3 +11,6 @@
             "Icon"="cmd.exe"
             [HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\background\shell\OpenInMyTerminal\command]
             @="cmd.exe /s /k pushd \"%V\""
+
+                恢复
+                    [-HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Directory\background\shell\OpenInMyTerminal]
