@@ -1,7 +1,3 @@
-概述
-    https://next.itellyou.cn/Original/
-        gAAAAABnmcziDz1CxDC0Zowwo7Xezr_cr4bx1hkZRnEjfwoLjc1BCV8xIw6iWBfYw1iNfcUcvzNK4EfPa-hRN3_n6nBTtQfBvqBsZ79rUX_v9eEqqiuh_UA=
-        gAAAAABnmcz7_nk-pnnYxN6QPRdOn3LsbtyVrodDpntT4MRtVNwiYv_NHLxbywqMiAPI1MlbhXlwWTWr5VNtJAKu_FMXSK4qSw==
 开始
     chcp
         chcp 65001 > nul
