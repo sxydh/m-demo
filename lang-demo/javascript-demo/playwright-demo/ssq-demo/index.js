@@ -9,7 +9,7 @@ const initServer = async () => {
         if (url === "/ssq") {
             const db = require("better-sqlite3")("index.db", {});
             db.pragma("journal_mode = WAL");
-            const list = db.prepare("select d '日期', r '红1', r2 '红2', r3 '红3', r4 '红4', r5 '红5', r6 '红6', b '蓝' from t_ssq order by id limit 30").all();
+            const list = db.prepare("select d '期', r '红1', r2 '红2', r3 '红3', r4 '红4', r5 '红5', r6 '红6', b '蓝' from t_ssq order by id limit 30").all();
             res.writeHead(200);
             res.end(JSON.stringify(list));
         } else {
@@ -20,7 +20,7 @@ const initServer = async () => {
 
     const PORT = 58;
     server.listen(PORT, () => {
-        console.debug(`http://localhost:${PORT}`);
+        console.info(`INIT SERVER DONE`);
     });
 };
 
@@ -80,11 +80,12 @@ const initData = async () => {
     const insert = db.prepare("INSERT INTO t_ssq (d, r, r2, r3, r4, r5, r6, b) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     for (let i = 0; i < list.length; i++) {
         const ele = list[i];
-        const frontSplit = ele.seqFrontWinningNum.split(" ");
+        const frontSplit = ele.frontWinningNum.split(" ");
         insert.run(ele.openTime, frontSplit[0], frontSplit[1], frontSplit[2], frontSplit[3], frontSplit[4], frontSplit[5], ele.seqBackWinningNum);
     }
 
     await browser.close();
+    console.info(`INIT DATA DONE`);
 };
 
 (async () => {

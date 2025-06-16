@@ -24,26 +24,20 @@
     });
 
     function buildChart(dataList) {
-        const groupList = [];
+        const groupList = ['红1', '红2', '红3', '红4', '红5', '红6', '蓝'];
         const xDataList = [];
         const yDataList = [];
 
         for (let i = 0; i < dataList.length; i++) {
             const data = dataList[i];
-            const dataKeys = Object.keys(data);
-
-            if (i === 0) {
-                groupList.push(...dataKeys.slice(1));
-            }
-
-            xDataList.push(data[dataKeys[0]]);
-            for (let j = 0, k = 1; k < dataKeys.length; j++, k++) {
+            xDataList.push(data['期']);
+            for (let j = 0; j < groupList.length; j++) {
                 yDataList[j] = yDataList[j] || {};
                 yDataList[j].name = groupList[j];
                 yDataList[j].type = "line";
                 yDataList[j].label = {show: true};
                 yDataList[j].data = (yDataList[j].data || []);
-                yDataList[j].data.push(data[dataKeys[k]]);
+                yDataList[j].data.push(data[groupList[j]]);
             }
         }
 
