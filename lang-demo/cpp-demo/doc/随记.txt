@@ -11,11 +11,6 @@
         vcpkg
             概述
                 https://vcpkg.io/en/
-            开始
-                vcpkg new --application
-                    创建文件 vcpkg.json
-                vcpkg add port fmt
-                    添加依赖 fmt
             环境
                 概述
                     https://learn.microsoft.com/en-us/vcpkg/get_started/get-started-msbuild?pivots=shell-cmd
@@ -29,3 +24,15 @@
                 环境变量
                     VCPKG_ROOT=C:\Users\Administrator\AppData\Local\vcpkg
                     PATH=%VCPKG_ROOT%;%PATH%
+                后置条件
+                    vcpkg new --application
+                        创建文件 vcpkg.json
+                    vcpkg add port fmt
+                        添加依赖 fmt
+                    Microsoft Visual C++ 2022
+                        {解决方案}
+                            属性
+                                配置属性
+                                    vcpkg
+                                        Use Vcpkg Manifest
+                                            是
