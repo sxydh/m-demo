@@ -45,10 +45,12 @@
                         创建文件 vcpkg.json
                     vcpkg add port fmt
                         添加依赖 fmt
-                    Microsoft Visual C++ 2022
-                        {解决方案}
-                            属性
-                                配置属性
-                                    vcpkg
-                                        Use Vcpkg Manifest
-                                            是
+
+                        添加依赖后完成以下配置并编译项目
+                            Microsoft Visual C++ 2022
+                                {解决方案}
+                                    属性
+                                        配置属性
+                                            vcpkg
+                                                Use Vcpkg Manifest
+                                                    是
