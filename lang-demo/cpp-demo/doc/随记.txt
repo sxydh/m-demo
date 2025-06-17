@@ -12,6 +12,8 @@
             概述
                 https://vcpkg.io/en/
             环境
+                概述
+                    https://learn.microsoft.com/en-us/vcpkg/get_started/get-started-msbuild?pivots=shell-cmd
                 前置条件
                     Microsoft Visual C++ 2022
                 安装文件
