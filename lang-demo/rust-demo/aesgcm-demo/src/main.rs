@@ -62,6 +62,7 @@ fn decrypt_string(password: &str, encrypted_b64: &str) -> Result<String> {
 
 fn main() -> Result<()> {
     loop {
+        println!("-----------------------");
         print!("Encryption password: ");
         io::stdout().flush()?;
         let mut encrypt_password = String::new();
@@ -91,7 +92,5 @@ fn main() -> Result<()> {
                 Err(e) => eprintln!("\n{}\n", e),
             }
         }
-
-        println!()
     }
 }
