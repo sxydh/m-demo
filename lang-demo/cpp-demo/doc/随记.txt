@@ -3,6 +3,22 @@
     C++ 是静态类型语言
     C++ 是编译型语言
 
+问题
+    static_assert failed: 'Unicode support requires compiling with /utf-8'
+        环境
+            Microsoft Visual C++ 2022
+        复现
+            fmt::print("Hello World!");
+        解决
+            Microsoft Visual C++ 2022
+                {解决方案}
+                    属性
+                        配置属性
+                            C/C++
+                                命令行
+                                    其他选项(D)
+                                        /utf-8
+
 环境
     包线上库
         vcpkg
