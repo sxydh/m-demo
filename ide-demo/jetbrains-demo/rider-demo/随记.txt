@@ -10,7 +10,7 @@
                     区域
                         管理
                             更改系统区域设置
-                                Beta 版：使用 Unicode UTF-8 提供全球语言支持
+                                Beta 版：使用 Unicode UTF-8 提供全球语言支持。
                             
 开始
     File

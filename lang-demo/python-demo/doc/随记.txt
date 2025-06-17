@@ -51,14 +51,14 @@
             验证安装
                 python --version
                 
-    软件仓库
+    包线上库
         PyPI
             正式环境
                 https://pypi.org/
             测试环境
                 https://test.pypi.org/
                 
-    软件管理
+    包管理器
         Uv
             概述
                 https://github.com/astral-sh/uv
