@@ -11,6 +11,11 @@
         vcpkg
             概述
                 https://vcpkg.io/en/
+            开始
+                vcpkg new --application
+                    创建文件 vcpkg.json
+                vcpkg add port fmt
+                    添加依赖 fmt
             环境
                 概述
                     https://learn.microsoft.com/en-us/vcpkg/get_started/get-started-msbuild?pivots=shell-cmd
@@ -18,5 +23,9 @@
                     Microsoft Visual C++ 2022
                 安装文件
                     git clone https://github.com/microsoft/vcpkg.git
-                    cd vcpkg
-                    .\bootstrap-vcpkg.bat
+                    cd vcpkg && bootstrap-vcpkg.bat
+                集成工具
+                    cd vcpkg && .\vcpkg.exe integrate install
+                环境变量
+                    VCPKG_ROOT=C:\Users\Administrator\AppData\Local\vcpkg
+                    PATH=%VCPKG_ROOT%;%PATH%
