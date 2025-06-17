@@ -40,7 +40,7 @@
                 环境变量
                     VCPKG_ROOT=C:\Users\Administrator\AppData\Local\vcpkg
                     PATH=%VCPKG_ROOT%;%PATH%
-                后置条件
+                可选条件
                     vcpkg new --application
                         创建文件 vcpkg.json
                     vcpkg add port fmt
