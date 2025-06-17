@@ -61,22 +61,20 @@ fn decrypt_string(password: &str, encrypted_b64: &str) -> Result<String> {
 }
 
 fn main() -> Result<()> {
-    println!("🔐 String Encryption/Decryption Tool (Press Ctrl+C to exit)");
-
     loop {
-        print!("Enter encryption password (leave empty to skip encryption): ");
+        print!("Enter encryption password: ");
         io::stdout().flush()?;
         let mut encrypt_password = String::new();
         io::stdin().read_line(&mut encrypt_password)?;
         let encrypt_password = encrypt_password.trim().to_string();
 
-        print!("Enter decryption password (leave empty to skip decryption): ");
+        print!("Enter decryption password: ");
         io::stdout().flush()?;
         let mut decrypt_password = String::new();
         io::stdin().read_line(&mut decrypt_password)?;
         let decrypt_password = decrypt_password.trim().to_string();
 
-        print!("Please enter the string to process: ");
+        print!("Enter the string to process: ");
         io::stdout().flush()?;
         let mut input = String::new();
         io::stdin().read_line(&mut input)?;
@@ -84,13 +82,13 @@ fn main() -> Result<()> {
 
         if !encrypt_password.is_empty() {
             match encrypt_string(&encrypt_password, input) {
-                Ok(enc) => println!("✅ Encryption result (Base64):\n{}\n", enc),
-                Err(e) => eprintln!("❌ Encryption failed: {}\n", e),
+                Ok(enc) => println!("✅:\n{}\n", enc),
+                Err(e) => eprintln!("❌: {}\n", e),
             }
         } else if !decrypt_password.is_empty() {
             match decrypt_string(&decrypt_password, input) {
-                Ok(dec) => println!("✅ Decryption result:\n{}\n", dec),
-                Err(e) => eprintln!("❌ Decryption failed: {}\n", e),
+                Ok(dec) => println!("✅:\n{}\n", dec),
+                Err(e) => eprintln!("❌: {}\n", e),
             }
         }
     }
