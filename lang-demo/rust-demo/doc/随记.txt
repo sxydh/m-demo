@@ -1,0 +1,10 @@
+环境
+    准备文件
+        https://www.rust-lang.org/tools/install
+    安装文件
+        Windows PowerShell
+            $proxy='http://127.0.0.1:7890'
+            $ENV:HTTP_PROXY=$proxy
+            $ENV:HTTPS_PROXY=$proxy
+            cd ~\Downloads
+            .\rustup-init.exe
