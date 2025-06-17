@@ -91,5 +91,7 @@ fn main() -> Result<()> {
                 Err(e) => eprintln!("\n{}\n", e),
             }
         }
+
+        println!()
     }
 }
