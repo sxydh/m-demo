@@ -9,5 +9,7 @@
                 $ENV:HTTPS_PROXY=$proxy
                 cd ~\Downloads
                 .\rustup-init.exe
+    包线上库
+        https://crates.io/
     包管理器
         Cargo
