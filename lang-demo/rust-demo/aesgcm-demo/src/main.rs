@@ -75,21 +75,23 @@ fn main() -> Result<()> {
         io::stdin().read_line(&mut decrypt_password)?;
         let decrypt_password = decrypt_password.trim().to_string();
 
-        println!("Input:");
-        io::stdout().flush()?;
-        let mut input = String::new();
-        io::stdin().read_line(&mut input)?;
-        let input = input.trim();
+        if !encrypt_password.is_empty() || !decrypt_password.is_empty() {
+            println!("Input:");
+            io::stdout().flush()?;
+            let mut input = String::new();
+            io::stdin().read_line(&mut input)?;
+            let input = input.trim();
 
-        if !encrypt_password.is_empty() {
-            match encrypt_string(&encrypt_password, input) {
-                Ok(enc) => println!("\n{}\n", enc),
-                Err(e) => eprintln!("\n{}\n", e),
-            }
-        } else if !decrypt_password.is_empty() {
-            match decrypt_string(&decrypt_password, input) {
-                Ok(dec) => println!("\n{}\n", dec),
-                Err(e) => eprintln!("\n{}\n", e),
+            if !encrypt_password.is_empty() {
+                match encrypt_string(&encrypt_password, input) {
+                    Ok(enc) => println!("\n{}\n", enc),
+                    Err(e) => eprintln!("\n{}\n", e),
+                }
+            } else if !decrypt_password.is_empty() {
+                match decrypt_string(&decrypt_password, input) {
+                    Ok(dec) => println!("\n{}\n", dec),
+                    Err(e) => eprintln!("\n{}\n", e),
+                }
             }
         } else {
             println!("-----------------------");
