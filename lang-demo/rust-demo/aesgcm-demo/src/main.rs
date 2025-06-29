@@ -94,6 +94,7 @@ fn main() -> Result<()> {
                 }
             }
         } else {
+            println!();
             println!("-----------------------");
             println!("1 - Decrypt TXT file");
             io::stdout().flush()?;
