@@ -102,7 +102,7 @@ fn main() -> Result<()> {
             let function_code = function_code.trim();
             match function_code {
                 "1" => {
-                    print!("File path: ");
+                    println!("File path:");
                     io::stdout().flush()?;
                     let mut file_path = String::new();
                     io::stdin().read_line(&mut file_path)?;
