@@ -106,7 +106,7 @@ fn main() -> Result<()> {
                     io::stdout().flush()?;
                     let mut file_path = String::new();
                     io::stdin().read_line(&mut file_path)?;
-                    print!("Password:");
+                    print!("Password: ");
                     io::stdout().flush()?;
                     let mut password = String::new();
                     io::stdin().read_line(&mut password)?;
