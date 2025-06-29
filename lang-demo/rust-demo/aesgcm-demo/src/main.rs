@@ -94,8 +94,7 @@ fn main() -> Result<()> {
                 }
             }
         } else {
-            println!();
-            println!("-----------------------");
+            println!("\n-----------------------");
             println!("1 - Decrypt TXT file");
             io::stdout().flush()?;
             let mut function_code = String::new();
