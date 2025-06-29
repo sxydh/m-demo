@@ -110,6 +110,7 @@ fn main() -> Result<()> {
                     io::stdout().flush()?;
                     let mut password = String::new();
                     io::stdin().read_line(&mut password)?;
+                    let password = password.trim().to_string();
 
                     let file_path = file_path.trim();
                     match std::fs::read_to_string(file_path) {
@@ -117,8 +118,8 @@ fn main() -> Result<()> {
                             let lines: Vec<&str> = file_content.lines().collect();
                             let mut new_lines: Vec<String> = Vec::new();
                             for line in lines {
-                                let first_non_space =
-                                    line.find(|c: char| !c.is_whitespace()).unwrap_or(0);
+                                let line = line.trim();
+                                let first_non_space = line.find(|c: char| !c.is_whitespace()).unwrap_or(0);
                                 let (space_part, content_part) = line.split_at(first_non_space);
                                 match decrypt_string(&password, content_part) {
                                     Ok(dec) => new_lines.push(format!("{}{}", space_part, dec)),
