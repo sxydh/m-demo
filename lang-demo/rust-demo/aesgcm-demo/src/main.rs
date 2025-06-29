@@ -121,9 +121,7 @@ fn main() -> Result<()> {
                                     line.find(|c: char| !c.is_whitespace()).unwrap_or(0);
                                 let (space_part, content_part) = line.split_at(first_non_space);
                                 match decrypt_string(&password, content_part) {
-                                    Ok(dec) => {
-                                        new_lines.push(format!("{}{}", space_part, dec));
-                                    }
+                                    Ok(dec) => new_lines.push(format!("{}{}", space_part, dec)),
                                     Err(_) => new_lines.push(line.to_string()),
                                 }
                             }
