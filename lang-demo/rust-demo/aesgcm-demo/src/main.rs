@@ -75,7 +75,7 @@ fn main() -> Result<()> {
         io::stdin().read_line(&mut decrypt_password)?;
         let decrypt_password = decrypt_password.trim().to_string();
 
-        print!("Input:\n");
+        println!("Input:");
         io::stdout().flush()?;
         let mut input = String::new();
         io::stdin().read_line(&mut input)?;
@@ -90,6 +90,52 @@ fn main() -> Result<()> {
             match decrypt_string(&decrypt_password, input) {
                 Ok(dec) => println!("\n{}\n", dec),
                 Err(e) => eprintln!("\n{}\n", e),
+            }
+        } else {
+            println!("-----------------------");
+            println!("1 - Decrypt TXT file");
+            io::stdout().flush()?;
+            let mut function_code = String::new();
+            io::stdin().read_line(&mut function_code)?;
+            let function_code = function_code.trim();
+            match function_code {
+                "1" => {
+                    print!("File path: ");
+                    io::stdout().flush()?;
+                    let mut file_path = String::new();
+                    io::stdin().read_line(&mut file_path)?;
+                    print!("Password:");
+                    io::stdout().flush()?;
+                    let mut password = String::new();
+                    io::stdin().read_line(&mut password)?;
+
+                    let file_path = file_path.trim();
+                    match std::fs::read_to_string(file_path) {
+                        Ok(file_content) => {
+                            let lines: Vec<&str> = file_content.lines().collect();
+                            let mut new_lines: Vec<String> = Vec::new();
+                            for line in lines {
+                                let first_non_space =
+                                    line.find(|c: char| !c.is_whitespace()).unwrap_or(0);
+                                let (space_part, content_part) = line.split_at(first_non_space);
+                                match decrypt_string(&password, content_part) {
+                                    Ok(dec) => {
+                                        new_lines.push(format!("{}{}", space_part, dec));
+                                    }
+                                    Err(_) => new_lines.push(line.to_string()),
+                                }
+                            }
+
+                            let new_file_content = new_lines.join("\n");
+                            match std::fs::write(format!("{}.dec", file_path), new_file_content) {
+                                Ok(_) => (),
+                                Err(e) => eprintln!("\n{}\n", e),
+                            }
+                        }
+                        Err(e) => eprintln!("\n{}\n", e),
+                    }
+                }
+                _ => (),
             }
         }
     }
