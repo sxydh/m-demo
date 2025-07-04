@@ -6,6 +6,7 @@ use anyhow::{Result, anyhow};
 use base64::{Engine as _, engine::general_purpose};
 use pbkdf2::pbkdf2_hmac;
 use rand::{RngCore, rngs::OsRng};
+use rayon::prelude::*;
 use sha2::Sha256;
 use std::io::{self, Write};
 
@@ -117,15 +118,18 @@ fn main() -> Result<()> {
                     match std::fs::read_to_string(file_path) {
                         Ok(file_content) => {
                             let lines: Vec<&str> = file_content.lines().collect();
-                            let mut new_lines: Vec<String> = Vec::new();
-                            for line in lines {
-                                let first_non_space = line.find(|c: char| !c.is_whitespace()).unwrap_or(0);
-                                let (space_part, content_part) = line.split_at(first_non_space);
-                                match decrypt_string(&password, content_part.trim()) {
-                                    Ok(dec) => new_lines.push(format!("{}{}", space_part, dec)),
-                                    Err(_) => new_lines.push(line.to_string()),
-                                }
-                            }
+                            let new_lines: Vec<String> = lines
+                                .par_iter()
+                                .map(|line| {
+                                    let line = *line;
+                                    let first_non_space = line.find(|c: char| !c.is_whitespace()).unwrap_or(0);
+                                    let (space_part, content_part) = line.split_at(first_non_space);
+                                    match decrypt_string(&password, content_part.trim()) {
+                                        Ok(dec) => format!("{}{}", space_part, dec),
+                                        Err(_) => line.to_string(),
+                                    }
+                                })
+                                .collect();
 
                             let new_file_content = new_lines.join("\n");
                             match std::fs::write(format!("{}.dec", file_path), new_file_content) {
