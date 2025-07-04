@@ -118,10 +118,9 @@ fn main() -> Result<()> {
                             let lines: Vec<&str> = file_content.lines().collect();
                             let mut new_lines: Vec<String> = Vec::new();
                             for line in lines {
-                                let line = line.trim().to_string();
                                 let first_non_space = line.find(|c: char| !c.is_whitespace()).unwrap_or(0);
                                 let (space_part, content_part) = line.split_at(first_non_space);
-                                match decrypt_string(&password, content_part) {
+                                match decrypt_string(&password, content_part.trim()) {
                                     Ok(dec) => new_lines.push(format!("{}{}", space_part, dec)),
                                     Err(_) => new_lines.push(line.to_string()),
                                 }
