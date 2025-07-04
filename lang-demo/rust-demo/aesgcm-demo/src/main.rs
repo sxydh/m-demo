@@ -131,11 +131,7 @@ fn main() -> Result<()> {
                                 })
                                 .collect();
 
-                            let new_file_content = new_lines.join("\n");
-                            match std::fs::write(format!("{}.dec", file_path), new_file_content) {
-                                Ok(_) => (),
-                                Err(e) => eprintln!("\n{}\n", e),
-                            }
+                            println!("{}", new_lines.join("\n"));
                         }
                         Err(e) => eprintln!("\n{}\n", e),
                     }
