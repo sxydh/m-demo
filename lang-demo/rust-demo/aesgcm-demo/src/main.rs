@@ -131,7 +131,7 @@ fn main() -> Result<()> {
                                 })
                                 .collect();
 
-                            println!("{}", new_lines.join("\n"));
+                            println!("\n{}\n", new_lines.join("\n"));
                         }
                         Err(e) => eprintln!("\n{}\n", e),
                     }
