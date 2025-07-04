@@ -68,13 +68,13 @@ fn main() -> Result<()> {
         io::stdout().flush()?;
         let mut encrypt_password = String::new();
         io::stdin().read_line(&mut encrypt_password)?;
-        let encrypt_password = encrypt_password.trim().to_string();
+        let encrypt_password = encrypt_password.trim();
 
         print!("Decryption password: ");
         io::stdout().flush()?;
         let mut decrypt_password = String::new();
         io::stdin().read_line(&mut decrypt_password)?;
-        let decrypt_password = decrypt_password.trim().to_string();
+        let decrypt_password = decrypt_password.trim();
 
         if !encrypt_password.is_empty() || !decrypt_password.is_empty() {
             println!("Input:");
@@ -107,14 +107,14 @@ fn main() -> Result<()> {
                     io::stdout().flush()?;
                     let mut file_path = String::new();
                     io::stdin().read_line(&mut file_path)?;
+                    let file_path = file_path.trim().trim_matches('"');
+                    
                     print!("Password: ");
                     io::stdout().flush()?;
                     let mut password = String::new();
                     io::stdin().read_line(&mut password)?;
-                    let password = password.trim().to_string();
+                    let password = password.trim();
 
-                    let file_path = file_path.trim().trim_matches('"').to_string();
-                    let file_path = &file_path;
                     match std::fs::read_to_string(file_path) {
                         Ok(file_content) => {
                             let lines: Vec<&str> = file_content.lines().collect();
