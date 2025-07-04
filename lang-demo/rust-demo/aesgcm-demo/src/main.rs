@@ -112,7 +112,7 @@ fn main() -> Result<()> {
                     io::stdin().read_line(&mut password)?;
                     let password = password.trim().to_string();
 
-                    let file_path = file_path.trim();
+                    let file_path = file_path.trim_matches('"');
                     match std::fs::read_to_string(file_path) {
                         Ok(file_content) => {
                             let lines: Vec<&str> = file_content.lines().collect();
