@@ -97,6 +97,7 @@ fn main() -> Result<()> {
         } else {
             println!("\n-----------------------");
             println!("1 - Decrypt TXT file");
+            println!("2 - Update TXT file");
             io::stdout().flush()?;
             let mut function_code = String::new();
             io::stdin().read_line(&mut function_code)?;
@@ -108,7 +109,7 @@ fn main() -> Result<()> {
                     let mut file_path = String::new();
                     io::stdin().read_line(&mut file_path)?;
                     let file_path = file_path.trim().trim_matches('"');
-                    
+
                     print!("Password: ");
                     io::stdout().flush()?;
                     let mut password = String::new();
@@ -132,6 +133,52 @@ fn main() -> Result<()> {
                                 .collect();
 
                             println!("\n{}\n", new_lines.join("\n"));
+                        }
+                        Err(e) => eprintln!("\n{}\n", e),
+                    }
+                }
+                "2" => {
+                    println!("File path:");
+                    io::stdout().flush()?;
+                    let mut file_path = String::new();
+                    io::stdin().read_line(&mut file_path)?;
+                    let file_path = file_path.trim().trim_matches('"');
+
+                    println!("Old password:");
+                    io::stdout().flush()?;
+                    let mut old_password = String::new();
+                    io::stdin().read_line(&mut old_password)?;
+                    let old_password = old_password.trim();
+
+                    println!("New password:");
+                    io::stdout().flush()?;
+                    let mut new_password = String::new();
+                    io::stdin().read_line(&mut new_password)?;
+                    let new_password = new_password.trim();
+
+                    match std::fs::read_to_string(file_path) {
+                        Ok(file_content) => {
+                            let lines: Vec<&str> = file_content.lines().collect();
+                            let new_lines: Vec<String> = lines
+                                .par_iter()
+                                .map(|line| {
+                                    let line = *line;
+                                    let first_non_space = line.find(|c: char| !c.is_whitespace()).unwrap_or(0);
+                                    let (space_part, content_part) = line.split_at(first_non_space);
+                                    match decrypt_string(&old_password, content_part.trim()) {
+                                        Ok(dec) => match encrypt_string(&new_password, &dec) {
+                                            Ok(enc) => format!("{}{}", space_part, enc),
+                                            Err(_) => "Error".to_string()
+                                        },
+                                        Err(_) => "Error".to_string()
+                                    }
+                                })
+                                .collect();
+
+                            match std::fs::write(format!("{}.updated", file_path), new_lines.join("\n")) {
+                                Ok(_) => (),
+                                Err(e) => eprintln!("\n{}\n", e),
+                            }
                         }
                         Err(e) => eprintln!("\n{}\n", e),
                     }
