@@ -168,9 +168,9 @@ fn main() -> Result<()> {
                                     match decrypt_string(&old_password, content_part.trim()) {
                                         Ok(dec) => match encrypt_string(&new_password, &dec) {
                                             Ok(enc) => format!("{}{}", space_part, enc),
-                                            Err(_) => "Error".to_string()
+                                            Err(_) => line.to_string()
                                         },
-                                        Err(_) => "Error".to_string()
+                                        Err(_) => line.to_string()
                                     }
                                 })
                                 .collect();
