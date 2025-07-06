@@ -144,13 +144,13 @@ fn main() -> Result<()> {
                     io::stdin().read_line(&mut file_path)?;
                     let file_path = file_path.trim().trim_matches('"');
 
-                    println!("Old password:");
+                    print!("Old password: ");
                     io::stdout().flush()?;
                     let mut old_password = String::new();
                     io::stdin().read_line(&mut old_password)?;
                     let old_password = old_password.trim();
 
-                    println!("New password:");
+                    print!("New password: ");
                     io::stdout().flush()?;
                     let mut new_password = String::new();
                     io::stdin().read_line(&mut new_password)?;
