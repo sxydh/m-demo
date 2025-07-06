@@ -96,8 +96,8 @@ fn main() -> Result<()> {
             }
         } else {
             println!("\n-----------------------");
-            println!("1 - Decrypt TXT file");
-            println!("2 - Update TXT file");
+            println!("1 - Decrypt file");
+            println!("2 - Update file");
             io::stdout().flush()?;
             let mut function_code = String::new();
             io::stdin().read_line(&mut function_code)?;
