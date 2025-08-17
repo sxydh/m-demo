@@ -1,0 +1,8 @@
+概述
+    微型录音机
+组成
+    MIC
+    ADC
+    MP3 Encoder
+    MCU
+    SD
