@@ -1,0 +1,9 @@
+概述
+    Solidity 是用于以太坊智能合约开发的高级语言
+    Solidity 是编译类型语言
+    Solidity 是静态类型语言
+环境
+    IDE
+        Remix IDE
+    虚拟机
+        EVM
