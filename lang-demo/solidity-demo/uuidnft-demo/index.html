@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>UUID NFT DApp</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+
+<body>
+    <h1>UUID NFT DApp</h1>
+
+    <button id="connect">连接 MetaMask</button>
+    <p id="account">未连接</p>
+
+    <h3>Mint NFT</h3>
+    <input type="text" id="uuidInput" placeholder="输入 UUID">
+    <button id="mint">Mint NFT</button>
+
+    <h3>查询余额</h3>
+    <button id="balance">查询我的余额</button>
+    <p id="balanceResult"></p>
+
+    <h3>查询 UUID</h3>
+    <input type="number" id="tokenIdInput" placeholder="输入 Token ID">
+    <button id="getUUID">查询 UUID</button>
+    <p id="uuidResult"></p>
+
+    <script>
+        // 合约地址
+        const contractAddress = "0x51c74559ddDB404B88aFd0Ca8c315c65f21F1F8b";
+
+        const abi = [
+            { "inputs": [{ "internalType": "string", "name": "uuid", "type": "string" }], "name": "createUUID", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+            { "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }], "name": "getBalance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            { "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }], "name": "getUUID", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }
+        ];
+
+        let provider, signer, contract, currentAccount;
+
+        document.getElementById("connect").onclick = async () => {
+            if (window.ethereum) {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = provider.getSigner();
+                currentAccount = await signer.getAddress();
+                document.getElementById("account").innerText = "已连接: " + currentAccount;
+
+                contract = new ethers.Contract(contractAddress, abi, signer);
+            } else {
+                alert("请安装 MetaMask");
+            }
+        };
+
+        // Mint NFT
+        document.getElementById("mint").onclick = async () => {
+            const uuid = document.getElementById("uuidInput").value;
+            try {
+                const tx = await contract.createUUID(uuid);
+                await tx.wait();
+                alert("Mint 成功，交易哈希: " + tx.hash);
+            } catch (err) {
+                console.error(err);
+                alert("Mint 失败: " + err.message);
+            }
+        };
+
+        // 查询余额
+        document.getElementById("balance").onclick = async () => {
+            const balance = await contract.getBalance(currentAccount);
+            document.getElementById("balanceResult").innerText = "你的 NFT 数量: " + balance.toString();
+        };
+
+        // 查询 UUID
+        document.getElementById("getUUID").onclick = async () => {
+            const tokenId = document.getElementById("tokenIdInput").value;
+            try {
+                const uuid = await contract.getUUID(tokenId);
+                document.getElementById("uuidResult").innerText = "UUID: " + uuid;
+            } catch (err) {
+                document.getElementById("uuidResult").innerText = "查询失败: " + err.message;
+            }
+        };
+    </script>
+</body>
+
+</html>
