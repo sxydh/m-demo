@@ -1,0 +1,29 @@
+概述
+    智能合约是自动执行预设条件下的交易的程序
+    智能合约部署在区块链网络的所有节点上
+    智能合约代码是特殊的交易数据，存储在区块上。
+部署
+    概述
+        部署是将合约代码作为一笔特殊的交易，广播到区块链上。
+        部署合约后可以得到合约地址，调用方可以使用合约地址来调用合约方法。
+        部署合约后会在链上产生该合约的单例
+    开始
+        Remix IDE
+            https://remix.ethereum.org/
+                Solidity compiler
+                    COMPILER
+                        选择编译器版本
+                    Compile <file_name>
+                        选择编译文件
+                Deploy & run transactions
+                    ENVIRONMENT
+                        WalletConnet
+                            前置条件
+                                MetaMask 账户
+                                MetaMask 浏览器插件
+                    CONTRACT
+                        选择合约
+                    Deploy
+                        部署合约
+                    Deployed Contracts
+                        部署结果，可以在这里直接调用合约方法。
