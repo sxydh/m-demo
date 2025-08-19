@@ -1,9 +1,2 @@
-关键字
-    for
-        概述
-            基于迭代器的循环
-        源码
-            Iterator var1 = list.iterator();
-            while(var1.hasNext()) {
-                ...
-            }
+数据类型
+函数
