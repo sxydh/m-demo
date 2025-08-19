@@ -21,6 +21,7 @@
                             前置条件
                                 MetaMask 账户
                                 MetaMask 浏览器插件
+                                Sepolia 网络
                     CONTRACT
                         选择合约
                     Deploy
