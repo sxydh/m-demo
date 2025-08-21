@@ -41,13 +41,23 @@
                 Tron
                     https://tronscan.org/#/
                 ...
-类型
-    基础币
-        BTC
-        ...
-    稳定币
-        USDT
-        ...
-    非同质化代币
-        NFT
+应用
+    加密货币
+        基础币
+            BTC
+            ...
+        稳定币
+            USDT
+            ...
+        非同质化代币
+            NFT
+            ...
+    去中心化金融（ DeFi ）
+        去中心化交易所（ DEX ）
+            Uniswap
+            SushiSwap
+            ...
+        借贷平台
+            Aave
+            ...
         ...
