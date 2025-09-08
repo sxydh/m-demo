@@ -1,5 +1,5 @@
 概述
-    Deployment 用于管理 Pod 的生命周期，而且支持 Pod 的扩展、更新、回滚等。
+    Deployment 用于管理 Pod 的生命周期，而且支持 Pod 的扩容、更新、回滚等。
 命令
     列表
         kubectl get deployment -o wide -n <namespace_name>
