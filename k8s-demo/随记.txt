@@ -27,9 +27,11 @@
             Service
         工作负载
             Deployment
+                Deployment 可以确保 Pod 按配置的副本数量运行，并且可以更新、回滚、扩容等。
             StatefulSet
             DaemonSet
             ReplicaSet
+                ReplicaSet 负责按照 Deployment 的要求创建和删除 Pod 副本
         配置存储
             ConfigMap
                 ConfigMap 用于存储键值对，创建之后可以被 Pod 以多种方式引用，例如作为 Pod 的环境变量，或者挂载到 Pod 内部的配置文件。

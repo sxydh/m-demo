@@ -1,6 +1,7 @@
 概述
-    多种类型： ClusterIP 、 NodePort 等。
-命令
+    Service 接收外部流量，通过标签选择器的方式，将流量负载均衡到各个 Pod 。
+    Service 的类型： ClusterIP 、 NodePort 等。
+开始
     创建
         kubectl create -f <yaml_file> -n <namespace_name>
     编辑
