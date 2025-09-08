@@ -1,6 +1,6 @@
 概述
     PVC （ Persistent Volume Claim ）是用户对 PV 的声明式请求
-命令
+开始
     创建
         kubectl create -f pvc.yaml -n <namespace_name>
             -f ：指定配置文件。
