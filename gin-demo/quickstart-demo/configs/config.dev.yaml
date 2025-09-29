@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+database:
+  host: localhost
+  port: 3306
+  username: root
+  password: 123
+  database: gin_demo
+
+redis:
+  addr: "localhost:6379"
+
+auth:
+  secret: x*0)k&=-123

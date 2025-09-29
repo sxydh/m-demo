@@ -1,0 +1,33 @@
+user
+    curl -X POST ^
+      http://localhost:8080/api/v1/user/register ^
+      -H "Content-Type: application/json" ^
+      --data-raw "{\"username\":\"zhangsan\",\"email\":\"zhangsan@email.com\",\"password\":\"12345678\"}"
+
+    curl -X POST ^
+      http://localhost:8080/api/v1/user/login ^
+      -H "Content-Type: application/json" ^
+      --data-raw "{\"username\":\"zhangsan\",\"password\":\"12345678\"}"
+
+    set TOKEN=""
+
+    curl -X GET ^
+      http://localhost:8080/api/v1/user ^
+      -H "Content-Type: application/json" ^
+      -H "Authorization: Bearer %TOKEN%"
+
+    curl -X GET ^
+      http://localhost:8080/api/v1/user/5 ^
+      -H "Content-Type: application/json" ^
+      -H "Authorization: Bearer %TOKEN%"
+
+    curl -X PUT ^
+      http://localhost:8080/api/v1/user/5 ^
+      -H "Content-Type: application/json" ^
+      -H "Authorization: Bearer %TOKEN%" ^
+      --data-raw "{\"username\":\"wangwu\",\"email\":\"wangwu@email.com\"}"
+
+    curl -X DELETE ^
+      http://localhost:8080/api/v1/user/5 ^
+      -H "Content-Type: application/json" ^
+      -H "Authorization: Bearer %TOKEN%"
