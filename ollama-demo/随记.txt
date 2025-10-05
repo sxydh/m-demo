@@ -1,2 +1,16 @@
 概述
     https://ollama.com/
+开始
+    run
+        ollama run deepseek-r1:70b
+            更改模型下载路径
+                export OLLAMA_MODELS=/path/to/models
+环境
+    Ubuntu
+        curl -LO https://ollama.com/download/ollama-linux-amd64.tgz
+        sudo rm -rf /usr/lib/ollama
+        sudo tar -C /usr -xzf ollama-linux-amd64.tgz
+
+        ollama serve
+            验证
+                ollama -v
