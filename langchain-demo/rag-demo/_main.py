@@ -1,12 +1,13 @@
 import json
 import os
+from collections import deque
 from datetime import datetime
 
 import requests
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import TextLoader
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
 
 
 class RAGSystem:
@@ -18,6 +19,7 @@ class RAGSystem:
         self.embeddings = None
         self.vector_store = None
         self.retriever = None
+        self.history = deque(maxlen=100)
         self.setup_components()
 
     def setup_components(self):
@@ -78,20 +80,19 @@ class RAGSystem:
             print(f"relevant_documents[{i}].file_name: {file_name}")
 
         context = "\n\n".join(doc.page_content for doc in relevant_docs)
-        prompt = f"""
-基于以下上下文回答问题：
-
-上下文：
+        system_message = f"""
+参考文档：
 {context}
 
-问题：
-{question}
-
-请回答："""
+结合参考文档和历史对话回答问题"""
 
         payload = {
             "model": self.model,
-            "prompt": prompt,
+            "messages": [
+                {"role": "system", "content": system_message},
+                *self.history,
+                {"role": "user", "content": question}
+            ],
             "stream": True
         }
         response = requests.post(
@@ -100,18 +101,24 @@ class RAGSystem:
             stream=True
         )
 
+        full_response = ""
         for line in response.iter_lines():
             if line:
                 data = json.loads(line)
-                if "response" in data:
-                    print(data["response"], end="", flush=True)
+                if "message" in data and "content" in data["message"]:
+                    chunk = data["message"]["content"]
+                    full_response += chunk
+                    print(chunk, end="", flush=True)
                 if data.get("done", False):
                     break
+
+        self.history.append({"role": "user", "content": question})
+        self.history.append({"role": "assistant", "content": full_response})
 
 
 def main():
     rag_system = RAGSystem(
-        url="http://localhost:11434/api/generate",
+        url="http://localhost:11434/api/chat",
         model="huihui_ai/deepseek-r1-abliterated:70b"
     )
     rag_system.process_documents(["./document.txt"])
