@@ -2,9 +2,7 @@
     https://ollama.com/
 开始
     run
-        ollama run deepseek-r1:70b
-            更改模型下载路径
-                export OLLAMA_MODELS=/path/to/models
+        ollama run huihui_ai/deepseek-r1-abliterated:70b
 环境
     Ubuntu
         curl -LO https://ollama.com/download/ollama-linux-amd64.tgz
@@ -14,3 +12,5 @@
         ollama serve
             验证
                 ollama -v
+            更改模型下载路径
+                export OLLAMA_MODELS=/root/autodl-tmp/ollama_models
