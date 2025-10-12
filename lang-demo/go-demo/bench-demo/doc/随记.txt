@@ -1,0 +1,39 @@
+开始
+    go test -bench=. -benchmem -benchtime=5s ./...
+        所有目录单元测试然后性能测试
+
+    go test -run=^$ -bench=. -benchmem -benchtime=5s ./...
+        所有目录性能测试
+
+            goos: windows
+            goarch: amd64
+            pkg: bench-demo/pkg
+            cpu: Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
+            BenchmarkSlowConcat-12              6343            872665 ns/op         5320828 B/op        999 allocs/op
+            BenchmarkFastConcat-12           1279054              4746 ns/op           10240 B/op          1 allocs/op
+            PASS
+            ok      bench-demo/pkg  16.455s
+
+                BenchmarkSlowConcat-12
+                    BenchmarkSlowConcat ：函数名。
+                    12 ：使用了 12 个逻辑核心。
+                6343 ：在 5 秒内执行了 6343 次操作。
+                872665 ：每次操作平均耗时 872665 纳秒，约 0.87 毫秒。
+                5320828 ：每次操作平均分配了 5320828 字节的内存，约 5.32 M。
+                999 ：每次操作发生了 999 次内存分配。
+
+    go test -run=^$ -bench=. -benchmem -benchtime=5s -cpuprofile=_cpu.prof -memprofile=_mem.prof ./pkg
+        pkg 目录性能测试，并生成 CPU Profiling 和 Memory Profiling 文件。
+
+            go tool pprof _cpu.prof
+
+                top ：显示消耗 CPU 时间最多的函数列表。
+                topN ：显示前 N 个最耗 CPU 的函数。
+                traces ：显示所有导致 CPU 使用的完整调用栈追踪。
+                web ：生成交互式火焰图并在浏览器中打开（需要安装 https://graphviz.org/download ）。
+
+            go tool pprof _mem.prof
+
+                top ：显示分配内存最多的函数。
+                list {func_name} ：显示指定函数的源代码，并标注每行代码分配的内存量和次数。
+                web ：生成交互式火焰图并在浏览器中打开（需要安装 https://graphviz.org/download ）。
