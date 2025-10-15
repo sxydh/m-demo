@@ -1,0 +1,4 @@
+开始
+    java -cp java-decompiler.jar org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler <todo.jar> <output_path>
+环境
+    C:\Program Files\JetBrains\IntelliJ IDEA 2025.1.2\plugins\java-decompiler\lib\java-decompiler.jar
