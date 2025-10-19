@@ -73,6 +73,11 @@ namespace cdp_demo
                     }
                 }
             }
+
+            if (chromeProcesses.Length > 0)
+            {
+                Console.WriteLine("Failed to kill Chrome processes");
+            }
         }
 
         private static void CopyUserDataDirectory()
