@@ -56,17 +56,21 @@ namespace cdp_demo
 
         private static void KillChromeProcesses()
         {
-            var chromeProcesses = Process.GetProcessesByName("chrome");
-            foreach (var process in chromeProcesses)
+            Process[] chromeProcesses;
+            var maxReties = 5;
+            while (maxReties-- > 0 && (chromeProcesses = Process.GetProcessesByName("chrome")).Length > 0)
             {
-                try
+                foreach (var process in chromeProcesses)
                 {
-                    process.Kill();
-                    process.WaitForExit();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Failed to kill Chrome process: {ex.Message}");
+                    try
+                    {
+                        process.Kill();
+                        process.WaitForExit();
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
             }
         }
