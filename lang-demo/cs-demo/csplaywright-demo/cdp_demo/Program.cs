@@ -58,7 +58,7 @@ namespace cdp_demo
         {
             Process[] chromeProcesses;
             var maxReties = 5;
-            while (maxReties-- > 0 && (chromeProcesses = Process.GetProcessesByName("chrome")).Length > 0)
+            while ((chromeProcesses = Process.GetProcessesByName("chrome")).Length > 0 && maxReties-- > 0)
             {
                 foreach (var process in chromeProcesses)
                 {
