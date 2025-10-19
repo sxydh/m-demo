@@ -89,7 +89,7 @@ namespace cdp_demo
                 process.StartInfo = new ProcessStartInfo
                 {
                     FileName = "robocopy.exe",
-                    Arguments = $"{sourceDir} {targetDir} /E /R:1 /W:1",
+                    Arguments = $@"""{sourceDir}"" ""{targetDir}"" /E /ZB /R:3 /W:2 /XJ",
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardOutput = false,
@@ -97,6 +97,10 @@ namespace cdp_demo
                 };
                 process.Start();
                 process.WaitForExit();
+                if (process.ExitCode >= 8)
+                {
+                    Console.WriteLine($@"Failed to copy ""{sourceDir}"" to ""{targetDir}""");
+                }
             }
         }
     }
