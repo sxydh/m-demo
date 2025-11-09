@@ -11,7 +11,7 @@
                         NVCUDA64.DLL
                             产品名称
         CUDA Toolkit
-            CUDA Toolkit Version = CUDA Version
+            CUDA Toolkit Version <= CUDA Version
     开始
         PyTorch
             2.6.0 && Windows && Pip && Python && CUDA 11.8
