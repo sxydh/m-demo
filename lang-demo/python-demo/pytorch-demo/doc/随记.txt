@@ -4,6 +4,8 @@
     PyTorch 是一个开源的深度学习框架，主要用于构建和训练神经网络模型。
 环境
     前置条件
+        Python
+            3.13.5
         CUDA Version
             NVIDIA 控制面板
                 系统信息
@@ -12,8 +14,5 @@
                             产品名称
         CUDA Toolkit
             CUDA Toolkit Version <= CUDA Version
-    开始
-        PyTorch
-            Windows 11 && Python && Pip && CUDA 11.8 && PyTorch 2.6.0
-                python.exe -m pip install --upgrade pip setuptools wheel
-                pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+    安装 PyTorch 2.9.0
+        pip install torch torchvision --index-url https://download.pytorch.org/whl/cu130
