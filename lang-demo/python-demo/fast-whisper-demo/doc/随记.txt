@@ -1,3 +1,5 @@
+概述
+    https://github.com/SYSTRAN/faster-whisper
 环境
     前置条件
         Python

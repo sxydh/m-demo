@@ -1,6 +1,5 @@
 from faster_whisper import WhisperModel
 
-# https://github.com/SYSTRAN/faster-whisper
 model = WhisperModel("medium", device="cuda", compute_type="float16")
 
 segments, info = model.transcribe("C:/Users/Administrator/Desktop/output.mp3", beam_size=5)
