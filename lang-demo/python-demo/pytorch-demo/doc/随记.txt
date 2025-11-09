@@ -1,6 +1,7 @@
 概述
     https://pytorch.org/get-started/locally/
     CUDA Toolkit （ CUDA 工具包）是 NVIDIA 推出的一个开发环境，用于帮助开发者在 NVIDIA 的 GPU （图形处理器）上进行并行计算。
+    PyTorch 是一个开源的深度学习框架，主要用于构建和训练神经网络模型。
 环境
     前置条件
         CUDA Version
