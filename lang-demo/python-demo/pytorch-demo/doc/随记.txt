@@ -16,3 +16,7 @@
             CUDA Toolkit Version <= CUDA Version
     安装 PyTorch 2.9.0
         pip install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+
+    注意事项
+        必须使用虚拟环境
+        考虑全局环境安装的组件是否有影响
