@@ -14,6 +14,6 @@
             CUDA Toolkit Version <= CUDA Version
     开始
         PyTorch
-            2.6.0 && Windows && Pip && Python && CUDA 11.8
+            Windows 11 && Python && Pip && CUDA 11.8 && PyTorch 2.6.0
                 python.exe -m pip install --upgrade pip setuptools wheel
                 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
