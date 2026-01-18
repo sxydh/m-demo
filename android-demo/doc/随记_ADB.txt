@@ -21,7 +21,7 @@
             
     shell
         进入设备
-            adb -s [<device_id>] shell
+            adb -s <device_id> shell
         
             开始
                 am start -n com.android.settings/.Settings
