@@ -5,15 +5,15 @@
                     
     logcat
         日志列表
-            adb -s [<device_id>] logcat *:E > logcat.txt
+            adb [-s <device_id>] logcat *:E > logcat.txt
             
     push
         上传文件
-            adb push <local_file> <remote_location>
+            adb [-s <device_id>] push <local_file> <remote_location>
             
     pull
         下载文件
-            adb pull <android_path> <local_path>
+            adb [-s <device_id>] pull <android_path> <local_path>
             
     reboot
         重启设备
@@ -21,7 +21,7 @@
             
     shell
         进入设备
-            adb -s <device_id> shell
+            adb [-s <device_id>] shell
         
             开始
                 am start -n com.android.settings/.Settings
