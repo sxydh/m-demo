@@ -14,7 +14,7 @@
             https://peter.sh/experiments/chromium-command-line-switches/#borealis-launch-options
             https://www.chromium.org/developers/how-tos/run-chromium-with-flags/
         开始
-            "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222
+            "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --start-maximized --user-data-dir="C:\_Temp\Google\Chrome\User Data"
                 注意：需要关闭当前所有浏览器实例。
         
     开发工具
