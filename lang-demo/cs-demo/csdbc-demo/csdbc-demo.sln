@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlite_demo", "sqlite_demo\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlcipher_demo", "sqlcipher_demo\sqlcipher_demo.csproj", "{16622EC2-B8E1-442C-A730-085D062B2478}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlsugar-demo", "sqlsugar-demo\sqlsugar-demo.csproj", "{F3FDE632-4BB8-4208-96BB-6A6EF4621C85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,14 @@ Global
 		{16622EC2-B8E1-442C-A730-085D062B2478}.Release|Any CPU.Build.0 = Release|Any CPU
 		{16622EC2-B8E1-442C-A730-085D062B2478}.Release|x64.ActiveCfg = Release|Any CPU
 		{16622EC2-B8E1-442C-A730-085D062B2478}.Release|x64.Build.0 = Release|Any CPU
+		{F3FDE632-4BB8-4208-96BB-6A6EF4621C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3FDE632-4BB8-4208-96BB-6A6EF4621C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3FDE632-4BB8-4208-96BB-6A6EF4621C85}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F3FDE632-4BB8-4208-96BB-6A6EF4621C85}.Debug|x64.Build.0 = Debug|Any CPU
+		{F3FDE632-4BB8-4208-96BB-6A6EF4621C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3FDE632-4BB8-4208-96BB-6A6EF4621C85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3FDE632-4BB8-4208-96BB-6A6EF4621C85}.Release|x64.ActiveCfg = Release|Any CPU
+		{F3FDE632-4BB8-4208-96BB-6A6EF4621C85}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
