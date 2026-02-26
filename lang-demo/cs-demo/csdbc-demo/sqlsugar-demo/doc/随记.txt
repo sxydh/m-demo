@@ -1,0 +1,4 @@
+﻿环境
+    dotnet add package SqlSugar
+    dotnet add package System.Data.SQLite.Core
+    dotnet add package Newtonsoft.Json
