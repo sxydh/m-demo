@@ -46,7 +46,7 @@
                 /data/local/tmp/frida-server
             
             启动客户端
-                frida -U -l demo.js -n com.android.settings
+                frida -U -l demo.js -f com.google.android.calculator
                     -U ：连接到 USB 设备。
                     -l ：加载脚本文件。
                     -f ：指定目标进程的名称（通常是包名）。
