@@ -27,6 +27,10 @@
             服务端
                 https://github.com/frida/frida/releases
                     下载对应架构的 frida-server 压缩文件并解压为 frida-server
+                        adb shell getprop ro.product.cpu.abi
+                            
+                            查看处理器架构
+
                 adb push frida-server /data/local/tmp
                 adb shell
                 su
@@ -42,7 +46,7 @@
                 /data/local/tmp/frida-server
             
             启动客户端
-                frida -U -l demo.js -f com.ss.android.ugc.aweme
+                frida -U -l demo.js -n com.android.settings
                     -U ：连接到 USB 设备。
                     -l ：加载脚本文件。
-                    -f ：启动目标文件（应用）。
+                    -f ：指定目标进程的名称（通常是包名）。
