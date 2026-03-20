@@ -1,0 +1,25 @@
+开始
+    Url
+        加密
+            OEUtils.componentDefaults["oe-ajax"]={presendHook:function(e,a)
+                if(URLEncryption&&l&&-1!=l.indexOf("api/")&&!d&&sessionStorage.auth_token){
+    Header
+        sessionstate
+            OEUtils.componentDefaults["oe-ajax"]={presendHook:function(e,a)
+                document.getElementById("keyManagement").getEncryptedSymKey()
+    Response
+        解密
+            postreceiveHook:async function(e){
+                forge.cipher.createDecipher("AES-GCM",o);u.start({iv:l,tag:
+    启用快捷键
+        function removePasteBlock(root, depth) {
+            root.querySelectorAll('*').forEach(el => {
+                if (el.getAttribute('onpaste') === 'return false') {
+                    el.removeAttribute('onpaste');
+                    el.removeAttribute('oncopy');
+                }
+                if (el.shadowRoot && depth < 10)
+                    removePasteBlock(el.shadowRoot, depth + 1);
+            });
+        }
+        removePasteBlock(document, 0);
