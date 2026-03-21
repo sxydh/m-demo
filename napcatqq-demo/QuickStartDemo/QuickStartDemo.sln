@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickStartDemo", "QuickStartDemo.csproj", "{BEABB501-D2D3-4F49-A546-40C9698F6B43}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BEABB501-D2D3-4F49-A546-40C9698F6B43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEABB501-D2D3-4F49-A546-40C9698F6B43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEABB501-D2D3-4F49-A546-40C9698F6B43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEABB501-D2D3-4F49-A546-40C9698F6B43}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
