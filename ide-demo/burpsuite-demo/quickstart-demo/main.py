@@ -1,5 +1,7 @@
 import base64
 import xml.etree.ElementTree as ET
+import tkinter as tk
+from tkinter import filedialog
 
 
 def decode_node(node):
@@ -49,7 +51,9 @@ def parse_burp_xml(input_file, output_file):
 
 
 if __name__ == "__main__":
-    input_file = r"C:\Users\Administrator\Desktop\1040"
+    root = tk.Tk()
+    root.withdraw()
+    input_file = filedialog.askopenfilename(title="请选择要解析的 Burp XML 文件")
     output_file = f"{input_file}_output"
     parse_burp_xml(input_file, output_file)
     print(f"Done. Output written to {output_file}")
