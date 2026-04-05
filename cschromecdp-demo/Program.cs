@@ -15,7 +15,7 @@ namespace cschromecdp_demo
         {
             Task.Run(async () =>
             {
-                var cdpService = new CdpServiceImpl(
+                var cdpService = new CdpService(
                     port: PortUtil.GetAvailablePort(),
                     browserPath: @"C:\Program Files\Google\Chrome\Application\chrome.exe");
                 await cdpService.StartAsync();
