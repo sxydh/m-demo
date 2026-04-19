@@ -1,0 +1,15 @@
+开始
+    获取包名
+        adb shell pm list packages > ./_tmp/packages.txt
+            com.ausmallfinancebank.amb
+    获取闪退日志
+        adb logcat -c
+        adb logcat -v time > ./_tmp/crash_log.txt
+
+环境
+    Frida
+        服务端
+            Pixel 4
+                Android 13
+        客户端
+            pip install frida-tools
