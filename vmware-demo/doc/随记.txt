@@ -23,6 +23,7 @@ VMware Workstation
             环境
                 Windows 11
                 VMware Workstation
+                    VMnet8
                 Ubuntu 20.04.6 LTS
             复现
                 迁移虚拟机
