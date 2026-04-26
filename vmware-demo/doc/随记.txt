@@ -1,7 +1,7 @@
 VMware Workstation
     开始
         编辑
-            虚拟网络编辑器
+            虚拟网络编辑器（这是 VMware 软件在宿主机级别的全局网络配置）
                 VMnet8
                     概述
                         VMnet8 使用 NAT （ Network Address Translation ，网络地址转换）技术，可以让虚拟机通过主机的 IP 地址访问外部网络。主机充当一个网关，将虚拟机的流量转发到外部网络。
@@ -19,6 +19,36 @@ VMware Workstation
                                 NAT 子网的子网掩码
                                 
     问题
+        桥接模式下无网络
+            环境
+                Windows 11
+                VMware Workstation
+                    VMnet0
+                Ubuntu 22.04.5 LTS
+            复现
+                编辑
+                    虚拟网络编辑器
+                        VMnet0
+                            已桥接至 Realtek RTL8852BE WiFi 6 802.11ax PCIe Adapter
+                虚拟机
+                    设置
+                        网络适配器
+                            桥接模式
+            解决
+                Ubuntu 20.04.6 LTS
+                    Settings
+                        Network
+                            Wired
+                                IPv4
+                                    IPv4 Method
+                                        Manual
+                                    Addresses
+                                        Address
+                                            192.168.0.27
+                                        Netmask
+                                            255.255.255.0
+                                        Gateway
+                                            192.168.0.1
         具有固定 IP 和网关地址的虚拟机迁移后无法连接到外部网络
             环境
                 Windows 11
