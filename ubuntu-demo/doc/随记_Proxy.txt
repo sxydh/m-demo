@@ -1,0 +1,22 @@
+开始
+    Ubuntu 22.04.5 LTS
+        sudo nano /etc/profile.d/proxy.sh
+            # 全局代理配置
+            export proxy_addr="192.168.0.187:7890"
+
+            export http_proxy="http://$proxy_addr"
+            export https_proxy="http://$proxy_addr"
+            export ftp_proxy="http://$proxy_addr"
+            export all_proxy="socks5://$proxy_addr"
+
+            # 设置不走代理的地址（务必包含 localhost 和 127.0.0.1）
+            export no_proxy="localhost,127.0.0.1,::1,192.168.0.0/16,10.0.0.0/8,docker.for.mac.localhost,kubernetes.docker.internal"
+
+            # 为 sudo 环境保留这些变量（可选）
+            export HTTP_PROXY="$http_proxy"
+            export HTTPS_PROXY="$https_proxy"
+            export FTP_PROXY="$ftp_proxy"
+            export ALL_PROXY="$all_proxy"
+            export NO_PROXY="$no_proxy"
+        sudo chmod +x /etc/profile.d/proxy.sh
+        source /etc/profile.d/proxy.sh
