@@ -26,7 +26,10 @@ const initServer = async () => {
 
 const initData = async () => {
     const {chromium} = require("playwright");
-    const browser = await chromium.launch({headless: true});
+    const browser = await chromium.launch({
+        headless: false,
+        executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe"
+    });
     const context = await browser.newContext();
     const page = await context.newPage();
 
@@ -49,7 +52,7 @@ const initData = async () => {
                         "startIssue": 0,
                         "endIssue": 0,
                         "startDate": "2010-01-01",
-                        "endDate": "2026-01-01",
+                        "endDate": "9999-12-31",
                         "type": 2,
                         "pageNum": pageNum,
                         "pageSize": 500,
