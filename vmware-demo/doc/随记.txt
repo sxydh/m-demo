@@ -62,12 +62,32 @@ VMware Workstation
 
                                 使用本地 DHCP 服务将 IP 地址分配给虚拟机
                                     取消勾选
+                                将主机虚拟适配器连接到自网络
+                                    勾选
                     虚拟机
                         设置
                             硬件
                                 网络适配器
                                     网络连接
                                         NAT 模式
+                window 11
+                    设置
+                        网络和 Internet
+                            高级网络设置
+                                VMware Virtual Ethernet Adapter for VMnet8
+                                    更多适配器选项
+                                        编辑
+                                            Internet 协议版本 4 (TCP/IPv4)
+                                                IP 地址
+                                                    NAT 子网中的可用地址，不能和 NAT 网关 IP 冲突，不能和虚拟机 IP 冲突。
+                                                子网掩码
+                                                    NAT 子网的子网掩码
+                                                默认网关
+                                                    不填
+                                                首选 DNS 服务器
+                                                    不填
+                                                备用 DNS 服务器
+                                                    不填
                 Ubuntu 22.04.5 LTS
                     sudo netplan apply
         桥接模式下无网络
