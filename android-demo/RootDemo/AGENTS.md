@@ -8,6 +8,14 @@ Android root demo
 - 任何可能将手机变砖的操作，都必须有恢复方案，否则严禁执行。
 - 每次重启手机后，必须在用户手动解锁屏幕之后，才能继续下一步操作。
 
+## adb / su 执行规范
+
+执行 adb 命令（尤其涉及 `su`）时，**强烈建议用 here-string + 管道，不要把命令写进 adb 的参数**。
+
+原因：PowerShell 5.1 给 `adb.exe` 传参时会丢失内层双引号，`su -c "cmd1; cmd2"` 里的 `;`、`&&`、`|` 会被设备侧外层 shell 拆分，导致只有第一条命令经 `su` 提权、其余以 uid=2000 落在 `u:r:shell:s0`，读写 `/data/adb` 被拒；看起来像 `su` 时灵时不灵，实为传参问题。
+
+here-string 走 stdin 原文送达设备 shell，不经过 PowerShell 引号解析，因此不受影响。
+
 ## 环境
 
 - 本机系统是 Windows11 ，大陆网络，有基于 Mihomo 的代理 `http://127.0.0.1:7890` 。
