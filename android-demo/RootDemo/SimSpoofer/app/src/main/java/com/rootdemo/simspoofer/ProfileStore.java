@@ -25,7 +25,8 @@ public final class ProfileStore {
     public static final String[] COLUMNS = {
             "line1", "iccid", "imsi",
             "sim_operator", "network_operator", "operator_name", "network_operator_name",
-            "country_iso", "mcc", "mnc", "subscription_id", "sim_state", "network_type", "has_icc"
+            "country_iso", "mcc", "mnc", "subscription_id", "sim_state", "network_type", "has_icc",
+            "debug"
     };
 
     public static final class Snapshot {
@@ -43,6 +44,7 @@ public final class ProfileStore {
         public int simState = SimProfile.SIM_STATE_READY;
         public int networkType = SimProfile.NETWORK_TYPE_LTE;
         public boolean hasIcc = true;
+        public boolean debug = false;
     }
 
     private static volatile Snapshot sCache;
@@ -62,6 +64,7 @@ public final class ProfileStore {
         if (loaded != null) {
             sCache = loaded;
             sCacheAt = now;
+            SimLog.setLevel(loaded.debug ? SimLog.DEBUG : SimLog.INFO);
             return loaded;
         }
         return cached != null ? cached : new Snapshot();
@@ -100,6 +103,7 @@ public final class ProfileStore {
                 s.simState = integer(cur, "sim_state", s.simState);
                 s.networkType = integer(cur, "network_type", s.networkType);
                 s.hasIcc = integer(cur, "has_icc", 1) != 0;
+                s.debug = integer(cur, "debug", 0) != 0;
                 return s;
             } finally {
                 cur.close();

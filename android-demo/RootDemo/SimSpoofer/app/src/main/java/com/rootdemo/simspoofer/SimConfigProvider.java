@@ -42,7 +42,8 @@ public class SimConfigProvider extends ContentProvider {
                 p.getInt("subscription_id", SimProfile.SUBSCRIPTION_ID),
                 p.getInt("sim_state", SimProfile.SIM_STATE_READY),
                 p.getInt("network_type", SimProfile.NETWORK_TYPE_LTE),
-                p.getBoolean("has_icc", true) ? 1 : 0
+                p.getBoolean("has_icc", true) ? 1 : 0,
+                p.getBoolean("debug", false) ? 1 : 0
         });
         return cur;
     }

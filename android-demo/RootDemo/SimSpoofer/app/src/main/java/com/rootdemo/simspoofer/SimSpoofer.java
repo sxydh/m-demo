@@ -20,21 +20,23 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
- * 只在 phone 进程（com.android.phone）生效的 SIM 伪造。
+ * SIM/网络环境伪装模块（Xposed / Vector）。
  *
- * 与旧版的区别：不再注入目标 App，而是改“数据源”——phone 进程里的 telephony
- * binder 服务实现。目标 App 只是通过正常 IPC 拿到已被伪造的数据，自身进程内没有
- * 任何 Xposed 痕迹，因此不会触发 App 的反注入自毁（春秋/UA 等）。
+ * 设计要点：**不注入目标 App**，只改“数据源”：
+ *   - phone 进程（com.android.phone）：telephony/binder 服务返回值（ICCID/IMSI/号码/
+ *     运营商/订阅/网络类型）；
+ *   - system_server：连通性（WiFi/Ethernet/VPN → 蜂窝）、以及把 adb_enabled /
+ *     development_settings_enabled 对普通 App 返回 0。
+ * 目标 App 只是通过正常 IPC 拿到已被伪造的数据，自身进程内没有 Xposed 痕迹。
  *
- * 目标类（Android 14~16）：
- *   - com.android.internal.telephony.PhoneSubInfoController      ICCID/IMSI/号码/运营商
- *   - com.android.internal.telephony.PhoneInterfaceManager       SIM 状态 / 卡槽数
- *   - com.android.internal.telephony.subscription.SubscriptionController  订阅列表
+ * 作用域：com.android.phone/0 + system/0（system_server）。**不要勾目标 App**。
  *
- * 安全守卫：这些方法经 binder 调用，用 Binder.getCallingUid() 区分调用方；
- * 系统（1000）、phone 自身（1001）、root（0）一律放行不伪造，只对普通 App 生效。
+ * 日志：默认 INFO（见 {@link SimLog}）；设置页可开 DEBUG 打印逐调用日志。
+ * 健壮性：各 hook 分组彼此隔离，单点失败只记 ERROR，不影响其它 hook。
  *
- * 作用域：只勾 com.android.phone，不要勾目标 App。
+ * 注意（能力边界）：本模块伪造的是“App 读到的值”，无法伪造网络侧身份
+ * （真正的 A 号码 / SMS 发送 / 运营商注册），因此过不了需要真实 SIM 的
+ * 短信绑定校验；这类问题不在本模块职责范围内。
  */
 public class SimSpoofer implements IXposedHookLoadPackage {
 
@@ -45,32 +47,48 @@ public class SimSpoofer implements IXposedHookLoadPackage {
         if (lpparam == null) {
             return;
         }
-        final String pkg = lpparam.packageName;
-        if ("android".equals(pkg) || "system_server".equals(pkg) || "system".equals(pkg)) {
-            log("loading in system_server: " + pkg);
-            hookConnectivityAsync(lpparam.classLoader);
-            hookSettings(lpparam.classLoader);
-            return;
+        try {
+            final String pkg = lpparam.packageName;
+            if ("android".equals(pkg) || "system_server".equals(pkg) || "system".equals(pkg)) {
+                logi("loading in system_server: " + pkg);
+                safe(() -> hookConnectivityAsync(lpparam.classLoader), "connectivity");
+                safe(() -> hookSettings(lpparam.classLoader), "settings");
+                return;
+            }
+            if (!PHONE_PACKAGE.equals(pkg)) {
+                return;
+            }
+            logi("loading in phone process: " + pkg);
+            final ClassLoader cl = lpparam.classLoader;
+            final Class<?> subInfo = findClass(cl, "android.telephony.SubscriptionInfo");
+            if (subInfo == null) {
+                loge("SubscriptionInfo not found, abort");
+                return;
+            }
+            safe(() -> hookPhoneSubInfo(cl, subInfo), "phoneSubInfo");
+            safe(() -> hookPhoneInterfaceManager(cl), "phoneInterfaceManager");
+            safe(() -> hookSubscriptionController(cl, subInfo), "subscriptionController");
+            safe(() -> hookSmsSend(cl), "smsSend");
+        } catch (Throwable t) {
+            loge("handleLoadPackage failed: " + t);
         }
-        if (!PHONE_PACKAGE.equals(pkg)) {
-            return;
-        }
-        log("loading in phone process: " + pkg);
-        final ClassLoader cl = lpparam.classLoader;
-        final Class<?> subInfo = findClass(cl, "android.telephony.SubscriptionInfo");
-        if (subInfo == null) {
-            log("SubscriptionInfo not found, abort");
-            return;
-        }
+    }
 
-        hookPhoneSubInfo(cl, subInfo);
-        hookPhoneInterfaceManager(cl);
-        hookSubscriptionController(cl, subInfo);
-        hookSmsSend(cl);
+    private interface Task {
+        void run();
+    }
+
+    /** 单个 hook 分组失败不影响整包加载。 */
+    private static void safe(Task task, String name) {
+        try {
+            task.run();
+        } catch (Throwable t) {
+            loge("hook group '" + name + "' failed: " + t);
+        }
     }
 
     /**
-     * 诊断：记录真正的短信发送调用（不改变行为）。
+     * 诊断：记录真正的短信发送调用（不改变行为，INFO 级）。
      *
      * Android 16 上 ISms 的实现类是 com.android.internal.telephony.SmsController；
      * IccSmsInterfaceManager 已不在 ISms binder 路径上，只作旧版本兜底。
@@ -81,7 +99,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
             c = findClassQuiet(cl, "com.android.internal.telephony.IccSmsInterfaceManager");
         }
         if (c == null) {
-            log("SMS manager class not found");
+            logi("SMS manager class not found");
             return;
         }
         final String cn = c.getSimpleName();
@@ -94,7 +112,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
             hookMethod(m, new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam p) {
-                    log("SMS SEND " + cn + "#" + n + " uid=" + uid() + " args="
+                    logi("SMS SEND " + cn + "#" + n + " uid=" + uid() + " args="
                             + java.util.Arrays.toString(p.args));
                 }
             });
@@ -206,11 +224,11 @@ public class SimSpoofer implements IXposedHookLoadPackage {
             Class<?> sm = findClassQuiet(cl, "android.os.ServiceManager");
             Object svc = XposedHelpers.callStaticMethod(sm, "getService", "connectivity");
             if (svc != null && !svc.getClass().getName().contains("BinderProxy")) {
-                log("ConnectivityService via ServiceManager: " + svc.getClass().getName());
+                logd("ConnectivityService via ServiceManager: " + svc.getClass().getName());
                 return svc.getClass();
             }
         } catch (Throwable t) {
-            log("ConnectivityService via ServiceManager failed: " + t);
+            loge("ConnectivityService via ServiceManager failed: " + t);
         }
         return null;
     }
@@ -237,7 +255,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
                     if (pt.length < 2 || !IBinder.class.isAssignableFrom(pt[1])) {
                         continue;
                     }
-                    log("hooking ServiceManager#addService (" + pt.length + " args)");
+                    logd("hooking ServiceManager#addService (" + pt.length + " args)");
                     hookMethod(m, new XC_MethodHook() {
                         @Override
                         protected void afterHookedMethod(MethodHookParam p) {
@@ -248,28 +266,32 @@ public class SimSpoofer implements IXposedHookLoadPackage {
                                 Object name = p.args[0];
                                 Object svc = p.args[1];
                                 if ("connectivity".equals(name) && svc != null) {
-                                    log("captured connectivity service: "
+                                    logi("captured connectivity service: "
                                             + svc.getClass().getName());
                                     doHookConnectivity(svc.getClass());
                                 }
                             } catch (Throwable t) {
-                                log("addService capture err: " + t);
+                                loge("addService capture err: " + t);
                             }
                         }
                     });
                 }
             }
         } catch (Throwable t) {
-            log("hook addService failed: " + t);
+            loge("hook addService failed: " + t);
         }
         Thread poll = new Thread(new Runnable() {
             @Override
             public void run() {
                 for (int i = 0; i < 180 && !sConnHooked; i++) {
-                    Class<?> cs = connectivityServiceClass(cl);
-                    if (cs != null) {
-                        doHookConnectivity(cs);
-                        return;
+                    try {
+                        Class<?> cs = connectivityServiceClass(cl);
+                        if (cs != null) {
+                            doHookConnectivity(cs);
+                            return;
+                        }
+                    } catch (Throwable t) {
+                        loge("connectivity poll err: " + t);
                     }
                     try {
                         Thread.sleep(1000L);
@@ -288,71 +310,75 @@ public class SimSpoofer implements IXposedHookLoadPackage {
             return;
         }
         sConnHooked = true;
-        log("hooking ConnectivityService class = " + cs.getName());
+        logi("hooking ConnectivityService class = " + cs.getName());
         for (Method m : cs.getDeclaredMethods()) {
-            if ("getNetworkCapabilities".equals(m.getName())
-                    && m.getReturnType() == NetworkCapabilities.class) {
-                hookMethod(m, new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) {
-                        if (isSystemCaller()) {
-                            return;
+            try {
+                if ("getNetworkCapabilities".equals(m.getName())
+                        && m.getReturnType() == NetworkCapabilities.class) {
+                    hookMethod(m, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) {
+                            if (isSystemCaller()) {
+                                return;
+                            }
+                            Object r = param.getResult();
+                            if (!(r instanceof NetworkCapabilities)) {
+                                return;
+                            }
+                            NetworkCapabilities nc = (NetworkCapabilities) r;
+                            boolean wifi = nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+                            boolean ethernet = nc.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET);
+                            boolean vpn = nc.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
+                            boolean cell = nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
+                            if (!(wifi || ethernet || vpn) || cell) {
+                                return;
+                            }
+                            try {
+                                Object copy = XposedHelpers.newInstance(NetworkCapabilities.class, nc);
+                                XposedHelpers.callMethod(copy, "removeTransportType",
+                                        NetworkCapabilities.TRANSPORT_WIFI);
+                                XposedHelpers.callMethod(copy, "removeTransportType",
+                                        NetworkCapabilities.TRANSPORT_ETHERNET);
+                                XposedHelpers.callMethod(copy, "removeTransportType",
+                                        NetworkCapabilities.TRANSPORT_VPN);
+                                XposedHelpers.callMethod(copy, "addTransportType",
+                                        NetworkCapabilities.TRANSPORT_CELLULAR);
+                                XposedHelpers.callMethod(copy, "removeCapability",
+                                        NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
+                                param.setResult(copy);
+                            } catch (Throwable t) {
+                                loge("nc spoof failed: " + t);
+                            }
                         }
-                        Object r = param.getResult();
-                        if (!(r instanceof NetworkCapabilities)) {
-                            return;
+                    });
+                } else if ("isActiveNetworkMetered".equals(m.getName())
+                        && m.getReturnType() == boolean.class) {
+                    hookMethod(m, new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) {
+                            if (isSystemCaller()) {
+                                return;
+                            }
+                            param.setResult(true);
                         }
-                        NetworkCapabilities nc = (NetworkCapabilities) r;
-                        boolean wifi = nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
-                        boolean ethernet = nc.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET);
-                        boolean vpn = nc.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
-                        boolean cell = nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
-                        if (!(wifi || ethernet || vpn) || cell) {
-                            return;
+                    });
+                } else if (("getActiveNetworkInfo".equals(m.getName())
+                        || "getActiveNetworkInfoForUid".equals(m.getName())
+                        || "getNetworkInfo".equals(m.getName())
+                        || "getNetworkInfoForUid".equals(m.getName()))
+                        && m.getReturnType() == android.net.NetworkInfo.class) {
+                    hookMethod(m, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) {
+                            if (isSystemCaller()) {
+                                return;
+                            }
+                            spoofNetworkInfo(param.getResult());
                         }
-                        try {
-                            Object copy = XposedHelpers.newInstance(NetworkCapabilities.class, nc);
-                            XposedHelpers.callMethod(copy, "removeTransportType",
-                                    NetworkCapabilities.TRANSPORT_WIFI);
-                            XposedHelpers.callMethod(copy, "removeTransportType",
-                                    NetworkCapabilities.TRANSPORT_ETHERNET);
-                            XposedHelpers.callMethod(copy, "removeTransportType",
-                                    NetworkCapabilities.TRANSPORT_VPN);
-                            XposedHelpers.callMethod(copy, "addTransportType",
-                                    NetworkCapabilities.TRANSPORT_CELLULAR);
-                            XposedHelpers.callMethod(copy, "removeCapability",
-                                    NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
-                            param.setResult(copy);
-                        } catch (Throwable t) {
-                            log("nc spoof failed: " + t);
-                        }
-                    }
-                });
-            } else if ("isActiveNetworkMetered".equals(m.getName())
-                    && m.getReturnType() == boolean.class) {
-                hookMethod(m, new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam param) {
-                        if (isSystemCaller()) {
-                            return;
-                        }
-                        param.setResult(true);
-                    }
-                });
-            } else if (("getActiveNetworkInfo".equals(m.getName())
-                    || "getActiveNetworkInfoForUid".equals(m.getName())
-                    || "getNetworkInfo".equals(m.getName())
-                    || "getNetworkInfoForUid".equals(m.getName()))
-                    && m.getReturnType() == android.net.NetworkInfo.class) {
-                hookMethod(m, new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) {
-                        if (isSystemCaller()) {
-                            return;
-                        }
-                        spoofNetworkInfo(param.getResult());
-                    }
-                });
+                    });
+                }
+            } catch (Throwable t) {
+                loge("connectivity hook err " + m.getName() + ": " + t);
             }
         }
     }
@@ -374,7 +400,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
             XposedHelpers.setObjectField(ni, "mDetailedState", detailConnected);
             XposedHelpers.setBooleanField(ni, "mIsAvailable", true);
         } catch (Throwable t) {
-            log("spoofNetworkInfo failed: " + t);
+            loge("spoofNetworkInfo failed: " + t);
         }
     }
 
@@ -393,7 +419,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
         // SettingsProvider 不在 system_server 的 classloader 里：用 attachInfo 捕获实例再钩 call
         final Class<?> cp = findClassQuiet(cl, "android.content.ContentProvider");
         if (cp == null) {
-            log("ContentProvider not found");
+            loge("ContentProvider not found");
             return;
         }
         for (final Method m : cp.getDeclaredMethods()) {
@@ -414,7 +440,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
                 }
             });
         }
-        log("waiting to capture SettingsProvider via attachInfo");
+        logd("waiting to capture SettingsProvider via attachInfo");
     }
 
     private static void hookSettingsProvider(Class<?> c) {
@@ -422,7 +448,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
             return;
         }
         sSettingsHooked = true;
-        log("SettingsProvider captured: " + c.getName());
+        logi("SettingsProvider captured: " + c.getName());
         for (final Method m : c.getDeclaredMethods()) {
             if (!m.getName().equals("call") || m.getReturnType() != Bundle.class) {
                 continue;
@@ -452,10 +478,10 @@ public class SimSpoofer implements IXposedHookLoadPackage {
                         Object r = p.getResult();
                         if (r instanceof Bundle) {
                             ((Bundle) r).putString("value", "0");
-                            log("hid setting " + name + " uid=" + uid());
+                            logi("hid setting " + name + " uid=" + uid());
                         }
                     } catch (Throwable t) {
-                        log("settings spoof failed: " + t);
+                        loge("settings spoof failed: " + t);
                     }
                 }
             });
@@ -495,7 +521,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
                     }
                     Object v = value.get();
                     if (v != null) {
-                        log("fire " + mn + " -> " + v);
+                        logd("fire " + mn + " -> " + v);
                         param.setResult(v);
                     }
                 }
@@ -517,7 +543,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
                     }
                     Object v = value.get();
                     if (v != null) {
-                        log("fire " + mn + " -> " + v);
+                        logd("fire " + mn + " -> " + v);
                         param.setResult(v);
                     }
                 }
@@ -539,7 +565,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
                     }
                     Object v = value.get();
                     if (v != null) {
-                        log("fire " + mn + " -> " + v);
+                        logd("fire " + mn + " -> " + v);
                         param.setResult(v);
                     }
                 }
@@ -568,7 +594,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
                     if (isSystemCaller()) {
                         return;
                     }
-                    log("fire " + mn + " -> [fake sub]");
+                    logd("fire " + mn + " -> [fake sub]");
                     Object info = buildSubscriptionInfo(subInfo, ProfileStore.get(cl));
                     param.setResult(info == null
                             ? Collections.emptyList()
@@ -591,7 +617,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
                     if (isSystemCaller()) {
                         return;
                     }
-                    log("fire " + mn + " -> [fake sub]");
+                    logd("fire " + mn + " -> [fake sub]");
                     Object info = buildSubscriptionInfo(subInfo, ProfileStore.get(cl));
                     if (info != null) {
                         param.setResult(info);
@@ -604,9 +630,9 @@ public class SimSpoofer implements IXposedHookLoadPackage {
     private static void hookMethod(Method m, XC_MethodHook cb) {
         try {
             XposedBridge.hookMethod(m, cb);
-            log("hooked " + m.getDeclaringClass().getSimpleName() + "#" + m.getName());
+            logd("hooked " + m.getDeclaringClass().getSimpleName() + "#" + m.getName());
         } catch (Throwable t) {
-            log("hook failed " + m.getName() + ": " + t);
+            loge("hook failed " + m.getName() + ": " + t);
         }
     }
 
@@ -614,7 +640,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
         try {
             return XposedHelpers.findClass(name, cl);
         } catch (Throwable t) {
-            log("class not found: " + name);
+            loge("class not found: " + name);
             return null;
         }
     }
@@ -642,7 +668,7 @@ public class SimSpoofer implements IXposedHookLoadPackage {
                 }
             }
             if (chosen == null) {
-                log("no SubscriptionInfo constructor matched");
+                loge("no SubscriptionInfo constructor matched");
                 return null;
             }
             Class<?>[] p = chosen.getParameterTypes();
@@ -674,10 +700,10 @@ public class SimSpoofer implements IXposedHookLoadPackage {
             }
             chosen.setAccessible(true);
             Object info = chosen.newInstance(a);
-            log("built SubscriptionInfo ctor len=" + p.length);
+            logd("built SubscriptionInfo ctor len=" + p.length);
             return info;
         } catch (Throwable t) {
-            log("buildSubscriptionInfo failed: " + t);
+            loge("buildSubscriptionInfo failed: " + t);
         }
         return null;
     }
@@ -698,9 +724,15 @@ public class SimSpoofer implements IXposedHookLoadPackage {
         return null;
     }
 
-    private static void log(String msg) {
-        if (SimProfile.DEBUG) {
-            XposedBridge.log("[SimSpoofer] " + msg);
-        }
+    private static void logi(String msg) {
+        SimLog.i(msg);
+    }
+
+    private static void logd(String msg) {
+        SimLog.d(msg);
+    }
+
+    private static void loge(String msg) {
+        SimLog.e(msg);
     }
 }

@@ -64,6 +64,10 @@ public class SettingsActivity extends Activity {
         hasIcc.setText("hasIccCard = true");
         hasIcc.setChecked(p.getBoolean("has_icc", true));
 
+        final CheckBox debugLog = new CheckBox(this);
+        debugLog.setText("调试日志（逐调用打印，默认关）");
+        debugLog.setChecked(p.getBoolean("debug", false));
+
         final Button save = new Button(this);
         save.setText("保存（改完最多 3 秒生效，无需重启）");
         final Button reset = new Button(this);
@@ -84,6 +88,7 @@ public class SettingsActivity extends Activity {
             inputs[i] = et;
         }
         root.addView(hasIcc);
+        root.addView(debugLog);
 
         save.setOnClickListener(v -> {
             final SharedPreferences.Editor e = p.edit();
@@ -96,6 +101,7 @@ public class SettingsActivity extends Activity {
                 }
             }
             e.putBoolean("has_icc", hasIcc.isChecked());
+            e.putBoolean("debug", debugLog.isChecked());
             e.apply();
             ProfileStore.invalidate();
             Toast.makeText(this, "已保存（phone 进程最多 3 秒后生效）", Toast.LENGTH_LONG).show();
@@ -113,6 +119,8 @@ public class SettingsActivity extends Activity {
             }
             e.putBoolean("has_icc", true);
             hasIcc.setChecked(true);
+            e.putBoolean("debug", false);
+            debugLog.setChecked(false);
             e.apply();
             ProfileStore.invalidate();
         });

@@ -9,7 +9,7 @@ public final class SimProfile {
     private SimProfile() {
     }
 
-    public static final boolean DEBUG = true;
+    /** 日志级别见 {@link SimLog}；默认 INFO，设置页可开 DEBUG。 */
 
     /** MCC+MNC，印度 Airtel 40410。 */
     public static final String SIM_OPERATOR = "40410";
