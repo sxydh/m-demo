@@ -11,12 +11,14 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 /**
  * 去除窗口 FLAG_SECURE。
  *
- * 银行类 App（AU 0101 / BOI Mobile 等）会在窗口上设置 FLAG_SECURE，使得
- * 截屏、录屏、adb 镜像（Android Studio / scrcpy）以及 recents 缩略图全部被
- * 系统置黑。这里在 system_server 的 WindowManagerService 里，于窗口添加/重布局
- * 时把 FLAG_SECURE 位清掉——只影响“捕获”，不改变 App 自身渲染。
+ * 银行类 App（AU 0101 / BOI Mobile 等）会在窗口上设置 FLAG_SECURE，使截屏、录屏、
+ * adb 镜像（Android Studio / scrcpy）以及 recents 缩略图被系统置黑。本模块在
+ * system_server 的 WindowManagerService 里，于窗口添加/重布局时清掉 FLAG_SECURE
+ * 位——只影响“捕获”，不改变 App 自身渲染。
  *
- * 作用域：只勾 system_server/0（不注入任何目标 App）。
+ * 作用域：只勾 system/0（system_server），**不注入任何目标 App**。
+ *
+ * 日志：默认只打印加载/安装/清除动作；逐次清除可开 {@link #DEBUG}。
  */
 public class NoFlagSecure implements IXposedHookLoadPackage {
 
@@ -25,17 +27,27 @@ public class NoFlagSecure implements IXposedHookLoadPackage {
 
     private static final String TAG = "[NoFlagSecure] ";
 
+    /** 置 true 时逐次打印“stripped FLAG_SECURE”，排查用；默认只打印首次。 */
+    private static final boolean DEBUG = false;
+
+    private static volatile boolean sLoggedFirstStrip = false;
+
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) {
         if (lpparam == null) {
             return;
         }
-        final String pkg = lpparam.packageName;
-        if (!"android".equals(pkg) && !"system_server".equals(pkg) && !"system".equals(pkg)) {
-            return;
+        try {
+            final String pkg = lpparam.packageName;
+            // system_server 的包名在不同版本/形态下为 android / system_server / system
+            if (!"android".equals(pkg) && !"system_server".equals(pkg) && !"system".equals(pkg)) {
+                return;
+            }
+            log("loading in " + pkg);
+            hookFlagSecure(lpparam.classLoader);
+        } catch (Throwable t) {
+            log("handleLoadPackage failed: " + t);
         }
-        log("loading in " + pkg);
-        hookFlagSecure(lpparam.classLoader);
     }
 
     private static void hookFlagSecure(ClassLoader cl) {
@@ -74,10 +86,15 @@ public class NoFlagSecure implements IXposedHookLoadPackage {
                             final int flags = (Integer) XposedHelpers.getObjectField(lp, "flags");
                             if ((flags & FLAG_SECURE) != 0) {
                                 XposedHelpers.setIntField(lp, "flags", flags & ~FLAG_SECURE);
-                                log("stripped FLAG_SECURE (" + n + ")");
+                                if (!sLoggedFirstStrip) {
+                                    sLoggedFirstStrip = true;
+                                    log("stripped FLAG_SECURE (" + n + ")");
+                                } else {
+                                    logd("stripped FLAG_SECURE (" + n + ")");
+                                }
                             }
                         } catch (Throwable t) {
-                            // ignore
+                            // 单个窗口失败不影响其它
                         }
                     }
                 });
@@ -99,5 +116,11 @@ public class NoFlagSecure implements IXposedHookLoadPackage {
 
     private static void log(String msg) {
         XposedBridge.log(TAG + msg);
+    }
+
+    private static void logd(String msg) {
+        if (DEBUG) {
+            XposedBridge.log(TAG + msg);
+        }
     }
 }

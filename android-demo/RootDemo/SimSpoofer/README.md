@@ -1,30 +1,30 @@
-# SimSpoofer / NoFlagSecure 模块说明
+# SimSpoofer 模块说明
 
-不注入目标 App 的前提下，**伪装 SIM/网络环境** 并 **关闭窗口 FLAG_SECURE** 的一组
-Xposed 模块，用于调试/研究类银行 App 的启动流程、以及让 adb 镜像可见。
+不注入目标 App 的前提下，**伪装 SIM/网络环境**的 Xposed 模块，用于调试/研究类银行
+App 的启动流程。
 
-> 结论先说：本套模块能过“**读取环境**”类门禁（SIM 字段、蜂窝网络、USB 调试开关、
-> hooking 检测之外的注入痕迹），但**过不了“真实 SIM 发短信/收 OTP”类门禁**——
-> 那取决于网络侧身份（真实 A 号码 / IMSI 鉴权），不在伪造范围内。见“能力边界”。
+> 结论先说：本模块能过“**读取环境**”类门禁（SIM 字段、蜂窝网络、USB 调试开关），
+> 但**过不了“真实 SIM 发短信/收 OTP”类门禁**——那取决于网络侧身份（真实 A 号码 /
+> IMSI 鉴权），不在伪造范围内。见第 6 节“能力边界”。
 
 ---
 
-## 1. 模块清单
+## 1. 模块信息
 
-| 模块 | 包名 | 作用域 | 作用 |
-|---|---|---|---|
-| **SimSpoofer** | `com.rootdemo.simspoofer` | `com.android.phone/0`、`system/0` | 伪造 SIM 数据；连通性伪装成蜂窝；对普通 App 隐藏 `adb_enabled`/`development_settings_enabled` |
-| **NoFlagSecure** | `com.rootdemo.noflagsecure` | `system/0` | 清除窗口 `FLAG_SECURE`，让 adb 镜像/截图/`uiautomator` 能看到目标 App |
+| 项 | 值 |
+|---|---|
+| 包名 | `com.rootdemo.simspoofer` |
+| 类型 | Xposed 模块（`IXposedHookLoadPackage` + `assets/xposed_init`） |
+| 作用域 | `com.android.phone/0`、`system/0`（system_server） |
+| 依赖 | KernelSU-Next + Zygisk Next(`zygisksu`) + Vector(`zygisk_vector`, LSPosed fork) |
 
-运行环境：**KernelSU-Next（内核内置） + Zygisk Next(`zygisksu`) + Vector(`zygisk_vector`, LSPosed fork)**。
-两个模块都是 **Xposed 模块**（`IXposedHookLoadPackage` + `assets/xposed_init`），由 Vector 按作用域注入；
-自身不依赖 KernelSU/Zygisk API。
+模块自身不依赖 KernelSU/Zygisk API；由 Vector 按作用域注入。
 
 ---
 
 ## 2. 架构（关键：不要改回“注入目标 App”）
 
-作用域只勾数据源进程，**绝不勾目标 App**：
+只改“数据源”，**绝不勾目标 App**：
 
 ```
 目标 App ──binder──> phone 进程(com.android.phone) ──> 本模块改返回值
@@ -33,41 +33,36 @@ Xposed 模块，用于调试/研究类银行 App 的启动流程、以及让 adb
 
 目标 App 进程内没有 Xposed 痕迹，因此不会触发 App 的注入自毁。
 （反例：AU 0101 的 Protectt SDK 会做 app blocklisting，点名“模块 App 本身”，
-这属于“应用列举检测”，不是进程内注入检测，需要用 HMA-OSS 把模块 App 藏起来，见第 6 节。）
+属应用列举检测，需用 HMA-OSS 隐藏模块 App，见第 7 节。）
 
 ---
 
 ## 3. 构建 / 安装 / 作用域
 
-两个独立 Gradle 项目（`SimSpoofer/`、`NoFlagSecure/`），各自构建：
-
 ```powershell
-# 构建（本机有代理 http://127.0.0.1:7890，见各自 gradle.properties）
-cd SimSpoofer;    .\gradlew.bat assembleDebug --console=plain
-cd ..\NoFlagSecure; .\gradlew.bat assembleDebug --console=plain
+# 构建（本机有代理 http://127.0.0.1:7890，见 gradle.properties）
+cd SimSpoofer; .\gradlew.bat assembleDebug --console=plain
 
 # 安装
 adb install -r SimSpoofer\app\build\outputs\apk\debug\app-debug.apk
-adb install -r NoFlagSecure\app\build\outputs\apk\debug\app-debug.apk
 ```
 
 作用域（Vector CLI，`system/0` 即 system_server）：
 
 ```powershell
 su -c "/data/adb/modules/zygisk_vector/cli scope set com.rootdemo.simspoofer com.android.phone/0 system/0"
-su -c "/data/adb/modules/zygisk_vector/cli scope set com.rootdemo.noflagsecure system/0"
 su -c "/data/adb/modules/zygisk_vector/cli modules ls"
 ```
 
 热重载：
 
-- **只改 phone 进程代码** → 杀 phone 进程即可：`su -c "kill -9 $(pidof com.android.phone)"`
-- **改了 system_server 代码（连通性/设置/NoFlagSecure）** → 只能 `adb reboot`。
+- **只改 phone 进程代码** → `su -c "kill -9 $(pidof com.android.phone)"`，无需重启。
+- **改了 system_server 代码（连通性/设置）** → 只能 `adb reboot`。
   **禁止 `ksud soft-reboot`**（实测卡开机）。
 
 ---
 
-## 4. 运行时配置（SimSpoofer）
+## 4. 运行时配置
 
 设置页 `SettingsActivity`（App 名 “SimSpoofer”）改字段 → 保存 → 写入模块 App 的
 `SharedPreferences("sim_profile")` → phone 进程 ≤3 秒读到（`ProfileStore`，3s 缓存）。
@@ -85,7 +80,7 @@ has_icc`，以及 **`debug`（调试日志开关）**。
 | 类 | 方法（示例） | 伪造 |
 |---|---|---|
 | `…telephony.PhoneSubInfoController` | `getIccSerialNumber*`, `getSimSerialNumber*`, `getSubscriberId*`, `getLine1Number*`, `getMsisdn*`, `getSimOperator*`, `getSimOperatorName*`, `getNetworkOperator*`, `getNetworkOperatorName*` | ICCID/IMSI/号码/运营商 |
-| `…telephony.PhoneInterfaceManager` | `getSimState*`, `hasIccCard`, `getActiveModemCount`, `getSupportedModemCount`, `getNetworkType*`, `getDataNetworkType*`, `getVoiceNetworkType*` | SIM 状态/卡槽数/网络制式 |
+| `…telephony.PhoneInterfaceManager` | `getSimState*`, `hasIccCard`, `getNetworkType*`, `getDataNetworkType*`, `getVoiceNetworkType*` | SIM 状态/网络制式 |
 | `…subscription.SubscriptionManagerService` | `getActiveSubscriptionInfoList`, `getAccessibleSubscriptionInfoList`, `getActiveSubscriptionInfo`, `getActiveSubInfoCount*`, `getDefault*SubId`, `getSlotIndex*` | 订阅列表/计数/默认 subId |
 | `…telephony.SmsController`（Android 16 的 ISms 实现） | `sendText*`/`sendMultipartText*`/`sendData*` | **仅诊断打印**，不改变行为 |
 
@@ -95,12 +90,6 @@ has_icc`，以及 **`debug`（调试日志开关）**。
 |---|---|---|
 | `…server.connectivity.ConnectivityService` | `getNetworkCapabilities`→CELLULAR；`isActiveNetworkMetered`→true；`getActiveNetworkInfo*`/`getNetworkInfo*`→MOBILE/CONNECTED | WiFi/以太网/VPN 被当作蜂窝 |
 | `…providers.settings.SettingsProvider` | `call(GET_global/GET_secure, adb_enabled/development_settings_enabled/adb_wifi_enabled)` | 对普通 App 返回 `"0"` |
-
-**NoFlagSecure（system_server）**
-
-| 类 | 方法 | 作用 |
-|---|---|---|
-| `…server.wm.WindowManagerService` | `addWindow`、`relayoutWindow` | 清掉 `LayoutParams.FLAG_SECURE`（只影响捕获） |
 
 **守卫**：`Binder.getCallingUid()` 为 0/1000/1001（root/system/phone）一律放行，只对普通 App 伪造。
 
@@ -113,8 +102,7 @@ countryIso 第 12 位；字段 `mMcc/mMnc` 是 private final，必须走构造�
 
 ## 6. 能力边界（重要）
 
-**能**：让 App 通过 telephony/connectivity API 读到的值变成伪造值；隐藏 USB 调试/开发者选项；
-让镜像/截图能捕获带 FLAG_SECURE 的窗口。
+**能**：让 App 通过 telephony/connectivity API 读到的值变成伪造值；隐藏 USB 调试/开发者选项。
 
 **不能**（取决于网络侧，非本模块职责）：
 
@@ -130,7 +118,7 @@ countryIso 第 12 位；字段 `mMcc/mMnc` 是 private final，必须走构造�
 
 ---
 
-## 7. 反检测与镜像
+## 7. 反检测
 
 - **模块 App 本身可被列举检测**：AU 0101 用 Protectt.ai（`ai.protectt.app.security`），
   通过 `getPackageArchiveInfo` / `sourceDir` 扫描已安装 APK 并命中 `de.robv.android.xposed.XposedBridge`
@@ -138,7 +126,6 @@ countryIso 第 12 位；字段 `mMcc/mMnc` 是 private final，必须走构造�
   缓解：用 **HMA-OSS**（已装 `hma_oss_zygisk`）把模块 App 对目标 App 隐藏
   （模板可用内置 “LSPosed/Xposed modules” 预设）。
 - **system_server 注入本身**未被 UA/BOI 检测到（它们不做系统进程注入检测）。
-- **FLAG_SECURE**：已抽到独立模块 NoFlagSecure，镜像/截图/`uiautomator` 均可正常读取。
 
 ---
 
@@ -161,14 +148,13 @@ countryIso 第 12 位；字段 `mMcc/mMnc` 是 private final，必须走构造�
 
 ## 10. 关键文件
 
-- `SimSpoofer/app/src/main/java/com/rootdemo/simspoofer/SimSpoofer.java` — hooks 主体
+- `app/src/main/java/com/rootdemo/simspoofer/SimSpoofer.java` — hooks 主体
 - `.../SimLog.java` — 日志分级
 - `.../ProfileStore.java` — 运行时配置读取（provider + 3s 缓存）
 - `.../SimConfigProvider.java` — 配置 provider（authority `com.rootdemo.simspoofer.config`）
 - `.../SettingsActivity.java` — 设置页
 - `.../CheckActivity.java` — 自检页
 - `.../SimProfile.java` — 默认值
-- `NoFlagSecure/app/src/main/java/com/rootdemo/noflagsecure/NoFlagSecure.java` — 去 FLAG_SECURE
 
 ## 11. adb / su 规范
 
