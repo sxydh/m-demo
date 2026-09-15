@@ -179,7 +179,7 @@ curl.exe -sS -X POST "https://uacymconnect.bankofindia.bank.in/ciamregsrvc/upi/c
 - 描述：绑定短信验证通过后，校验服务端下发的手机 OTP（`sendOtpResponseDto`）；UPI SIM 绑定流程的最后一步
 - 方法：`POST`
 - 地址：`https://uacymconnect.bankofindia.bank.in/ciamregsrvc/upi/verifyUpiMobileOtp`
-- 鉴权：`Bearer <API-002 的 token>`
+- 鉴权：`Bearer <API-003 成功时返回的 data.token>`（App 实际用这个；实测 API-002 的流程 token 服务端同样放行）
 - 加密：无
 - 关键代码：`verifyUpiMobileOtpUsingPOST`
 
@@ -187,7 +187,7 @@ curl.exe -sS -X POST "https://uacymconnect.bankofindia.bank.in/ciamregsrvc/upi/c
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| Authorization | string | 是 | `Bearer <API-002 返回的 token>` |
+| Authorization | string | 是 | `Bearer <API-003 成功时返回的 data.token>` |
 | Content-Type | string | 是 | 固定 `application/json` |
 | locLatitude | string | 否 | 纬度 |
 | locLongitude | string | 否 | 经度 |
