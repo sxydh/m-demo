@@ -116,7 +116,7 @@ token payload（base64url 解码，非加密）：`{"result":true,"roles":["VERI
 
 ## API-003 · 轮询绑定状态
 
-- 描述：查询 SIM 绑定结果；成功时返回绑定状态与 `sendOtpResponseDto`（OTP 下发信息）
+- 描述：查询 SIM 绑定结果；成功时返回绑定状态、新 `token`（JWT）与 `sendOtpResponseDto`（OTP 下发信息）
 - 方法：`POST`
 - 地址：`https://uacymconnect.bankofindia.bank.in/ciamregsrvc/upi/checkBindingKeyStatusUpi`
 - 鉴权：`Bearer <API-002 的 token>`
@@ -152,7 +152,7 @@ curl.exe -sS -X POST "https://uacymconnect.bankofindia.bank.in/ciamregsrvc/upi/c
 | 参数 | 类型 | 说明 |
 |---|---|---|
 | success | boolean | 是否成功 |
-| data | object | 绑定状态；成功时含 `simbindingstatus`、`sendOtpResponseDto` |
+| data | object | 绑定状态；成功时含 `simbindingstatus`、`token`、`sendOtpResponseDto` |
 | timestamp | string | 服务端时间 |
 | message | string | 提示信息，可空 |
 | errorCode | string | 错误码，可空 |
