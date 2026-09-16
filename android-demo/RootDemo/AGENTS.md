@@ -31,6 +31,8 @@ Android root demo
 
 here-string 走 stdin 原文送达设备 shell，不经过 PowerShell 引号解析，因此不受影响。
 
+命令里含中文/emoji 等非 ASCII 字符时，必须先把管道编码改成 UTF-8，否则会被替换成 `?`。
+
 ## 环境
 
 - 本机系统是 Windows11 ，大陆网络，有基于 Mihomo 的代理 `http://127.0.0.1:7890` 。
