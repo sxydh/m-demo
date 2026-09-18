@@ -8,8 +8,8 @@ from datetime import datetime
 
 import requests
 
-from cipher import decrypt, encrypt
-from config import (
+from common.cipher import decrypt, encrypt
+from common.config import (
     BASE_URL,
     BASIC_CREDENTIALS,
     CHANNEL_ID,
