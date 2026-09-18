@@ -16,5 +16,5 @@ OUTER_PASSWORD = "sdfheu$*sdfGw2"
 BASIC_CREDENTIALS = "rocket-app-enc:Rk#t40ckEt*#"
 CHANNEL_ID = "ROCKET_APP_USER"
 
-OUTPUT_DIR = "_Temp"
+OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_Temp")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
