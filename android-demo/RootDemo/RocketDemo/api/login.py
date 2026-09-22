@@ -19,6 +19,7 @@ from common.config import (
     PHONE,
     PRE_SESSION_ID,
 )
+from common.log import log
 
 now = datetime.now()
 payload = {
@@ -43,9 +44,9 @@ resp = post(url, payload, basic_auth(), "login.json")
 assert resp.status_code == 200, "HTTP %d: %s" % (resp.status_code, resp.text)
 data = json.loads(decrypt(resp.json()["userData"], OUTER_PASSWORD))
 assert data.get("status") == "SUCCESS", "status=%r body=%s" % (data.get("status"), data)
-print(json.dumps(data, ensure_ascii=False, indent=2))
+log(json.dumps(data, ensure_ascii=False, indent=2))
 
 for name in ("accessToken", "refreshToken"):
     part = data["data"][name].split(".")[1]
     part += "=" * (-len(part) % 4)
-    print(name, json.dumps(json.loads(base64.urlsafe_b64decode(part)), ensure_ascii=False))
+    log(name, json.dumps(json.loads(base64.urlsafe_b64decode(part)), ensure_ascii=False))

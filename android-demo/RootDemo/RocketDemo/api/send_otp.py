@@ -18,6 +18,7 @@ from common.config import (
     PHONE,
     ROCKET_SESSION_ID,
 )
+from common.log import log
 
 with open(OUTPUT_DIR + "/login.json", encoding="utf-8") as f:
     login_resp = json.load(f)
@@ -52,4 +53,4 @@ resp = post(url, payload, bearer(login["data"]["accessToken"]), "send_otp.json")
 assert resp.status_code == 200, "HTTP %d: %s" % (resp.status_code, resp.text)
 data = json.loads(decrypt(resp.json()["userData"], OUTER_PASSWORD))
 assert data.get("status") == "SUCCESS", "status=%r body=%s" % (data.get("status"), data)
-print(json.dumps(data, ensure_ascii=False, indent=2))
+log(json.dumps(data, ensure_ascii=False, indent=2))
