@@ -11,6 +11,7 @@ GATEWAY_SESSION_ID = os.environ.get("ROCKET_GATEWAY_SESSION_ID", "123")
 PRE_SESSION_ID = os.environ.get("ROCKET_PRE_SESSION_ID", "1234")
 ROCKET_SESSION_ID = os.environ.get("ROCKET_ROCKET_SESSION_ID", "7654321")
 TIMEOUT = 20
+PROXY = os.environ.get("ROCKET_PROXY", "http://127.0.0.1:7890")
 
 OUTER_PASSWORD = "sdfheu$*sdfGw2"
 BASIC_CREDENTIALS = "rocket-app-enc:Rk#t40ckEt*#"
