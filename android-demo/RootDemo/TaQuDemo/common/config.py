@@ -13,7 +13,7 @@ TIMEOUT = 20
 
 ROOT = Path(__file__).resolve().parents[1]
 UNIDBG_DIR = ROOT / "_Temp" / "unidbg-call"
-SO_PATH = UNIDBG_DIR / "libnative-xbp.so"
+SO_PATH = ROOT / "native" / "libnative-xbp.so"
 CP_FILE = UNIDBG_DIR / "cp.txt"
 OUTPUT_DIR = ROOT / "_Temp"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
