@@ -39,7 +39,7 @@ payload = {
 }
 
 url = BASE_URL.rstrip("/") + "/apigw/v1/login"
-resp = post(url, payload, basic_auth(), "login.json")
+resp = post(url, payload, basic_auth(), "login.json", "手机号登录")
 
 assert resp.status_code == 200, "HTTP %d: %s" % (resp.status_code, resp.text)
 data = json.loads(decrypt(resp.json()["userData"], OUTER_PASSWORD))

@@ -46,7 +46,7 @@ payload = {
 }
 
 url = BASE_URL_TXN.rstrip("/") + "/apigw/v1/userService"
-resp = post(url, payload, bearer(login["data"]["accessToken"]), "verify_otp.json")
+resp = post(url, payload, bearer(login["data"]["accessToken"]), "verify_otp.json", "OTP 验证")
 
 assert resp.status_code == 200, "HTTP %d: %s" % (resp.status_code, resp.text)
 data = json.loads(decrypt(resp.json()["userData"], OUTER_PASSWORD))

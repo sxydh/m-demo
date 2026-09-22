@@ -14,6 +14,7 @@ from common.config import (
     PROXY,
     TIMEOUT,
 )
+from common.log import log
 
 PROXIES = {"http": PROXY, "https": PROXY} if PROXY else None
 
@@ -26,7 +27,7 @@ def bearer(token):
     return "Bearer " + token
 
 
-def post(url, payload, auth, save_name):
+def post(url, payload, auth, save_name, desc=""):
     plain = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     body = {"userData": encrypt(plain, OUTER_PASSWORD)}
     headers = {
@@ -35,11 +36,12 @@ def post(url, payload, auth, save_name):
         "Content-Type": "application/json",
         "User-Agent": "okhttp/4.9.3",
     }
-    print("POST", url)
+    log("[接口] %s" % desc if desc else "[接口] (未命名)")
+    log("POST", url)
     resp = requests.post(url, json=body, headers=headers, timeout=TIMEOUT, proxies=PROXIES)
 
     path = OUTPUT_DIR + "/" + save_name
     with open(path, "w", encoding="utf-8") as f:
         f.write(resp.text)
-    print("saved", path, "HTTP", resp.status_code)
+    log("saved", path, "HTTP", resp.status_code)
     return resp
