@@ -6,23 +6,18 @@ import base64
 import json
 from datetime import datetime
 
-import requests
-
-from common.cipher import decrypt, encrypt
+from common.cipher import decrypt
+from common.client import basic_auth, post
 from common.config import (
     BASE_URL,
-    BASIC_CREDENTIALS,
-    CHANNEL_ID,
     CLIENT_LANGUAGE,
     CLIENT_VERSION,
     DEVICE_ID,
     DEVICE_INFO,
     GATEWAY_SESSION_ID,
     OUTER_PASSWORD,
-    OUTPUT_DIR,
     PHONE,
     PRE_SESSION_ID,
-    TIMEOUT,
 )
 
 now = datetime.now()
@@ -42,23 +37,8 @@ payload = {
     },
 }
 
-plain = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-body = {"userData": encrypt(plain, OUTER_PASSWORD)}
-headers = {
-    "Authorization": "Basic " + base64.b64encode(BASIC_CREDENTIALS.encode("utf-8")).decode("ascii"),
-    "CHANNEL_ID": CHANNEL_ID,
-    "Content-Type": "application/json",
-    "User-Agent": "okhttp/4.9.3",
-}
-
 url = BASE_URL.rstrip("/") + "/apigw/v1/login"
-print("POST", url)
-resp = requests.post(url, json=body, headers=headers, timeout=TIMEOUT)
-
-path = OUTPUT_DIR + "/login.json"
-with open(path, "w", encoding="utf-8") as f:
-    f.write(resp.text)
-print("saved", path, "HTTP", resp.status_code)
+resp = post(url, payload, basic_auth(), "login.json")
 
 assert resp.status_code == 200, "HTTP %d: %s" % (resp.status_code, resp.text)
 data = json.loads(decrypt(resp.json()["userData"], OUTER_PASSWORD))

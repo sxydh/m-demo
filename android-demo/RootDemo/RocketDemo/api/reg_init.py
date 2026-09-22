@@ -5,12 +5,10 @@ POST /apigw/v1/userService
 import json
 from datetime import datetime
 
-import requests
-
-from common.cipher import decrypt, encrypt
+from common.cipher import decrypt
+from common.client import bearer, post
 from common.config import (
     BASE_URL_TXN,
-    CHANNEL_ID,
     CLIENT_LANGUAGE,
     CLIENT_VERSION,
     DEVICE_ID,
@@ -19,7 +17,6 @@ from common.config import (
     OUTPUT_DIR,
     PHONE,
     ROCKET_SESSION_ID,
-    TIMEOUT,
 )
 
 with open(OUTPUT_DIR + "/login.json", encoding="utf-8") as f:
@@ -45,23 +42,8 @@ payload = {
     },
 }
 
-plain = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-body = {"userData": encrypt(plain, OUTER_PASSWORD)}
-headers = {
-    "Authorization": "Bearer " + login["data"]["accessToken"],
-    "CHANNEL_ID": CHANNEL_ID,
-    "Content-Type": "application/json",
-    "User-Agent": "okhttp/4.9.3",
-}
-
 url = BASE_URL_TXN.rstrip("/") + "/apigw/v1/userService"
-print("POST", url)
-resp = requests.post(url, json=body, headers=headers, timeout=TIMEOUT)
-
-path = OUTPUT_DIR + "/reg_init.json"
-with open(path, "w", encoding="utf-8") as f:
-    f.write(resp.text)
-print("saved", path, "HTTP", resp.status_code)
+resp = post(url, payload, bearer(login["data"]["accessToken"]), "reg_init.json")
 
 assert resp.status_code == 200, "HTTP %d: %s" % (resp.status_code, resp.text)
 data = json.loads(decrypt(resp.json()["userData"], OUTER_PASSWORD))
