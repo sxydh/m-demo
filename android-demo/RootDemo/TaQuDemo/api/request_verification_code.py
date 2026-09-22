@@ -1,20 +1,17 @@
 ﻿"""发送短信验证码
 POST /jpush/v1/verificationCode/requestVerificationCode
 
-真实调用会向手机号下发短信。
-用法: python -m api.request_verification_code [手机号]
+真实调用会向 config.PHONE 下发短信。
+用法: python -m api.request_verification_code
 """
 
 import json
-import sys
 import urllib.parse
 
 from common.config import DEVICE_ID, FORM_HEADERS, PHONE, TIMEOUT
 from common.http import save, send, signed_headers
 from common.log import log
 from common.sign import distinct_request_id, generate_signature
-
-phone = sys.argv[1] if len(sys.argv) > 1 else PHONE
 
 sig = generate_signature(DEVICE_ID)
 headers = signed_headers(FORM_HEADERS, sig)
@@ -24,7 +21,7 @@ url = (
         + urllib.parse.urlencode({"distinctRequestId": distinct_request_id()})
 )
 body = urllib.parse.urlencode(
-    {"sms_type": "SINGLE_VCODE", "code": "reg_login", "phone": phone}
+    {"sms_type": "SINGLE_VCODE", "code": "reg_login", "phone": PHONE}
 ).encode()
 
 log("POST", url, body.decode())

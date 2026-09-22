@@ -1,34 +1,37 @@
 """验证码登录
 POST /i/v1/Account/autoLogin
 
-校验验证码并登录，成功后 ticket_id 落在 _Temp/auto_login.json，供后续接口读取。
-用法: python -m api.auto_login <vcode> [手机号]
+校验验证码并登录，成功后 ticket 落到 _Temp/auto_login.json，供后续接口读取。
+用法: python -m api.auto_login    （交互式输入验证码）
 """
 
-import sys
+import json
 import urllib.parse
 
-from common.config import DEVICE_ID, FORM_HEADERS, LOGIN_EXTRA_JSON, PHONE, SHUMEI_DEVICE_ID, TIMEOUT
+from common.config import (
+    DEVICE_ID,
+    FORM_HEADERS,
+    LOGIN_EXTRA_JSON,
+    PHONE,
+    SHUMEI_DEVICE_ID,
+    TIMEOUT,
+)
 from common.http import save, send, signed_headers
 from common.log import log
 from common.sign import distinct_request_id, generate_signature
 
-if len(sys.argv) > 1:
-    vcode = sys.argv[1]
-else:
-    vcode = input("vcode: ").strip()
-mobile = sys.argv[2] if len(sys.argv) > 2 else PHONE
+vcode = input("vcode: ").strip()
 
 sig = generate_signature(DEVICE_ID)
 headers = signed_headers(FORM_HEADERS, sig)
 
 url = (
-        "https://gw-cn.jiaoliuqu.com/i/v1/Account/autoLogin?"
-        + urllib.parse.urlencode({"spm": "0", "distinctRequestId": distinct_request_id()})
+    "https://gw-cn.jiaoliuqu.com/i/v1/Account/autoLogin?"
+    + urllib.parse.urlencode({"spm": "0", "distinctRequestId": distinct_request_id()})
 )
 body = urllib.parse.urlencode(
     {
-        "mobile": mobile,
+        "mobile": PHONE,
         "type": "0",
         "vcode": vcode,
         "version_number": "1",
