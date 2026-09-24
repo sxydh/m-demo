@@ -2,7 +2,8 @@ import os
 
 BASE_URL = os.environ.get("ROCKET_BASE_URL", "https://rocket-ekycservice.dutchbanglabank.com")
 BASE_URL_TXN = os.environ.get("ROCKET_BASE_URL_TXN", "https://rocket-consumertxnservice.dutchbanglabank.com")
-PHONE = os.environ.get("ROCKET_PHONE", "01833856750")
+BASE_URL_LOCATION = os.environ.get("ROCKET_BASE_URL_LOCATION", "https://rocket-locationservice.dutchbanglabank.com")
+PHONE = os.environ.get("ROCKET_PHONE", "01886143145")
 DEVICE_ID = os.environ.get("ROCKET_DEVICE_ID", PHONE)
 DEVICE_INFO = os.environ.get("ROCKET_DEVICE_INFO", "BP2A.250605.031.A2-Pixel 7 Pro")
 CLIENT_VERSION = os.environ.get("ROCKET_CLIENT_VERSION", "3.1.5")

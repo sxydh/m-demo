@@ -1,37 +1,27 @@
 """刷新 Token
 POST /apigw/v1/refreshToken
 
-先跑 verify_otp（3032）和 pin_login（3033）拿到 refreshToken，再运行本接口。
-本接口为明文直连（非 userData 加密通道）。
+自动取最新 refreshToken（refresh_token.json 优先于 pin_login.json）。
+本接口为明文直连（非 userData 加密通道），响应为明文 JSON。
 """
 
 import json
 
 import requests
 
-from common.cipher import decrypt
 from common.client import PROXIES, bearer
 from common.config import (
     BASE_URL,
     CHANNEL_ID,
-    OUTER_PASSWORD,
     OUTPUT_DIR,
     TIMEOUT,
 )
 from common.log import log
-
-with open(OUTPUT_DIR + "/verify_otp.json", encoding="utf-8") as f:
-    verify_resp = json.load(f)
-verify = json.loads(decrypt(verify_resp["userData"], OUTER_PASSWORD))
-secret_key = verify["data"]["secretKey"]
-
-with open(OUTPUT_DIR + "/pin_login.json", encoding="utf-8") as f:
-    pin_resp = json.load(f)
-pin = json.loads(decrypt(pin_resp["userData"], secret_key))
+from common.session import refresh_token
 
 url = BASE_URL.rstrip("/") + "/apigw/v1/refreshToken"
 headers = {
-    "Authorization": bearer(pin["data"]["refreshToken"]),
+    "Authorization": bearer(refresh_token()),
     "CHANNEL_ID": CHANNEL_ID,
     "Content-Type": "application/json; charset=utf-8",
     "User-Agent": "okhttp/4.9.3",
