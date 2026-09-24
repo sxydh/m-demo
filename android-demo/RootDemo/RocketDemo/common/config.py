@@ -15,6 +15,7 @@ PROXY = os.environ.get("ROCKET_PROXY", "http://127.0.0.1:7890")
 
 OUTER_PASSWORD = "sdfheu$*sdfGw2"
 BASIC_CREDENTIALS = "rocket-app-enc:Rk#t40ckEt*#"
+INNER_CREDENTIALS = "rocket-user-enc:rK#T10cAEt*#"
 CHANNEL_ID = "ROCKET_APP_USER"
 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "_Temp")
