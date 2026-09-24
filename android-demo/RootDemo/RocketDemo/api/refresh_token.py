@@ -29,6 +29,7 @@ headers = {
 
 log("[接口] 刷新 Token")
 log("POST", url)
+log("[请求参数]", "{}")
 resp = requests.post(url, data="{}", headers=headers, timeout=TIMEOUT, proxies=PROXIES)
 
 path = OUTPUT_DIR + "/refresh_token.json"

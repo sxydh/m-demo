@@ -45,6 +45,7 @@ def post(url, payload, auth, save_name, desc="", extra_headers=None, password=OU
         headers.update(extra_headers)
     log("[接口] %s" % desc if desc else "[接口] (未命名)")
     log("POST", url)
+    log("[请求参数]", json.dumps(payload, ensure_ascii=False, indent=2))
     resp = requests.post(url, json=body, headers=headers, timeout=TIMEOUT, proxies=PROXIES)
 
     path = OUTPUT_DIR + "/" + save_name
