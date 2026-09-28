@@ -23,6 +23,14 @@ Android root demo
 - 任何可能将手机变砖的操作，都必须有恢复方案，否则严禁执行。
 - 每次重启手机后，必须在用户手动解锁屏幕之后，才能继续下一步操作。
 
+## Frida 与 Zygisk/Vector 注入冲突（重要）
+
+- **秒崩条件**：`frida-server` 正在运行 **且** Zygisk/Vector 向该 app 注入，两者同时成立时，被注入进程启动早期内存被写坏 → 约 1 秒内 SIGSEGV（单帧落在 `libstagefright.so` / `libmedia.so` 只读代码页，`SEGV_ACCERR`）。与 App 自身反作弊无关，换任意 app 同样崩。
+- **需要 attach 时的固定顺序**：杀 frida-server → 启动 app → 起 frida-server（等 `netstat` 真 LISTEN）→ attach。
+- **需 hook 启动早期**：改用 Zygisk 注入的 frida-gadget（如 ZygiskFrida），不占端口、不 ptrace，与 Zygisk Next 共存。
+- **只抓包（挂 TrustMe、不开 Frida）**：完全安全。
+- 看到「启动 1 秒内 SIGSEGV + 单帧落系统库」先确认 frida-server 是否在跑。
+
 ## adb / su 执行规范
 
 执行 adb 命令（尤其涉及 `su`）时，**强烈建议用 here-string + 管道，不要把命令写进 adb 的参数**。
