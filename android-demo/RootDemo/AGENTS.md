@@ -31,6 +31,13 @@ Android root demo
 - **只抓包（挂 TrustMe、不开 Frida）**：完全安全。
 - 看到「启动 1 秒内 SIGSEGV + 单帧落系统库」先确认 frida-server 是否在跑。
 
+## 重装作用域内 App 后抓包 "No Connection"（重启恢复）
+
+- 卸载重装被 TrustMe 作用域覆盖的 App（如 `com.shopee.ph`）后，走 MITM 显示 **No Connection**，Reqable 只有 `CONNECT`、无解密 HTTPS。
+- 原因：新进程**没被 Vector/TrustMe 注入**。判据：`su -c 'grep -a TrustMe /data/adb/lspd/log/verbose_*.log | tail'`，最后一条 `[TrustMe] 处理 App` 停在重装前。
+- **不是** Zygisk denylist（新旧进程都在 `zygisk-core64 [..] is on the denylist`，但旧进程照样被处理）；也不是证书挂载。
+- **修复：重启手机**（重启后需手动解锁）。凡「重装作用域内 App」后网络/抓包异常，先重启。
+
 ## adb / su 执行规范
 
 执行 adb 命令（尤其涉及 `su`）时，**强烈建议用 here-string + 管道，不要把命令写进 adb 的参数**。
