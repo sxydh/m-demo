@@ -54,3 +54,17 @@ here-string 走 stdin 原文送达设备 shell，不经过 PowerShell 引号解�
 - 本机已经安装最新版本的 Android Studio
 - 本机已经通过 USB 数据线连接手机
 - 手机已经开启 USB 调试模式，且已经解锁 OEM 。
+
+## Nagad Agent（UddoktaDemo）应用要点
+
+- **App**：`com.konasl.nagad.agent`，v1.0.120.01，KonaPayment SDK，**2 个 dex、无壳未加密**，jadx 可直接出源码。
+- **网关**：`https://app2.mynagad.com:20002`；MQTT `tcp://app2.mynagad.com:1883`（明文端口）。**证书固定**（`res/raw/nagad_server_certificate*.cer`），抓包需 TrustMe/Vector 绕过。
+- **配置解密**：`BuildConfig` 里网关/ASP_ID 等是密文，算法 `DESede/ECB/PKCS5`，key `o64l8sYbJu4+sW54Jq+TdFZ8Rjyv3rgu`；`ASP_ID=100012345612345`。解出见 `CCBP.AbstractC0513Iu.decryptConfigProperty`。
+- **接口**：`MobilePlatformDao` 共 207 个端点；`POST /api/login` body = `username(手机号)/password(SHA256(pin).upper)/aspId/mpaId`。
+- **设备标识 = `mpaId`**（服务端在钱包初始化下发，加密存本地）+ 头部 `X-KM-DEVICE-FGP`；指纹 = `SHA256("android"+厂商+机型+产品+"NAAANANA"+android_id*2+"02:00:00:00:00:00"+"true")`，**弱、可伪造/复刻**（核心是 `android_id`）。
+- **新设备流程**：`GET /api/user/check-user-status-for-log-in?msisdn=` 返回 `verificationStatus=VERIFICATION_REQUIRED` → App 显示拨号引导；**「Dial *167#」只是 `ACTION_DIAL` 预填号码**，`*167#`→My Nagad→Allow New Device→Android→PIN 全是**运营商 USSD 人工操作，App 不参与**（清单无 `CALL_PHONE`、无 `sendUssdRequest`）。
+- **token 是账号/SIM 级、不绑定机器**：`check-ussd-otp` 只传 `msisdn+token`；设备指纹仅用于“发现新设备→触发流程”。真正门槛是 **PIN + OTP**。
+- **不读 SIM 号码**：无 `getLine1Number/getSubscriberId/getSimSerialNumber`，无 `READ_PHONE_STATE` 权限；号码**用户手输**。仅用 `SubscriptionManager` 判断 SIM 是否插入、`getNetworkOperatorName` 判断运营商。
+- **登录后持久化**：`initializeWallet` 把服务端下发的 **`mpaId` + RSA 密钥对 + mobile keys + refreshToken** 加密存入 SQLite `WalletProperties`（DB `dfs_channel`）；之后靠 `mpaId` 二次登录，**不再拨号**。
+- **KonaShield（`libshield.so`）**：Root/Hook/篡改/调试/模拟器检测 + 5s 巡检。**crash-on-detect 默认全 false，root 只上报埋点**（`EV_DEVICE_DEVICE_IS_ROOTED`）并经 `/api/device/update-device-info` 上报 `rooted` 布尔值 → **rooted 设备不被拦截**。`HookCheckerImpl` 末尾恒 `return false`。
+- 报告与接口清单：`NagadAgent-report.md`、`NagadAgent-endpoints.md`（207 条）；反编译产物在 `_Temp/`（已 gitignore）。
