@@ -44,6 +44,13 @@ Android root demo
 - **不是** Zygisk denylist（新旧进程都在 `zygisk-core64 [..] is on the denylist`，但旧进程照样被处理）；也不是证书挂载。
 - **修复：重启手机**（重启后需手动解锁）。凡「重装作用域内 App」后网络/抓包异常，先重启。
 
+## adb 无线连接（免数据线）
+
+- 已开启无线 adb，端口固定 `5555`。
+- 连接：`adb connect 192.168.0.226:5555`（IP 以手机实际 Wi-Fi IP 为准）。
+- 开机自启脚本：`/data/adb/service.d/adb_tcpip.sh`。
+- 关闭：`su -c 'rm /data/adb/service.d/adb_tcpip.sh'`，再 `adb usb`。
+
 ## adb / su 执行规范
 
 执行 adb 命令（尤其涉及 `su`）时，**强烈建议用 here-string + 管道，不要把命令写进 adb 的参数**。
@@ -58,5 +65,5 @@ here-string 走 stdin 原文送达设备 shell，不经过 PowerShell 引号解�
 
 - 本机系统是 Windows11 ，大陆网络，有基于 Mihomo 的代理 `http://127.0.0.1:7890` 。
 - 本机已经安装最新版本的 Android Studio
-- 本机已经通过 USB 数据线连接手机
+- 手机已通过**无线 adb**（固定 `192.168.0.226:5555`）连接，无需数据线（详见「adb 无线连接」）
 - 手机已经开启 USB 调试模式，且已经解锁 OEM 。
