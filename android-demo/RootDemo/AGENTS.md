@@ -31,6 +31,12 @@ Android root demo
 - **只抓包（挂 TrustMe、不开 Frida）**：完全安全。
 - 看到「启动 1 秒内 SIGSEGV + 单帧落系统库」先确认 frida-server 是否在跑。
 
+## Frida 只能用隐藏版
+
+- 只能用**隐藏版 frida `17.16.4`**（phantom-frida 的 `sysrender-server-17.16.4-android-arm64`，伪装进程名 `.sysrender`，监听 `127.0.0.1:31337`）。
+- 电脑端的 `frida-tools` 也必须用 **17.16.4**（与隐藏版版本一致）。
+- **不能用官方 `frida-server`**：不隐藏会被检测到。
+
 ## 重装作用域内 App 后抓包 "No Connection"（重启恢复）
 
 - 卸载重装被 TrustMe 作用域覆盖的 App（如 `com.shopee.ph`）后，走 MITM 显示 **No Connection**，Reqable 只有 `CONNECT`、无解密 HTTPS。
